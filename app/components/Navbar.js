@@ -1,12 +1,14 @@
+import StudyHubLogo from './StudyHubLogo';
+
 export default function Navbar() {
   return (
     <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-xl border-b border-white/10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="text-xl md:text-2xl font-black bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent whitespace-nowrap">
-            🎓 StudyHub
-          </div>
+          <a href="/" style={{ textDecoration: 'none' }}>
+            <StudyHubLogo size={36} textSize={18} />
+          </a>
 
           {/* Navigation Links */}
           <div className="hidden md:flex gap-8 items-center">
