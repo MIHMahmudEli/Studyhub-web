@@ -31,9 +31,9 @@ export default function Home() {
         <div className="blob blob-2"></div>
       </div>
       
-      {/* Decorative Circles */}
-      <div className="decor-circle dc-1"></div>
-      <div className="decor-circle dc-2"></div>
+      {/* Decorative Circles - Hidden on mobile, visible on lg and above */}
+      <div className="hidden lg:block decor-circle dc-1"></div>
+      <div className="hidden lg:block decor-circle dc-2"></div>
 
       {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 bg-black/85 backdrop-blur-xl border-b border-white/12">
@@ -270,30 +270,15 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Scroll to Top Button */}
+      {/* Scroll to Top Button - Responsive sizing */}
       <button
         onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center hover:bg-purple-600 transition transform hover:scale-110 z-40 ${
+        className={`fixed sm:bottom-8 sm:right-8 bottom-5 right-5 sm:w-14 sm:h-14 w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center hover:bg-purple-600 transition transform hover:scale-110 z-40 ${
           showScrollBtn ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
       >
         <ChevronUp className="w-6 h-6 text-white" />
       </button>
-    </div>
-  );
-}
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
     </div>
   );
 }
