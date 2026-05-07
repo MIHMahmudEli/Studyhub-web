@@ -4,11 +4,33 @@ export default function ScrollToTopButton({ showScrollBtn, onScrollToTop }) {
   return (
     <button
       onClick={onScrollToTop}
-      className={`fixed sm:bottom-8 sm:right-8 bottom-5 right-5 sm:w-14 sm:h-14 w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center hover:bg-purple-600 transition transform hover:scale-110 z-40 ${
-        showScrollBtn ? 'opacity-100' : 'opacity-0 pointer-events-none'
-      }`}
+      aria-label="Scroll to top"
+      style={{
+        position: 'fixed',
+        bottom: 28,
+        right: 28,
+        zIndex: 200,
+        width: 44,
+        height: 44,
+        background: 'rgba(37,99,235,0.9)',
+        border: '1px solid rgba(59,130,246,0.3)',
+        borderRadius: 12,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#fff',
+        cursor: 'pointer',
+        backdropFilter: 'blur(8px)',
+        transition: 'all 0.3s ease',
+        opacity: showScrollBtn ? 1 : 0,
+        transform: showScrollBtn ? 'translateY(0)' : 'translateY(12px)',
+        pointerEvents: showScrollBtn ? 'auto' : 'none',
+        boxShadow: '0 4px 24px rgba(37,99,235,0.3)',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(29,78,216,0.95)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(37,99,235,0.9)'; e.currentTarget.style.transform = showScrollBtn ? 'translateY(0)' : 'translateY(12px)'; }}
     >
-      <ChevronUp className="w-6 h-6 text-white" />
+      <ChevronUp size={18} />
     </button>
   );
 }

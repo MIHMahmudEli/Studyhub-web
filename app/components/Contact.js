@@ -1,58 +1,68 @@
+import { Play, Send, Mail, Globe } from 'lucide-react';
+
 const socialLinks = [
-  {
-    name: 'YouTube',
-    emoji: '📺',
-    url: 'https://www.youtube.com/@studyhub991',
-    description: 'Tutorials & Guides',
-    color: 'red',
-  },
-  {
-    name: 'Telegram',
-    emoji: '✈️',
-    url: 'https://t.me/studyhub991',
-    description: 'Resources Channel',
-    color: 'cyan',
-  },
-  {
-    name: 'Email',
-    emoji: '✉️',
-    url: 'mailto:studyhubteam.official@gmail.com',
-    description: 'Get Support',
-    color: 'blue',
-  },
-  {
-    name: 'Facebook',
-    emoji: 'f',
-    url: 'https://fb.com/mihmahmudali',
-    description: 'Developer',
-    color: 'blue',
-    isExternal: true,
-  },
+  { icon: Play,  name: 'YouTube',  description: 'Tutorials & Guides',   url: 'https://www.youtube.com/@studyhub991',           accent: '#ef4444' },
+  { icon: Send,  name: 'Telegram', description: 'Resources Channel',     url: 'https://t.me/studyhub991',                       accent: '#0ea5e9' },
+  { icon: Mail,  name: 'Email',    description: 'Get Support',            url: 'mailto:studyhubteam.official@gmail.com',          accent: '#3b82f6' },
+  { icon: Globe, name: 'Facebook', description: 'Developer Profile',      url: 'https://fb.com/mihmahmudali',                    accent: '#6366f1' },
 ];
 
-const hoverColors = {
-  red: 'hover:border-red-500/50 hover:shadow-red-500/10',
-  cyan: 'hover:border-cyan-500/50 hover:shadow-cyan-500/10',
-  blue: 'hover:border-blue-500/50 hover:shadow-blue-500/10',
+const S = {
+  section: { padding: '0 24px 140px' },
+  container: { maxWidth: 1120, margin: '0 auto' },
+  divider: { borderTop: '1px solid rgba(255,255,255,0.05)', marginBottom: 80 },
+  header: { marginBottom: 56 },
+  label: { display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#10b981', marginBottom: 14 },
+  h2: { fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.025em', color: '#f0f4ff', marginBottom: 14 },
+  sub: { fontSize: 16, color: '#64748b', lineHeight: 1.7, maxWidth: 480 },
+  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 },
 };
 
 function SocialCard({ link }) {
-  const isEmail = link.url.startsWith('mailto:');
-  const Component = isEmail ? 'a' : 'a';
+  const { icon: Icon } = link;
 
   return (
     <a
       href={link.url}
-      target={link.isExternal || !isEmail ? '_blank' : undefined}
-      rel={link.isExternal || !isEmail ? 'noopener noreferrer' : undefined}
-      className="fade-up group"
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ textDecoration: 'none', display: 'block' }}
     >
-      <div className={`bg-slate-800/50 border border-slate-700 ${hoverColors[link.color]} rounded-lg p-6 text-center transition duration-300 hover:shadow-lg h-full flex flex-col items-center justify-center`}>
-        <div className="text-3xl mb-3 group-hover:scale-110 transition">
-          {link.emoji}
+      <div
+        style={{
+          background: 'rgba(255,255,255,0.025)',
+          border: '1px solid rgba(255,255,255,0.06)',
+          borderRadius: 20,
+          padding: '28px 24px',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 16,
+          transition: 'transform 0.25s ease, background 0.25s ease, border-color 0.25s ease',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.transform = 'translateY(-4px)';
+          e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+          e.currentTarget.style.borderColor = `${link.accent}30`;
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.background = 'rgba(255,255,255,0.025)';
+          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
+        }}
+      >
+        <div style={{
+          width: 44, height: 44, flexShrink: 0,
+          background: `${link.accent}18`,
+          border: `1px solid ${link.accent}30`,
+          borderRadius: 14,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Icon size={20} color={link.accent} strokeWidth={1.5} />
         </div>
-        <h5 className="font-bold text-sm mb-1">{link.name}</h5>
-        <p className="text-slate-500 text-xs">{link.description}</p>
+        <div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#f0f4ff', marginBottom: 4 }}>{link.name}</div>
+          <div style={{ fontSize: 13, color: '#64748b' }}>{link.description}</div>
+        </div>
       </div>
     </a>
   );
@@ -60,21 +70,21 @@ function SocialCard({ link }) {
 
 export default function Contact() {
   return (
-    <section id="contact" className="py-20 md:py-28 px-4 bg-gradient-to-b from-transparent via-purple-950/5 to-transparent">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-16 fade-up">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4">
-            Join the <span className="text-blue-400">Community</span>
+    <section id="contact" style={S.section}>
+      <div style={S.container}>
+        <div style={S.divider} />
+        <div style={S.header}>
+          <span style={S.label}>Community</span>
+          <h2 style={S.h2}>
+            Connect with us<br />
+            <span style={{ color: '#334155' }}>wherever you are.</span>
           </h2>
-          <p className="text-slate-400 text-base md:text-lg">
-            Connect with us on your favorite platforms
+          <p style={S.sub}>
+            Join our growing community across platforms — get resources, updates, and direct support.
           </p>
         </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {socialLinks.map((link, index) => (
-            <SocialCard key={index} link={link} />
-          ))}
+        <div style={S.grid}>
+          {socialLinks.map((link, i) => <SocialCard key={i} link={link} />)}
         </div>
       </div>
     </section>

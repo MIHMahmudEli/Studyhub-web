@@ -1,26 +1,77 @@
 import StudyHubLogo from './StudyHubLogo';
 
+const footerLinks = [
+  { label: 'Features', href: '#features' },
+  { label: 'How it Works', href: '#how' },
+  { label: 'Contact', href: '#contact' },
+  { label: 'Sign In', href: '/auth' },
+];
+
+const S = {
+  footer: {
+    borderTop: '1px solid rgba(255,255,255,0.05)',
+    background: '#030507',
+    padding: '64px 24px',
+  },
+  container: {
+    maxWidth: 1120,
+    margin: '0 auto',
+  },
+  top: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 40,
+    flexWrap: 'wrap',
+    marginBottom: 56,
+  },
+  brand: { maxWidth: 300 },
+  tagline: { fontSize: 14, color: '#334155', lineHeight: 1.7, marginTop: 12 },
+  navCol: {},
+  navLabel: { fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#1e293b', marginBottom: 16, display: 'block' },
+  linkList: { display: 'flex', flexDirection: 'column', gap: 10 },
+  footerLink: { fontSize: 14, color: '#334155', textDecoration: 'none', transition: 'color 0.2s' },
+  bottom: {
+    borderTop: '1px solid rgba(255,255,255,0.03)',
+    paddingTop: 24,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  copy: { fontSize: 13, color: '#1e293b' },
+};
+
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-800 bg-black py-12 px-4">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-8">
-          <div>
-            <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 10 }}>
-              <StudyHubLogo size={38} textSize={19} />
+    <footer style={S.footer}>
+      <div style={S.container}>
+        <div style={S.top}>
+          <div style={S.brand}>
+            <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 12 }}>
+              <StudyHubLogo size={32} textSize={16} />
             </a>
-            <p className="text-slate-500 text-sm mt-3">
-              Empowering peer-to-peer learning
+            <p style={S.tagline}>
+              Empowering students to learn collaboratively, share knowledge, and grow academically — together.
             </p>
           </div>
-          <div className="text-center md:text-right">
-            <p className="text-slate-500 text-sm">
-              © {new Date().getFullYear()} StudyHub. All rights reserved.
-            </p>
-            <p className="text-slate-600 text-xs mt-2">
-              Crafted for academic excellence
-            </p>
+          <div style={S.navCol}>
+            <span style={S.navLabel}>Navigate</span>
+            <div style={S.linkList}>
+              {footerLinks.map(l => (
+                <a key={l.href} href={l.href} style={S.footerLink}
+                  onMouseEnter={e => e.target.style.color = '#94a3b8'}
+                  onMouseLeave={e => e.target.style.color = '#334155'}>
+                  {l.label}
+                </a>
+              ))}
+            </div>
           </div>
+        </div>
+        <div style={S.bottom}>
+          <p style={S.copy}>© {new Date().getFullYear()} StudyHub. All rights reserved.</p>
+          <p style={S.copy}>Crafted for academic excellence</p>
         </div>
       </div>
     </footer>

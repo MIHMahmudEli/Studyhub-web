@@ -1,79 +1,152 @@
-import { BookOpen, Users, Award } from 'lucide-react';
+import { BookOpen, Users, Shield } from 'lucide-react';
 
 const features = [
   {
     icon: BookOpen,
     title: 'Student',
-    description: 'Access thousands of lecture notes and exam resources. Share knowledge and earn badges.',
-    color: 'blue',
+    description: 'Access thousands of lecture notes and exam resources. Share your knowledge, earn reputation badges, and stay ahead of the curve.',
+    accent: '#3b82f6',
   },
   {
     icon: Users,
     title: 'Moderator',
-    description: 'Maintain content quality. Review uploads and guide community growth.',
-    color: 'purple',
+    description: 'Maintain content quality across the platform. Review uploads, guide community discussions, and ensure our standards are upheld.',
+    accent: '#8b5cf6',
   },
   {
-    icon: Award,
+    icon: Shield,
     title: 'Administrator',
-    description: 'Analyze trends and manage users. Generate activity reports.',
-    color: 'cyan',
+    description: 'Analyze trends, manage users, and generate activity reports. Keep the StudyHub ecosystem running smoothly for everyone.',
+    accent: '#10b981',
   },
 ];
 
-function FeatureCard({ feature }) {
-  const borderColors = {
-    blue: 'hover:border-blue-500/50 hover:shadow-blue-500/10',
-    purple: 'hover:border-purple-500/50 hover:shadow-purple-500/10',
-    cyan: 'hover:border-cyan-500/50 hover:shadow-cyan-500/10',
-  };
+const sectionStyle = {
+  padding: '0 24px 120px',
+};
 
-  const bgColors = {
-    blue: 'bg-blue-500/20 group-hover:bg-blue-500/30',
-    purple: 'bg-purple-500/20 group-hover:bg-purple-500/30',
-    cyan: 'bg-cyan-500/20 group-hover:bg-cyan-500/30',
-  };
+const containerStyle = {
+  maxWidth: 1120,
+  margin: '0 auto',
+};
 
-  const textColors = {
-    blue: 'text-blue-400',
-    purple: 'text-purple-400',
-    cyan: 'text-cyan-400',
-  };
+const dividerStyle = {
+  borderTop: '1px solid rgba(255,255,255,0.05)',
+  marginBottom: 80,
+};
 
-  const Icon = feature.icon;
+const headerStyle = {
+  marginBottom: 56,
+};
+
+const labelStyle = {
+  display: 'block',
+  fontSize: 11,
+  fontWeight: 700,
+  letterSpacing: '0.12em',
+  textTransform: 'uppercase',
+  color: '#3b82f6',
+  marginBottom: 14,
+};
+
+const h2Style = {
+  fontSize: 'clamp(1.8rem, 4vw, 3rem)',
+  fontWeight: 800,
+  lineHeight: 1.15,
+  letterSpacing: '-0.025em',
+  color: '#f0f4ff',
+  marginBottom: 14,
+};
+
+const subStyle = {
+  fontSize: 16,
+  color: '#64748b',
+  lineHeight: 1.7,
+  maxWidth: 480,
+};
+
+const gridStyle = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+  gap: 20,
+};
+
+const cardStyle = (accent) => ({
+  background: 'rgba(255,255,255,0.025)',
+  border: '1px solid rgba(255,255,255,0.06)',
+  borderRadius: 20,
+  padding: '36px 32px',
+  transition: 'transform 0.25s ease, border-color 0.25s ease, background 0.25s ease',
+  cursor: 'default',
+});
+
+const iconWrapStyle = (accent) => ({
+  width: 48,
+  height: 48,
+  background: `${accent}18`,
+  border: `1px solid ${accent}30`,
+  borderRadius: 14,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginBottom: 24,
+});
+
+const cardTitleStyle = {
+  fontSize: 19,
+  fontWeight: 700,
+  color: '#f0f4ff',
+  marginBottom: 10,
+};
+
+const cardDescStyle = {
+  fontSize: 14,
+  color: '#64748b',
+  lineHeight: 1.75,
+};
+
+function Card({ feature }) {
+  const { icon: Icon } = feature;
+
+  const handleEnter = (e) => {
+    e.currentTarget.style.transform = 'translateY(-4px)';
+    e.currentTarget.style.borderColor = `${feature.accent}30`;
+    e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+  };
+  const handleLeave = (e) => {
+    e.currentTarget.style.transform = 'translateY(0)';
+    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
+    e.currentTarget.style.background = 'rgba(255,255,255,0.025)';
+  };
 
   return (
-    <div className="fade-up group">
-      <div className={`bg-gradient-to-br from-slate-800 to-slate-900/50 border border-slate-700 ${borderColors[feature.color]} rounded-xl p-8 h-full transition duration-300 hover:shadow-lg`}>
-        <div className={`w-14 h-14 ${bgColors[feature.color]} rounded-lg flex items-center justify-center mb-6 transition`}>
-          <Icon className={`w-7 h-7 ${textColors[feature.color]}`} />
-        </div>
-        <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-        <p className="text-slate-400 text-sm leading-relaxed">
-          {feature.description}
-        </p>
+    <div style={cardStyle(feature.accent)} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
+      <div style={iconWrapStyle(feature.accent)}>
+        <Icon size={22} color={feature.accent} strokeWidth={1.5} />
       </div>
+      <div style={cardTitleStyle}>{feature.title}</div>
+      <p style={cardDescStyle}>{feature.description}</p>
     </div>
   );
 }
 
 export default function Features() {
   return (
-    <section id="features" className="py-20 md:py-28 px-4 bg-gradient-to-b from-transparent via-blue-950/5 to-transparent">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-16 fade-up">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4">
-            Built for <span className="text-blue-400">Everyone</span>
+    <section id="features" style={sectionStyle}>
+      <div style={containerStyle}>
+        <div style={dividerStyle} />
+        <div style={headerStyle}>
+          <span style={labelStyle}>Capabilities</span>
+          <h2 style={h2Style}>
+            Built for everyone<br />
+            <span style={{ color: '#334155' }}>in your institution.</span>
           </h2>
-          <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Experience seamless collaboration designed for every role
+          <p style={subStyle}>
+            Whether you&apos;re a student, moderator, or admin — StudyHub gives you exactly the tools you need.
           </p>
         </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <FeatureCard key={index} feature={feature} />
-          ))}
+        <div style={gridStyle}>
+          {features.map((f, i) => <Card key={i} feature={f} />)}
         </div>
       </div>
     </section>

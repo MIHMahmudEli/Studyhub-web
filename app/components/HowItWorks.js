@@ -1,62 +1,105 @@
+import { UserPlus, Upload, Trophy } from 'lucide-react';
+
 const steps = [
   {
     number: '01',
+    icon: UserPlus,
     title: 'Quick Register',
-    description: 'Create your account in seconds. Verify via OTP.',
-    color: 'blue',
+    description: 'Create your account in seconds. Verify with a one-time OTP — no credit card required.',
+    accent: '#3b82f6',
   },
   {
     number: '02',
+    icon: Upload,
     title: 'Share Knowledge',
-    description: 'Upload your best notes and let them help others globally.',
-    color: 'purple',
+    description: 'Upload your best lecture notes and past papers. Help thousands of peers around the world.',
+    accent: '#8b5cf6',
   },
   {
     number: '03',
+    icon: Trophy,
     title: 'Level Up',
-    description: 'Gain points, earn certifications, climb the leaderboard.',
-    color: 'cyan',
+    description: 'Earn reputation points with every contribution. Climb the leaderboard and unlock certifications.',
+    accent: '#10b981',
   },
 ];
 
+const S = {
+  section: { padding: '0 24px 120px' },
+  container: { maxWidth: 1120, margin: '0 auto' },
+  divider: { borderTop: '1px solid rgba(255,255,255,0.05)', marginBottom: 80 },
+  header: { marginBottom: 56 },
+  label: { display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8b5cf6', marginBottom: 14 },
+  h2: { fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.025em', color: '#f0f4ff', marginBottom: 14 },
+  sub: { fontSize: 16, color: '#64748b', lineHeight: 1.7, maxWidth: 480 },
+  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 },
+};
+
 function StepCard({ step }) {
-  const bgColors = {
-    blue: 'bg-blue-500/20 text-blue-400',
-    purple: 'bg-purple-500/20 text-purple-400',
-    cyan: 'bg-cyan-500/20 text-cyan-400',
-  };
+  const { icon: Icon } = step;
 
   return (
-    <div className="fade-up">
-      <div className="relative">
-        <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 h-full">
-          <div className={`w-12 h-12 ${bgColors[step.color]} rounded-full flex items-center justify-center mb-6 text-xl font-bold`}>
-            {step.number}
-          </div>
-          <h4 className="text-lg font-bold mb-2">{step.title}</h4>
-          <p className="text-slate-400 text-sm">
-            {step.description}
-          </p>
+    <div
+      style={{
+        background: 'rgba(255,255,255,0.025)',
+        border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: 20,
+        padding: '36px 32px',
+        transition: 'transform 0.25s ease, background 0.25s ease',
+        cursor: 'default',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.background = 'rgba(255,255,255,0.025)'; }}
+    >
+      {/* Ghost number watermark */}
+      <div style={{
+        position: 'absolute', top: 20, right: 24,
+        fontSize: 72, fontWeight: 900, lineHeight: 1,
+        color: 'rgba(255,255,255,0.03)', userSelect: 'none',
+        letterSpacing: '-0.04em',
+      }}>
+        {step.number}
+      </div>
+
+      {/* Top row: step label + icon */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: step.accent }}>
+          Step {step.number}
+        </span>
+        <div style={{
+          width: 40, height: 40,
+          background: `${step.accent}18`,
+          border: `1px solid ${step.accent}30`,
+          borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Icon size={18} color={step.accent} strokeWidth={1.5} />
         </div>
       </div>
+
+      <div style={{ fontSize: 19, fontWeight: 700, color: '#f0f4ff', marginBottom: 10 }}>{step.title}</div>
+      <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.75 }}>{step.description}</p>
     </div>
   );
 }
 
 export default function HowItWorks() {
   return (
-    <section id="how" className="py-20 md:py-28 px-4">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-16 fade-up">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black">
-            Simple <span className="text-blue-400">Workflow</span>
+    <section id="how" style={S.section}>
+      <div style={S.container}>
+        <div style={S.divider} />
+        <div style={S.header}>
+          <span style={S.label}>Process</span>
+          <h2 style={S.h2}>
+            Up and running<br />
+            <span style={{ color: '#334155' }}>in three steps.</span>
           </h2>
+          <p style={S.sub}>No long onboarding. No complexity. Start learning and contributing in minutes.</p>
         </div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {steps.map((step, index) => (
-            <StepCard key={index} step={step} />
-          ))}
+        <div style={S.grid}>
+          {steps.map((step, i) => <StepCard key={i} step={step} />)}
         </div>
       </div>
     </section>

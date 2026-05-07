@@ -13,41 +13,28 @@ export default function Home() {
   const [showScrollBtn, setShowScrollBtn] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 300) {
-        setShowScrollBtn(true);
-      } else {
-        setShowScrollBtn(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setShowScrollBtn(window.scrollY > 300);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
-      {/* Background Blobs */}
-      <div className="bg-blobs">
-        <div className="blob blob-1"></div>
-        <div className="blob blob-2"></div>
+    <div style={{ minHeight: '100vh', background: '#06080f', color: '#e8eaf0', overflowX: 'hidden', position: 'relative' }}>
+      {/* Ambient glow orbs */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-15%', left: '-10%', width: 700, height: 700, background: 'radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', bottom: '-15%', right: '-10%', width: 600, height: 600, background: 'radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%)', borderRadius: '50%' }} />
       </div>
 
-      {/* Decorative Circles - Hidden on mobile, visible on lg and above */}
-      <div className="hidden lg:block decor-circle dc-1"></div>
-      <div className="hidden lg:block decor-circle dc-2"></div>
-
       <Navbar />
-      <Hero />
-      <Features />
-      <HowItWorks />
-      <Contact />
+      <main>
+        <Hero />
+        <Features />
+        <HowItWorks />
+        <Contact />
+      </main>
       <Footer />
-      <ScrollToTopButton showScrollBtn={showScrollBtn} onScrollToTop={scrollToTop} />
+      <ScrollToTopButton showScrollBtn={showScrollBtn} onScrollToTop={() => window.scrollTo({ top: 0, behavior: 'smooth' })} />
     </div>
   );
 }
