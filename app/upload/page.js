@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { 
   UploadCloud, 
@@ -10,37 +10,57 @@ import {
   AlertCircle, 
   Plus,
   BookOpen,
-  Tag,
+  GraduationCap,
   MessageSquare,
-  Coins
+  Coins,
+  Search
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-
-const categories = [
-  'Computer Science', 'Mathematics', 'Physics', 'Chemistry', 
-  'Biology', 'Economics', 'Business', 'History', 'Literature'
-];
+import coursesData from '@/lib/data/courses.json';
 
 export default function UploadPage() {
   const [file, setFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: '', message: '' });
+  const [courseSearch, setCourseSearch] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  
   const [formData, setFormData] = useState({
     title: '',
-    category: '',
+    course: '',
     description: ''
   });
 
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const fileInputRef = useRef(null);
+  const suggestionsRef = useRef(null);
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/auth');
   }, [user, authLoading, router]);
+
+  // Handle clicking outside of suggestions
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredCourses = useMemo(() => {
+    if (courseSearch.length < 2) return [];
+    return coursesData.filter(course => 
+      course.name.toLowerCase().includes(courseSearch.toLowerCase()) ||
+      course.code.toLowerCase().includes(courseSearch.toLowerCase())
+    ).slice(0, 5); // Limit to top 5 results
+  }, [courseSearch]);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -70,7 +90,7 @@ export default function UploadPage() {
       setStatus({ type: 'error', message: 'Please upload a PDF, Word document, or Image.' });
       return;
     }
-    if (selectedFile.size > 10 * 1024 * 1024) { // 10MB
+    if (selectedFile.size > 10 * 1024 * 1024) {
       setStatus({ type: 'error', message: 'File size must be less than 10MB.' });
       return;
     }
@@ -78,9 +98,15 @@ export default function UploadPage() {
     setStatus({ type: '', message: '' });
   };
 
+  const selectCourse = (course) => {
+    setFormData({ ...formData, course: course.name });
+    setCourseSearch(course.name);
+    setShowSuggestions(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file || !formData.title || !formData.category) {
+    if (!file || !formData.title || !formData.course) {
       setStatus({ type: 'error', message: 'Please complete all required fields.' });
       return;
     }
@@ -92,10 +118,9 @@ export default function UploadPage() {
       const data = new FormData();
       data.append('file', file);
       data.append('title', formData.title);
-      data.append('category', formData.category);
+      data.append('course', formData.course);
       data.append('description', formData.description);
 
-      // Assuming endpoint: /notes/upload
       await apiRequest('/notes/upload', {
         method: 'POST',
         body: data,
@@ -104,9 +129,9 @@ export default function UploadPage() {
 
       setStatus({ type: 'success', message: 'Note uploaded successfully! +50 Points earned.' });
       setFile(null);
-      setFormData({ title: '', category: '', description: '' });
+      setFormData({ title: '', course: '', description: '' });
+      setCourseSearch('');
       
-      // Redirect after success
       setTimeout(() => router.push('/notes'), 2000);
     } catch (err) {
       setStatus({ type: 'error', message: err.message || 'Failed to upload note.' });
@@ -150,20 +175,47 @@ export default function UploadPage() {
                     />
                   </div>
 
-                  {/* Category */}
-                  <div className="space-y-2">
+                  {/* Course with Suggestions */}
+                  <div className="space-y-2 relative" ref={suggestionsRef}>
                     <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
-                      <Tag size={14} /> Category <span className="text-red-500">*</span>
+                      <GraduationCap size={14} /> Course Name <span className="text-red-500">*</span>
                     </label>
-                    <select 
-                      required
-                      className="w-full bg-[var(--background)]/50 border border-[var(--card-border)] rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-blue-500/30 transition-all appearance-none cursor-pointer"
-                      value={formData.category}
-                      onChange={(e) => setFormData({...formData, category: e.target.value})}
-                    >
-                      <option value="">Select a subject</option>
-                      {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="Type course name or code (e.g. Advanced Web...)"
+                        className="w-full bg-[var(--background)]/50 border border-[var(--card-border)] rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all"
+                        value={courseSearch}
+                        onChange={(e) => {
+                          setCourseSearch(e.target.value);
+                          setShowSuggestions(true);
+                          if (formData.course) setFormData({ ...formData, course: '' });
+                        }}
+                        onFocus={() => setShowSuggestions(true)}
+                      />
+                    </div>
+
+                    {/* Suggestions Dropdown */}
+                    {showSuggestions && filteredCourses.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-hidden z-50 backdrop-blur-xl animate-in fade-in slide-in-from-top-2">
+                        {filteredCourses.map((course) => (
+                          <button
+                            key={course.id}
+                            type="button"
+                            onClick={() => selectCourse(course)}
+                            className="w-full px-6 py-4 text-left hover:bg-blue-500/5 flex items-center justify-between group transition-colors"
+                          >
+                            <div>
+                              <p className="text-sm font-bold text-[var(--foreground)] group-hover:text-blue-500 transition-colors">{course.name}</p>
+                              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{course.code}</p>
+                            </div>
+                            <Plus size={16} className="text-slate-600 group-hover:text-blue-500" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Description */}
@@ -191,9 +243,9 @@ export default function UploadPage() {
                 )}
 
                 <button 
-                  disabled={loading || !file}
+                  disabled={loading || !file || !formData.course}
                   className={`w-full mt-10 py-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 ${
-                    loading || !file 
+                    loading || !file || !formData.course
                       ? 'bg-[var(--card-bg)] text-slate-600 cursor-not-allowed border border-[var(--card-border)]' 
                       : 'bg-blue-500 text-white hover:bg-blue-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-500/20'
                   }`}
