@@ -1,25 +1,21 @@
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import "./globals.css";
 
 export const metadata = {
-  title: "StudyHub — The Academic Collaboration Platform",
-  description: "Access curated academic resources, share your notes, and connect with a global community of driven learners.",
-  icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
-  },
+  title: "StudyHub | Premium Student Resource Platform",
+  description: "The ultimate space for students to share notes, find resources, and excel in their studies.",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-      </head>
-      <body>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+      <body className="font-sans antialiased">
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

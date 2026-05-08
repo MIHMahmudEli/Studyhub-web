@@ -25,9 +25,9 @@ export default function StudyHubLogo({ size = 36, textSize = 18 }) {
       {/* Wordmark */}
       <span 
         style={{ fontSize: textSize }}
-        className="font-black text-[#f0f4ff] tracking-tighter leading-none"
+        className="font-black text-[var(--foreground)] tracking-tighter leading-none transition-colors duration-500"
       >
-        Study<span className="text-blue-400">Hub</span>
+        Study<span className="text-blue-500">Hub</span>
       </span>
     </div>
   );

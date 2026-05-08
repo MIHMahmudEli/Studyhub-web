@@ -78,14 +78,14 @@ export default function NotesPage() {
 
   if (authLoading || (!user && !authLoading)) {
     return (
-      <div className="min-h-screen bg-[#02040a] flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center transition-colors duration-500">
         <div className="w-8 h-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#02040a] text-white">
+    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500">
       <DashboardNavbar />
 
       {/* Hero Header Section */}
@@ -95,7 +95,7 @@ export default function NotesPage() {
         <div className="max-w-[1440px] mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4 bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4 bg-gradient-to-r from-[var(--foreground)] via-[var(--foreground)] to-slate-500 bg-clip-text text-transparent">
                 Study Feed
               </h1>
               <p className="text-slate-500 max-w-[600px] text-base font-medium">
@@ -105,10 +105,10 @@ export default function NotesPage() {
             </div>
             
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl text-[13px] font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all">
+              <button className="flex items-center gap-2 px-5 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-[13px] font-bold text-slate-500 hover:text-[var(--foreground)] hover:bg-[var(--card-bg)] transition-all">
                 <Filter size={16} /> Filter
               </button>
-              <button className="flex items-center gap-2 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl text-[13px] font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all">
+              <button className="flex items-center gap-2 px-5 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-[13px] font-bold text-slate-500 hover:text-[var(--foreground)] hover:bg-[var(--card-bg)] transition-all">
                 <SortDesc size={16} /> Newest
               </button>
             </div>
