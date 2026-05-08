@@ -1,13 +1,6 @@
 'use client';
 
-import { 
-  FileText, 
-  Calendar, 
-  User, 
-  ArrowUpRight, 
-  BookOpen,
-  Star
-} from 'lucide-react';
+import { FileText, Calendar, User, ArrowUpRight, BookOpen, Star } from 'lucide-react';
 
 export default function NoteCard({ note }) {
   return (
