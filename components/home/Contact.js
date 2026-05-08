@@ -1,3 +1,5 @@
+'use client';
+
 import { Play, Send, Mail, Globe } from 'lucide-react';
 
 const socialLinks = [
@@ -7,17 +9,6 @@ const socialLinks = [
   { icon: Globe, name: 'Facebook', description: 'Developer Profile',      url: 'https://fb.com/mihmahmudali',                    accent: '#6366f1' },
 ];
 
-const S = {
-  section: { padding: '0 24px 140px' },
-  container: { maxWidth: 1120, margin: '0 auto' },
-  divider: { borderTop: '1px solid rgba(255,255,255,0.05)', marginBottom: 80 },
-  header: { marginBottom: 56 },
-  label: { display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#10b981', marginBottom: 14 },
-  h2: { fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.025em', color: '#f0f4ff', marginBottom: 14 },
-  sub: { fontSize: 16, color: '#64748b', lineHeight: 1.7, maxWidth: 480 },
-  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 },
-};
-
 function SocialCard({ link }) {
   const { icon: Icon } = link;
 
@@ -26,36 +17,27 @@ function SocialCard({ link }) {
       href={link.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group"
-      style={{ textDecoration: 'none', display: 'block' }}
+      className="group block no-underline"
     >
-      <div
-        className="group-hover:-translate-y-2 group-hover:bg-white/[0.05] group-hover:border-white/15 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.35)]"
-        style={{
-          background: 'rgba(255,255,255,0.025)',
-          border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: 20,
-          padding: '28px 24px',
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: 16,
-        }}
-      >
+    <div
+      className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] rounded-[24px] p-[28px_24px] flex items-start gap-4 group-hover:-translate-y-2 group-hover:bg-white/[0.05] group-hover:border-emerald-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(16,185,129,0.05)] overflow-hidden relative"
+    >
+      {/* Hover glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
         <div 
-          className="group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{
-            width: 44, height: 44, flexShrink: 0,
             background: `${link.accent}18`,
             border: `1px solid ${link.accent}30`,
-            borderRadius: 14,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
+          className="w-11 h-11 shrink-0 rounded-[14px] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
         >
           <Icon size={20} color={link.accent} strokeWidth={1.5} />
         </div>
         <div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#f0f4ff', marginBottom: 4 }}>{link.name}</div>
-          <div style={{ fontSize: 13, color: '#64748b' }} className="group-hover:text-gray-400 transition-colors">{link.description}</div>
+          <h3 className="text-[15px] font-bold text-[#f0f4ff] mb-1">{link.name}</h3>
+          <p className="text-[13px] text-slate-500 group-hover:text-gray-400 transition-colors">
+            {link.description}
+          </p>
         </div>
       </div>
     </a>
@@ -64,20 +46,25 @@ function SocialCard({ link }) {
 
 export default function Contact() {
   return (
-    <section id="contact" style={S.section}>
-      <div style={S.container}>
-        <div style={S.divider} />
-        <div style={S.header}>
-          <span style={S.label}>Community</span>
-          <h2 style={S.h2}>
+    <section id="contact" className="px-6 pb-[140px] relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute bottom-[10%] left-[-5%] w-[350px] h-[350px] bg-emerald-600/5 blur-[80px] rounded-full -z-10 animate-nebula [animation-delay:4s]" />
+
+      <div className="max-w-[1120px] mx-auto">
+        <div className="border-t border-white/5 mb-20" />
+        <div className="mb-14">
+          <span className="block text-[11px] font-bold tracking-[0.12em] uppercase text-emerald-500 mb-3.5">
+            Community
+          </span>
+          <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-extrabold leading-[1.15] tracking-tight text-[#f0f4ff] mb-3.5">
             Connect with us<br />
-            <span style={{ color: '#334155' }}>wherever you are.</span>
+            <span className="text-slate-700">wherever you are.</span>
           </h2>
-          <p style={S.sub}>
+          <p className="text-base text-slate-500 leading-relaxed max-w-[480px]">
             Join our growing community across platforms — get resources, updates, and direct support.
           </p>
         </div>
-        <div style={S.grid}>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
           {socialLinks.map((link, i) => <SocialCard key={i} link={link} />)}
         </div>
       </div>

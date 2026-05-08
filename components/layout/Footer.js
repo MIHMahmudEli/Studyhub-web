@@ -1,3 +1,5 @@
+'use client';
+
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 
 const footerLinks = [
@@ -6,42 +8,6 @@ const footerLinks = [
   { label: 'Contact', href: '#contact' },
   { label: 'Sign In', href: '/auth' },
 ];
-
-const S = {
-  footer: {
-    borderTop: '1px solid rgba(255,255,255,0.05)',
-    background: '#030507',
-    padding: '64px 24px',
-  },
-  container: {
-    maxWidth: 1120,
-    margin: '0 auto',
-  },
-  top: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: 40,
-    flexWrap: 'wrap',
-    marginBottom: 56,
-  },
-  brand: { maxWidth: 300 },
-  tagline: { fontSize: 14, color: '#334155', lineHeight: 1.7, marginTop: 12 },
-  navCol: {},
-  navLabel: { fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#1e293b', marginBottom: 16, display: 'block' },
-  linkList: { display: 'flex', flexDirection: 'column', gap: 10 },
-  footerLink: { fontSize: 14, color: '#334155', textDecoration: 'none', transition: 'color 0.2s' },
-  bottom: {
-    borderTop: '1px solid rgba(255,255,255,0.03)',
-    paddingTop: 24,
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  copy: { fontSize: 13, color: '#1e293b' },
-};
 
 export default function Footer() {
   const handleScroll = (e, href) => {
@@ -61,26 +27,27 @@ export default function Footer() {
   };
 
   return (
-    <footer style={S.footer}>
-      <div style={S.container}>
-        <div style={S.top}>
-          <div style={S.brand}>
-            <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 12 }}>
+    <footer className="border-t border-white/5 bg-[#030507] py-16 px-6">
+      <div className="max-w-[1120px] mx-auto">
+        <div className="flex justify-between items-start gap-10 flex-wrap mb-14">
+          <div className="max-w-[300px]">
+            <a href="/" className="no-underline inline-block mb-3">
               <StudyHubLogo size={32} textSize={16} />
             </a>
-            <p style={S.tagline}>
+            <p className="text-sm text-slate-700 leading-relaxed mt-3">
               Empowering students to learn collaboratively, share knowledge, and grow academically — together.
             </p>
           </div>
-          <div style={S.navCol}>
-            <span style={S.navLabel}>Navigate</span>
-            <div style={S.linkList}>
+          <div>
+            <span className="text-[11px] font-bold tracking-widest uppercase text-slate-900 mb-4 block">
+              Navigate
+            </span>
+            <div className="flex flex-col gap-2.5">
               {footerLinks.map(l => (
                 <a 
                   key={l.href} 
                   href={l.href} 
-                  style={S.footerLink}
-                  className="hover:text-gray-400 hover:translate-x-2 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                  className="text-sm text-slate-700 no-underline transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-gray-400 hover:translate-x-2"
                   onClick={(e) => handleScroll(e, l.href)}
                 >
                   {l.label}
@@ -89,9 +56,9 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div style={S.bottom}>
-          <p style={S.copy}>© {new Date().getFullYear()} StudyHub. All rights reserved.</p>
-          <p style={S.copy}>Crafted for academic excellence</p>
+        <div className="border-t border-white/[0.03] pt-6 flex justify-between items-center flex-wrap gap-2">
+          <p className="text-[13px] text-slate-900">© {new Date().getFullYear()} StudyHub. All rights reserved.</p>
+          <p className="text-[13px] text-slate-900">Crafted for academic excellence</p>
         </div>
       </div>
     </footer>

@@ -1,3 +1,5 @@
+'use client';
+
 import { BookOpen, Users, Shield } from 'lucide-react';
 
 const features = [
@@ -21,122 +23,55 @@ const features = [
   },
 ];
 
-const sectionStyle = {
-  padding: '0 24px 120px',
-};
-
-const containerStyle = {
-  maxWidth: 1120,
-  margin: '0 auto',
-};
-
-const dividerStyle = {
-  borderTop: '1px solid rgba(255,255,255,0.05)',
-  marginBottom: 80,
-};
-
-const headerStyle = {
-  marginBottom: 56,
-};
-
-const labelStyle = {
-  display: 'block',
-  fontSize: 11,
-  fontWeight: 700,
-  letterSpacing: '0.12em',
-  textTransform: 'uppercase',
-  color: '#3b82f6',
-  marginBottom: 14,
-};
-
-const h2Style = {
-  fontSize: 'clamp(1.8rem, 4vw, 3rem)',
-  fontWeight: 800,
-  lineHeight: 1.15,
-  letterSpacing: '-0.025em',
-  color: '#f0f4ff',
-  marginBottom: 14,
-};
-
-const subStyle = {
-  fontSize: 16,
-  color: '#64748b',
-  lineHeight: 1.7,
-  maxWidth: 480,
-};
-
-const gridStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-  gap: 20,
-};
-
-const cardStyle = (accent) => ({
-  background: 'rgba(255,255,255,0.025)',
-  border: '1px solid rgba(255,255,255,0.06)',
-  borderRadius: 20,
-  padding: '36px 32px',
-  cursor: 'default',
-});
-
-const iconWrapStyle = (accent) => ({
-  width: 48,
-  height: 48,
-  background: `${accent}18`,
-  border: `1px solid ${accent}30`,
-  borderRadius: 14,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginBottom: 24,
-});
-
-const cardTitleStyle = {
-  fontSize: 19,
-  fontWeight: 700,
-  color: '#f0f4ff',
-  marginBottom: 10,
-};
-
-const cardDescStyle = {
-  fontSize: 14,
-  color: '#64748b',
-  lineHeight: 1.75,
-};
-
 function Card({ feature }) {
   const { icon: Icon } = feature;
 
   return (
     <div 
-      style={cardStyle(feature.accent)}
-      className="group hover:-translate-y-2 hover:bg-white/[0.04] hover:border-white/15 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]"
+      className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] rounded-[24px] p-9 group hover:-translate-y-2 hover:bg-white/[0.05] hover:border-blue-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(59,130,246,0.05)] overflow-hidden relative"
     >
-      <div style={iconWrapStyle(feature.accent)} className="group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+      {/* Hover glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <div 
+        style={{ 
+          background: `${feature.accent}18`, 
+          border: `1px solid ${feature.accent}30` 
+        }}
+        className="w-12 h-12 rounded-[14px] flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+      >
         <Icon size={22} color={feature.accent} strokeWidth={1.5} />
       </div>
-      <div style={cardTitleStyle} className="group-hover:text-white transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">{feature.title}</div>
-      <p style={cardDescStyle}>{feature.description}</p>
+      <h3 className="text-[19px] font-bold text-[#f0f4ff] mb-2.5 group-hover:text-white transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+        {feature.title}
+      </h3>
+      <p className="text-sm text-slate-500 leading-relaxed">
+        {feature.description}
+      </p>
     </div>
   );
 }
 
 export default function Features() {
   return (
-    <section id="features" style={sectionStyle}>
-      <div style={containerStyle}>
-        <div style={dividerStyle} />
-        <div style={headerStyle}>
-          <span style={labelStyle}>Capabilities</span>
-          <h2 style={h2Style}>
+    <section id="features" className="px-6 pb-[120px] relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-[20%] right-[-5%] w-[400px] h-[400px] bg-indigo-600/5 blur-[100px] rounded-full -z-10 animate-nebula" />
+
+      <div className="max-w-[1120px] mx-auto">
+        <div className="border-t border-white/5 mb-20" />
+        <div className="mb-14">
+          <span className="block text-[11px] font-bold tracking-[0.12em] uppercase text-blue-500 mb-3.5">
+            Capabilities
+          </span>
+          <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-extrabold leading-[1.15] tracking-tight text-[#f0f4ff] mb-3.5">
             Built for everyone<br />
-            <span style={{ color: '#334155' }}>in your institution.</span>
+            <span className="text-slate-700">in your institution.</span>
           </h2>
-          <p style={subStyle}>
+          <p className="text-base text-slate-500 leading-relaxed max-w-[480px]">
             Whether you&apos;re a student, moderator, or admin — StudyHub gives you exactly the tools you need.
           </p>
         </div>
-        <div style={gridStyle}>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
           {features.map((f, i) => <Card key={i} feature={f} />)}
         </div>
       </div>

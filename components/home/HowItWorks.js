@@ -1,3 +1,5 @@
+'use client';
+
 import { UserPlus, Upload, Trophy } from 'lucide-react';
 
 const steps = [
@@ -24,82 +26,66 @@ const steps = [
   },
 ];
 
-const S = {
-  section: { padding: '0 24px 120px' },
-  container: { maxWidth: 1120, margin: '0 auto' },
-  divider: { borderTop: '1px solid rgba(255,255,255,0.05)', marginBottom: 80 },
-  header: { marginBottom: 56 },
-  label: { display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8b5cf6', marginBottom: 14 },
-  h2: { fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.025em', color: '#f0f4ff', marginBottom: 14 },
-  sub: { fontSize: 16, color: '#64748b', lineHeight: 1.7, maxWidth: 480 },
-  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 },
-};
-
 function StepCard({ step }) {
   const { icon: Icon } = step;
 
   return (
     <div
-      className="group hover:-translate-y-2 hover:bg-white/[0.05] hover:border-white/15 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default relative overflow-hidden hover:shadow-[0_24px_48px_rgba(0,0,0,0.4)]"
-      style={{
-        background: 'rgba(255,255,255,0.025)',
-        border: '1px solid rgba(255,255,255,0.06)',
-        borderRadius: 20,
-        padding: '36px 32px',
-      }}
+      className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] rounded-[24px] p-9 group hover:-translate-y-2 hover:bg-white/[0.05] hover:border-purple-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default relative overflow-hidden hover:shadow-[0_24px_48px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(139,92,246,0.05)]"
     >
+      {/* Hover glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       {/* Ghost number watermark */}
       <div 
-        className="group-hover:scale-110 group-hover:text-white/[0.06] group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
-        style={{
-          position: 'absolute', top: 20, right: 24,
-          fontSize: 72, fontWeight: 900, lineHeight: 1,
-          color: 'rgba(255,255,255,0.03)', userSelect: 'none',
-          letterSpacing: '-0.04em',
-        }}
+        className="absolute top-5 right-6 text-[72px] font-black leading-none text-white/[0.03] select-none tracking-tighter group-hover:scale-110 group-hover:text-white/[0.06] group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
       >
         {step.number}
       </div>
 
       {/* Top row: step label + icon */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: step.accent }}>
+      <div className="flex justify-between items-center mb-8">
+        <span 
+          style={{ color: step.accent }}
+          className="text-[11px] font-bold tracking-[0.12em] uppercase"
+        >
           Step {step.number}
         </span>
         <div 
-          className="group-hover:rotate-6 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{
-            width: 40, height: 40,
             background: `${step.accent}18`,
             border: `1px solid ${step.accent}30`,
-            borderRadius: 12,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
+          className="w-10 h-10 rounded-xl flex items-center justify-center group-hover:rotate-6 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
         >
           <Icon size={18} color={step.accent} strokeWidth={1.5} />
         </div>
       </div>
 
-      <div style={{ fontSize: 19, fontWeight: 700, color: '#f0f4ff', marginBottom: 10 }}>{step.title}</div>
-      <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.75 }}>{step.description}</p>
+      <h3 className="text-[19px] font-bold text-[#f0f4ff] mb-2.5 leading-tight">{step.title}</h3>
+      <p className="text-sm text-slate-500 leading-relaxed">{step.description}</p>
     </div>
   );
 }
 
 export default function HowItWorks() {
   return (
-    <section id="how" style={S.section}>
-      <div style={S.container}>
-        <div style={S.divider} />
-        <div style={S.header}>
-          <span style={S.label}>Process</span>
-          <h2 style={S.h2}>
+    <section id="how" className="px-6 pb-[120px] relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-[30%] left-[-10%] w-[500px] h-[500px] bg-purple-600/5 blur-[120px] rounded-full -z-10 animate-nebula [animation-delay:1s]" />
+
+      <div className="max-w-[1120px] mx-auto">
+        <div className="border-t border-white/5 mb-20" />
+        <div className="mb-14">
+          <span className="block text-[11px] font-bold tracking-[0.12em] uppercase text-purple-500 mb-3.5">
+            Process
+          </span>
+          <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-extrabold leading-[1.15] tracking-tight text-[#f0f4ff] mb-3.5">
             Up and running<br />
-            <span style={{ color: '#334155' }}>in three steps.</span>
+            <span className="text-slate-700">in three steps.</span>
           </h2>
-          <p style={S.sub}>No long onboarding. No complexity. Start learning and contributing in minutes.</p>
+          <p className="text-base text-slate-500 leading-relaxed max-w-[480px]">No long onboarding. No complexity. Start learning and contributing in minutes.</p>
         </div>
-        <div style={S.grid}>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
           {steps.map((step, i) => <StepCard key={i} step={step} />)}
         </div>
       </div>

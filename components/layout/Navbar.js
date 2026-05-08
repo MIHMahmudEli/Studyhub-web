@@ -1,224 +1,110 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 
-const NAV_LINKS = [
-  { label: 'Features', href: '#features' },
-  { label: 'How it Works', href: '#how' },
-  { label: 'Contact', href: '#contact' },
-];
-
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', fn);
-    return () => window.removeEventListener('scroll', fn);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Custom smooth scroll handler
-  const handleNavClick = (e, href) => {
-    if (href.startsWith('#')) {
-      e.preventDefault();
-      const id = href.replace('#', '');
-      const element = document.getElementById(id);
-      if (element) {
-        const offset = 64; // Navbar height
-        const bodyRect = document.body.getBoundingClientRect().top;
-        const elementRect = element.getBoundingClientRect().top;
-        const elementPosition = elementRect - bodyRect;
-        const offsetPosition = elementPosition - offset;
-
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        });
-      }
-      setMobileOpen(false);
+  const handleScrollTo = (e, id) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    const element = document.getElementById(id);
+    if (element) {
+      const offset = 64;
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = element.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
+      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
     }
   };
 
+  const navLinks = [
+    { label: 'Features', id: 'features' },
+    { label: 'How it Works', id: 'how' },
+    { label: 'Community', id: 'contact' },
+  ];
+
   return (
-    <>
-      {/* Scoped responsive styles */}
-      <style>{`
-        .nav-root {
-          position: fixed;
-          top: 0; left: 0; right: 0;
-          z-index: 100;
-          transition: all 0.3s ease;
-        }
-        .nav-root.scrolled {
-          background: rgba(6,8,15,0.88);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-          box-shadow: 0 4px 32px rgba(0,0,0,0.4);
-        }
-        .nav-inner {
-          max-width: 1120px;
-          margin: 0 auto;
-          padding: 0 24px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          height: 64px;
-        }
-        .nav-links-desktop {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
-        .nav-link {
-          padding: 8px 16px;
-          color: #94a3b8;
-          font-weight: 500;
-          font-size: 14px;
-          text-decoration: none;
-          border-radius: 8px;
-          transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .nav-link:hover {
-          color: #f1f5f9;
-          background: rgba(255,255,255,0.1);
-          transform: translateY(-1px);
-        }
-        .nav-cta {
-          margin-left: 12px;
-          padding: 8px 20px;
-          background: #2563eb;
-          color: #fff;
-          font-weight: 600;
-          font-size: 14px;
-          text-decoration: none;
-          border-radius: 10px;
-          transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-          white-space: nowrap;
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-        }
-        .nav-cta:hover { 
-          background: #1d4ed8; 
-          transform: translateY(-3px);
-          box-shadow: 0 12px 24px rgba(37, 99, 235, 0.45);
-        }
+    <nav 
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
+        scrolled 
+          ? 'bg-[#06080f]/80 backdrop-blur-2xl border-b border-white/5 py-3' 
+          : 'bg-transparent py-5'
+      }`}
+    >
+      <div className="max-w-[1120px] mx-auto px-6 flex justify-between items-center">
+        {/* Logo */}
+        <Link href="/" className="transition-transform duration-300 hover:scale-105 active:scale-95">
+          <StudyHubLogo size={32} textSize={18} />
+        </Link>
 
-        /* Hamburger button — hidden on desktop */
-        .nav-hamburger {
-          display: none;
-          flex-direction: column;
-          gap: 5px;
-          cursor: pointer;
-          background: none;
-          border: none;
-          padding: 6px;
-          border-radius: 8px;
-          transition: background 0.2s;
-        }
-        .nav-hamburger:hover { background: rgba(255,255,255,0.06); }
-        .nav-hamburger span {
-          display: block;
-          width: 22px;
-          height: 2px;
-          background: #94a3b8;
-          border-radius: 2px;
-          transition: all 0.25s ease;
-        }
-
-        /* Mobile dropdown */
-        .nav-mobile {
-          display: none;
-          flex-direction: column;
-          padding: 12px 16px 16px;
-          border-top: 1px solid rgba(255,255,255,0.05);
-          background: rgba(6,8,15,0.95);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-        }
-        .nav-mobile.open { display: flex; }
-        .nav-mobile .nav-link {
-          padding: 12px 16px;
-          font-size: 15px;
-          border-radius: 10px;
-        }
-        .nav-mobile .nav-cta {
-          margin: 8px 0 0;
-          padding: 12px 20px;
-          text-align: center;
-          border-radius: 10px;
-          display: block;
-        }
-
-        /* Breakpoint: <= 768px */
-        @media (max-width: 768px) {
-          .nav-links-desktop { display: none; }
-          .nav-hamburger { display: flex; }
-        }
-
-        /* Hamburger X animation when open */
-        .nav-hamburger.open span:nth-child(1) {
-          transform: translateY(7px) rotate(45deg);
-        }
-        .nav-hamburger.open span:nth-child(2) {
-          opacity: 0;
-          transform: scaleX(0);
-        }
-        .nav-hamburger.open span:nth-child(3) {
-          transform: translateY(-7px) rotate(-45deg);
-        }
-      `}</style>
-
-      <nav className={`nav-root${scrolled ? ' scrolled' : ''}`}>
-        <div className="nav-inner">
-          {/* Logo */}
-          <Link href="/" style={{ textDecoration: 'none' }}>
-            <StudyHubLogo size={32} textSize={16} />
-          </Link>
-
-          {/* Desktop Nav */}
-          <div className="nav-links-desktop">
-            {NAV_LINKS.map(l => (
-              <a 
-                key={l.href} 
-                href={l.href} 
-                className="nav-link"
-                onClick={(e) => handleNavClick(e, l.href)}
-              >
-                {l.label}
-              </a>
-            ))}
-            <Link href="/auth" className="nav-cta">Sign In</Link>
-          </div>
-
-          {/* Hamburger (mobile only) */}
-          <button
-            className={`nav-hamburger${mobileOpen ? ' open' : ''}`}
-            onClick={() => setMobileOpen(o => !o)}
-            aria-label="Toggle navigation"
-          >
-            <span />
-            <span />
-            <span />
-          </button>
-        </div>
-
-        {/* Mobile dropdown */}
-        <div className={`nav-mobile${mobileOpen ? ' open' : ''}`}>
-          {NAV_LINKS.map(l => (
-            <a 
-              key={l.href} 
-              href={l.href} 
-              className="nav-link" 
-              onClick={(e) => handleNavClick(e, l.href)}
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-2">
+          {navLinks.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={(e) => handleScrollTo(e, link.id)}
+              className="px-4 py-2 text-slate-400 font-medium text-sm no-underline rounded-lg transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[#f1f5f9] hover:bg-white/10 hover:-translate-y-[1px]"
             >
-              {l.label}
+              {link.label}
             </a>
           ))}
-          <Link href="/auth" className="nav-cta" onClick={() => setMobileOpen(false)}>Sign In</Link>
+          <Link 
+            href="/auth" 
+            className="ml-3 px-5 py-2 bg-blue-600 text-white font-semibold text-sm no-underline rounded-[10px] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] whitespace-nowrap shadow-[0_4px_12px_rgba(37,99,235,0.2)] hover:bg-blue-700 hover:-translate-y-[3px] hover:shadow-[0_12px_24_rgba(37,99,235,0.45)]"
+          >
+            Get Started
+          </Link>
         </div>
-      </nav>
-    </>
+
+        {/* Hamburger */}
+        <button 
+          className="md:hidden w-10 h-10 flex flex-col justify-center items-center gap-1.5 rounded-lg border border-white/5 transition-colors hover:bg-white/5"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          <span className={`block w-5 h-0.5 bg-slate-400 rounded-full transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+          <span className={`block w-5 h-0.5 bg-slate-400 rounded-full transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`} />
+          <span className={`block w-5 h-0.5 bg-slate-400 rounded-full transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+        </button>
+      </div>
+
+      {/* Mobile Dropdown */}
+      <div 
+        className={`md:hidden overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] bg-[#06080f]/95 backdrop-blur-xl border-b border-white/5 ${
+          mobileMenuOpen ? 'max-h-[300px] py-4' : 'max-h-0'
+        }`}
+      >
+        <div className="flex flex-col gap-1 px-6">
+          {navLinks.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={(e) => handleScrollTo(e, link.id)}
+              className="py-3 text-slate-400 font-medium text-base no-underline transition-colors hover:text-white"
+            >
+              {link.label}
+            </a>
+          ))}
+          <Link 
+            href="/auth" 
+            className="mt-4 px-5 py-3 bg-blue-600 text-white font-bold text-center rounded-xl no-underline"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Get Started
+          </Link>
+        </div>
+      </div>
+    </nav>
   );
 }

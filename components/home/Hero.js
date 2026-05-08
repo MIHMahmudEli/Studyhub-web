@@ -1,152 +1,54 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
-const S = {
-  section: {
-    padding: '160px 24px 120px',
-    textAlign: 'center',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  container: {
-    maxWidth: 800,
-    margin: '0 auto',
-  },
-  badge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 8,
-    padding: '6px 16px',
-    background: 'rgba(59,130,246,0.1)',
-    border: '1px solid rgba(59,130,246,0.25)',
-    borderRadius: 999,
-    color: '#60a5fa',
-    fontSize: 12,
-    fontWeight: 700,
-    letterSpacing: '0.08em',
-    textTransform: 'uppercase',
-    marginBottom: 28,
-  },
-  h1: {
-    fontSize: 'clamp(2.4rem, 6vw, 4.5rem)',
-    fontWeight: 900,
-    lineHeight: 1.08,
-    letterSpacing: '-0.03em',
-    marginBottom: 24,
-    color: '#f0f4ff',
-  },
-  grad: {
-    background: 'linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #c084fc 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text',
-  },
-  sub: {
-    fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-    color: '#64748b',
-    lineHeight: 1.7,
-    maxWidth: 560,
-    margin: '0 auto 48px',
-  },
-  buttons: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 16,
-    flexWrap: 'wrap',
-  },
-  btnPrimary: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 8,
-    padding: '14px 32px',
-    background: '#2563eb',
-    color: '#fff',
-    fontWeight: 700,
-    fontSize: 15,
-    textDecoration: 'none',
-    borderRadius: 12,
-    transition: 'all 0.2s',
-    boxShadow: '0 0 40px rgba(37,99,235,0.35)',
-  },
-  btnSecondary: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 8,
-    padding: '14px 32px',
-    border: '1px solid rgba(255,255,255,0.1)',
-    color: '#94a3b8',
-    fontWeight: 600,
-    fontSize: 15,
-    textDecoration: 'none',
-    borderRadius: 12,
-    transition: 'all 0.2s',
-    background: 'transparent',
-  },
-  proof: {
-    marginTop: 52,
-    color: '#334155',
-    fontSize: 14,
-  },
-  proofHighlight: {
-    color: '#64748b',
-    fontWeight: 700,
-  },
-};
-
 export default function Hero() {
   return (
-    <section style={S.section} className="fade-up">
-      {/* Background dot grid */}
-      <div style={{
-        position: 'absolute', inset: 0, zIndex: -1,
-        backgroundImage: 'radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px)',
-        backgroundSize: '28px 28px',
-      }} />
-      {/* Center glow */}
-      <div style={{
-        position: 'absolute', top: '30%', left: '50%',
-        transform: 'translateX(-50%)',
-        width: 700, height: 400,
-        background: 'radial-gradient(ellipse, rgba(59,130,246,0.1) 0%, transparent 65%)',
-        zIndex: -1,
-      }} />
+    <section className="pt-[160px] px-6 pb-[120px] text-center relative overflow-hidden fade-up">
+      {/* Background starfield grid */}
+      <div className="absolute inset-0 -z-10 [background-image:radial-gradient(rgba(255,255,255,0.07)_1px,transparent_1px)] [background-size:32px_32px]" />
+      
+      {/* Nebula Glows */}
+      <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-600/10 blur-[120px] rounded-full -z-10 animate-nebula" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/10 blur-[100px] rounded-full -z-10 animate-nebula [animation-delay:2s]" />
 
-      <div style={S.container}>
-        <div className="fade-up" style={S.badge}>
+      {/* Center atmospheric glow */}
+      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[radial-gradient(ellipse,rgba(59,130,246,0.12)_0%,transparent_70%)] -z-10" />
+
+      <div className="max-w-[800px] mx-auto">
+        <div className="inline-flex items-center gap-2 py-1.5 px-4 bg-blue-500/10 border border-blue-500/25 rounded-full text-blue-400 text-[12px] font-bold uppercase tracking-widest mb-7 fade-up">
           ✦ Academic Collaboration Platform
         </div>
 
-        <h1 className="fade-up delay-1" style={S.h1}>
+        <h1 className="text-[clamp(2.4rem,6vw,4.5rem)] font-black leading-[1.08] tracking-tight mb-6 text-[#f0f4ff] fade-up delay-1">
           Study smarter.<br />
-          <span style={S.grad}>Grow together.</span>
+          <span className="bg-gradient-to-br from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">Grow together.</span>
         </h1>
 
-        <p className="fade-up delay-2" style={S.sub}>
+        <p className="text-[clamp(1rem,2vw,1.2rem)] text-slate-500 leading-relaxed max-w-[560px] mx-auto mb-12 fade-up delay-2">
           Join thousands of students sharing high-quality notes, earning badges,
           and climbing the academic leaderboard — all in one place.
         </p>
 
-        <div className="fade-up delay-3" style={S.buttons}>
+        <div className="flex justify-center items-center gap-4 flex-wrap fade-up delay-3">
           <Link 
             href="/auth" 
-            className="hover:bg-blue-700 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(37,99,235,0.4)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-            style={S.btnPrimary}
+            className="group inline-flex items-center gap-2 py-3.5 px-8 bg-blue-600 text-white font-bold text-[15px] rounded-xl transition-all duration-500 shadow-[0_0_40px_rgba(37,99,235,0.35)] hover:bg-blue-700 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(37,99,235,0.4)]"
           >
             Get Started Free
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-500" />
           </Link>
           <a 
             href="#features" 
-            className="hover:border-white/30 hover:text-white hover:bg-white/5 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-            style={S.btnSecondary}
+            className="inline-flex items-center gap-2 py-3.5 px-8 border border-white/10 text-slate-400 font-semibold text-[15px] rounded-xl transition-all duration-500 bg-transparent hover:border-white/30 hover:text-white hover:bg-white/5"
           >
             Explore Features
           </a>
         </div>
 
-        <p className="fade-up delay-4" style={S.proof}>
-          Trusted by <span style={S.proofHighlight}>5,000+</span> students worldwide
+        <p className="mt-[52px] text-slate-800 text-sm fade-up delay-4">
+          Trusted by <span className="text-slate-500 font-bold">5,000+</span> students worldwide
         </p>
       </div>
     </section>
