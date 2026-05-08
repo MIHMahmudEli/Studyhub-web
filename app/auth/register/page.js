@@ -87,7 +87,7 @@ export default function RegisterPage() {
 
             <button 
               disabled={isSubmitDisabled || isLoading} 
-              className={`w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-3 transition-all duration-500 group/btn ${
+              className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 group/btn ${
                 isSubmitDisabled || isLoading 
                   ? 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5' 
                   : 'bg-white text-black hover:bg-gray-200 active:scale-[0.98]'
