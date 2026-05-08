@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { ArrowRight, Mail, Lock, MousePointer2 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 import AuthInput from '@/components/auth/AuthInput';
 
@@ -11,12 +13,17 @@ export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [touched, setTouched] = useState({});
+  const [error, setError] = useState('');
+  
+  const { login } = useAuth();
+  const router = useRouter(); // Wait, I need to import useRouter or check if it's already there.
 
   useEffect(() => setMounted(true), []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (!touched[e.target.name]) setTouched(prev => ({ ...prev, [e.target.name]: true }));
+    if (error) setError('');
   };
 
   const handleBlur = (e) => setTouched({ ...touched, [e.target.name]: true });
@@ -24,7 +31,14 @@ export default function AuthPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1500);
+    setError('');
+    
+    try {
+      await login(formData.email, formData.password);
+    } catch (err) {
+      setError(err.message || 'Invalid email or password');
+      setIsLoading(false);
+    }
   };
 
   const isSubmitDisabled = !(formData.email && formData.password);
@@ -50,6 +64,14 @@ export default function AuthPage() {
               Continue your learning journey
             </p>
           </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
+              <p className="text-red-400 text-[11px] font-bold uppercase tracking-widest text-center">
+                {error}
+              </p>
+            </div>
+          )}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <AuthInput icon={Mail} type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} placeholder="Email Address" />

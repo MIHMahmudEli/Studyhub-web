@@ -1,34 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
 
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #06080f;
-  color: #e8eaf0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
-  overflow-x: hidden;
-}
-
-/* Fade-up animation */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.fade-up           { opacity: 0; animation: fadeUp 0.7s ease forwards; }
-.fade-up.delay-1   { animation-delay: 0.1s; }
-.fade-up.delay-2   { animation-delay: 0.2s; }
-.fade-up.delay-3   { animation-delay: 0.3s; }
-.fade-up.delay-4   { animation-delay: 0.4s; }

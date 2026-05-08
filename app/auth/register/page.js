@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useMemo } from 'react';
-import { Sparkles, Mail, Lock, User } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { Sparkles, Mail, Lock, User, ShieldCheck, ArrowLeft, RefreshCw } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 import AuthInput from '@/components/auth/AuthInput';
 import ValidationRules from '@/components/auth/ValidationRules';
@@ -10,9 +12,16 @@ import ValidationRules from '@/components/auth/ValidationRules';
 export default function RegisterPage() {
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState('register'); // 'register' or 'verify'
   const [formData, setFormData] = useState({ fullName: '', email: '', password: '', confirmPassword: '' });
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
+  const [status, setStatus] = useState({ type: '', message: '' });
+  
+  const otpRefs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
+  const { register, verifyEmail } = useAuth();
+  const router = useRouter();
 
   useEffect(() => setMounted(true), []);
 
@@ -43,10 +52,52 @@ export default function RegisterPage() {
 
   const handleBlur = (e) => setTouched({ ...touched, [e.target.name]: true });
 
+  const handleOtpChange = (index, value) => {
+    if (isNaN(value)) return;
+    const newOtp = [...otp];
+    newOtp[index] = value.substring(value.length - 1);
+    setOtp(newOtp);
+
+    // Auto-focus next input
+    if (value && index < 5) {
+      otpRefs[index + 1].current.focus();
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      otpRefs[index - 1].current.focus();
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1500);
+    setStatus({ type: '', message: '' });
+
+    try {
+      await register(formData.fullName, formData.email, formData.password);
+      setStep('verify');
+      setIsLoading(false);
+    } catch (err) {
+      setStatus({ type: 'error', message: err.message || 'Failed to create account' });
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifySubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setStatus({ type: '', message: '' });
+
+    try {
+      await verifyEmail(formData.email, otp.join(''));
+      setStatus({ type: 'success', message: 'Email verified! Redirecting to login...' });
+      setTimeout(() => router.push('/auth'), 2000);
+    } catch (err) {
+      setStatus({ type: 'error', message: err.message || 'Invalid OTP' });
+      setIsLoading(false);
+    }
   };
 
   const allRulesMet = Object.values(passwordRules).every(Boolean);
@@ -67,42 +118,111 @@ export default function RegisterPage() {
         <div className="p-10">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-black text-white mb-2 tracking-tight bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
-              Create Account
+              {step === 'register' ? 'Create Account' : 'Verify Email'}
             </h1>
             <p className="text-gray-500 text-[11px] font-bold uppercase tracking-[0.2em]">
-              Start your academic success today
+              {step === 'register' ? 'Start your academic success today' : `Enter the code sent to ${formData.email}`}
             </p>
           </div>
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <AuthInput icon={User} name="fullName" value={formData.fullName} onChange={handleChange} onBlur={handleBlur} placeholder="Full Name" error={errors.fullName} touched={touched.fullName} />
-            
-            <AuthInput icon={Mail} type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} placeholder="Email Address" error={errors.email} touched={touched.email} />
-
-            <div className="space-y-4">
-              <AuthInput icon={Lock} type="password" name="password" value={formData.password} onChange={handleChange} onBlur={handleBlur} placeholder="Password" />
-              {formData.password && <ValidationRules rules={passwordRules} />}
-              <AuthInput icon={Lock} type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} onBlur={handleBlur} placeholder="Confirm Password" error={errors.confirmPassword} touched={touched.confirmPassword} />
+          {status.message && (
+            <div className={`mb-6 p-4 border rounded-2xl ${
+              status.type === 'success' 
+                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+                : 'bg-red-500/10 border-red-500/20 text-red-400'
+            }`}>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-center">
+                {status.message}
+              </p>
             </div>
+          )}
 
-            <button 
-              disabled={isSubmitDisabled || isLoading} 
-              className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 group/btn ${
-                isSubmitDisabled || isLoading 
-                  ? 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5' 
-                  : 'bg-white text-black hover:bg-gray-200 active:scale-[0.98]'
-              }`}
-            >
-              {isLoading ? (
-                <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-              ) : (
-                <>
-                  Create Account
-                  <Sparkles size={18} className="group-hover/btn:scale-125 transition-transform" />
-                </>
-              )}
-            </button>
-          </form>
+          {step === 'register' ? (
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <AuthInput icon={User} name="fullName" value={formData.fullName} onChange={handleChange} onBlur={handleBlur} placeholder="Full Name" error={errors.fullName} touched={touched.fullName} />
+              
+              <AuthInput icon={Mail} type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} placeholder="Email Address" error={errors.email} touched={touched.email} />
+
+              <div className="space-y-4">
+                <AuthInput icon={Lock} type="password" name="password" value={formData.password} onChange={handleChange} onBlur={handleBlur} placeholder="Password" />
+                {formData.password && <ValidationRules rules={passwordRules} />}
+                <AuthInput icon={Lock} type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} onBlur={handleBlur} placeholder="Confirm Password" error={errors.confirmPassword} touched={touched.confirmPassword} />
+              </div>
+
+              <button 
+                disabled={isSubmitDisabled || isLoading} 
+                className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 group/btn ${
+                  isSubmitDisabled || isLoading 
+                    ? 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5' 
+                    : 'bg-white text-black hover:bg-gray-200 active:scale-[0.98]'
+                }`}
+              >
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                ) : (
+                  <>
+                    Create Account
+                    <Sparkles size={18} className="group-hover/btn:scale-125 transition-transform" />
+                  </>
+                )}
+              </button>
+            </form>
+          ) : (
+            <form className="space-y-8" onSubmit={handleVerifySubmit}>
+              <div className="flex justify-between gap-2">
+                {otp.map((digit, index) => (
+                  <input
+                    key={index}
+                    ref={otpRefs[index]}
+                    type="text"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleOtpChange(index, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(index, e)}
+                    className="w-12 h-14 bg-white/5 border border-white/10 rounded-xl text-center text-white text-xl font-black focus:border-blue-500/50 focus:bg-blue-500/5 outline-none transition-all"
+                  />
+                ))}
+              </div>
+
+              <div className="space-y-4">
+                <button 
+                  disabled={otp.some(d => !d) || isLoading} 
+                  className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 group/btn ${
+                    otp.some(d => !d) || isLoading 
+                      ? 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5' 
+                      : 'bg-white text-black hover:bg-gray-200 active:scale-[0.98]'
+                  }`}
+                >
+                  {isLoading ? (
+                    <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      Verify Code
+                      <ShieldCheck size={18} className="group-hover/btn:scale-110 transition-transform" />
+                    </>
+                  )}
+                </button>
+
+                <div className="flex flex-col gap-4">
+                  <button 
+                    type="button"
+                    onClick={() => setStep('register')}
+                    className="text-[10px] font-bold text-gray-500 hover:text-white transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
+                  >
+                    <ArrowLeft size={12} /> Wrong email? Go back
+                  </button>
+                  
+                  <button 
+                    type="button"
+                    onClick={handleSubmit}
+                    className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
+                  >
+                    <RefreshCw size={12} /> Resend OTP
+                  </button>
+                </div>
+              </div>
+            </form>
+          )}
 
           <div className="mt-8 text-center border-t border-white/5 pt-6">
             <p className="text-gray-500 text-[11px] font-bold uppercase tracking-widest">
