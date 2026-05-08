@@ -34,6 +34,7 @@ const courseList = [{
         faculty: 'fst',
         type: 'PDF',
         size: '1.2 MB',
+        term: "mid",
         downloads: 124
       },
       {
@@ -42,6 +43,7 @@ const courseList = [{
         dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
         faculty: 'fst',
         type: 'PDF',
+        term: "final",
         size: '1.8 MB',
         downloads: 250
       }
@@ -62,6 +64,7 @@ const courseList = [{
         faculty: 'fst',
         type: 'PDF',
         size: '1.2 MB',
+        term: "mid",
         downloads: 124
       },
       {
@@ -71,6 +74,7 @@ const courseList = [{
         faculty: 'fst',
         type: 'PDF',
         size: '1.8 MB',
+        term: "final",
         downloads: 250
       }
     ],
@@ -91,6 +95,7 @@ const courseList = [{
         faculty: 'fst',
         type: 'PDF',
         size: '1.2 MB',
+        term: "mid",
         downloads: 124
       },
       {
@@ -100,6 +105,7 @@ const courseList = [{
         faculty: 'fst',
         type: 'PDF',
         size: '1.8 MB',
+        term: "final",
         downloads: 250
       }
     ],
@@ -121,6 +127,7 @@ size: '2.0 MB',
         faculty: 'fst',
         type: 'PDF',
         size: '1.2 MB',
+        term: "mid",
         downloads: 124
       },
       {
@@ -130,6 +137,7 @@ size: '2.0 MB',
         faculty: 'fst',
         type: 'PDF',
         size: '1.8 MB',
+        term: "final",
         downloads: 250
       }
     ],

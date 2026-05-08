@@ -8,50 +8,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-
-// Academic Course & Resource Registry
-const courseList = [
-  {
-    id: 1,
-    courseTitle: 'Computer Graphics - Course Outline',
-    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-    faculty: 'fst',
-    resources: [
-      { id: 1, title: 'Course Outline PDF' },
-      { id: 2, title: 'Lecture Notes - Intro' }
-    ]
-  },
-  {
-    id: 2,
-    courseTitle: 'Introduction to C Programming - Lecture Notes',
-    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-    faculty: 'fst',
-    resources: [
-      { id: 1, title: 'Loops & Conditionals' },
-      { id: 2, title: 'Pointers Guide' }
-    ]
-  },
-  {
-    id: 3,
-    courseTitle: 'Differential Calculus and Coordinate Geometry - Course Outline',
-    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-    faculty: 'fst',
-    resources: [
-      { id: 1, title: 'Derivatives Worksheet' },
-      { id: 2, title: 'Limit Theory' }
-    ]
-  },
-  {
-    id: 4,
-    courseTitle: 'Introduction to Artificial Intelligence - Course Outline',
-    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-    faculty: 'fst',
-    resources: [
-      { id: 1, title: 'Neural Networks 101' },
-      { id: 2, title: 'AI Ethics Paper' }
-    ]
-  }
-];
+import { courseList } from '@/lib/data/resourceData';
 
 export default function ResourcesPage() {
   const { user, loading: authLoading } = useAuth();
@@ -69,11 +26,12 @@ export default function ResourcesPage() {
 
       <div className="pt-40 px-6">
         <div className="max-w-[1200px] mx-auto">
-          {/* Classic Grid with Resource Counters */}
+          {/* Classic Grid with Dynamic Navigation */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {courseList.map((res) => (
               <div 
                 key={res.id} 
+                onClick={() => router.push(`/resources/${res.id}`)}
                 className="group bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-8 hover:border-blue-500/40 hover:bg-blue-500/[0.02] transition-all duration-500 cursor-pointer shadow-sm hover:shadow-xl hover:shadow-blue-500/5 flex flex-col items-center justify-between text-center h-64"
               >
                 <div className="flex flex-col items-center">
