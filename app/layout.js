@@ -5,6 +5,9 @@ import "./globals.css";
 export const metadata = {
   title: "StudyHub | Premium Student Resource Platform",
   description: "The ultimate space for students to share notes, find resources, and excel in their studies.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({ children }) {
