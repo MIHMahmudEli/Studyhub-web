@@ -128,7 +128,7 @@ export default function Hero() {
 
         <div className="fade-up delay-3" style={S.buttons}>
           <a 
-            href="/auth#register" 
+            href="/auth" 
             className="hover:bg-blue-700 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(37,99,235,0.4)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
             style={S.btnPrimary}
           >
