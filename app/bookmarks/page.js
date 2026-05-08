@@ -22,6 +22,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import bookmarkData from '@/lib/data/bookmark.json';
+import { courseList as masterResources } from '@/lib/data/resourceData';
 
 export default function BookmarkPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,6 +32,22 @@ export default function BookmarkPage() {
   useEffect(() => {
     if (!authLoading && !user) router.push('/auth');
   }, [user, authLoading, router]);
+
+  // Map master data for course details (counts, codes, depts)
+  const masterCourseMap = useMemo(() => {
+    const map = {};
+    masterResources.forEach(item => {
+      if (!map[item.courseTitle]) {
+        map[item.courseTitle] = {
+          code: item.course_code,
+          dept: item.dept,
+          count: 0
+        };
+      }
+      map[item.courseTitle].count += 1;
+    });
+    return map;
+  }, []);
 
   // Unified Filtering & Grouping Logic
   const { savedNotes, savedCourses, savedResources } = useMemo(() => {
@@ -78,7 +95,7 @@ export default function BookmarkPage() {
       <DashboardNavbar />
 
       <div className="pt-24 md:pt-32 px-4 md:px-8">
-        <div className="max-w-[1200px] mx-auto">
+        <div className="max-w-[1400px] mx-auto">
           {/* Majestic Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
             <div className="space-y-4">
@@ -107,21 +124,82 @@ export default function BookmarkPage() {
           </div>
 
           <div className="space-y-20">
-            {/* 1. SAVED NOTES SECTION */}
+            {/* 1. SAVED RESOURCES SECTION (Majestic Grid - Course Hub) */}
+            {savedCourses.length > 0 && (
+              <section className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20 shadow-lg">
+                    <BookOpen size={20} />
+                  </div>
+                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Resources</h2>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {filterBySearch(savedCourses).map((course, idx) => {
+                    const masterData = masterCourseMap[course.courseTitle] || {};
+                    const Icon = getCourseIcon(course.courseTitle);
+                    const slug = course.courseTitle.replace(/\s+/g, '-').toLowerCase();
+
+                    return (
+                      <div 
+                        key={course.bookmark_id}
+                        onClick={() => router.push(`/resources/${slug}`)}
+                        className="group relative h-[300px] md:h-[360px] bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-700 hover:-translate-y-1 md:hover:-translate-y-2 shadow-sm animate-in fade-in slide-in-from-bottom-6 fill-mode-both"
+                        style={{ animationDelay: `${idx * 40}ms` }}
+                      >
+                        <div className="absolute inset-0 rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                        
+                        <div className="relative z-10 w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] md:rounded-[2rem] bg-white dark:bg-[var(--background)] border border-slate-200 dark:border-white/[0.05] flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-all duration-700">
+                          <Icon size={28} strokeWidth={1.5} className="md:w-8 md:h-8" />
+                        </div>
+
+                        <div className="relative z-10 text-center space-y-3">
+                          <div className="space-y-2">
+                            <p className="text-[7px] md:text-[7.5px] font-black tracking-[0.2em] text-blue-500/80 uppercase px-3 py-1 rounded-full bg-blue-500/5 border border-blue-500/10 inline-block">
+                              {masterData.dept?.split(' ')[2] || 'FACULTY'}
+                            </p>
+                            <div className="space-y-1">
+                              <p className="text-[8px] font-black tracking-[0.2em] text-slate-500 uppercase">{masterData.code || 'SAVED'}</p>
+                              <h3 className="text-[11px] md:text-[12px] font-black uppercase tracking-widest leading-relaxed max-w-[180px] mx-auto group-hover:text-blue-500 transition-colors duration-500">
+                                {course.courseTitle}
+                              </h3>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="relative z-10 w-full flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/[0.05]">
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                            <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-400">
+                              {masterData.count || 0} Files
+                            </span>
+                          </div>
+                          <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
+                            <ArrowRight size={10} className="md:w-3 md:h-3" />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* 2. SAVED NOTES SECTION */}
             {savedNotes.length > 0 && (
-              <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 border border-purple-500/20 shadow-lg">
                     <FileText size={20} />
                   </div>
                   <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Notes</h2>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {filterBySearch(savedNotes).map((note) => (
                     <Link 
                       key={note.bookmark_id} 
                       href={`/notes/${note.note_id}`}
-                      className="group bg-slate-50/50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.05] rounded-[1.5rem] p-6 hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 flex flex-col justify-between h-full shadow-sm"
+                      className="group bg-slate-50/50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.05] rounded-[1.5rem] p-6 hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 flex flex-col justify-between h-[180px] shadow-sm"
                     >
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
@@ -136,7 +214,7 @@ export default function BookmarkPage() {
                           {note.matched_item?.title || 'Course Notes'}
                         </h3>
                       </div>
-                      <div className="mt-6 flex items-center justify-between border-t border-slate-200/50 dark:border-white/[0.05] pt-4">
+                      <div className="mt-4 flex items-center justify-between border-t border-slate-200/50 dark:border-white/[0.05] pt-4">
                         <div className="flex items-center gap-2 text-[8px] font-black text-slate-400 uppercase tracking-widest">
                           <Clock size={10} /> {note.created_at?.split(' ')[0]}
                         </div>
@@ -148,52 +226,7 @@ export default function BookmarkPage() {
               </section>
             )}
 
-            {/* 2. SAVED RESOURCES SECTION (Courses based on CourseTitle) */}
-            {savedCourses.length > 0 && (
-              <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20 shadow-lg">
-                    <BookOpen size={20} />
-                  </div>
-                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Resources</h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filterBySearch(savedCourses).map((course, idx) => {
-                    const Icon = getCourseIcon(course.courseTitle);
-                    return (
-                      <Link 
-                        key={course.bookmark_id} 
-                        href={`/resources/${course.courseTitle.replace(/\s+/g, '-').toLowerCase()}`}
-                        className="group relative h-[220px] bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-8 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1 shadow-sm flex flex-col justify-between overflow-hidden"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                        
-                        <div className="relative z-10 flex items-center justify-between">
-                          <div className="w-12 h-12 rounded-2xl bg-white dark:bg-[var(--background)] border border-slate-200 dark:border-white/[0.05] flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-all duration-700">
-                            <Icon size={20} strokeWidth={1.5} />
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-white/[0.05] flex items-center justify-center text-slate-300 group-hover:bg-blue-500 group-hover:text-white transition-all">
-                            <ArrowRight size={14} />
-                          </div>
-                        </div>
-
-                        <div className="relative z-10 space-y-2">
-                          <h3 className="text-[12px] font-black uppercase tracking-widest leading-relaxed pr-4 group-hover:text-blue-500 transition-colors">
-                            {course.courseTitle}
-                          </h3>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1 h-1 rounded-full bg-blue-500" />
-                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Access Full Library</p>
-                          </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
-
-            {/* 3. SAVED FILES SECTION (based on Resource ID) */}
+            {/* 3. SAVED FILES SECTION */}
             {savedResources.length > 0 && (
               <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
                 <div className="flex items-center gap-4">
