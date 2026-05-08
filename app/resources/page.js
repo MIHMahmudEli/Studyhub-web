@@ -13,10 +13,48 @@ import {
   Library,
   ChevronRight
 } from 'lucide-react';
-import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import coursesData from '@/lib/data/courses.json';
+
+// Academic Resource List
+const courseList = [
+  {
+    id: 1,
+    courseTitle: 'Computer Graphics - Course Outline',
+    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+    faculty: 'fst',
+    type: 'PDF',
+    size: '1.2 MB',
+    downloads: 124
+  },
+  {
+    id: 2,
+    courseTitle: 'Introduction to C Programming - Lecture Notes',
+    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+    faculty: 'fst',
+    type: 'PDF',
+    size: '1.8 MB',
+    downloads: 250
+  },
+  {
+    id: 3,
+    courseTitle: 'Differential Calculus and Coordinate Geometry - Course Outline',
+    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+    faculty: 'fst',
+    type: 'PDF',
+    size: '1.5 MB',
+    downloads: 180
+  },
+  {
+    id: 4,
+    courseTitle: 'Introduction to Artificial Intelligence - Course Outline',
+    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+    faculty: 'fst',
+    type: 'PDF',
+    size: '2.0 MB',
+    downloads: 150
+  }
+];
 
 const faculties = [
   { id: 'all', name: 'All Faculties', icon: Library },
@@ -27,8 +65,6 @@ const faculties = [
 ];
 
 export default function ResourcesPage() {
-  const [resources, setResources] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [activeFaculty, setActiveFaculty] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const { user, loading: authLoading } = useAuth();
@@ -38,76 +74,18 @@ export default function ResourcesPage() {
     if (!authLoading && !user) router.push('/auth');
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    const fetchResources = async () => {
-      setLoading(true);
-      try {
-        const response = await apiRequest('/resources');
-        setResources(response.data || response);
-      } catch (err) {
-        // Mock data for development
-        const mockResources = [
-          { 
-            id: 1, 
-            courseTitle: 'COMPUTER GRAPHICS', 
-            dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-            faculty: 'fst',
-            type: 'PDF',
-            size: '1.2 MB'
-          },
-          { 
-            id: 2, 
-            courseTitle: 'DIFF CALCULUS AND COORDINATE GEOMETRY', 
-            dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-            faculty: 'fst',
-            type: 'PDF',
-            size: '2.1 MB'
-          },
-          { 
-            id: 3, 
-            courseTitle: 'PHONETICS & PHONOLOGY', 
-            dept: 'FACULTY OF ARTS AND SOCIAL SCIENCES',
-            faculty: 'fass',
-            type: 'PDF',
-            size: '1.8 MB'
-          },
-          { 
-            id: 4, 
-            courseTitle: 'FAKE COURSE NAME', // This should be filtered out
-            dept: 'FACULTY OF ENGINEERING',
-            faculty: 'fe',
-            type: 'DOCX',
-            size: '850 KB'
-          }
-        ];
-        setResources(mockResources);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (user) fetchResources();
-  }, [user]);
-
   const filteredResources = useMemo(() => {
-    // 1. Get a set of valid course titles for O(1) lookup
-    const validCourseTitles = new Set(coursesData.map(c => c.courseTitle.toLowerCase()));
-
-    return resources.filter(res => {
-      // 2. Database verification: Only show if course exists in courses.json
-      const isCourseInDatabase = validCourseTitles.has(res.courseTitle.toLowerCase());
-      if (!isCourseInDatabase) return false;
-
-      // 3. Faculty filter
+    return courseList.filter(res => {
+      // 1. Faculty filter
       const matchesFaculty = activeFaculty === 'all' || res.faculty === activeFaculty;
       
-      // 4. Search query
+      // 2. Search query
       const matchesSearch = res.courseTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             res.dept.toLowerCase().includes(searchQuery.toLowerCase());
       
       return matchesFaculty && matchesSearch;
     });
-  }, [resources, activeFaculty, searchQuery]);
+  }, [activeFaculty, searchQuery]);
 
   if (authLoading) return null;
 
@@ -168,13 +146,7 @@ export default function ResourcesPage() {
 
             {/* Resource Grid */}
             <div className="flex-1 w-full">
-              {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="h-40 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl animate-pulse" />
-                  ))}
-                </div>
-              ) : filteredResources.length > 0 ? (
+              {filteredResources.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
                   {filteredResources.map((res) => (
                     <div 
@@ -212,9 +184,9 @@ export default function ResourcesPage() {
                   <div className="w-20 h-20 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl flex items-center justify-center text-slate-700 mb-8 shadow-2xl">
                     <Filter size={32} />
                   </div>
-                  <h3 className="text-xl font-black mb-2">No verified resources found</h3>
+                  <h3 className="text-xl font-black mb-2">No matching resources</h3>
                   <p className="text-slate-500 text-sm font-medium max-w-[300px]">
-                    Only academic resources linked to official courses are displayed here.
+                    We couldn&apos;t find any verified resources matching your criteria in the global repository.
                   </p>
                 </div>
               )}

@@ -18,6 +18,47 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import coursesData from '@/lib/data/courses.json';
 
+//this is replace by database in feature
+const courseList = [{
+    id: 1,
+    courseTitle: 'Computer Graphics - Course Outline',
+    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+    faculty: 'fst',
+    type: 'PDF',
+    size: '1.2 MB',
+    downloads: 124},
+    
+    {id: 2,
+    courseTitle: 'Introduction to C Programming - Lecture Notes',
+    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+    faculty: 'fst',
+    type: 'PDF',
+    size: '1.8 MB',
+    downloads: 250
+},
+{
+  id: 3,
+  courseTitle: 'Differential Calculus and Coordinate Geometry - Course Outline',
+  dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+  faculty: 'fst',
+  type: 'PDF',
+  size: '1.5 MB',
+  downloads: 180
+},
+
+  {
+id: 4,
+courseTitle: 'Introduction to Artificial Intelligence - Course Outline',
+dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+faculty: 'fst',
+type: 'PDF',
+size: '2.0 MB',
+downloads: 150
+}
+
+
+]
+
 export default function UploadPage() {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
