@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { 
   Layers, 
@@ -16,6 +16,7 @@ import {
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import coursesData from '@/lib/data/courses.json';
 
 const faculties = [
   { id: 'all', name: 'All Faculties', icon: Library },
@@ -48,48 +49,35 @@ export default function ResourcesPage() {
         const mockResources = [
           { 
             id: 1, 
-            title: 'Computer Graphics - Course Outline', 
+            courseTitle: 'COMPUTER GRAPHICS', 
             dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
             faculty: 'fst',
             type: 'PDF',
-            size: '1.2 MB',
-            downloads: 124
+            size: '1.2 MB'
           },
           { 
             id: 2, 
-            title: 'Calculus II Problem Set', 
-            dept: 'FACULTY OF ENGINEERING',
-            faculty: 'fe',
-            type: 'DOCX',
-            size: '850 KB',
-            downloads: 89
+            courseTitle: 'DIFF CALCULUS AND COORDINATE GEOMETRY', 
+            dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+            faculty: 'fst',
+            type: 'PDF',
+            size: '2.1 MB'
           },
           { 
             id: 3, 
-            title: 'Business Communication Guide', 
-            dept: 'FACULTY OF BUSINESS ADMINISTRATION',
-            faculty: 'fba',
-            type: 'PDF',
-            size: '2.4 MB',
-            downloads: 215
-          },
-          { 
-            id: 4, 
-            title: 'Linguistics Foundations', 
+            courseTitle: 'PHONETICS & PHONOLOGY', 
             dept: 'FACULTY OF ARTS AND SOCIAL SCIENCES',
             faculty: 'fass',
             type: 'PDF',
-            size: '1.8 MB',
-            downloads: 56
+            size: '1.8 MB'
           },
           { 
-            id: 5, 
-            title: 'Digital Logic Design Lab Manual', 
+            id: 4, 
+            courseTitle: 'FAKE COURSE NAME', // This should be filtered out
             dept: 'FACULTY OF ENGINEERING',
             faculty: 'fe',
-            type: 'PDF',
-            size: '3.1 MB',
-            downloads: 142
+            type: 'DOCX',
+            size: '850 KB'
           }
         ];
         setResources(mockResources);
@@ -101,12 +89,25 @@ export default function ResourcesPage() {
     if (user) fetchResources();
   }, [user]);
 
-  const filteredResources = resources.filter(res => {
-    const matchesFaculty = activeFaculty === 'all' || res.faculty === activeFaculty;
-    const matchesSearch = res.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          res.dept.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFaculty && matchesSearch;
-  });
+  const filteredResources = useMemo(() => {
+    // 1. Get a set of valid course titles for O(1) lookup
+    const validCourseTitles = new Set(coursesData.map(c => c.courseTitle.toLowerCase()));
+
+    return resources.filter(res => {
+      // 2. Database verification: Only show if course exists in courses.json
+      const isCourseInDatabase = validCourseTitles.has(res.courseTitle.toLowerCase());
+      if (!isCourseInDatabase) return false;
+
+      // 3. Faculty filter
+      const matchesFaculty = activeFaculty === 'all' || res.faculty === activeFaculty;
+      
+      // 4. Search query
+      const matchesSearch = res.courseTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            res.dept.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      return matchesFaculty && matchesSearch;
+    });
+  }, [resources, activeFaculty, searchQuery]);
 
   if (authLoading) return null;
 
@@ -130,7 +131,7 @@ export default function ResourcesPage() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                 <input 
                   type="text" 
-                  placeholder="Search by title, department, or keyword..."
+                  placeholder="Search verified resources..."
                   className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:border-blue-500/30 transition-all shadow-xl backdrop-blur-xl"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -186,7 +187,7 @@ export default function ResourcesPage() {
                         </div>
                         <div>
                           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">{res.dept}</p>
-                          <h4 className="text-lg font-black tracking-tight mb-2 group-hover:text-blue-500 transition-colors line-clamp-1">{res.title}</h4>
+                          <h4 className="text-lg font-black tracking-tight mb-2 group-hover:text-blue-500 transition-colors line-clamp-1">{res.courseTitle}</h4>
                           <div className="flex items-center gap-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                             <span>{res.type}</span>
                             <div className="w-1 h-1 bg-slate-700 rounded-full" />
@@ -211,9 +212,9 @@ export default function ResourcesPage() {
                   <div className="w-20 h-20 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl flex items-center justify-center text-slate-700 mb-8 shadow-2xl">
                     <Filter size={32} />
                   </div>
-                  <h3 className="text-xl font-black mb-2">No resources found</h3>
+                  <h3 className="text-xl font-black mb-2">No verified resources found</h3>
                   <p className="text-slate-500 text-sm font-medium max-w-[300px]">
-                    Try adjusting your search or faculty filters to find what you&apos;re looking for.
+                    Only academic resources linked to official courses are displayed here.
                   </p>
                 </div>
               )}
