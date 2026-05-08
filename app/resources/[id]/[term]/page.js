@@ -13,24 +13,28 @@ import { useRouter, useParams } from 'next/navigation';
 import { courseList } from '@/lib/data/resourceData';
 
 export default function TermResourcesPage() {
-  const { id, term } = useParams();
+  const { id: slug, term } = useParams();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [course, setCourse] = useState(null);
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/auth');
+  }, [user, authLoading, router]);
+
+  // Resolve Course Info and Filtered Resources
+  const { courseInfo, filteredResources } = useMemo(() => {
+    const resources = courseList.filter(item => 
+      item.courseTitle.replace(/\s+/g, '-').toLowerCase() === slug &&
+      item.term.toLowerCase() === term.toLowerCase()
+    );
     
-    const foundCourse = courseList.find(c => c.id === parseInt(id));
-    setCourse(foundCourse);
-  }, [id, user, authLoading, router]);
+    return {
+      courseInfo: resources[0] || courseList.find(c => c.courseTitle.replace(/\s+/g, '-').toLowerCase() === slug),
+      filteredResources: resources
+    };
+  }, [slug, term]);
 
-  const filteredResources = useMemo(() => {
-    if (!course || !term) return [];
-    return course.resources.filter(res => res.term === term);
-  }, [course, term]);
-
-  if (authLoading || !course) return null;
+  if (authLoading || !courseInfo) return null;
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-20">
@@ -48,7 +52,7 @@ export default function TermResourcesPage() {
             </button>
             <div className="w-1 h-1 bg-slate-700 rounded-full" />
             <button 
-              onClick={() => router.push(`/resources/${id}`)}
+              onClick={() => router.push(`/resources/${slug}`)}
               className="text-slate-500 hover:text-blue-500 transition-colors text-[10px] font-black uppercase tracking-widest"
             >
               Terms
@@ -60,8 +64,8 @@ export default function TermResourcesPage() {
           </div>
 
           <div className="mb-16">
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">{course.dept}</p>
-            <h1 className="text-3xl font-black tracking-tight uppercase mb-4">{course.courseTitle}</h1>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">{courseInfo.dept || 'FACULTY RESOURCE'}</p>
+            <h1 className="text-3xl font-black tracking-tight uppercase mb-4">{courseInfo.courseTitle}</h1>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-500 text-[10px] font-black uppercase tracking-[0.2em]">
               {term === 'mid' ? 'Midterm' : 'Final'} Session Materials
             </div>
@@ -79,12 +83,20 @@ export default function TermResourcesPage() {
                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/[0.05] flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform duration-500 shadow-lg">
                       <BookMarked size={24} />
                     </div>
-                    <div>
-                      <h4 className="text-sm font-black uppercase tracking-widest group-hover:text-blue-500 transition-colors">{res.title}</h4>
-                      <div className="flex items-center gap-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
-                        <span>PDF</span>
+                    <div className="flex-1">
+                      <h4 className="text-xs font-black uppercase tracking-widest group-hover:text-blue-500 transition-colors leading-relaxed line-clamp-2 max-w-[500px]">
+                        {res.title}
+                      </h4>
+                      <div className="flex items-center gap-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-2">
+                        <span className="px-2 py-0.5 bg-white/[0.05] rounded-md">{res.file_type || 'PDF'}</span>
                         <div className="w-1 h-1 bg-slate-700 rounded-full" />
-                        <span>1.5 MB</span>
+                        <span>{res.downloads || 0} Downloads</span>
+                        {res.course_code && (
+                          <>
+                            <div className="w-1 h-1 bg-slate-700 rounded-full" />
+                            <span className="text-blue-500/80">{res.course_code}</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>

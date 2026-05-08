@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { 
   Calendar,
@@ -12,19 +12,20 @@ import { useRouter, useParams } from 'next/navigation';
 import { courseList } from '@/lib/data/resourceData';
 
 export default function CourseDetailPage() {
-  const { id } = useParams();
+  const { id: slug } = useParams(); // 'id' in folder name refers to course slug
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [course, setCourse] = useState(null);
+  
+  // Find course info by slug
+  const courseInfo = useMemo(() => {
+    return courseList.find(c => c.courseTitle.replace(/\s+/g, '-').toLowerCase() === slug);
+  }, [slug]);
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/auth');
-    
-    const foundCourse = courseList.find(c => c.id === parseInt(id));
-    setCourse(foundCourse);
-  }, [id, user, authLoading, router]);
+  }, [user, authLoading, router]);
 
-  if (authLoading || !course) return null;
+  if (authLoading || !courseInfo) return null;
 
   const terms = [
     { id: 'mid', name: 'Midterm Resources', icon: Calendar, color: 'from-blue-500/10 to-cyan-500/10', border: 'border-blue-500/20' },
@@ -47,18 +48,18 @@ export default function CourseDetailPage() {
           </button>
 
           <div className="mb-16 text-center">
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">{course.dept}</p>
-            <h1 className="text-3xl font-black tracking-tight uppercase max-w-[700px] mx-auto">{course.courseTitle}</h1>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">{courseInfo.dept || 'FACULTY RESOURCE'}</p>
+            <h1 className="text-3xl font-black tracking-tight uppercase max-w-[700px] mx-auto">{courseInfo.courseTitle}</h1>
           </div>
 
-          {/* Term Selection Grid (Dynamic Links) */}
+          {/* Term Selection Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
             {terms.map((term) => {
               const Icon = term.icon;
               return (
                 <div 
                   key={term.id}
-                  onClick={() => router.push(`/resources/${id}/${term.id}`)}
+                  onClick={() => router.push(`/resources/${slug}/${term.id}`)}
                   className={`group relative bg-gradient-to-br ${term.color} border ${term.border} rounded-[2.5rem] p-12 flex flex-col items-center justify-center text-center cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 shadow-xl shadow-black/5 h-80`}
                 >
                   <div className="w-20 h-20 rounded-3xl bg-[var(--background)] border border-[var(--card-border)] flex items-center justify-center text-[var(--foreground)] mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-2xl">
