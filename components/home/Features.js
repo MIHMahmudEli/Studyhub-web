@@ -111,12 +111,12 @@ function Card({ feature }) {
   return (
     <div 
       style={cardStyle(feature.accent)}
-      className="group hover:-translate-y-1.5 hover:bg-white/[0.04] hover:border-white/10 transition-all duration-300 cursor-default"
+      className="group hover:-translate-y-2 hover:bg-white/[0.04] hover:border-white/15 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]"
     >
-      <div style={iconWrapStyle(feature.accent)} className="group-hover:scale-110 transition-transform duration-300">
+      <div style={iconWrapStyle(feature.accent)} className="group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
         <Icon size={22} color={feature.accent} strokeWidth={1.5} />
       </div>
-      <div style={cardTitleStyle} className="group-hover:text-white transition-colors duration-300">{feature.title}</div>
+      <div style={cardTitleStyle} className="group-hover:text-white transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">{feature.title}</div>
       <p style={cardDescStyle}>{feature.description}</p>
     </div>
   );

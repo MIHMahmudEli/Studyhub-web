@@ -30,7 +30,7 @@ function SocialCard({ link }) {
       style={{ textDecoration: 'none', display: 'block' }}
     >
       <div
-        className="group-hover:-translate-y-1 group-hover:bg-white/[0.04] transition-all duration-300"
+        className="group-hover:-translate-y-2 group-hover:bg-white/[0.05] group-hover:border-white/15 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.35)]"
         style={{
           background: 'rgba(255,255,255,0.025)',
           border: '1px solid rgba(255,255,255,0.06)',
@@ -42,7 +42,7 @@ function SocialCard({ link }) {
         }}
       >
         <div 
-          className="group-hover:scale-110 transition-transform duration-300"
+          className="group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{
             width: 44, height: 44, flexShrink: 0,
             background: `${link.accent}18`,

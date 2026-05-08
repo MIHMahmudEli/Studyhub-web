@@ -129,15 +129,15 @@ export default function Hero() {
         <div className="fade-up delay-3" style={S.buttons}>
           <a 
             href="/auth#register" 
-            className="hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-[0_0_50px_rgba(37,99,235,0.5)] transition-all duration-300"
+            className="hover:bg-blue-700 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(37,99,235,0.4)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
             style={S.btnPrimary}
           >
             Get Started Free
-            <ArrowRight size={16} />
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-500" />
           </a>
           <a 
             href="#features" 
-            className="hover:border-white/20 hover:text-white hover:bg-white/5 transition-all duration-300"
+            className="hover:border-white/30 hover:text-white hover:bg-white/5 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
             style={S.btnSecondary}
           >
             Explore Features

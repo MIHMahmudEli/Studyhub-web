@@ -64,7 +64,7 @@ export default function Footer() {
                   key={l.href} 
                   href={l.href} 
                   style={S.footerLink}
-                  className="hover:text-gray-400 hover:translate-x-1 transition-all duration-300"
+                  className="hover:text-gray-400 hover:translate-x-2 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
                 >
                   {l.label}
                 </a>

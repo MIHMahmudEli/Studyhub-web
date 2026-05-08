@@ -40,7 +40,7 @@ function StepCard({ step }) {
 
   return (
     <div
-      className="group hover:-translate-y-1.5 hover:bg-white/[0.04] hover:border-white/10 transition-all duration-300 cursor-default relative overflow-hidden"
+      className="group hover:-translate-y-2 hover:bg-white/[0.05] hover:border-white/15 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default relative overflow-hidden hover:shadow-[0_24px_48px_rgba(0,0,0,0.4)]"
       style={{
         background: 'rgba(255,255,255,0.025)',
         border: '1px solid rgba(255,255,255,0.06)',
@@ -50,7 +50,7 @@ function StepCard({ step }) {
     >
       {/* Ghost number watermark */}
       <div 
-        className="group-hover:scale-110 group-hover:text-white/[0.05] transition-all duration-500"
+        className="group-hover:scale-110 group-hover:text-white/[0.06] group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
         style={{
           position: 'absolute', top: 20, right: 24,
           fontSize: 72, fontWeight: 900, lineHeight: 1,
@@ -67,7 +67,7 @@ function StepCard({ step }) {
           Step {step.number}
         </span>
         <div 
-          className="group-hover:rotate-12 transition-transform duration-300"
+          className="group-hover:rotate-6 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{
             width: 40, height: 40,
             background: `${step.accent}18`,
