@@ -23,17 +23,31 @@ export default function NotFound() {
           0%, 100% { transform: translateY(0) scale(1); }
           50% { transform: translateY(-20px) scale(1.05); }
         }
-        @keyframes pulse-glow {
-          0%, 100% { opacity: 0.5; transform: scale(1); }
-          50% { opacity: 0.8; transform: scale(1.1); }
+        @keyframes shimmer {
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
         }
         .not-found-title {
           transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: default;
+          background: linear-gradient(
+            to right, 
+            #60a5fa 20%, 
+            #818cf8 40%, 
+            #c084fc 60%, 
+            #818cf8 80%, 
+            #60a5fa 100%
+          ) !important;
+          background-size: 200% auto !important;
+          -webkit-background-clip: text !important;
+          -webkit-text-fill-color: transparent !important;
+          background-clip: text !important;
+          animation: shimmer 5s linear infinite;
         }
         .not-found-title:hover {
-          transform: scale(1.05);
+          transform: scale(1.05) rotate(-1deg);
           filter: drop-shadow(0 0 30px rgba(96, 165, 250, 0.4));
+          animation-play-state: paused;
         }
         .btn-hover {
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -75,10 +89,6 @@ export default function NotFound() {
           fontWeight: 900,
           lineHeight: 1,
           margin: '0 0 16px',
-          background: 'linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #c084fc 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
           letterSpacing: '-0.05em',
         }}>
           404
