@@ -12,8 +12,7 @@ import {
   User, 
   Coins,
   Sun,
-  Moon,
-  LogOut
+  Moon
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -96,14 +95,6 @@ export default function DashboardNavbar() {
               {user?.name?.split(' ')[0]}
             </span>
           </div>
-
-          <button 
-            onClick={logout}
-            className="p-2.5 rounded-xl bg-red-500/5 text-red-500 hover:bg-red-500/10 transition-all"
-            title="Logout"
-          >
-            <LogOut size={18} />
-          </button>
         </div>
       </div>
     </nav>
