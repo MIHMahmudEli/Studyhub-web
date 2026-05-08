@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { apiRequest } from '@/lib/api';
+import { apiRequest, setAccessToken } from '@/lib/api';
 
 const AuthContext = createContext();
 
@@ -17,10 +17,13 @@ export function AuthProvider({ children }) {
 
   const checkUser = async () => {
     try {
+      // The interceptor in lib/api.js will automatically try to /refresh 
+      // if /me fails with 401, so this should recover the session on refresh.
       const data = await apiRequest('/auth/me');
       setUser(data);
     } catch (err) {
       setUser(null);
+      setAccessToken(null);
     } finally {
       setLoading(false);
     }
@@ -32,6 +35,10 @@ export function AuthProvider({ children }) {
       body: { email, password },
     });
     
+    if (data.access_token) {
+      setAccessToken(data.access_token);
+    }
+
     const loggedUser = data.user || data;
     setUser(loggedUser); 
 
@@ -83,6 +90,7 @@ export function AuthProvider({ children }) {
       await apiRequest('/auth/logout', { method: 'POST' });
     } finally {
       setUser(null);
+      setAccessToken(null);
       router.push('/auth');
     }
   };
