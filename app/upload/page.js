@@ -50,7 +50,7 @@ export default function UploadPage() {
   const validateCourse = (value) => {
     if (!value.trim()) return '';
     const exists = coursesData.some(c => c.name.toLowerCase() === value.toLowerCase());
-    if (!exists && value.length > 3) {
+    if (!exists && value.length > 1) {
       return 'Please select a valid course from the suggestions';
     }
     return '';
