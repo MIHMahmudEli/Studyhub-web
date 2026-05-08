@@ -54,6 +54,9 @@ function Card({ feature }) {
 export default function Features() {
   return (
     <section id="features" className="px-6 pb-20 md:pb-[120px] relative overflow-hidden">
+      {/* Background starfield grid */}
+      <div className="absolute inset-0 -z-10 [background-image:radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:24px_24px] md:[background-size:32px_32px]" />
+      
       {/* Background Glow */}
       <div className="absolute top-[20%] right-[-10%] w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-indigo-600/5 blur-[80px] md:blur-[100px] rounded-full -z-10 animate-nebula" />
 

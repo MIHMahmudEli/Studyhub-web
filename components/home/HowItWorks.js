@@ -70,6 +70,9 @@ function StepCard({ step }) {
 export default function HowItWorks() {
   return (
     <section id="how" className="px-6 pb-20 md:pb-[120px] relative overflow-hidden">
+      {/* Background starfield grid */}
+      <div className="absolute inset-0 -z-10 [background-image:radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:24px_24px] md:[background-size:32px_32px]" />
+      
       {/* Background Glow */}
       <div className="absolute top-[30%] left-[-15%] md:left-[-10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-purple-600/5 blur-[80px] md:blur-[120px] rounded-full -z-10 animate-nebula [animation-delay:1s]" />
 

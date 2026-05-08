@@ -47,6 +47,9 @@ function SocialCard({ link }) {
 export default function Contact() {
   return (
     <section id="contact" className="px-6 pb-24 md:pb-[140px] relative overflow-hidden">
+      {/* Background starfield grid */}
+      <div className="absolute inset-0 -z-10 [background-image:radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:24px_24px] md:[background-size:32px_32px]" />
+      
       {/* Background Glow */}
       <div className="absolute bottom-[10%] left-[-15%] md:left-[-5%] w-[300px] md:w-[350px] h-[300px] md:h-[350px] bg-emerald-600/5 blur-[70px] md:blur-[80px] rounded-full -z-10 animate-nebula [animation-delay:4s]" />
 
