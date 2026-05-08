@@ -49,7 +49,7 @@ export default function UploadPage() {
 
   const validateCourse = (value) => {
     if (!value.trim()) return '';
-    const exists = coursesData.some(c => c.name.toLowerCase() === value.toLowerCase());
+    const exists = coursesData.some(c => c.courseTitle.toLowerCase() === value.toLowerCase());
     if (!exists && value.length > 1) {
       return 'Please select a valid course from the suggestions';
     }
@@ -79,7 +79,7 @@ export default function UploadPage() {
   const filteredCourses = useMemo(() => {
     if (courseSearch.length < 2) return [];
     return coursesData.filter(course => 
-      course.name.toLowerCase().includes(courseSearch.toLowerCase()) ||
+      course.courseTitle.toLowerCase().includes(courseSearch.toLowerCase()) ||
       course.code.toLowerCase().includes(courseSearch.toLowerCase())
     ).slice(0, 5); // Limit to top 5 results
   }, [courseSearch]);
@@ -121,8 +121,8 @@ export default function UploadPage() {
   };
 
   const selectCourse = (course) => {
-    setFormData({ ...formData, course: course.name });
-    setCourseSearch(course.name);
+    setFormData({ ...formData, course: course.courseTitle });
+    setCourseSearch(course.courseTitle);
     setErrors({ ...errors, course: '' });
     setShowSuggestions(false);
   };
@@ -137,7 +137,7 @@ export default function UploadPage() {
     }
 
     // 2. Strict Course Validation: Must be in the courses.json list
-    const isValidCourse = coursesData.some(c => c.name === formData.course);
+    const isValidCourse = coursesData.some(c => c.courseTitle === formData.course);
     if (!isValidCourse) {
       setStatus({ type: 'error', message: 'Please select a valid course from the suggestions.' });
       return;
@@ -270,8 +270,10 @@ export default function UploadPage() {
                             className="w-full px-6 py-4 text-left hover:bg-blue-500/5 flex items-center justify-between group transition-colors"
                           >
                             <div>
-                              <p className="text-sm font-bold text-[var(--foreground)] group-hover:text-blue-500 transition-colors">{course.name}</p>
-                              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{course.code}</p>
+                              <p className="text-sm font-bold text-[var(--foreground)] group-hover:text-blue-500 transition-colors">{course.courseTitle}</p>
+                              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                {course.code ? `${course.code} • ` : ''}{course.dept}
+                              </p>
                             </div>
                             <Plus size={16} className="text-slate-600 group-hover:text-blue-500" />
                           </button>
