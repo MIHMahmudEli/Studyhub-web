@@ -120,16 +120,12 @@ export default function UploadPage() {
       return;
     }
 
-    // 2. Title validation: At least 2 words, each at least 2 characters
+    // 3. Title validation (Generic Error)
     const titleWords = formData.title.trim().split(/\s+/);
-    if (titleWords.length < 2) {
-      setStatus({ type: 'error', message: 'Title must be at least 2 words long.' });
-      return;
-    }
-
-    const isEachWordValid = titleWords.every(word => word.length >= 2);
-    if (!isEachWordValid) {
-      setStatus({ type: 'error', message: 'Each word in the title must be at least 2 characters long.' });
+    const isValidTitle = titleWords.length >= 2 && titleWords.every(word => word.length >= 2);
+    
+    if (!isValidTitle) {
+      setStatus({ type: 'error', message: 'Please provide a valid title (at least 2 words, with 2+ characters each).' });
       return;
     }
 
