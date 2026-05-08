@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 
 const NAV_LINKS = [
@@ -172,9 +173,9 @@ export default function Navbar() {
       <nav className={`nav-root${scrolled ? ' scrolled' : ''}`}>
         <div className="nav-inner">
           {/* Logo */}
-          <a href="/" style={{ textDecoration: 'none' }}>
+          <Link href="/" style={{ textDecoration: 'none' }}>
             <StudyHubLogo size={32} textSize={16} />
-          </a>
+          </Link>
 
           {/* Desktop Nav */}
           <div className="nav-links-desktop">
@@ -188,7 +189,7 @@ export default function Navbar() {
                 {l.label}
               </a>
             ))}
-            <a href="/auth" className="nav-cta">Sign In</a>
+            <Link href="/auth" className="nav-cta">Sign In</Link>
           </div>
 
           {/* Hamburger (mobile only) */}
@@ -215,7 +216,7 @@ export default function Navbar() {
               {l.label}
             </a>
           ))}
-          <a href="/auth" className="nav-cta" onClick={() => setMobileOpen(false)}>Sign In</a>
+          <Link href="/auth" className="nav-cta" onClick={() => setMobileOpen(false)}>Sign In</Link>
         </div>
       </nav>
     </>
