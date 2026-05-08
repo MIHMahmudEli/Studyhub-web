@@ -33,6 +33,18 @@ export default function UploadPage() {
     course: '',
     description: ''
   });
+  const [errors, setErrors] = useState({
+    title: ''
+  });
+
+  const validateTitle = (value) => {
+    if (!value.trim()) return '';
+    const words = value.trim().split(/\s+/);
+    if (words.length < 2 || !words.every(word => word.length >= 2)) {
+      return 'Please provide a valid title (at least 2 words, 2+ characters each)';
+    }
+    return '';
+  };
 
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -125,7 +137,7 @@ export default function UploadPage() {
     const isValidTitle = titleWords.length >= 2 && titleWords.every(word => word.length >= 2);
     
     if (!isValidTitle) {
-      setStatus({ type: 'error', message: 'Please provide a valid title (at least 2 words, with 2+ characters each).' });
+      setStatus({ type: 'error', message: 'Please provide a valid title' });
       return;
     }
 
@@ -145,7 +157,7 @@ export default function UploadPage() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      setStatus({ type: 'success', message: 'Note uploaded successfully! +50 Points earned.' });
+      setStatus({ type: 'success', message: 'Note uploaded successfully! +5 Points earned.' });
       setFile(null);
       setFormData({ title: '', course: '', description: '' });
       setCourseSearch('');
@@ -187,10 +199,21 @@ export default function UploadPage() {
                       type="text" 
                       required
                       placeholder="e.g. Data Structures - Week 5 Lecture Notes"
-                      className="w-full bg-[var(--background)]/50 border border-[var(--card-border)] rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all"
+                      className={`w-full bg-[var(--background)]/50 border rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all ${
+                        errors.title ? 'border-red-500/50' : 'border-[var(--card-border)]'
+                      }`}
                       value={formData.title}
-                      onChange={(e) => setFormData({...formData, title: e.target.value})}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData({...formData, title: val});
+                        setErrors({...errors, title: validateTitle(val)});
+                      }}
                     />
+                    {errors.title && (
+                      <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1 animate-in fade-in slide-in-from-top-1">
+                        {errors.title}
+                      </p>
+                    )}
                   </div>
 
                   {/* Course with Suggestions */}
@@ -336,7 +359,7 @@ export default function UploadPage() {
                 <div>
                   <h4 className="font-black text-amber-500 text-sm uppercase tracking-wider mb-1">Earn Points</h4>
                   <p className="text-slate-500 text-[11px] font-bold leading-relaxed">
-                    You will receive <span className="text-[var(--foreground)]">+50 Points</span> for every verified note you contribute.
+                    You will receive <span className="text-[var(--foreground)]">+5 Points</span> for every verified note you contribute.
                   </p>
                 </div>
               </div>
