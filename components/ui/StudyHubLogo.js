@@ -1,3 +1,5 @@
+export default function StudyHubLogo({ size = 36, textSize = 18 }) {
+  return (
     <div className="flex items-center gap-2.5 no-underline group">
       {/* Icon — with pulsing aura */}
       <div className="relative">
@@ -11,12 +13,13 @@
           }}
           className="relative flex items-center justify-center shrink-0 shadow-[0_4px_14px_rgba(59,130,246,0.4)] bg-gradient-to-br from-blue-500 to-purple-600 z-10"
         >
-        <img
-          src="/favicon.svg"
-          alt="StudyHub icon"
-          style={{ width: '60%', height: '60%' }}
-          className="block"
-        />
+          <img
+            src="/favicon.svg"
+            alt="StudyHub icon"
+            style={{ width: '60%', height: '60%' }}
+            className="block"
+          />
+        </div>
       </div>
 
       {/* Wordmark */}
