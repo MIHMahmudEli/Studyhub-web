@@ -42,6 +42,9 @@ export default function Navbar() {
           : 'bg-transparent py-5'
       }`}
     >
+      {/* Navbar space glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[600px] h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent shadow-[0_0_20px_rgba(59,130,246,0.3)]" />
+      <div className="absolute top-0 left-1/4 w-[300px] h-[100px] bg-blue-600/5 blur-[60px] rounded-full -z-10 animate-nebula" />
       <div className="max-w-[1120px] mx-auto px-6 flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="transition-transform duration-300 hover:scale-105 active:scale-95">

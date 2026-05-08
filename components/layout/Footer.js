@@ -27,8 +27,12 @@ export default function Footer() {
   };
 
   return (
-    <footer className="border-t border-white/5 bg-[#030507] py-16 px-6">
-      <div className="max-w-[1120px] mx-auto">
+    <footer className="border-t border-white/5 bg-[#030507] py-16 px-6 relative overflow-hidden">
+      {/* Footer nebula glow */}
+      <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-purple-600/5 blur-[100px] rounded-full -z-10 animate-nebula" />
+      <div className="absolute top-[10%] left-[-5%] w-[300px] h-[300px] bg-blue-600/5 blur-[80px] rounded-full -z-10 animate-nebula [animation-delay:3s]" />
+
+      <div className="max-w-[1120px] mx-auto relative z-10">
         <div className="flex justify-between items-start gap-10 flex-wrap mb-14">
           <div className="max-w-[300px]">
             <a href="/" className="no-underline inline-block mb-3">
