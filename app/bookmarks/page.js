@@ -11,7 +11,12 @@ import {
   ArrowRight,
   Clock,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  Cpu,
+  Globe,
+  Database,
+  Code2,
+  Network
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -54,6 +59,16 @@ export default function BookmarkPage() {
         target.course_code?.toLowerCase().includes(q)
       );
     });
+  };
+
+  const getCourseIcon = (title) => {
+    const t = title.toLowerCase();
+    if (t.includes('network')) return Network;
+    if (t.includes('compiler') || t.includes('software')) return Code2;
+    if (t.includes('intelligence') || t.includes('machine')) return Cpu;
+    if (t.includes('web')) return Globe;
+    if (t.includes('data')) return Database;
+    return BookOpen;
   };
 
   if (authLoading || !user) return null;
@@ -114,7 +129,7 @@ export default function BookmarkPage() {
                             {note.matched_item?.course_code || 'STUDY'}
                           </span>
                           <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest truncate">
-                            {note.matched_item?.subject}
+                            {note.courseTitle || note.matched_item?.subject || 'GENERAL'}
                           </span>
                         </div>
                         <h3 className="text-[11px] font-black uppercase tracking-widest leading-relaxed line-clamp-2 pr-6 group-hover:text-blue-500 transition-colors">
@@ -143,24 +158,37 @@ export default function BookmarkPage() {
                   <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Resources</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filterBySearch(savedCourses).map((course, idx) => (
-                    <Link 
-                      key={course.bookmark_id} 
-                      href={`/resources/${course.courseTitle.replace(/\s+/g, '-').toLowerCase()}`}
-                      className="group relative bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[1.5rem] p-6 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1 shadow-sm"
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center text-slate-400 group-hover:bg-blue-500 group-hover:text-white transition-all">
-                          <GraduationCap size={16} />
+                  {filterBySearch(savedCourses).map((course, idx) => {
+                    const Icon = getCourseIcon(course.courseTitle);
+                    return (
+                      <Link 
+                        key={course.bookmark_id} 
+                        href={`/resources/${course.courseTitle.replace(/\s+/g, '-').toLowerCase()}`}
+                        className="group relative h-[220px] bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-8 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1 shadow-sm flex flex-col justify-between overflow-hidden"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                        
+                        <div className="relative z-10 flex items-center justify-between">
+                          <div className="w-12 h-12 rounded-2xl bg-white dark:bg-[var(--background)] border border-slate-200 dark:border-white/[0.05] flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-all duration-700">
+                            <Icon size={20} strokeWidth={1.5} />
+                          </div>
+                          <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-white/[0.05] flex items-center justify-center text-slate-300 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                            <ArrowRight size={14} />
+                          </div>
                         </div>
-                        <ArrowRight size={14} className="text-slate-300 group-hover:translate-x-1 transition-all" />
-                      </div>
-                      <h3 className="text-[11px] font-black uppercase tracking-widest leading-relaxed mb-2 pr-4">
-                        {course.courseTitle}
-                      </h3>
-                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Library Collection</p>
-                    </Link>
-                  ))}
+
+                        <div className="relative z-10 space-y-2">
+                          <h3 className="text-[12px] font-black uppercase tracking-widest leading-relaxed pr-4 group-hover:text-blue-500 transition-colors">
+                            {course.courseTitle}
+                          </h3>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1 h-1 rounded-full bg-blue-500" />
+                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Access Full Library</p>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </section>
             )}
@@ -200,7 +228,7 @@ export default function BookmarkPage() {
                         </div>
                       </div>
                       <button 
-                        onClick={() => router.push(`/resources/${resource.courseTitle?.replace(/\s+/g, '-').toLowerCase()}`)}
+                        onClick={() => router.push(`/resources/${(resource.courseTitle || resource.matched_item?.subject || '').replace(/\s+/g, '-').toLowerCase()}`)}
                         className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.05] text-slate-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm"
                       >
                         <ArrowRight size={14} />
