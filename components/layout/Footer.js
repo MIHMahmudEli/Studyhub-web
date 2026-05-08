@@ -44,6 +44,22 @@ const S = {
 };
 
 export default function Footer() {
+  const handleScroll = (e, href) => {
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      const id = href.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        const offset = 64;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = element.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
     <footer style={S.footer}>
       <div style={S.container}>
@@ -65,6 +81,7 @@ export default function Footer() {
                   href={l.href} 
                   style={S.footerLink}
                   className="hover:text-gray-400 hover:translate-x-2 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                  onClick={(e) => handleScroll(e, l.href)}
                 >
                   {l.label}
                 </a>

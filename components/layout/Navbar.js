@@ -18,8 +18,27 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', fn);
   }, []);
 
-  // Close mobile menu on link click
-  const handleLinkClick = () => setMobileOpen(false);
+  // Custom smooth scroll handler
+  const handleNavClick = (e, href) => {
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      const id = href.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        const offset = 64; // Navbar height
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = element.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+      setMobileOpen(false);
+    }
+  };
 
   return (
     <>
@@ -160,7 +179,14 @@ export default function Navbar() {
           {/* Desktop Nav */}
           <div className="nav-links-desktop">
             {NAV_LINKS.map(l => (
-              <a key={l.href} href={l.href} className="nav-link">{l.label}</a>
+              <a 
+                key={l.href} 
+                href={l.href} 
+                className="nav-link"
+                onClick={(e) => handleNavClick(e, l.href)}
+              >
+                {l.label}
+              </a>
             ))}
             <a href="/auth" className="nav-cta">Sign In</a>
           </div>
@@ -180,9 +206,16 @@ export default function Navbar() {
         {/* Mobile dropdown */}
         <div className={`nav-mobile${mobileOpen ? ' open' : ''}`}>
           {NAV_LINKS.map(l => (
-            <a key={l.href} href={l.href} className="nav-link" onClick={handleLinkClick}>{l.label}</a>
+            <a 
+              key={l.href} 
+              href={l.href} 
+              className="nav-link" 
+              onClick={(e) => handleNavClick(e, l.href)}
+            >
+              {l.label}
+            </a>
           ))}
-          <a href="/auth" className="nav-cta" onClick={handleLinkClick}>Sign In</a>
+          <a href="/auth" className="nav-cta" onClick={() => setMobileOpen(false)}>Sign In</a>
         </div>
       </nav>
     </>
