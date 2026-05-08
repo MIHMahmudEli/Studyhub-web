@@ -40,26 +40,24 @@ function StepCard({ step }) {
 
   return (
     <div
+      className="group hover:-translate-y-1.5 hover:bg-white/[0.04] hover:border-white/10 transition-all duration-300 cursor-default relative overflow-hidden"
       style={{
         background: 'rgba(255,255,255,0.025)',
         border: '1px solid rgba(255,255,255,0.06)',
         borderRadius: 20,
         padding: '36px 32px',
-        transition: 'transform 0.25s ease, background 0.25s ease',
-        cursor: 'default',
-        position: 'relative',
-        overflow: 'hidden',
       }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.background = 'rgba(255,255,255,0.025)'; }}
     >
       {/* Ghost number watermark */}
-      <div style={{
-        position: 'absolute', top: 20, right: 24,
-        fontSize: 72, fontWeight: 900, lineHeight: 1,
-        color: 'rgba(255,255,255,0.03)', userSelect: 'none',
-        letterSpacing: '-0.04em',
-      }}>
+      <div 
+        className="group-hover:scale-110 group-hover:text-white/[0.05] transition-all duration-500"
+        style={{
+          position: 'absolute', top: 20, right: 24,
+          fontSize: 72, fontWeight: 900, lineHeight: 1,
+          color: 'rgba(255,255,255,0.03)', userSelect: 'none',
+          letterSpacing: '-0.04em',
+        }}
+      >
         {step.number}
       </div>
 
@@ -68,13 +66,16 @@ function StepCard({ step }) {
         <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: step.accent }}>
           Step {step.number}
         </span>
-        <div style={{
-          width: 40, height: 40,
-          background: `${step.accent}18`,
-          border: `1px solid ${step.accent}30`,
-          borderRadius: 12,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
+        <div 
+          className="group-hover:rotate-12 transition-transform duration-300"
+          style={{
+            width: 40, height: 40,
+            background: `${step.accent}18`,
+            border: `1px solid ${step.accent}30`,
+            borderRadius: 12,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >
           <Icon size={18} color={step.accent} strokeWidth={1.5} />
         </div>
       </div>

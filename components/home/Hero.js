@@ -127,15 +127,19 @@ export default function Hero() {
         </p>
 
         <div className="fade-up delay-3" style={S.buttons}>
-          <a href="/auth#register" style={S.btnPrimary}
-            onMouseEnter={e => { e.currentTarget.style.background = '#1d4ed8'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#2563eb'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+          <a 
+            href="/auth#register" 
+            className="hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-[0_0_50px_rgba(37,99,235,0.5)] transition-all duration-300"
+            style={S.btnPrimary}
+          >
             Get Started Free
             <ArrowRight size={16} />
           </a>
-          <a href="#features" style={S.btnSecondary}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#f1f5f9'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#94a3b8'; }}>
+          <a 
+            href="#features" 
+            className="hover:border-white/20 hover:text-white hover:bg-white/5 transition-all duration-300"
+            style={S.btnSecondary}
+          >
             Explore Features
           </a>
         </div>

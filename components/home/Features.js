@@ -108,23 +108,15 @@ const cardDescStyle = {
 function Card({ feature }) {
   const { icon: Icon } = feature;
 
-  const handleEnter = (e) => {
-    e.currentTarget.style.transform = 'translateY(-4px)';
-    e.currentTarget.style.borderColor = `${feature.accent}30`;
-    e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
-  };
-  const handleLeave = (e) => {
-    e.currentTarget.style.transform = 'translateY(0)';
-    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
-    e.currentTarget.style.background = 'rgba(255,255,255,0.025)';
-  };
-
   return (
-    <div style={cardStyle(feature.accent)} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
-      <div style={iconWrapStyle(feature.accent)}>
+    <div 
+      style={cardStyle(feature.accent)}
+      className="group hover:-translate-y-1.5 hover:bg-white/[0.04] hover:border-white/10 transition-all duration-300 cursor-default"
+    >
+      <div style={iconWrapStyle(feature.accent)} className="group-hover:scale-110 transition-transform duration-300">
         <Icon size={22} color={feature.accent} strokeWidth={1.5} />
       </div>
-      <div style={cardTitleStyle}>{feature.title}</div>
+      <div style={cardTitleStyle} className="group-hover:text-white transition-colors duration-300">{feature.title}</div>
       <p style={cardDescStyle}>{feature.description}</p>
     </div>
   );

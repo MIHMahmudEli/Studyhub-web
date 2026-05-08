@@ -26,9 +26,11 @@ function SocialCard({ link }) {
       href={link.url}
       target="_blank"
       rel="noopener noreferrer"
+      className="group"
       style={{ textDecoration: 'none', display: 'block' }}
     >
       <div
+        className="group-hover:-translate-y-1 group-hover:bg-white/[0.04] transition-all duration-300"
         style={{
           background: 'rgba(255,255,255,0.025)',
           border: '1px solid rgba(255,255,255,0.06)',
@@ -37,31 +39,23 @@ function SocialCard({ link }) {
           display: 'flex',
           alignItems: 'flex-start',
           gap: 16,
-          transition: 'transform 0.25s ease, background 0.25s ease, border-color 0.25s ease',
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.transform = 'translateY(-4px)';
-          e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
-          e.currentTarget.style.borderColor = `${link.accent}30`;
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.background = 'rgba(255,255,255,0.025)';
-          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
         }}
       >
-        <div style={{
-          width: 44, height: 44, flexShrink: 0,
-          background: `${link.accent}18`,
-          border: `1px solid ${link.accent}30`,
-          borderRadius: 14,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
+        <div 
+          className="group-hover:scale-110 transition-transform duration-300"
+          style={{
+            width: 44, height: 44, flexShrink: 0,
+            background: `${link.accent}18`,
+            border: `1px solid ${link.accent}30`,
+            borderRadius: 14,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >
           <Icon size={20} color={link.accent} strokeWidth={1.5} />
         </div>
         <div>
           <div style={{ fontSize: 15, fontWeight: 700, color: '#f0f4ff', marginBottom: 4 }}>{link.name}</div>
-          <div style={{ fontSize: 13, color: '#64748b' }}>{link.description}</div>
+          <div style={{ fontSize: 13, color: '#64748b' }} className="group-hover:text-gray-400 transition-colors">{link.description}</div>
         </div>
       </div>
     </a>

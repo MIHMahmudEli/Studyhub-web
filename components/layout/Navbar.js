@@ -59,11 +59,12 @@ export default function Navbar() {
           font-size: 14px;
           text-decoration: none;
           border-radius: 8px;
-          transition: all 0.2s;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .nav-link:hover {
           color: #f1f5f9;
-          background: rgba(255,255,255,0.06);
+          background: rgba(255,255,255,0.08);
+          transform: translateY(-1px);
         }
         .nav-cta {
           margin-left: 12px;
@@ -74,10 +75,15 @@ export default function Navbar() {
           font-size: 14px;
           text-decoration: none;
           border-radius: 10px;
-          transition: background 0.2s;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           white-space: nowrap;
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
-        .nav-cta:hover { background: #1d4ed8; }
+        .nav-cta:hover { 
+          background: #1d4ed8; 
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
 
         /* Hamburger button — hidden on desktop */
         .nav-hamburger {

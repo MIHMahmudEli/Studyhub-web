@@ -60,9 +60,12 @@ export default function Footer() {
             <span style={S.navLabel}>Navigate</span>
             <div style={S.linkList}>
               {footerLinks.map(l => (
-                <a key={l.href} href={l.href} style={S.footerLink}
-                  onMouseEnter={e => e.target.style.color = '#94a3b8'}
-                  onMouseLeave={e => e.target.style.color = '#334155'}>
+                <a 
+                  key={l.href} 
+                  href={l.href} 
+                  style={S.footerLink}
+                  className="hover:text-gray-400 hover:translate-x-1 transition-all duration-300"
+                >
                   {l.label}
                 </a>
               ))}
