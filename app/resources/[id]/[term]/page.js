@@ -3,7 +3,6 @@
 import { useEffect, useMemo } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { 
-  ChevronLeft,
   Download,
   ExternalLink,
   FileText,
@@ -39,7 +38,7 @@ export default function TermResourcesPage() {
   if (authLoading || !courseInfo) return null;
 
   return (
-    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-20">
+    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-20 transition-colors duration-500">
       <DashboardNavbar />
 
       <div className="pt-32 px-8">
@@ -48,18 +47,18 @@ export default function TermResourcesPage() {
           <nav className="flex items-center gap-4 mb-10 animate-in fade-in slide-in-from-left-4 duration-700">
             <button 
               onClick={() => router.push('/resources')}
-              className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-blue-500 transition-colors"
+              className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-blue-500 transition-colors"
             >
               Library
             </button>
-            <div className="w-1 h-1 bg-slate-800 rounded-full" />
+            <div className="w-1 h-1 bg-slate-300 dark:bg-slate-800 rounded-full" />
             <button 
               onClick={() => router.push(`/resources/${slug}`)}
-              className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-blue-500 transition-colors"
+              className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-blue-500 transition-colors"
             >
               {courseInfo.course_code || 'Course'}
             </button>
-            <div className="w-1 h-1 bg-slate-800 rounded-full" />
+            <div className="w-1 h-1 bg-slate-300 dark:bg-slate-800 rounded-full" />
             <span className="text-[9px] font-black uppercase tracking-[0.3em] text-blue-500">
               {term === 'mid' ? 'Midterm' : 'Final'}
             </span>
@@ -75,7 +74,7 @@ export default function TermResourcesPage() {
                 <div className={`px-4 py-1 rounded-full border ${term === 'mid' ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' : 'bg-purple-500/10 border-purple-500/20 text-purple-500'} text-[8px] font-black uppercase tracking-[0.3em]`}>
                   {term === 'mid' ? 'Midterm Session' : 'Final Session'}
                 </div>
-                <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-[0.3em] text-slate-500">
+                <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-[0.3em] text-slate-400">
                   <HardDrive size={10} />
                   {filteredResources.length} Files
                 </div>
@@ -83,17 +82,17 @@ export default function TermResourcesPage() {
             </div>
           </div>
 
-          {/* Compact Luxury Resource List */}
+          {/* Theme-Aware Resource List */}
           <div className="space-y-3">
             {filteredResources.length > 0 ? (
               filteredResources.map((res, idx) => (
                 <div 
                   key={res.id} 
-                  className="group relative bg-white/[0.02] border border-white/[0.05] rounded-[1.5rem] p-6 hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 flex flex-col md:flex-row md:items-center justify-between gap-6 animate-in fade-in slide-in-from-bottom-6 fill-mode-both"
+                  className="group relative bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[1.5rem] p-6 hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm hover:shadow-xl hover:shadow-black/5 animate-in fade-in slide-in-from-bottom-6 fill-mode-both"
                   style={{ animationDelay: `${idx * 30}ms` }}
                 >
                   <div className="flex items-center gap-6">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/[0.05] to-transparent border border-white/[0.05] flex items-center justify-center text-blue-500 shadow-lg">
+                    <div className="w-12 h-12 rounded-xl bg-white dark:bg-gradient-to-br dark:from-white/[0.05] dark:to-transparent border border-slate-200 dark:border-white/[0.05] flex items-center justify-center text-blue-500 shadow-sm">
                       <FileText size={20} />
                     </div>
                     
@@ -101,11 +100,11 @@ export default function TermResourcesPage() {
                       <h4 className="text-xs font-black uppercase tracking-wider group-hover:text-blue-500 transition-colors leading-relaxed max-w-[500px]">
                         {res.title}
                       </h4>
-                      <div className="flex items-center gap-4 text-[8px] font-black uppercase tracking-widest text-slate-500">
+                      <div className="flex items-center gap-4 text-[8px] font-black uppercase tracking-widest text-slate-400">
                         <span>{res.file_type || 'PDF'}</span>
-                        <div className="w-1 h-1 bg-slate-800 rounded-full" />
+                        <div className="w-1 h-1 bg-slate-300 dark:bg-slate-800 rounded-full" />
                         <span>{res.downloads || 0} DL</span>
-                        <div className="w-1 h-1 bg-slate-800 rounded-full" />
+                        <div className="w-1 h-1 bg-slate-300 dark:bg-slate-800 rounded-full" />
                         <span>{res.created_at?.split(' ')[0] || 'RECENT'}</span>
                       </div>
                     </div>
@@ -116,15 +115,15 @@ export default function TermResourcesPage() {
                       <Download size={14} />
                       <span className="text-[9px] font-black uppercase tracking-widest">Download</span>
                     </button>
-                    <button className="p-2.5 rounded-xl bg-white/[0.05] text-slate-500 hover:bg-white/[0.1] transition-all">
+                    <button className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/[0.05] text-slate-500 hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-all">
                       <Eye size={16} />
                     </button>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center py-20 text-center bg-white/[0.01] border border-dashed border-white/[0.05] rounded-[2rem]">
-                <p className="text-slate-500 text-[8px] font-black uppercase tracking-[0.4em]">No archived materials found.</p>
+              <div className="flex flex-col items-center justify-center py-20 text-center bg-slate-50/50 dark:bg-white/[0.01] border border-dashed border-slate-200 dark:border-white/[0.05] rounded-[2rem]">
+                <p className="text-slate-400 text-[8px] font-black uppercase tracking-[0.4em]">No archived materials found.</p>
               </div>
             )}
           </div>
