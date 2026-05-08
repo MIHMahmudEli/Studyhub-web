@@ -34,14 +34,24 @@ export default function UploadPage() {
     description: ''
   });
   const [errors, setErrors] = useState({
-    title: ''
+    title: '',
+    course: ''
   });
 
   const validateTitle = (value) => {
     if (!value.trim()) return '';
     const words = value.trim().split(/\s+/);
     if (words.length < 2 || !words.every(word => word.length >= 2)) {
-      return 'Please provide a valid title (at least 2 words, 2+ characters each)';
+      return 'Please provide a valid title';
+    }
+    return '';
+  };
+
+  const validateCourse = (value) => {
+    if (!value.trim()) return '';
+    const exists = coursesData.some(c => c.name.toLowerCase() === value.toLowerCase());
+    if (!exists && value.length > 3) {
+      return 'Please select a valid course from the suggestions';
     }
     return '';
   };
@@ -113,6 +123,7 @@ export default function UploadPage() {
   const selectCourse = (course) => {
     setFormData({ ...formData, course: course.name });
     setCourseSearch(course.name);
+    setErrors({ ...errors, course: '' });
     setShowSuggestions(false);
   };
 
@@ -227,16 +238,26 @@ export default function UploadPage() {
                         type="text" 
                         required
                         placeholder="Type course name or code (e.g. Advanced Web...)"
-                        className="w-full bg-[var(--background)]/50 border border-[var(--card-border)] rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all"
+                        className={`w-full bg-[var(--background)]/50 border rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all ${
+                          errors.course ? 'border-red-500/50' : 'border-[var(--card-border)]'
+                        }`}
                         value={courseSearch}
                         onChange={(e) => {
-                          setCourseSearch(e.target.value);
+                          const val = e.target.value;
+                          setCourseSearch(val);
+                          setErrors({ ...errors, course: validateCourse(val) });
                           setShowSuggestions(true);
                           if (formData.course) setFormData({ ...formData, course: '' });
                         }}
                         onFocus={() => setShowSuggestions(true)}
                       />
                     </div>
+
+                    {errors.course && (
+                      <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1 animate-in fade-in slide-in-from-top-1">
+                        {errors.course}
+                      </p>
+                    )}
 
                     {/* Suggestions Dropdown */}
                     {showSuggestions && filteredCourses.length > 0 && (
