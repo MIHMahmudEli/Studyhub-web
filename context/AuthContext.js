@@ -32,11 +32,16 @@ export function AuthProvider({ children }) {
       body: { email, password },
     });
     
-    // The refresh token is in a cookie, access token is in the response (usually)
-    // However, the /auth/me call will use the cookie if configured.
-    // If your backend returns the user object, set it here.
-    setUser(data.user || data); 
-    router.push('/');
+    const loggedUser = data.user || data;
+    setUser(loggedUser); 
+
+    // Role-based redirection
+    if (loggedUser.role === 'student') {
+      router.push('/notes');
+    } else {
+      router.push('/');
+    }
+    
     return data;
   };
 
