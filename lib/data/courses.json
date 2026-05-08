@@ -1,98 +1,2722 @@
 [
-  {"code": "MAT1102", "name": "DIFFERENTIAL CALCULUS & CO-ORDINATE GEOMETRY"},
-  {"code": "PHY1101", "name": "PHYSICS 1"},
-  {"code": "PHY1102", "name": "PHYSICS 1 LAB"},
-  {"code": "ENG1101", "name": "ENGLISH READING SKILLS & PUBLIC SPEAKING"},
-  {"code": "CSC1102", "name": "INTRODUCTION TO PROGRAMMING"},
-  {"code": "CSC1103", "name": "INTRODUCTION TO PROGRAMMING LAB"},
-  {"code": "CSC1101", "name": "INTRODUCTION TO COMPUTER STUDIES"},
-  {"code": "CSC1204", "name": "DISCRETE MATHEMATICS"},
-  {"code": "MAT1205", "name": "INTEGRAL CALCULUS & ORDINARY DIFFERENTIAL EQUATIONS"},
-  {"code": "CSC1205", "name": "OBJECT ORIENTED PROGRAMMING 1"},
-  {"code": "PHY1203", "name": "PHYSICS 2"},
-  {"code": "PHY1204", "name": "PHYSICS 2 LAB"},
-  {"code": "ENG1202", "name": "ENGLISH WRITING SKILLS & COMMUNICATION"},
-  {"code": "COE2101", "name": "INTRODUCTION TO ELECTRICAL CIRCUITS"},
-  {"code": "COE2102", "name": "INTRODUCTION TO ELECTRICAL CIRCUITS LAB"},
-  {"code": "CHEM1101", "name": "CHEMISTRY"},
-  {"code": "MAT2101", "name": "COMPLEX VARIABLE, LAPLACE & Z-TRANSFORMATION"},
-  {"code": "CSC2108", "name": "INTRODUCTION TO DATABASE"},
-  {"code": "EEE2104", "name": "ELECTRONIC DEVICES LAB"},
-  {"code": "BBA1102", "name": "PRINCIPLES OF ACCOUNTING"},
-  {"code": "EEE2103", "name": "ELECTRONIC DEVICES"},
-  {"code": "CSC2106", "name": "DATA STRUCTURE"},
-  {"code": "CSC2107", "name": "DATA STRUCTURE LAB"},
-  {"code": "BAE2101", "name": "COMPUTER AIDED DESIGN & DRAFTING"},
-  {"code": "CSC2211", "name": "ALGORITHMS"},
-  {"code": "MAT2202", "name": "MATRICES, VECTORS, FOURIER ANALYSIS"},
-  {"code": "CSC2210", "name": "OBJECT ORIENTED PROGRAMMING 2"},
-  {"code": "CSC2209", "name": "OBJECT ORIENTED ANALYSIS AND DESIGN"},
-  {"code": "BAS2101", "name": "BANGLADESH STUDIES"},
-  {"code": "EEE3101", "name": "DIGITAL LOGIC AND CIRCUITS"},
-  {"code": "EEE3102", "name": "DIGITAL LOGIC AND CIRCUITS LAB"},
-  {"code": "MAT3103", "name": "COMPUTATIONAL STATISTICS AND PROBABILITY"},
-  {"code": "CSC3113", "name": "THEORY OF COMPUTATION"},
-  {"code": "ECO3150", "name": "PRINCIPLES OF ECONOMICS"},
-  {"code": "ENG2103", "name": "BUSINESS COMMUNICATION"},
-  {"code": "MAT3101", "name": "NUMERICAL METHODS FOR SCIENCE AND ENGINEERING"},
-  {"code": "COE3103", "name": "DATA COMMUNICATION"},
-  {"code": "COE3104", "name": "MICROPROCESSOR AND EMBEDDED SYSTEM"},
-  {"code": "CSC3112", "name": "SOFTWARE ENGINEERING"},
-  {"code": "CSC3217", "name": "ARTIFICIAL INTELLIGENCE AND EXPERT SYS."},
-  {"code": "COE3206", "name": "COMPUTER NETWORKS"},
-  {"code": "COE3205", "name": "COMPUTER ORGANIZATION AND ARCHITECTURE"},
-  {"code": "CSC3214", "name": "OPERATING SYSTEM"},
-  {"code": "CSC3215", "name": "WEB TECHNOLOGIES"},
-  {"code": "EEE2216", "name": "ENGINEERING ETHICS"},
-  {"code": "CSC3216", "name": "COMPILER DESIGN"},
-  {"code": "CSC4118", "name": "COMPUTER GRAPHICS"},
-  {"code": "MGT3202", "name": "ENGINEERING MANAGEMENT"},
-  {"code": "CSC4197", "name": "RESEARCH METHODOLOGY"},
-  {"code": "CSC4298", "name": "THESIS / PROJECT"},
-  {"code": "CSC4299", "name": "INTERNSHIP"},
-  {"code": "CSC4181", "name": "ADVANCE DATABASE MANAGEMENT SYSTEM"},
-  {"code": "BAE1201", "name": "BASIC MECHANICAL ENGG."},
-  {"code": "CSC4125", "name": "COMPUTER SCIENCE MATHEMATICS"},
-  {"code": "MIS3101", "name": "MANAGEMENT INFORMATION SYSTEM"},
-  {"code": "EEE2213", "name": "SIGNALS & LINEAR SYSTEM"},
-  {"code": "CSC4126", "name": "BASIC GRAPH THEORY"},
-  {"code": "COE4128", "name": "DIGITAL SYSTEM DESIGN"},
-  {"code": "COE4231", "name": "IMAGE PROCESSING"},
-  {"code": "COE4129", "name": "MULTIMEDIA SYSTEMS"},
-  {"code": "COE4230", "name": "SIMULATION & MODELING"},
-  {"code": "MIS4011", "name": "ENTERPRISE RESOURCE PLANNING"},
-  {"code": "CSC4285", "name": "DATA WAREHOUSE AND DATA MINING"},
-  {"code": "CSC4233", "name": "NATURAL LANGUAGE PROCESSING"},
-  {"code": "CSC4270", "name": "SOFTWARE DEVELOPMENT PROJECT MANAGEMENT"},
-  {"code": "CSC4182", "name": "HUMAN COMPUTER INTERACTION"},
-  {"code": "COE4126", "name": "ADVANCED COMPUTER NETWORKS"},
-  {"code": "CSC4160", "name": "SOFTWARE REQUIREMENT ENGINEERING"},
-  {"code": "COE4234", "name": "COMPUTER VISION AND PATTERN RECOGNITION"},
-  {"code": "CSC4128", "name": "LINEAR PROGRAMMING"},
-  {"code": "COE4232", "name": "NETWORK SECURITY"},
-  {"code": "CSC4271", "name": "SOFTWARE QUALITY AND TESTING"},
-  {"code": "COE4125", "name": "ADVANCED OPERATING SYSTEM"},
-  {"code": "EEE4233", "name": "DIGITAL DESIGN WITH SYSTEM [VERILOG,VHDL & FPGAS]"},
-  {"code": "COE4235", "name": "ROBOTICS ENGINEERING"},
-  {"code": "MIS4014", "name": "BUSINESS INTELLIGENCE AND DECISION SUPPORT"},
-  {"code": "EEE4209", "name": "TELECOMMUNICATIONS ENGINEERING"},
-  {"code": "CSC4162", "name": "PROGRAMMING IN PYTHON"},
-  {"code": "CSC4163", "name": "ADVANCED PROGRAMMING WITH JAVA"},
-  {"code": "CSC4164", "name": "ADVANCED PROGRAMMING WITH .NET"},
-  {"code": "CSC4161", "name": "ADVANCED PROGRAMMING IN WEB TECHNOLOGY"},
-  {"code": "CSC4127", "name": "ADVANCED ALGORITHM TECHNIQUES"},
-  {"code": "COE4127", "name": "NETWORK RESOURCE MANAGEMENT & ORGANIZATION"},
-  {"code": "CSC4180", "name": "INTRODUCTION TO DATA SCIENCE"},
-  {"code": "CSC4183", "name": "CYBER LAWS & INFORMATION SECURITY"},
-  {"code": "CSC4230", "name": "BIOINFORMATICS"},
-  {"code": "CSC4231", "name": "PARALLEL COMPUTING"},
-  {"code": "CSC4232", "name": "MACHINE LEARNING"},
-  {"code": "COE4233", "name": "WIRELESS SENSOR NETWORKS"},
-  {"code": "EEE4241", "name": "INDUSTRIAL ELECTRONICS, DRIVES & INSTRUMENTATION"},
-  {"code": "CSC4272", "name": "MOBILE APPLICATION DEVELOPMENT"},
-  {"code": "CSC4273", "name": "SOFTWARE ARCHITECTURE AND DESIGN PATTERNS"},
-  {"code": "MIS4007", "name": "DIGITAL MARKETING"},
-  {"code": "MIS4012", "name": "E-COMMERCE, E-GOVERNANCE & E-SERIES"},
-  {"code": "EEE3103", "name": "DIGITAL SIGNAL PROCESSING"},
-  {"code": "EEE4217", "name": "VLSI CIRCUIT DESIGN"}
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO BUSINESS",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "FINANCIAL ACCOUNTING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BANGLADESH STUDIES [BBA]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS MATHEMATICS-1",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGLISH READING",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO PROGRAMMING",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO PROGRAMMING LAB",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO COMPUTER STUDIES",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "PHYSICS 1",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "PHYSICS 1 LAB",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "DIFF CALCULUS AND COORDINATE GEOMETRY",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGLISH READING SKILLS & PUBLIC SPEAKING",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "CHEMISTRY",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO ENGINEERING STUDIES",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF ECONOMICS [FST]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF ECONOMICS [FE]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF ECONOMICS [ARCH]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "DESIGN THEORY I",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MATHEMATICS FOR ARCHITECTS",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "PHYSICS 1 FOR ARCHITECTS",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "ARCHITECTURAL GRAPHICS I",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ART AND ARCHITECTURE",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO ENGLISH LITERATURE",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BANGLA LANGUAGE & LITERATURE",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTER FUNDAMENTALS",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "FOUNDATIONS OF SOCIOLOGY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MATHEMATICS 1 (ECO)",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BASICS IN SOCIAL SCIENCE",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BASICS IN SOCIAL SCIENCE (ARCH)",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO MICROECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BANGLA LANGUAGE AND LITERATURE",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO DIGITAL TOOLS OF COMMUNICATION",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ARTS AND AESTHETICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "CONCEPTS OF COMMUNICATION",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BIOPHYSICAL CHEMISTRY",
+    "dept": "FACULTY OF HEALTH AND LIFE SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BIO-ORGANIC CHEMISTRY",
+    "dept": "FACULTY OF HEALTH AND LIFE SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "CELLS AND BIOMOLECULES",
+    "dept": "FACULTY OF HEALTH AND LIFE SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF ACCOUNTING [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MATHEMATICS FOR BUSINESS [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS LAW & CORPORATE SOCIAL RESPONSIBILITY [MBA]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTING & BUSINESS APPLICATIONS [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "GENDER AND FAMILY LAW [LL.M]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERNATIONAL ENVIRONMENTAL LAW [LL.M]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF CIVIL AND CRIMINAL LITIGATION [LL.M]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERNATIONAL LAW OF THE SEA [LL.M]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO EPIDEMIOLOGY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "REPRODUCTIVE AND SEXUAL HEALTH",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENVIRONMENTAL AND OCCUPATIONAL HEALTH AND SAFETY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMMUNICATION FOR DEVELOPMENT",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "STATISTICS FOR DEVELOPMENT [MDS]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "POVERTY STUDIES AND DEVELOPMENT POLICIES [MDS]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "GENDER AND DEVELOPMENT [MDS]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "RESEARCH METHODS IN ENGLISH STUDIES [MAE]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "TEACHING ENGLISH FOR ACADEMIC AND SPECIFIC PURPOSES [MAE]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ACCOUNTING FOR MANAGERS [EMBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "CORPORATE COMMUNICATION [EMBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "LEADERSHIP AND MANAGEMENT SKILLS [EMBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "PEPTIDES AND PROTEINS",
+    "dept": "FACULTY OF HEALTH AND LIFE SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MOLECULAR BIOLOGY 1",
+    "dept": "FACULTY OF HEALTH AND LIFE SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MICROBIOLOGY I",
+    "dept": "FACULTY OF HEALTH AND LIFE SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BIOCHEMISTRY LABORATORY WORK I",
+    "dept": "FACULTY OF HEALTH AND LIFE SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MATHEMATICS FOR BIOCHEMISTRY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "COGNITIVE AND SOCIAL PSYCHOLOGY [BMB]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO PUBLIC HEALTH & NUTRITION [BMB]",
+    "dept": "FACULTY OF HEALTH AND LIFE SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENZYME AND ENZYME KINETICS",
+    "dept": "FACULTY OF HEALTH AND LIFE SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "CARBOHYDRATE METABOLISM",
+    "dept": "FACULTY OF HEALTH AND LIFE SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MOLECULAR BIOLOGY II",
+    "dept": "FACULTY OF HEALTH AND LIFE SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "HUMAN NUTRITION",
+    "dept": "FACULTY OF HEALTH AND LIFE SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BIOCHEMISTRY LABORATORY WORK II",
+    "dept": "FACULTY OF HEALTH AND LIFE SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS COMMUNICATION (BMB)",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "REMEDIAL MATHEMATICS (N0N-CREDIT) (BBA)",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "REMEDIAL MATHEMATICS (N0N-CREDIT) (BMB)",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "REMEDIAL ENGLISH (NON-CREDIT)",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ADVANCE DATABASE MANAGEMENT SYSTEM",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "ADVANCED COMPUTER NETWORKS",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "ADVANCED PROGRAMMING IN WEB TECHNOLOGY",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "ADVANCED PROGRAMMING WITH .NET",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "ADVANCED PROGRAMMING WITH JAVA",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "ALGORITHMS",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "ARTIFICIAL INTELLIGENCE AND EXPERT SYSTEM",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO BIOSTATISTICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BASIC GRAPH THEORY",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "RESEARCH METHODOLOGY FOR PUBLIC HEALTH",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "APPLIED EPIDEMIOLOGY [MPH]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPILER DESIGN",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "CONCEPTS OF ONE HEALTH: HUMAN, ENVIRONMENT AND ANIMAL HEALTH",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BIOSTATISTICS 2 [MPH]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTER GRAPHICS",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTER NETWORKS",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "EPIDEMIOLOGY OF NON COMMUNICABLE DISEASES [MPH]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "HOSPITAL MANAGEMENT AND ADMINISTRATION [MPH]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTER VISION AND PATTERN RECOGNITION",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "DATA STRUCTURE",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "DATA STRUCTURE LAB",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "DISCRETE MATHEMATICS",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "HUMAN COMPUTER INTERACTION",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO DATA SCIENCE",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "FINANCIAL MANAGEMENT OF HEALTH SERVICES AND ORGANIZATION",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "HOSPITAL MANAGEMENT INFORMATION SYSTEM",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MANAGING HEALTH SERVICE ORGANIZATIONS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "GLOBAL HEALTH AND EMERGING DISEASES PATTERN",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "HEALTH PROMOTION AND COMMUNITY OUTREACH",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "HEALTH ECONOMICS [MPH]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO DATABASE",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "DISSERTATION / INTERNSHIP [MPH]",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "MACHINE LEARNING",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "MOBILE APPLICATION DEVELOPMEN",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS COMMUNICATION (FBA/FASS)",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "NATURAL LANGUAGE PROCESSING",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS COMMUNICATION [FST/FE]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "NETWORK SECURITY",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "OBJECT ORIENTED ANALYSIS AND DESIGN",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "OBJECT ORIENTED PROGRAMMING 1 (JAVA)",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "OBJECT ORIENTED PROGRAMMING 2",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "OPERATING SYSTEM",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "PROGRAMMING IN PYTHON",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "PROGRAMMING LANGUAGE 1 [EEE]",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGLISH WRITING SKILLS & COMMUNICATIONS [FST/FE]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "PROGRAMMING LANGUAGE 2 [EEE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "RESEARCH METHODOLOGY",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGLISH WRITING [FBA/FASS]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOFTWARE DEVELOPMENT PROJECT MANAGEMENT",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "MACRO ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOFTWARE ENGINEERING",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "MICRO ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "FUNDAMENTALS OF ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOFTWARE QUALITY AND TESTING",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF ECONOMICS (ARCHI)",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOFTWARE REQUIREMENT ENGINEERING",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "THEORY OF COMPUTATION",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "ROMANTIC POETRY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "CREATIVE WRITING",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "GRADUATE PRODUCTION: ANIMATION",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "SEMANTICS AND PRAGMATICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELT APPROACHES AND METHODS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGLISH FOR SPECIFIC PURPOSE",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "TECHNOLOGY IN LANGUAGE LEARNING",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "WEB TECHNOLOGIES",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "INDEPENDENT PROJECT",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "DATA PROCESSING",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "DATA COMMUNICATION [CNCS]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPLEX VARIABLE,LAPLACE & Z-TRANSFORMATION",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "CLASSROOM MANAGEMENT TECHNIQUES IN ELT",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTEGRAL CALCULUS & ORD. DIFF EQUATION",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "APPRECIATION OF POETRY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "NUMERICAL METHODS FOR SCIENCE AND ENGINEERING",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "MATRICES, VECTORS, FOURIER ANALYSIS",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTATIONAL STATISTICS AND PROBABILITY",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "PHILOSOPHY AND ETHICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "APPRECIATION OF PROSE",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MORPHOLOGY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "PHYSICS 2",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOCIAL SCIENCE RESEARCH METHODOLOGY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MODERN PHYSICS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "PHYSICS 2 LAB",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "PROFESSIONAL DEVELOPMENT",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "UBIQUITOUS COMPUTING [MScCS]",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "HUMAN COMPUTER INTERACTION [MScCS]",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "AI PROGRAMMING AND TOOLS [MScCS]",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "WRITING FOR ARTS AND SOCIAL SCIENCES",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MACHINE LEARNING & NEURAL NETWORKS [MScCS]",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "TEACHING GRAMMAR AND VOCABULARY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "HISTORY OF EMERGENCE OF BANGLADESH",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOFTWARE DOCUMENTATION AND TOOLS",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOFTWARE ENGINEERING PROCESS & CONFIGURATION MANAGEMENT",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "INFORMATION SYSTEM AUDITING [MScCS]",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "CLASSICAL LITERATURE",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO LINGUISTICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BLOCKCHAIN AND CRYPTOGRAPHY [MScCS]",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "DATABASE TECHNOLOGY, MANAGEMENT, AND SECURITY",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "STATISTICS FOR SOCIAL SCIENCE",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INFORMATION SECURITY MANAGEMENT [MScCS]",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTER ETHICS AND GOVERNANCE [MScCS]",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTER SCIENCE APPLICATIONS AND ADVANCEMENTS [MScCS]",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "PROFESSIONAL ENGLISH",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "DATA WAREHOUSING AND DATA MINING [CS]",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOCIOLINGUISTICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "COGNITIVE AND SOCIAL PSYCHOLOGY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "APPRECIATION OF DRAMA",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "FIRST LANGUAGE DEVELOPMENT",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "LITERARY THEORY AND CRITICISM",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "SHAKESPEARE",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELEMENTARY ACCOUNTING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "CONTEMPORARY SOUTH ASIAN LITERATURE IN ENGLISH",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOUTH ASIAN HISTORY AND DEVELOPMENT",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "NATURAL SCIENCE",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "HISTORY OF ENGLISH LANGUAGE",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "TEACHING PRACTICUM",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "HISTORY OF JOURNALISM AND MASS COMMUNICATION IN BANGLADESH",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "HISTORY OF ANIMATION",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "VIDEO EDITING",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "PUBLIC RELATIONS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO MASS COMMUNICATION",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ADVERTISING AS SOCIAL COMMUNICATION",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INVESTIGATIVE JOURNALISM",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "REPORTING AND EDITING [PRINT MEDIA]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "DIGITAL PHOTOGRAPHY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "3-D CHARACTER ANIMATION",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "SPECIAL AND VISUAL EFFECTS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ASIAN MEDIA SYSTEM",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO ANIMATION",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERNSHIP [BAMMC]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ECOCRITICISM AND ENVIRONMENTAL LITERATURE [MAE]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "LANGUAGE CURRICULUM DESIGN [MAE]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "DESIGN AND PRINCIPLES OF LANGUAGE ASSESSMENT [MAE]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "DISCOURSE ANALYSIS AND THE DIGITAL WORLD [MAE]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "POSTMODERN LITERATURE [MAE]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "PROJECT ANALYSIS AND EVALUATION",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "STATISTICS FOR ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERMEDIATE MICROECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "POPULATION AND ECONOMIC GROWTH",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "HEALTH ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MONETARY ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "LABOR ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MATHEMATICAL ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MATHEMATICS 2 (ECO)",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "APPLIED ECONOMETRICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "DEVELOPMENT ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERMEDIATE MACROECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MACROECONOMICS OF DEVELOPING COUNTRIES",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ECONOMICS OF MONEY, BANKING AND FINANCE",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "AGRICULTURAL ECONOMICS (ECO)",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPARATIVE ECONOMIC ANALYSIS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "RESEARCH METHODOLOGY [ECO]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ECONOMETRICS (ECO)",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BIG DATA AND BUSINESS DECISION",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "PUBLIC ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERNATIONAL TRADE",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ECONOMICS OF POVERTY, INEQUALITY AND GENDER",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO MACROECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BANGLADESH ECONOMY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO PROGRAMMING [ECO]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "HISTORY OF ECONOMIC THOUGHT",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENERGY ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENVIRONMENTAL ECONOMICS AND SUSTAINABILITY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "GAME THEORY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "OFFICE MANAGEMENT TECHNOLOGY",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGINEERING MANAGEMENT",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF ACCOUNTING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF ACCOUNTING [IPE]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS MATHEMATICS-2",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ADVANCED BUSINESS STATISTICS",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS STATISTICS",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENTREPRENEURSHIP DEVELOPMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "INNOVATION AND ENTREPRENEURSHIP DEVELOPMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "GLOBAL LANGUAGES",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "POLITICS, PHILOSOPHY AND PUBLIC AFFAIRS",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF FINANCE",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "FINANCIAL MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "FOUNDATION COURSE",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "PROFESSIONAL DEVELOPMENT COURSE",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "CORPORATE GOVERNANCE AND SOCIAL RESPONSIBILITY",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERNATIONAL BUSINESS",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "HUMAN RESOURCE MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ORGANIZATIONAL BEHAVIOUR",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "LEGAL ENVIRONMENT IN BUSINESS",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS LAW",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "MANAGEMENT INFORMATION SYSTEMS",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO INFORMATION TECHNOLOGY",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MANAGERIAL ACCOUNTING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES AND PRACTICES OF TAXATION",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MARKETING MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "OPERATIONS AND SUPPLY CHAIN MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS RESEARCH",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "STRATEGIC MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "PROJECT MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "TOTAL QUALITY MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF MARKETING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BASICS IN NATURAL SCIENCE",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "ETHICS, SUSTAINABILITY, AND COMMUNICATION FOR DEVELOPMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "TOURISM & HOSPITALITY LAW",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "TRAVEL AGENCY & TOUR OPERATION MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO TOURISM & HOSPITALITY INDUSTRY",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "COST ACCOUNTING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ACCOUNTING INFORMATION SYSTEM",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERMEDIATE ACCOUNTING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "STRATEGIC MANAGEMENT ACCOUNTING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ADVANCE FINANCIAL ACCOUNTING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "AUDITING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ADVANCED COST ACCOUNTING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "FINANCIAL AND CORPORATE REPORTING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "FINANCIAL STATEMENT ANALYSIS",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPREHENSIVE FINANCIAL CASE ANALYSIS",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "FINANCIAL INSTITUTIONS AND MARKETS",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "CORPORATE FINANCE",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ISLAMIC FINANCE AND BANKING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "GLOBAL FINANCE",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "INVESTMENT ANALYSIS AND PORTFOLIO MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BANK FUND MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "TRAINING AND DEVELOPMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ORGANIZATIONAL THEORY & DEVELOPMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "OCCUPATIONAL HEALTH AND SAFETY MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "PERFORMANCE APPRAISAL MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "HR IN GLOBAL BUSINESS ENVIRONMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "LABOR LAW OF BANGLADESH",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "HUMAN RESOURCE INFORMATION SYSTEM (HRIS)",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "STRATEGIC HUMAN RESOURCE MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "SELECTION AND STAFFING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "DIGITAL MARKETING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS INTELLIGENCE AND DECISION SUPPORT SYSTEMS",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "DATA AND WEB ANALYTICS",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ANALYTICS FOR TALENT MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "DATA WAREHOUSE AND DATA MINING [MIS]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENTERPRISE RESOURCE PLANNING",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "ARTIFICIAL INTELLIGENCE IN BUSINESS [BBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "NETWORK RESOURCE MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "GLOBAL BUSINESS STRATEGY",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MARKETING RESEARCH [BBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MARKETING STRATEGY",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "SERVICE MARKETING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BRAND AND PRODUCT MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "CONSUMER BEHAVIOR",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOCIAL MEDIA AND DIGITAL MARKETING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "AGRO-BASED PRODUCT MARKETING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERNATIONAL MARKETING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "DISTRIBUTION AND CHANNEL MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTEGRATED MARKETING COMMUNICATION",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRODUCT INNOVATION AND MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "SALES MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MANAGERIAL FORECASTING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "LOGISTICS MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "SUPPLY CHAIN ANALYTICS",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRODUCT STRATEGY MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOURCING AND NEGOTIATION",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "PURCHASING AND PROCUREMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "INVENTORY MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "SERVICE OPERATIONS MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ADVANCED SUPPLY CHAIN MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MICROECONOMIC THEORY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ACCOUNTING FOR MANAGERS [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS COMMUNICATION [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS STATISTICS & DECISION ANALYSIS [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENTREPRENEURSHIP DEVELOPMENT [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ECONOMICS FOR MANAGERS [MBA]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "FINANCIAL MANAGEMENT [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "HUMAN RESOURCE MANAGEMENT [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MANAGING OPERATIONS & QUALITY [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MARKETING MANAGEMENT [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "RESEARCH METHODOLOGY [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "STRATEGIC MANAGEMENT [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "CORPORATE TAX MANAGEMENT [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "AUDITING AND ASSURANCE [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "FINANCIAL REPORTING [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "CORPORATE FINANCE [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "FINANCIAL MARKETS AND INSTITUTIONS [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPENSATION MANAGEMENT [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "LABOR LAW OF BANGLADESH [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MATERIALS AND INVENTORY MANAGEMENT [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MANAGEMENT OF SERVICE OPERATIONS [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "SERVICE MARKETING [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUYER BEHAVIOUR [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "STRATEGIC MARKETING [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "STRATEGIC BRAND AND MANAGEMENT [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "DISTRIBUTION MANAGEMENT & RETAIL MARKETING [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MANAGEMENT INFORMATION SYSTEM [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "DATABASE MANAGEMENT SYSTEM [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERNATIONAL TOURISM AND TOURISTS [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "TOURIST CONSUMER BEHAVIOR & MARKETING [MBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS LAW & ETHICS [EMBA]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "ANALYTICAL TECHNIQUES FOR DECISION MAKING [EMBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ECONOMIC ANALYSIS FOR MANAGERS [EMBA]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "LOGISTICS & OPERATIONS MANAGEMENT [EMBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "CORPORATE FINANCIAL STRATEGY [EMBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "STRATEGIC HUMAN RESOURCE MANAGEMENT [EMBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "CORPORATE ENTREPRENEURSHIP [EMBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MARKETING STRATEGY & POLICY [EMBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "MIS & DECISION MAKING TECHNIQUE [EMBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUSINESS PROJECT [EMBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "GLOBAL BUSINESS STRATEGY [EMBA]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "ANALOG ELECTRONICS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ANALOG ELECTRONICS 2",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "BASIC MECHANICAL ENGINEERING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "DATA COMMUNICATION",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "DIGITAL DESIGN WITH SYSTEM [ VERILOG,VHDL & FPGAS ]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "DIGITAL LOGIC AND CIRCUITS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "DIGITAL LOGIC DESIGN",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "DIGITAL ELECTRONICS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "DIGITAL SIGNAL PROCESSING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRICAL CIRCUITS -1 (DC)",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRICAL CIRCUITS 2 (AC)",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRICAL MACHINES 1",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRICAL MACHINES 2",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRICAL POWER TRANSMISSION & DIST.",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRICAL PROPERTIES OF MATERIALS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTROMAGNETICS FIELDS AND WAVES",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRONIC DEVICES",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGINEERING ETHICS & ENVIRONMENTAL PROTECTION",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGINEERING ETHICS [FST]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "INDUSTRIAL ELECTRONICS AND DRIVES",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTELLIGENT ROBOTICS AND AUTOMATION",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO ELECTRICAL CIRCUITS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MEASUREMENT AND INSTRUMENTATION",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MICROPROCESSOR AND EMBEDDED SYSTEMS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MODERN CONTROL SYSTEMS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "NUCLEAR POWER ENGINEERING [EEE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "POWER STATIONS AND SUBSTATIONS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "POWER SYSTEM PROTECTION",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "POWER SYSTEMS ANALYSIS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF COMMUNICATIONS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "RENEWABLE ENERGY TECHNOLOGY",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "SIGNAL & LINEAR SYSTEM",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "TELECOMMUNICATIONS ENGINEERING [FE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "TELECOMMUNICATIONS ENGINEERING [EEE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "VLSI CIRCUIT DESIGN",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "NANOTECHNOLOGY FOR ENGINEERS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "BIOMEDICAL INSTRUMENTATION MEASUREMENT AND DESIGN",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "CELLULAR MOBILE COMMUNICATION",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTER SYSTEM ARCHITECTURE",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MICROWAVE ENGINEERING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MIXED-SIGNAL ANALOG CIRCUITS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "OPTOELECTRONIC DEVICES",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "DIGITAL ASIC DESIGN",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "DIGITAL LOGIC & ELECTRONICS",
+    "dept": "FACULTY OF SCIENCE & TECHNOLOGY"
+  },
+  {
+    "code": "",
+    "courseTitle": "FLUID MECHANICS AND MACHINERY",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MARKETING MANAGEMENT [IPE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "VALUE CHAIN MANAGEMENT",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGINEERING MANAGEMENT [IPE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTER INTEGRATED MANUFACTURING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "OPERATIONS RESEARCH [IPE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRODUCT DESIGN AND DEVELOPMENT",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "OPERATIONS MANAGEMENT [IPE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "LOGISTICS AND DISTRIBUTION MANAGEMENT",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGINEERING ECONOMY [IPE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MACHINE TOOLS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "STATISTICAL DECISION MAKING FOR ENGINEERS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MECHANICS OF SOLIDS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGINEERING MECHANICS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MEASUREMENT AND QUALITY CONTROL",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ADVANCE MATERIAL AND PROCESS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "HUMAN FACTORS ENGINEERING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "DESIGN AND SIMULATION IN IE",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "QUALITY MANAGEMENT",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MANUFACTURING AND PRODUCTION PROCESS I",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "INDUSTRIAL, ERGONOMICS AND PRODUCTION SAFETY",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ANALOG ELECTRONICS LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ANALOG ELECTRONICS 2 LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTER AIDED DESIGN & DRAFTING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "DIGITAL ELECTRONICS LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "DIGITAL LOGIC AND CIRCUITS LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "DIGITAL LOGIC DESIGN LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRICAL CIRCUITS -1 LAB (DC)",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRICAL CIRCUITS-2 (AC) LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRICAL MACHINES 1 LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRICAL MACHINES 2 LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRICAL SERVICES DESIGN LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRONIC DEVICES LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGINEERING SHOP",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "INDUSTRIAL ELECTRONICS AND DRIVES LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTRODUCTION TO ELECTRICAL CIRCUITS LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MODERN CONTROL SYSTEMS LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "TELECOMMUNICATIONS ENGINEERING LAB [EEE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "FLUID MECHANICS AND MACHINERY LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MACHINE TOOLS LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MECHANICS OF SOLIDS LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MACHINE JOB SHOP- I (DRILLING, WELDING, MILLING AND TURNING)",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MACHINE JOB SHOP- II (SHEET METAL FORMING AND CASTING)",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGINEERING MECHANICS LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENGINEERING DRAWING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "DESIGN AND SIMULATION IN IE LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MANUFACTURING AND PRODUCTION PROCESS I LAB",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTER AIDED DRAWING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MODERN TELECOMMUNICATIONS PRINCIPLES",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "TELECOM LEGAL, REGULATORY AND SPECTRUM MANAGEMENT ISSUES",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "OPTIMIZATION OF POWER SYSTEM OPERATION",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "LASER THEORY [MEEE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ELECTRICAL DRIVE SYSTEM [MEEE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "QUANTUM PHENOMENA IN NANOSTRUCTURES [MEEE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ARCHITECTURAL GRAPHICS II",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ARCHITECTURAL GRAPHICS III",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMPUTER GRAPHICS (ARCH)",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "GRAPHIC ART",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "PHOTOGRAPHY",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "SCULPTURE",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "WORKING DRAWING I : CONST. DRAWING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "WORKING DRAWING II: PRODUCTION DRAWING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "SEMINAR",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "COST ESTIMATION",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "LANDSCAPE DESIGN STUDIO",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERIOR DESIGN STUDIO",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "PROFESSIONAL TRAINING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "STRUCTURE I: BASIC MECHANICS OF SOLIDS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "STRUCTURE - II : Reinforced Concrete Design",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "STRUCTURE III : STEEL AND TIMBER STRUCTURES",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "STRUCTURE IV: LONG SPAN STRUCTURES",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUILDING SERVICES 1:Plumbing and fire fighting system",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUILDING SERVICES II: MECHANICAL EQUIPMENT FOR BUILDINGS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUILDING SERVICES - III : ELECTRICAL INSTALLATIONS IN BUILDINGS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "SURVEY TECHNIQUES AND ANALYTICAL METHODS TRANSFORMS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "LOGIC AND PHILOSOPHY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "DESIGN THEORY II",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "BUILDING AND FINISH MATERIALS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "CONSTRUCTION METHODS AND DETAILS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENVIRONMENT AND DESIGN I:CLIMATE AND DESIGN",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENVIRONMENT AND DESIGN - II : DESIGN IN THE TROPICS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ENVIRONMENT AND DESIGN III: LANDSCAPE DESIGN",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOCIETY AND ARCHITECTURE OF BENGAL",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ART AND ARCHITECTURE 2",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ART AND ARCHITECTURE III",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ART AND ARCHITECTURE - IV",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ART AND ARCHITECTURE - V",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ART AND ARCHITECTURE VI; MODERN ART AND ARCHITECTURE",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "CONTEMPRORAY ARCHITECTURAL THEORY",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "BASIC PLANNING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "URBAN DESIGN I",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "URBAN DESIGN II",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "HOUSING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "VISUAL ENVIRONMENT",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ARCHITECTURAL ACOUSTICS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "MUSIC APPRECIATION",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ARCHITECTURAL SPECIFICATIONS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ART APPRECIATION",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERIOR DESIGN",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "PROFESSIONAL PRACTICE AND ETHICS",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "HEALTH FACILITIES PLANNING AND DESIGN",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "ARCHITECTURAL CONSERVATION",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "RURAL PLANNING",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "COMMUNICATIONS FOR ARCHITECTS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF MANAGEMENT",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "PRINCIPLES OF ACCOUNTING [ARCH]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "BANGLADESH STUDIES [ARCHI]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BANGLADESH STUDIES [FST]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BANGLADESH STUDIES [FASS]",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BANGLADESH STUDIES",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "BEHAVIORAL ECONOMICS",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  },
+  {
+    "code": "",
+    "courseTitle": "HUMAN RESOURCE PLANNING & FORECASTING",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "PHARMACEUTICAL MICROBIOLOGY-II LAB",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "THESIS [BSCS]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "THESIS [MSCS]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "THESIS CONTINUED [MSCS]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOFTWARE PROJECT I",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "SOFTWARE PROJECT II",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERNSHIP [BSCS]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "WEB TECHNOLOGIES [MIS]",
+    "dept": "FACULTY OF BUSINESS ADMINISTRATION"
+  },
+  {
+    "code": "",
+    "courseTitle": "CAPSTONE PROJECT",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "CAPSTONE PROJECT [IPE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERNSHIP/ SEMINAR/ WORKSHOP [EEE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERNSHIP/ SEMINAR/ WORKSHOP [COE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "INTERNSHIP [IPE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "INDUSTRIAL ELECTRONICS [COE]",
+    "dept": "FACULTY OF ENGINEERING"
+  },
+  {
+    "code": "",
+    "courseTitle": "PHONETICS & PHONOLOGY",
+    "dept": "FACULTY OF ARTS AND SOCIAL SCIENCES"
+  }
 ]
