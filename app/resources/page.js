@@ -32,17 +32,17 @@ export default function ResourcesPage() {
 
       <div className="pt-40 px-6">
         <div className="max-w-[1200px] mx-auto">
-          {/* Classic Minimalist Grid with Icons */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          {/* Classic Minimalist Grid with Taller Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {courseList.map((res) => (
               <div 
                 key={res.id} 
-                className="group bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-6 hover:border-blue-500/40 hover:bg-blue-500/[0.02] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-xl hover:shadow-blue-500/5 flex flex-col items-center justify-center text-center h-40"
+                className="group bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-8 hover:border-blue-500/40 hover:bg-blue-500/[0.02] transition-all duration-500 cursor-pointer shadow-sm hover:shadow-xl hover:shadow-blue-500/5 flex flex-col items-center justify-center text-center h-56"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/[0.05] flex items-center justify-center text-blue-500 mb-4 group-hover:scale-110 transition-transform duration-500">
-                  <FileText size={24} />
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/[0.05] flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-blue-500/5">
+                  <FileText size={28} />
                 </div>
-                <h4 className="text-[10px] font-black tracking-[0.15em] uppercase leading-relaxed group-hover:text-blue-500 transition-colors">
+                <h4 className="text-[11px] font-black tracking-[0.18em] uppercase leading-relaxed group-hover:text-blue-500 transition-colors max-w-[180px]">
                   {res.courseTitle}
                 </h4>
               </div>
