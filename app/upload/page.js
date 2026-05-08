@@ -26,6 +26,26 @@ const courseList = [{
     faculty: 'fst',
     type: 'PDF',
     size: '1.2 MB',
+    resources: [
+      {
+        id: 1,
+        courseTitle: 'Computer Graphics - Course Outline',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.2 MB',
+        downloads: 124
+      },
+      {
+        id: 2,
+        courseTitle: 'Introduction to C Programming - Lecture Notes',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.8 MB',
+        downloads: 250
+      }
+    ],
     downloads: 124},
     
     {id: 2,
@@ -34,6 +54,26 @@ const courseList = [{
     faculty: 'fst',
     type: 'PDF',
     size: '1.8 MB',
+        resources: [
+      {
+        id: 1,
+        courseTitle: 'Computer Graphics - Course Outline',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.2 MB',
+        downloads: 124
+      },
+      {
+        id: 2,
+        courseTitle: 'Introduction to C Programming - Lecture Notes',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.8 MB',
+        downloads: 250
+      }
+    ],
     downloads: 250
 },
 {
@@ -43,6 +83,26 @@ const courseList = [{
   faculty: 'fst',
   type: 'PDF',
   size: '1.5 MB',
+      resources: [
+      {
+        id: 1,
+        courseTitle: 'Computer Graphics - Course Outline',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.2 MB',
+        downloads: 124
+      },
+      {
+        id: 2,
+        courseTitle: 'Introduction to C Programming - Lecture Notes',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.8 MB',
+        downloads: 250
+      }
+    ],
   downloads: 180
 },
 
@@ -53,6 +113,26 @@ dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
 faculty: 'fst',
 type: 'PDF',
 size: '2.0 MB',
+    resources: [
+      {
+        id: 1,
+        courseTitle: 'Computer Graphics - Course Outline',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.2 MB',
+        downloads: 124
+      },
+      {
+        id: 2,
+        courseTitle: 'Introduction to C Programming - Lecture Notes',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.8 MB',
+        downloads: 250
+      }
+    ],
 downloads: 150
 }
 
