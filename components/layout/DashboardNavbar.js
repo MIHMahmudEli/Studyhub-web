@@ -91,7 +91,7 @@ export default function DashboardNavbar() {
               <span className="text-xs font-black tracking-tighter">{user?.points || 0}</span>
             </div>
             <div className="w-px h-3 bg-[var(--card-border)]" />
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest truncate max-w-[100px]">
+            <span className="text-[12px] font-black text-[var(--foreground)] uppercase tracking-tighter truncate max-w-[120px]">
               {user?.name?.split(' ')[0]}
             </span>
           </div>
