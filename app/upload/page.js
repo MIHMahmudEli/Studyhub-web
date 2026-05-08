@@ -2,27 +2,153 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
+import FileUploader from '@/components/upload/FileUploader';
+import RewardCard from '@/components/upload/RewardCard';
 import { 
-  UploadCloud, 
-  File, 
-  X, 
-  CheckCircle2, 
-  AlertCircle, 
   Plus,
   BookOpen,
   GraduationCap,
   MessageSquare,
-  Coins,
-  Search
+  Search,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import coursesData from '@/lib/data/courses.json';
 
+//this is replace by database in feature
+const courseList = [{
+    id: 1,
+    courseTitle: 'Computer Graphics - Course Outline',
+    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+    faculty: 'fst',
+    type: 'PDF',
+    size: '1.2 MB',
+    resources: [
+      {
+        id: 1,
+        courseTitle: 'Computer Graphics - Course Outline',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.2 MB',
+        term: "mid",
+        downloads: 124
+      },
+      {
+        id: 2,
+        courseTitle: 'Introduction to C Programming - Lecture Notes',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        term: "final",
+        size: '1.8 MB',
+        downloads: 250
+      }
+    ],
+    downloads: 124},
+    
+    {id: 2,
+    courseTitle: 'Introduction to C Programming - Lecture Notes',
+    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+    faculty: 'fst',
+    type: 'PDF',
+    size: '1.8 MB',
+        resources: [
+      {
+        id: 1,
+        courseTitle: 'Computer Graphics - Course Outline',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.2 MB',
+        term: "mid",
+        downloads: 124
+      },
+      {
+        id: 2,
+        courseTitle: 'Introduction to C Programming - Lecture Notes',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.8 MB',
+        term: "final",
+        downloads: 250
+      }
+    ],
+    downloads: 250
+},
+{
+  id: 3,
+  courseTitle: 'Differential Calculus and Coordinate Geometry - Course Outline',
+  dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+  faculty: 'fst',
+  type: 'PDF',
+  size: '1.5 MB',
+      resources: [
+      {
+        id: 1,
+        courseTitle: 'Computer Graphics - Course Outline',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.2 MB',
+        term: "mid",
+        downloads: 124
+      },
+      {
+        id: 2,
+        courseTitle: 'Introduction to C Programming - Lecture Notes',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.8 MB',
+        term: "final",
+        downloads: 250
+      }
+    ],
+  downloads: 180
+},
+
+  {
+id: 4,
+courseTitle: 'Introduction to Artificial Intelligence - Course Outline',
+dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+faculty: 'fst',
+type: 'PDF',
+size: '2.0 MB',
+    resources: [
+      {
+        id: 1,
+        courseTitle: 'Computer Graphics - Course Outline',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.2 MB',
+        term: "mid",
+        downloads: 124
+      },
+      {
+        id: 2,
+        courseTitle: 'Introduction to C Programming - Lecture Notes',
+        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
+        faculty: 'fst',
+        type: 'PDF',
+        size: '1.8 MB',
+        term: "final",
+        downloads: 250
+      }
+    ],
+downloads: 150
+}
+
+
+]
+
 export default function UploadPage() {
   const [file, setFile] = useState(null);
-  const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: '', message: '' });
   const [courseSearch, setCourseSearch] = useState('');
@@ -38,6 +164,24 @@ export default function UploadPage() {
     course: ''
   });
 
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const suggestionsRef = useRef(null);
+
+  useEffect(() => {
+    if (!authLoading && !user) router.push('/auth');
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const validateTitle = (value) => {
     if (!value.trim()) return '';
     const words = value.trim().split(/\s+/);
@@ -49,112 +193,49 @@ export default function UploadPage() {
 
   const validateCourse = (value) => {
     if (!value.trim()) return '';
-    const exists = coursesData.some(c => c.name.toLowerCase() === value.toLowerCase());
+    const exists = coursesData.some(c => c.courseTitle.toLowerCase() === value.toLowerCase());
     if (!exists && value.length > 1) {
       return 'Please select a valid course from the suggestions';
     }
     return '';
   };
 
-  const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
-  const fileInputRef = useRef(null);
-  const suggestionsRef = useRef(null);
-
-  useEffect(() => {
-    if (!authLoading && !user) router.push('/auth');
-  }, [user, authLoading, router]);
-
-  // Handle clicking outside of suggestions
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const filteredCourses = useMemo(() => {
     if (courseSearch.length < 2) return [];
     return coursesData.filter(course => 
-      course.name.toLowerCase().includes(courseSearch.toLowerCase()) ||
-      course.code.toLowerCase().includes(courseSearch.toLowerCase())
-    ).slice(0, 5); // Limit to top 5 results
+      course.courseTitle.toLowerCase().includes(courseSearch.toLowerCase()) ||
+      course.code?.toLowerCase().includes(courseSearch.toLowerCase())
+    ).slice(0, 5);
   }, [courseSearch]);
 
-  const handleDrag = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
-    else if (e.type === "dragleave") setDragActive(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      validateAndSetFile(e.dataTransfer.files[0]);
-    }
-  };
-
-  const handleFileSelect = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      validateAndSetFile(e.target.files[0]);
-    }
-  };
-
-  const validateAndSetFile = (selectedFile) => {
-    const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    if (!validTypes.includes(selectedFile.type)) {
-      setStatus({ type: 'error', message: 'Please upload a PDF, Word document, or Image.' });
-      return;
-    }
-    if (selectedFile.size > 10 * 1024 * 1024) {
-      setStatus({ type: 'error', message: 'File size must be less than 10MB.' });
-      return;
-    }
-    setFile(selectedFile);
-    setStatus({ type: '', message: '' });
-  };
-
   const selectCourse = (course) => {
-    setFormData({ ...formData, course: course.name });
-    setCourseSearch(course.name);
+    setFormData({ ...formData, course: course.courseTitle });
+    setCourseSearch(course.courseTitle);
     setErrors({ ...errors, course: '' });
     setShowSuggestions(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // 1. Basic empty checks
     if (!file || !formData.title.trim() || !formData.course) {
       setStatus({ type: 'error', message: 'Please complete all required fields.' });
       return;
     }
 
-    // 2. Strict Course Validation: Must be in the courses.json list
-    const isValidCourse = coursesData.some(c => c.name === formData.course);
+    const isValidCourse = coursesData.some(c => c.courseTitle === formData.course);
     if (!isValidCourse) {
       setStatus({ type: 'error', message: 'Please select a valid course from the suggestions.' });
       return;
     }
 
-    // 3. Title validation (Generic Error)
     const titleWords = formData.title.trim().split(/\s+/);
     const isValidTitle = titleWords.length >= 2 && titleWords.every(word => word.length >= 2);
-    
     if (!isValidTitle) {
       setStatus({ type: 'error', message: 'Please provide a valid title' });
       return;
     }
 
     setLoading(true);
-    setStatus({ type: '', message: '' });
-
     try {
       const data = new FormData();
       data.append('file', file);
@@ -172,7 +253,6 @@ export default function UploadPage() {
       setFile(null);
       setFormData({ title: '', course: '', description: '' });
       setCourseSearch('');
-      
       setTimeout(() => router.push('/notes'), 2000);
     } catch (err) {
       setStatus({ type: 'error', message: err.message || 'Failed to upload note.' });
@@ -201,7 +281,7 @@ export default function UploadPage() {
             <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-6">
               <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 md:p-10 shadow-xl backdrop-blur-xl relative overflow-hidden">
                 <div className="space-y-6">
-                  {/* Title */}
+                  {/* Title Input */}
                   <div className="space-y-2">
                     <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
                       <BookOpen size={14} /> Note Title <span className="text-red-500">*</span>
@@ -220,14 +300,10 @@ export default function UploadPage() {
                         setErrors({...errors, title: validateTitle(val)});
                       }}
                     />
-                    {errors.title && (
-                      <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1 animate-in fade-in slide-in-from-top-1">
-                        {errors.title}
-                      </p>
-                    )}
+                    {errors.title && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.title}</p>}
                   </div>
 
-                  {/* Course with Suggestions */}
+                  {/* Course Search */}
                   <div className="space-y-2 relative" ref={suggestionsRef}>
                     <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
                       <GraduationCap size={14} /> Course Name <span className="text-red-500">*</span>
@@ -237,7 +313,7 @@ export default function UploadPage() {
                       <input 
                         type="text" 
                         required
-                        placeholder="Type course name or code (e.g. Advanced Web...)"
+                        placeholder="Type course name or code..."
                         className={`w-full bg-[var(--background)]/50 border rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all ${
                           errors.course ? 'border-red-500/50' : 'border-[var(--card-border)]'
                         }`}
@@ -253,25 +329,20 @@ export default function UploadPage() {
                       />
                     </div>
 
-                    {errors.course && (
-                      <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1 animate-in fade-in slide-in-from-top-1">
-                        {errors.course}
-                      </p>
-                    )}
+                    {errors.course && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.course}</p>}
 
-                    {/* Suggestions Dropdown */}
                     {showSuggestions && filteredCourses.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-hidden z-50 backdrop-blur-xl animate-in fade-in slide-in-from-top-2">
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-hidden z-50 backdrop-blur-xl">
                         {filteredCourses.map((course) => (
                           <button
-                            key={course.id}
+                            key={`${course.courseTitle}-${course.code}`}
                             type="button"
                             onClick={() => selectCourse(course)}
                             className="w-full px-6 py-4 text-left hover:bg-blue-500/5 flex items-center justify-between group transition-colors"
                           >
                             <div>
-                              <p className="text-sm font-bold text-[var(--foreground)] group-hover:text-blue-500 transition-colors">{course.name}</p>
-                              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{course.code}</p>
+                              <p className="text-sm font-bold text-[var(--foreground)] group-hover:text-blue-500 transition-colors">{course.courseTitle}</p>
+                              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{course.code ? `${course.code} • ` : ''}{course.dept}</p>
                             </div>
                             <Plus size={16} className="text-slate-600 group-hover:text-blue-500" />
                           </button>
@@ -287,7 +358,7 @@ export default function UploadPage() {
                     </label>
                     <textarea 
                       rows={4}
-                      placeholder="Give a brief summary of what's covered in these notes..."
+                      placeholder="Summary of these notes..."
                       className="w-full bg-[var(--background)]/50 border border-[var(--card-border)] rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all resize-none"
                       value={formData.description}
                       onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -296,7 +367,7 @@ export default function UploadPage() {
                 </div>
 
                 {status.message && (
-                  <div className={`mt-8 p-4 rounded-2xl flex items-center gap-3 border animate-in fade-in slide-in-from-top-2 ${
+                  <div className={`mt-8 p-4 rounded-2xl flex items-center gap-3 border ${
                     status.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'
                   }`}>
                     {status.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
@@ -312,78 +383,15 @@ export default function UploadPage() {
                       : 'bg-blue-500 text-white hover:bg-blue-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-500/20'
                   }`}
                 >
-                  {loading ? (
-                    <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    <>Submit Resource <Plus size={18} /></>
-                  )}
+                  {loading ? <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <>Submit Resource <Plus size={18} /></>}
                 </button>
               </div>
             </form>
 
-            {/* Upload Section */}
+            {/* Sidebar Section */}
             <div className="lg:col-span-2 space-y-6">
-              <div 
-                className={`relative bg-[var(--card-bg)] border-2 border-dashed rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center transition-all duration-500 ${
-                  dragActive ? 'border-blue-500 bg-blue-500/5 scale-105' : 'border-[var(--card-border)] hover:border-blue-500/30 hover:bg-white/[0.02]'
-                } ${file ? 'border-emerald-500/30 bg-emerald-500/5' : ''}`}
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={handleDrop}
-              >
-                {file ? (
-                  <div className="animate-in zoom-in duration-500">
-                    <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20 text-emerald-400">
-                      <File size={32} />
-                    </div>
-                    <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest truncate max-w-[200px] mb-2">{file.name}</p>
-                    <p className="text-[10px] font-bold text-slate-500 mb-6 uppercase">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
-                    <button 
-                      onClick={() => setFile(null)}
-                      className="p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-all"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-500/20 text-blue-400">
-                      <UploadCloud size={32} />
-                    </div>
-                    <h3 className="text-lg font-bold mb-2">Drop your notes here</h3>
-                    <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-8 leading-relaxed">
-                      Supports PDF, PNG, JPG, DOCX <br /> (Max 10MB)
-                    </p>
-                    <button 
-                      onClick={() => fileInputRef.current.click()}
-                      className="px-6 py-3 rounded-xl bg-white text-black font-black text-[11px] uppercase tracking-widest hover:bg-slate-200 transition-all shadow-lg"
-                    >
-                      Browse Files
-                    </button>
-                  </>
-                )}
-                <input 
-                  ref={fileInputRef}
-                  type="file" 
-                  className="hidden" 
-                  onChange={handleFileSelect}
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                />
-              </div>
-
-              {/* Point Reward Card */}
-              <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-[2rem] p-8 flex items-center gap-6">
-                <div className="w-14 h-14 bg-amber-500 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-amber-500/20">
-                  <Coins size={28} />
-                </div>
-                <div>
-                  <h4 className="font-black text-amber-500 text-sm uppercase tracking-wider mb-1">Earn Points</h4>
-                  <p className="text-slate-500 text-[11px] font-bold leading-relaxed">
-                    You will receive <span className="text-[var(--foreground)]">+5 Points</span> for every verified note you contribute.
-                  </p>
-                </div>
-              </div>
+              <FileUploader file={file} setFile={setFile} setStatus={setStatus} />
+              <RewardCard />
             </div>
           </div>
         </div>
