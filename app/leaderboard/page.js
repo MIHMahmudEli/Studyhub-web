@@ -54,7 +54,7 @@ export default function LeaderboardPage() {
           { id: 3, name: 'Elena Rodriguez', points: 1750, uploads: 24 },
           { id: 12, name: 'Omar Sy', points: 1500, uploads: 21 },
           { id: 13, name: 'Yuna Sato', points: 1300, uploads: 18 },
-          { id: 4, name: David Kim, points: 1200, uploads: 15 },
+          { id: 4, name: 'David Kim', points: 1200, uploads: 15 },
         ];
         
         setLeaders(activeTab === 'current' ? mockCurrent : mockPrevious);
