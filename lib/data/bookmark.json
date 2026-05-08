@@ -1,0 +1,1197 @@
+[
+  {
+    "bookmark_id": 5,
+    "user_id": 28,
+    "type": "note",
+    "note_id": 113,
+    "resource_id": null,
+    "created_at": "2026-01-28 19:56:16",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 113,
+      "title": "ML Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC4232",
+      "subject": "MACHINE LEARNING",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 6,
+    "user_id": 33,
+    "type": "note",
+    "note_id": 95,
+    "resource_id": null,
+    "created_at": "2025-12-05 16:23:14",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 95,
+      "title": "Software Final-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3112",
+      "subject": "SOFTWARE ENGINEERING",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 7,
+    "user_id": 33,
+    "type": "note",
+    "note_id": 96,
+    "resource_id": null,
+    "created_at": "2025-12-04 19:06:38",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 96,
+      "title": "Microprocessor Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3104",
+      "subject": "MICROPROCESSOR AND EMBEDDED SYSTEM",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 8,
+    "user_id": 33,
+    "type": "note",
+    "note_id": 98,
+    "resource_id": null,
+    "created_at": "2025-12-11 07:01:54",
+    "courseTitle": null,
+    "matched_item": null
+  },
+  {
+    "bookmark_id": 9,
+    "user_id": 33,
+    "type": "note",
+    "note_id": 105,
+    "resource_id": null,
+    "created_at": "2025-11-26 09:35:10",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 105,
+      "title": "AI Final-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3217",
+      "subject": "ARTIFICIAL INTELLIGENCE AND EXPERT SYS.",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 10,
+    "user_id": 62,
+    "type": "note",
+    "note_id": 72,
+    "resource_id": null,
+    "created_at": "2025-11-18 06:24:24",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 72,
+      "title": "Math 4 Mid Term Notes",
+      "uploader_id": 27,
+      "course_code": "MAT2202",
+      "subject": "MATRICES, VECTORS, FOURIER ANALYSIS",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 12,
+    "user_id": 82,
+    "type": "note",
+    "note_id": 94,
+    "resource_id": null,
+    "created_at": "2025-11-28 12:48:27",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 94,
+      "title": "Software Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3112",
+      "subject": "SOFTWARE ENGINEERING",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 13,
+    "user_id": 83,
+    "type": "note",
+    "note_id": 103,
+    "resource_id": null,
+    "created_at": "2025-12-02 14:18:33",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 103,
+      "title": "Compiler Final-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3216",
+      "subject": "COMPILER DESIGN",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 14,
+    "user_id": 89,
+    "type": "note",
+    "note_id": 73,
+    "resource_id": null,
+    "created_at": "2025-12-11 06:55:54",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 73,
+      "title": "Math 4 Final Term Notes",
+      "uploader_id": 27,
+      "course_code": "MAT2202",
+      "subject": "MATRICES, VECTORS, FOURIER ANALYSIS",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 15,
+    "user_id": 105,
+    "type": "note",
+    "note_id": 93,
+    "resource_id": null,
+    "created_at": "2026-01-18 14:58:22",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 93,
+      "title": "Data Com Final-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3103",
+      "subject": "DATA COMMUNICATION",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 16,
+    "user_id": 114,
+    "type": "note",
+    "note_id": 92,
+    "resource_id": null,
+    "created_at": "2026-01-13 10:41:29",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 92,
+      "title": "Data Com Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3103",
+      "subject": "DATA COMMUNICATION",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 17,
+    "user_id": 114,
+    "type": "note",
+    "note_id": 93,
+    "resource_id": null,
+    "created_at": "2026-01-13 10:41:30",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 93,
+      "title": "Data Com Final-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3103",
+      "subject": "DATA COMMUNICATION",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 18,
+    "user_id": 114,
+    "type": "note",
+    "note_id": 96,
+    "resource_id": null,
+    "created_at": "2026-01-13 10:41:18",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 96,
+      "title": "Microprocessor Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3104",
+      "subject": "MICROPROCESSOR AND EMBEDDED SYSTEM",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 19,
+    "user_id": 114,
+    "type": "note",
+    "note_id": 97,
+    "resource_id": null,
+    "created_at": "2026-01-13 10:41:22",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 97,
+      "title": "Microprocessor Final-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3104",
+      "subject": "MICROPROCESSOR AND EMBEDDED SYSTEM",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 20,
+    "user_id": 28,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 20,
+    "created_at": "2026-01-28 23:19:58",
+    "courseTitle": "ENGINEERING MANAGEMENT",
+    "matched_item": {
+      "id": 20,
+      "title": "Engineering Management   Chapter 4   Strategic Capacity Planning For Goods And Services",
+      "uploader_id": 27,
+      "course_code": "MGT3202",
+      "file_type": "pptx"
+    }
+  },
+  {
+    "bookmark_id": 21,
+    "user_id": 28,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 16,
+    "created_at": "2026-01-28 23:20:15",
+    "courseTitle": "COMPUTER NETWORKS",
+    "matched_item": {
+      "id": 16,
+      "title": "CN Lecture 14 Transport Layer II",
+      "uploader_id": 27,
+      "course_code": "COE3206",
+      "file_type": "pptx"
+    }
+  },
+  {
+    "bookmark_id": 22,
+    "user_id": 28,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 15,
+    "created_at": "2026-01-28 23:20:16",
+    "courseTitle": "COMPUTER NETWORKS",
+    "matched_item": {
+      "id": 15,
+      "title": "CN Lecture 13 Transport Layer I",
+      "uploader_id": 27,
+      "course_code": "COE3206",
+      "file_type": "pptx"
+    }
+  },
+  {
+    "bookmark_id": 24,
+    "user_id": 28,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 7,
+    "created_at": "2026-01-28 23:22:50",
+    "courseTitle": "COMPUTER NETWORKS",
+    "matched_item": {
+      "id": 7,
+      "title": "CN Lecture 06 DHCP, ARP",
+      "uploader_id": 27,
+      "course_code": "COE3206",
+      "file_type": "pptx"
+    }
+  },
+  {
+    "bookmark_id": 31,
+    "user_id": 37,
+    "type": null,
+    "note_id": null,
+    "resource_id": null,
+    "created_at": "2026-01-28 23:45:21",
+    "courseTitle": "COMPUTER NETWORKS",
+    "matched_item": null
+  },
+  {
+    "bookmark_id": 32,
+    "user_id": 37,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 20,
+    "created_at": "2026-01-28 23:45:33",
+    "courseTitle": "ENGINEERING MANAGEMENT",
+    "matched_item": {
+      "id": 20,
+      "title": "Engineering Management   Chapter 4   Strategic Capacity Planning For Goods And Services",
+      "uploader_id": 27,
+      "course_code": "MGT3202",
+      "file_type": "pptx"
+    }
+  },
+  {
+    "bookmark_id": 33,
+    "user_id": 37,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 19,
+    "created_at": "2026-01-28 23:45:34",
+    "courseTitle": "ENGINEERING MANAGEMENT",
+    "matched_item": {
+      "id": 19,
+      "title": "Engineering Management   Chapter 3   Forecasting Updated",
+      "uploader_id": 27,
+      "course_code": "MGT3202",
+      "file_type": "pptx"
+    }
+  },
+  {
+    "bookmark_id": 38,
+    "user_id": 28,
+    "type": null,
+    "note_id": null,
+    "resource_id": null,
+    "created_at": "2026-01-28 23:54:35",
+    "courseTitle": "COMPUTER NETWORKS",
+    "matched_item": null
+  },
+  {
+    "bookmark_id": 39,
+    "user_id": 28,
+    "type": null,
+    "note_id": null,
+    "resource_id": null,
+    "created_at": "2026-01-28 23:55:24",
+    "courseTitle": "RESEARCH METHODOLOGY",
+    "matched_item": null
+  },
+  {
+    "bookmark_id": 57,
+    "user_id": 27,
+    "type": "note",
+    "note_id": 97,
+    "resource_id": null,
+    "created_at": "2026-01-29 11:42:05",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 97,
+      "title": "Microprocessor Final-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3104",
+      "subject": "MICROPROCESSOR AND EMBEDDED SYSTEM",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 65,
+    "user_id": 27,
+    "type": "note",
+    "note_id": 94,
+    "resource_id": null,
+    "created_at": "2026-01-29 11:43:57",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 94,
+      "title": "Software Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3112",
+      "subject": "SOFTWARE ENGINEERING",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 66,
+    "user_id": 27,
+    "type": "note",
+    "note_id": 91,
+    "resource_id": null,
+    "created_at": "2026-01-29 11:43:59",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 91,
+      "title": "TOC Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3113",
+      "subject": "THEORY OF COMPUTATION",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 67,
+    "user_id": 27,
+    "type": "note",
+    "note_id": 90,
+    "resource_id": null,
+    "created_at": "2026-01-29 11:44:00",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 90,
+      "title": "TOC Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3113",
+      "subject": "THEORY OF COMPUTATION",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 75,
+    "user_id": 28,
+    "type": null,
+    "note_id": null,
+    "resource_id": null,
+    "created_at": "2026-01-29 04:02:39",
+    "courseTitle": "ARTIFICIAL INTELLIGENCE AND EXPERT SYS.",
+    "matched_item": null
+  },
+  {
+    "bookmark_id": 79,
+    "user_id": 41,
+    "type": "note",
+    "note_id": 110,
+    "resource_id": null,
+    "created_at": "2026-01-30 03:27:22",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 110,
+      "title": "OS Final-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3214",
+      "subject": "OPERATING SYSTEM",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 81,
+    "user_id": 27,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 7,
+    "created_at": "2026-01-30 03:29:08",
+    "courseTitle": "COMPUTER NETWORKS",
+    "matched_item": {
+      "id": 7,
+      "title": "CN Lecture 06 DHCP, ARP",
+      "uploader_id": 27,
+      "course_code": "COE3206",
+      "file_type": "pptx"
+    }
+  },
+  {
+    "bookmark_id": 82,
+    "user_id": 41,
+    "type": null,
+    "note_id": null,
+    "resource_id": null,
+    "created_at": "2026-01-30 03:29:53",
+    "courseTitle": "COMPUTER NETWORKS",
+    "matched_item": null
+  },
+  {
+    "bookmark_id": 84,
+    "user_id": 33,
+    "type": "note",
+    "note_id": 113,
+    "resource_id": null,
+    "created_at": "2026-01-31 07:26:23",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 113,
+      "title": "ML Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC4232",
+      "subject": "MACHINE LEARNING",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 89,
+    "user_id": 27,
+    "type": "note",
+    "note_id": 104,
+    "resource_id": null,
+    "created_at": "2026-02-12 09:11:01",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 104,
+      "title": "AI Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3217",
+      "subject": "ARTIFICIAL INTELLIGENCE AND EXPERT SYS.",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 93,
+    "user_id": 140,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 157,
+    "created_at": "2026-02-23 07:54:27",
+    "courseTitle": "MICROPROCESSOR AND EMBEDDED SYSTEM",
+    "matched_item": {
+      "id": 157,
+      "title": "Microprocessor Lecture  (6)",
+      "uploader_id": 27,
+      "course_code": "COE3104",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 94,
+    "user_id": 141,
+    "type": "note",
+    "note_id": 96,
+    "resource_id": null,
+    "created_at": "2026-02-23 08:47:04",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 96,
+      "title": "Microprocessor Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3104",
+      "subject": "MICROPROCESSOR AND EMBEDDED SYSTEM",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 95,
+    "user_id": 27,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 148,
+    "created_at": "2026-03-16 01:34:39",
+    "courseTitle": "PRINCIPLES OF ECONOMICS",
+    "matched_item": {
+      "id": 148,
+      "title": "Final term topic 1",
+      "uploader_id": 27,
+      "course_code": "ECO3150",
+      "file_type": "ppt"
+    }
+  },
+  {
+    "bookmark_id": 97,
+    "user_id": 147,
+    "type": "note",
+    "note_id": 100,
+    "resource_id": null,
+    "created_at": "2026-03-26 14:34:34",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 100,
+      "title": "WebTech Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3215",
+      "subject": "WEB TECHNOLOGIES",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 98,
+    "user_id": 150,
+    "type": "note",
+    "note_id": 107,
+    "resource_id": null,
+    "created_at": "2026-03-27 09:14:04",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 107,
+      "title": "CN Mid-Term Notes",
+      "uploader_id": 33,
+      "course_code": "COE3206",
+      "subject": "COMPUTER NETWORKS",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 99,
+    "user_id": 157,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 47,
+    "created_at": "2026-03-29 03:30:56",
+    "courseTitle": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+    "matched_item": {
+      "id": 47,
+      "title": "Lecture 2 Representation of Numbers and Characters",
+      "uploader_id": 48,
+      "course_code": "COE3205",
+      "file_type": "pptx"
+    }
+  },
+  {
+    "bookmark_id": 100,
+    "user_id": 27,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 179,
+    "created_at": "2026-03-29 05:20:54",
+    "courseTitle": "SOFTWARE ENGINEERING",
+    "matched_item": {
+      "id": 179,
+      "title": "SE   Ch.15   Project Scheduling",
+      "uploader_id": 27,
+      "course_code": "CSC3112",
+      "file_type": "pptx"
+    }
+  },
+  {
+    "bookmark_id": 101,
+    "user_id": 164,
+    "type": "note",
+    "note_id": 120,
+    "resource_id": null,
+    "created_at": "2026-03-29 05:50:49",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 120,
+      "title": "COA Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3205",
+      "subject": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 102,
+    "user_id": 171,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 191,
+    "created_at": "2026-03-29 06:55:40",
+    "courseTitle": "WEB TECHNOLOGIES",
+    "matched_item": {
+      "id": 191,
+      "title": "WEEK01 LAB",
+      "uploader_id": 27,
+      "course_code": "CSC3215",
+      "file_type": "pptx"
+    }
+  },
+  {
+    "bookmark_id": 103,
+    "user_id": 179,
+    "type": null,
+    "note_id": null,
+    "resource_id": null,
+    "created_at": "2026-03-29 09:43:46",
+    "courseTitle": "COMPUTER AIDED DESIGN & DRAFTING",
+    "matched_item": null
+  },
+  {
+    "bookmark_id": 104,
+    "user_id": 186,
+    "type": "note",
+    "note_id": 120,
+    "resource_id": null,
+    "created_at": "2026-03-29 12:36:31",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 120,
+      "title": "COA Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3205",
+      "subject": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 105,
+    "user_id": 190,
+    "type": "note",
+    "note_id": 100,
+    "resource_id": null,
+    "created_at": "2026-03-30 03:07:35",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 100,
+      "title": "WebTech Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3215",
+      "subject": "WEB TECHNOLOGIES",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 106,
+    "user_id": 190,
+    "type": "note",
+    "note_id": 120,
+    "resource_id": null,
+    "created_at": "2026-03-30 03:07:44",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 120,
+      "title": "COA Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3205",
+      "subject": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 107,
+    "user_id": 202,
+    "type": "note",
+    "note_id": 120,
+    "resource_id": null,
+    "created_at": "2026-03-30 08:58:26",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 120,
+      "title": "COA Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3205",
+      "subject": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 108,
+    "user_id": 210,
+    "type": "note",
+    "note_id": 120,
+    "resource_id": null,
+    "created_at": "2026-03-30 21:11:17",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 120,
+      "title": "COA Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3205",
+      "subject": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 113,
+    "user_id": 213,
+    "type": "note",
+    "note_id": 120,
+    "resource_id": null,
+    "created_at": "2026-03-31 03:45:32",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 120,
+      "title": "COA Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3205",
+      "subject": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 114,
+    "user_id": 235,
+    "type": "note",
+    "note_id": 120,
+    "resource_id": null,
+    "created_at": "2026-03-31 11:06:12",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 120,
+      "title": "COA Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3205",
+      "subject": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 115,
+    "user_id": 244,
+    "type": "note",
+    "note_id": 120,
+    "resource_id": null,
+    "created_at": "2026-03-31 15:02:37",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 120,
+      "title": "COA Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3205",
+      "subject": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 118,
+    "user_id": 301,
+    "type": "note",
+    "note_id": 60,
+    "resource_id": null,
+    "created_at": "2026-04-01 22:36:57",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 60,
+      "title": "Physics 2 Mid Term Notes",
+      "uploader_id": 27,
+      "course_code": "PHY1203",
+      "subject": "PHYSICS 2",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 120,
+    "user_id": 188,
+    "type": "note",
+    "note_id": 120,
+    "resource_id": null,
+    "created_at": "2026-04-05 10:32:48",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 120,
+      "title": "COA Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3205",
+      "subject": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 121,
+    "user_id": 317,
+    "type": "note",
+    "note_id": 112,
+    "resource_id": null,
+    "created_at": "2026-04-07 07:59:13",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 112,
+      "title": "EM Final-Term Notes",
+      "uploader_id": 27,
+      "course_code": "MGT3202",
+      "subject": "ENGINEERING MANAGEMENT",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 122,
+    "user_id": 317,
+    "type": "note",
+    "note_id": 110,
+    "resource_id": null,
+    "created_at": "2026-04-07 07:59:19",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 110,
+      "title": "OS Final-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3214",
+      "subject": "OPERATING SYSTEM",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 123,
+    "user_id": 317,
+    "type": "note",
+    "note_id": 109,
+    "resource_id": null,
+    "created_at": "2026-04-07 07:59:21",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 109,
+      "title": "OS Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3214",
+      "subject": "OPERATING SYSTEM",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 124,
+    "user_id": 317,
+    "type": "note",
+    "note_id": 103,
+    "resource_id": null,
+    "created_at": "2026-04-07 07:59:29",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 103,
+      "title": "Compiler Final-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3216",
+      "subject": "COMPILER DESIGN",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 125,
+    "user_id": 317,
+    "type": "note",
+    "note_id": 102,
+    "resource_id": null,
+    "created_at": "2026-04-07 07:59:36",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 102,
+      "title": "Compiler Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3216",
+      "subject": "COMPILER DESIGN",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 126,
+    "user_id": 317,
+    "type": "note",
+    "note_id": 101,
+    "resource_id": null,
+    "created_at": "2026-04-07 07:59:38",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 101,
+      "title": "WebTech Final-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3215",
+      "subject": "WEB TECHNOLOGIES",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 127,
+    "user_id": 317,
+    "type": "note",
+    "note_id": 100,
+    "resource_id": null,
+    "created_at": "2026-04-07 07:59:40",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 100,
+      "title": "WebTech Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC3215",
+      "subject": "WEB TECHNOLOGIES",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 128,
+    "user_id": 317,
+    "type": "note",
+    "note_id": 77,
+    "resource_id": null,
+    "created_at": "2026-04-07 08:00:09",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 77,
+      "title": "Math 5 Final Term Notes",
+      "uploader_id": 27,
+      "course_code": "MAT3101",
+      "subject": "NUMERICAL METHODS FOR SCIENCE AND ENGINEERING",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 130,
+    "user_id": 317,
+    "type": "note",
+    "note_id": 76,
+    "resource_id": null,
+    "created_at": "2026-04-07 08:00:49",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 76,
+      "title": "Math 5 Mid Term Notes",
+      "uploader_id": 27,
+      "course_code": "MAT3101",
+      "subject": "NUMERICAL METHODS FOR SCIENCE AND ENGINEERING",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 131,
+    "user_id": 27,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 212,
+    "created_at": "2026-04-07 23:59:48",
+    "courseTitle": "Natural Language Processing",
+    "matched_item": {
+      "id": 212,
+      "title": "Week3 1",
+      "uploader_id": 48,
+      "course_code": "cse-4233",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 134,
+    "user_id": 159,
+    "type": "note",
+    "note_id": 120,
+    "resource_id": null,
+    "created_at": "2026-04-11 11:34:46",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 120,
+      "title": "COA Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3205",
+      "subject": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 135,
+    "user_id": 309,
+    "type": "note",
+    "note_id": 120,
+    "resource_id": null,
+    "created_at": "2026-04-11 13:45:17",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 120,
+      "title": "COA Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3205",
+      "subject": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 139,
+    "user_id": 341,
+    "type": "note",
+    "note_id": 113,
+    "resource_id": null,
+    "created_at": "2026-04-18 10:36:50",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 113,
+      "title": "ML Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC4232",
+      "subject": "MACHINE LEARNING",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 140,
+    "user_id": 298,
+    "type": "note",
+    "note_id": 108,
+    "resource_id": null,
+    "created_at": "2026-04-18 21:42:54",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 108,
+      "title": "CN Final-Term Notes",
+      "uploader_id": 33,
+      "course_code": "COE3206",
+      "subject": "COMPUTER NETWORKS",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 141,
+    "user_id": 206,
+    "type": "note",
+    "note_id": 120,
+    "resource_id": null,
+    "created_at": "2026-04-27 12:23:53",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 120,
+      "title": "COA Mid-Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE3205",
+      "subject": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 142,
+    "user_id": 375,
+    "type": "note",
+    "note_id": 67,
+    "resource_id": null,
+    "created_at": "2026-05-01 10:09:59",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 67,
+      "title": "Accounting Final Term Notes",
+      "uploader_id": 27,
+      "course_code": "BBA1102",
+      "subject": "PRINCIPLES OF ACCOUNTING",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 143,
+    "user_id": 375,
+    "type": "note",
+    "note_id": 83,
+    "resource_id": null,
+    "created_at": "2026-05-01 10:10:35",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 83,
+      "title": "Algorithm Final Term Notes",
+      "uploader_id": 27,
+      "course_code": "CSC2211",
+      "subject": "ALGORITHMS",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 144,
+    "user_id": 375,
+    "type": "note",
+    "note_id": 69,
+    "resource_id": null,
+    "created_at": "2026-05-01 10:10:56",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 69,
+      "title": "Circuit Final Term Notes",
+      "uploader_id": 27,
+      "course_code": "COE2101",
+      "subject": "INTRODUCTION TO ELECTRICAL CIRCUITS",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 146,
+    "user_id": 381,
+    "type": "note",
+    "note_id": 71,
+    "resource_id": null,
+    "created_at": "2026-05-03 03:06:44",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 71,
+      "title": "Chemistry Final Term Notes",
+      "uploader_id": 27,
+      "course_code": "CHEM1101",
+      "subject": "CHEMISTRY",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 147,
+    "user_id": 390,
+    "type": "resource/lecture",
+    "note_id": null,
+    "resource_id": 137,
+    "created_at": "2026-05-04 00:55:24",
+    "courseTitle": "DIGITAL LOGIC AND CIRCUITS",
+    "matched_item": {
+      "id": 137,
+      "title": "FINAL LECT 2",
+      "uploader_id": 27,
+      "course_code": "EEE3101",
+      "file_type": "pdf"
+    }
+  },
+  {
+    "bookmark_id": 148,
+    "user_id": 326,
+    "type": "note",
+    "note_id": 108,
+    "resource_id": null,
+    "created_at": "2026-05-05 23:19:37",
+    "courseTitle": null,
+    "matched_item": {
+      "id": 108,
+      "title": "CN Final-Term Notes",
+      "uploader_id": 33,
+      "course_code": "COE3206",
+      "subject": "COMPUTER NETWORKS",
+      "file_type": "pdf"
+    }
+  }
+]
