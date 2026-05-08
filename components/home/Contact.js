@@ -46,25 +46,25 @@ function SocialCard({ link }) {
 
 export default function Contact() {
   return (
-    <section id="contact" className="px-6 pb-[140px] relative overflow-hidden">
+    <section id="contact" className="px-6 pb-24 md:pb-[140px] relative overflow-hidden">
       {/* Background Glow */}
-      <div className="absolute bottom-[10%] left-[-5%] w-[350px] h-[350px] bg-emerald-600/5 blur-[80px] rounded-full -z-10 animate-nebula [animation-delay:4s]" />
+      <div className="absolute bottom-[10%] left-[-15%] md:left-[-5%] w-[300px] md:w-[350px] h-[300px] md:h-[350px] bg-emerald-600/5 blur-[70px] md:blur-[80px] rounded-full -z-10 animate-nebula [animation-delay:4s]" />
 
       <div className="max-w-[1120px] mx-auto">
-        <div className="border-t border-white/5 mb-20" />
-        <div className="mb-14">
-          <span className="block text-[11px] font-bold tracking-[0.12em] uppercase text-emerald-500 mb-3.5">
+        <div className="border-t border-white/5 mb-12 md:mb-20" />
+        <div className="mb-10 md:mb-14">
+          <span className="block text-[10px] md:text-[11px] font-bold tracking-[0.12em] uppercase text-emerald-500 mb-3">
             Community
           </span>
-          <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-extrabold leading-[1.15] tracking-tight text-[#f0f4ff] mb-3.5">
+          <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[#f0f4ff] mb-4">
             Connect with us<br />
             <span className="text-slate-700">wherever you are.</span>
           </h2>
-          <p className="text-base text-slate-500 leading-relaxed max-w-[480px]">
+          <p className="text-sm md:text-base text-slate-500 leading-relaxed max-w-[480px]">
             Join our growing community across platforms — get resources, updates, and direct support.
           </p>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {socialLinks.map((link, i) => <SocialCard key={i} link={link} />)}
         </div>
       </div>

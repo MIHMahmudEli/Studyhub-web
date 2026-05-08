@@ -28,7 +28,7 @@ function Card({ feature }) {
 
   return (
     <div 
-      className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] rounded-[24px] p-9 group hover:-translate-y-2 hover:bg-white/[0.05] hover:border-blue-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(59,130,246,0.05)] overflow-hidden relative"
+      className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] rounded-[24px] p-6 md:p-9 group hover:-translate-y-2 hover:bg-white/[0.05] hover:border-blue-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(59,130,246,0.05)] overflow-hidden relative"
     >
       {/* Hover glow effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -53,25 +53,25 @@ function Card({ feature }) {
 
 export default function Features() {
   return (
-    <section id="features" className="px-6 pb-[120px] relative overflow-hidden">
+    <section id="features" className="px-6 pb-20 md:pb-[120px] relative overflow-hidden">
       {/* Background Glow */}
-      <div className="absolute top-[20%] right-[-5%] w-[400px] h-[400px] bg-indigo-600/5 blur-[100px] rounded-full -z-10 animate-nebula" />
+      <div className="absolute top-[20%] right-[-10%] w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-indigo-600/5 blur-[80px] md:blur-[100px] rounded-full -z-10 animate-nebula" />
 
       <div className="max-w-[1120px] mx-auto">
-        <div className="border-t border-white/5 mb-20" />
-        <div className="mb-14">
-          <span className="block text-[11px] font-bold tracking-[0.12em] uppercase text-blue-500 mb-3.5">
+        <div className="border-t border-white/5 mb-12 md:mb-20" />
+        <div className="mb-10 md:mb-14">
+          <span className="block text-[10px] md:text-[11px] font-bold tracking-[0.12em] uppercase text-blue-500 mb-3">
             Capabilities
           </span>
-          <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-extrabold leading-[1.15] tracking-tight text-[#f0f4ff] mb-3.5">
+          <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[#f0f4ff] mb-4">
             Built for everyone<br />
             <span className="text-slate-700">in your institution.</span>
           </h2>
-          <p className="text-base text-slate-500 leading-relaxed max-w-[480px]">
+          <p className="text-sm md:text-base text-slate-500 leading-relaxed max-w-[480px]">
             Whether you&apos;re a student, moderator, or admin — StudyHub gives you exactly the tools you need.
           </p>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-5">
           {features.map((f, i) => <Card key={i} feature={f} />)}
         </div>
       </div>

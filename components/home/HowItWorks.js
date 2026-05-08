@@ -31,7 +31,7 @@ function StepCard({ step }) {
 
   return (
     <div
-      className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] rounded-[24px] p-9 group hover:-translate-y-2 hover:bg-white/[0.05] hover:border-purple-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default relative overflow-hidden hover:shadow-[0_24px_48px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(139,92,246,0.05)]"
+      className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] rounded-[24px] p-6 md:p-9 group hover:-translate-y-2 hover:bg-white/[0.05] hover:border-purple-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default relative overflow-hidden hover:shadow-[0_24px_48px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(139,92,246,0.05)]"
     >
       {/* Hover glow effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -69,23 +69,23 @@ function StepCard({ step }) {
 
 export default function HowItWorks() {
   return (
-    <section id="how" className="px-6 pb-[120px] relative overflow-hidden">
+    <section id="how" className="px-6 pb-20 md:pb-[120px] relative overflow-hidden">
       {/* Background Glow */}
-      <div className="absolute top-[30%] left-[-10%] w-[500px] h-[500px] bg-purple-600/5 blur-[120px] rounded-full -z-10 animate-nebula [animation-delay:1s]" />
+      <div className="absolute top-[30%] left-[-15%] md:left-[-10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-purple-600/5 blur-[80px] md:blur-[120px] rounded-full -z-10 animate-nebula [animation-delay:1s]" />
 
       <div className="max-w-[1120px] mx-auto">
-        <div className="border-t border-white/5 mb-20" />
-        <div className="mb-14">
-          <span className="block text-[11px] font-bold tracking-[0.12em] uppercase text-purple-500 mb-3.5">
+        <div className="border-t border-white/5 mb-12 md:mb-20" />
+        <div className="mb-10 md:mb-14">
+          <span className="block text-[10px] md:text-[11px] font-bold tracking-[0.12em] uppercase text-purple-500 mb-3">
             Process
           </span>
-          <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-extrabold leading-[1.15] tracking-tight text-[#f0f4ff] mb-3.5">
+          <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[#f0f4ff] mb-4">
             Up and running<br />
             <span className="text-slate-700">in three steps.</span>
           </h2>
-          <p className="text-base text-slate-500 leading-relaxed max-w-[480px]">No long onboarding. No complexity. Start learning and contributing in minutes.</p>
+          <p className="text-sm md:text-base text-slate-500 leading-relaxed max-w-[480px]">No long onboarding. No complexity. Start learning and contributing in minutes.</p>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-5">
           {steps.map((step, i) => <StepCard key={i} step={step} />)}
         </div>
       </div>
