@@ -76,7 +76,6 @@ const cardStyle = (accent) => ({
   border: '1px solid rgba(255,255,255,0.06)',
   borderRadius: 20,
   padding: '36px 32px',
-  transition: 'transform 0.25s ease, border-color 0.25s ease, background 0.25s ease',
   cursor: 'default',
 });
 
