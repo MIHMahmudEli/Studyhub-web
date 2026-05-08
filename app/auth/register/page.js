@@ -70,8 +70,20 @@ export default function RegisterPage() {
     }
   };
 
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    let timer;
+    if (resendCooldown > 0) {
+      timer = setInterval(() => {
+        setResendCooldown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setIsLoading(true);
     setStatus({ type: '', message: '' });
 
@@ -79,6 +91,7 @@ export default function RegisterPage() {
       await register(formData.fullName, formData.email, formData.password);
       setStep('verify');
       setIsLoading(false);
+      setResendCooldown(30); // Start 30s cooldown
     } catch (err) {
       setStatus({ type: 'error', message: err.message || 'Failed to create account' });
       setIsLoading(false);
@@ -93,7 +106,7 @@ export default function RegisterPage() {
     try {
       await verifyEmail(formData.email, otp.join(''));
       setStatus({ type: 'success', message: 'Email verified! Redirecting to login...' });
-      setTimeout(() => router.push('/auth'), 2000);
+      setTimeout(() => router.push('/auth'), 3000);
     } catch (err) {
       setStatus({ type: 'error', message: err.message || 'Invalid OTP' });
       setIsLoading(false);
@@ -212,13 +225,19 @@ export default function RegisterPage() {
                     <ArrowLeft size={12} /> Wrong email? Go back
                   </button>
                   
-                  <button 
-                    type="button"
-                    onClick={handleSubmit}
-                    className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
-                  >
-                    <RefreshCw size={12} /> Resend OTP
-                  </button>
+                  {resendCooldown > 0 ? (
+                    <p className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                      Resend in {resendCooldown}s
+                    </p>
+                  ) : (
+                    <button 
+                      type="button"
+                      onClick={handleSubmit}
+                      className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
+                    >
+                      <RefreshCw size={12} /> Resend OTP
+                    </button>
+                  )}
                 </div>
               </div>
             </form>
