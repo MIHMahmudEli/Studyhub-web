@@ -48,6 +48,22 @@ export function AuthProvider({ children }) {
     return data; // Usually returns a message about OTP
   };
 
+  const forgotPassword = async (email) => {
+    return await apiRequest('/auth/forgot-password', {
+      method: 'POST',
+      body: { email },
+    });
+  };
+
+  const resetPassword = async (email, otp, newPassword) => {
+    const data = await apiRequest('/auth/reset-password', {
+      method: 'POST',
+      body: { email, otp, newPassword },
+    });
+    router.push('/auth');
+    return data;
+  };
+
   const verifyEmail = async (email, otp) => {
     const data = await apiRequest('/auth/verify-email', {
       method: 'POST',
@@ -67,7 +83,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, verifyEmail, logout, checkUser }}>
+    <AuthContext.Provider value={{ user, loading, login, register, verifyEmail, logout, checkUser, forgotPassword, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );

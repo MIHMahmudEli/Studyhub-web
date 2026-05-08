@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useMemo } from 'react';
-import { ArrowRight, Sparkles, Mail, Lock, ChevronLeft, CheckCircle2, ShieldCheck, RefreshCw, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { ArrowRight, Sparkles, Mail, Lock, ChevronLeft, CheckCircle2, ShieldCheck, RefreshCw, X, ArrowLeft } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 import AuthInput from '@/components/auth/AuthInput';
 import ValidationRules from '@/components/auth/ValidationRules';
@@ -13,14 +15,20 @@ export default function ForgotPasswordPage() {
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
+  const [status, setStatus] = useState({ type: '', message: '' });
   
   const [formData, setFormData] = useState({
-    email: '', password: '', confirmPassword: '', otp: '',
+    email: '', password: '', confirmPassword: '',
   });
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const otpRefs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
 
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+
+  const { forgotPassword, resetPassword } = useAuth();
+  const router = useRouter();
 
   useEffect(() => setMounted(true), []);
 
@@ -31,12 +39,6 @@ export default function ForgotPasswordPage() {
     }
     return () => clearInterval(timer);
   }, [resendTimer]);
-
-  const handleResendOTP = () => {
-    if (resendTimer === 0) {
-      setResendTimer(30);
-    }
-  };
 
   const passwordRules = useMemo(() => ({
     length: formData.password.length >= 8,
@@ -52,7 +54,6 @@ export default function ForgotPasswordPage() {
     
     if (step === 'otp') {
       if (formData.confirmPassword && formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords mismatch';
-      if (formData.otp && formData.otp.length !== 6) newErrors.otp = 'Must be 6 digits';
     }
 
     if (formData.email && !emailRegex.test(formData.email)) newErrors.email = 'Invalid email format';
@@ -62,29 +63,65 @@ export default function ForgotPasswordPage() {
       setIsSubmitDisabled(!emailRegex.test(formData.email));
     } else {
       const allRulesMet = Object.values(passwordRules).every(Boolean);
-      setIsSubmitDisabled(!(formData.otp.length === 6 && allRulesMet && formData.password === formData.confirmPassword));
+      const isOtpComplete = otp.every(digit => digit !== '');
+      setIsSubmitDisabled(!(isOtpComplete && allRulesMet && formData.password === formData.confirmPassword));
     }
-  }, [formData, step, passwordRules]);
+  }, [formData, step, passwordRules, otp]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (!touched[e.target.name]) setTouched(prev => ({ ...prev, [e.target.name]: true }));
+    if (status.message) setStatus({ type: '', message: '' });
   };
 
   const handleBlur = (e) => setTouched({ ...touched, [e.target.name]: true });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleOtpChange = (index, value) => {
+    if (isNaN(value)) return;
+    const newOtp = [...otp];
+    newOtp[index] = value.substring(value.length - 1);
+    setOtp(newOtp);
+    if (value && index < 5) otpRefs[index + 1].current.focus();
+    if (status.message) setStatus({ type: '', message: '' });
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) otpRefs[index - 1].current.focus();
+  };
+
+  const handleResend = async () => {
     setIsLoading(true);
-    setTimeout(() => {
+    setStatus({ type: '', message: '' });
+    try {
+      await forgotPassword(formData.email);
+      setResendTimer(30);
+      setStatus({ type: 'success', message: 'A new OTP has been sent to your email.' });
+    } catch (err) {
+      setStatus({ type: 'error', message: err.message || 'Failed to resend OTP' });
+    } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+    setIsLoading(true);
+    setStatus({ type: '', message: '' });
+
+    try {
       if (step === 'email') {
+        await forgotPassword(formData.email);
         setStep('otp');
         setResendTimer(30);
       } else {
+        await resetPassword(formData.email, otp.join(''), formData.password);
         setIsSuccess(true);
       }
-    }, 1500);
+    } catch (err) {
+      setStatus({ type: 'error', message: err.message || 'Something went wrong' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -119,38 +156,44 @@ export default function ForgotPasswordPage() {
           ) : (
             <>
               <div className="text-center mb-8 relative">
-                {step === 'otp' && (
-                  <Link href="/auth" className="absolute -left-2 -top-2 p-2 text-gray-500 hover:text-white transition-colors">
-                    <X size={20} />
-                  </Link>
-                )}
                 <h1 className="text-3xl font-black text-white mb-2 tracking-tight bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
                   {step === 'email' ? 'Reset Password' : 'Verify Identity'}
                 </h1>
                 <p className="text-gray-500 text-[11px] font-bold uppercase tracking-[0.2em]">
-                  {step === 'email' ? 'We will help you get back in' : 'Enter the code sent to your email'}
+                  {step === 'email' ? 'We will help you get back in' : `Enter the code sent to ${formData.email}`}
                 </p>
               </div>
+
+              {status.message && (
+                <div className={`mb-6 p-4 border rounded-2xl ${
+                  status.type === 'success' 
+                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+                    : 'bg-red-500/10 border-red-500/20 text-red-400'
+                }`}>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-center">
+                    {status.message}
+                  </p>
+                </div>
+              )}
 
               <form className="space-y-6" onSubmit={handleSubmit}>
                 {step === 'email' ? (
                   <AuthInput icon={Mail} type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} placeholder="Email Address" error={errors.email} touched={touched.email} />
                 ) : (
-                  <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center mb-1">
-                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">OTP Code</label>
-                        <button 
-                          type="button" 
-                          onClick={handleResendOTP}
-                          disabled={resendTimer > 0}
-                          className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors ${resendTimer > 0 ? 'text-gray-700' : 'text-blue-400 hover:text-blue-300'}`}
-                        >
-                          <RefreshCw size={10} className={resendTimer > 0 ? '' : 'animate-spin-slow'} />
-                          {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend Code'}
-                        </button>
-                      </div>
-                      <AuthInput icon={ShieldCheck} name="otp" value={formData.otp} onChange={handleChange} onBlur={handleBlur} placeholder="000000" error={errors.otp} touched={touched.otp} />
+                  <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
+                    <div className="flex justify-between gap-2">
+                      {otp.map((digit, index) => (
+                        <input
+                          key={index}
+                          ref={otpRefs[index]}
+                          type="text"
+                          maxLength={1}
+                          value={digit}
+                          onChange={(e) => handleOtpChange(index, e.target.value)}
+                          onKeyDown={(e) => handleKeyDown(index, e)}
+                          className="w-12 h-14 bg-white/5 border border-white/10 rounded-xl text-center text-white text-xl font-black focus:border-blue-500/50 focus:bg-blue-500/5 outline-none transition-all"
+                        />
+                      ))}
                     </div>
 
                     <div className="space-y-4">
@@ -161,29 +204,57 @@ export default function ForgotPasswordPage() {
                   </div>
                 )}
 
-                <button 
-                  disabled={isSubmitDisabled || isLoading} 
-                  className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 group/btn ${
-                    isSubmitDisabled || isLoading 
-                      ? 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5' 
-                      : 'bg-white text-black hover:bg-gray-200 active:scale-[0.98]'
-                  }`}
-                >
-                  {isLoading ? (
-                    <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-                  ) : (
-                    <>
-                      {step === 'email' ? 'Send OTP Code' : 'Reset Password'}
-                      {step === 'email' ? <ArrowRight size={18} /> : <Sparkles size={18} />}
-                    </>
-                  )}
-                </button>
+                <div className="space-y-4">
+                  <button 
+                    disabled={isSubmitDisabled || isLoading} 
+                    className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 group/btn ${
+                      isSubmitDisabled || isLoading 
+                        ? 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5' 
+                        : 'bg-white text-black hover:bg-gray-200 active:scale-[0.98]'
+                    }`}
+                  >
+                    {isLoading ? (
+                      <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                    ) : (
+                      <>
+                        {step === 'email' ? 'Send OTP Code' : 'Reset Password'}
+                        {step === 'email' ? <ArrowRight size={18} /> : <Sparkles size={18} />}
+                      </>
+                    )}
+                  </button>
 
-                {step === 'email' && (
-                <Link href="/auth" className="w-full text-center text-[10px] font-bold text-gray-500 hover:text-white transition-colors uppercase tracking-[0.2em] flex items-center justify-center gap-2">
-                  <ChevronLeft size={14} /> Back to Login
-                </Link>
-                )}
+                  <div className="flex flex-col gap-4">
+                    {step === 'email' ? (
+                      <Link href="/auth" className="w-full text-center text-[10px] font-bold text-gray-500 hover:text-white transition-colors uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                        <ChevronLeft size={14} /> Back to Login
+                      </Link>
+                    ) : (
+                      <>
+                        <button 
+                          type="button"
+                          onClick={() => setStep('email')}
+                          className="text-[10px] font-bold text-gray-500 hover:text-white transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
+                        >
+                          <ArrowLeft size={12} /> Wrong email? Go back
+                        </button>
+                        
+                        {resendTimer > 0 ? (
+                          <p className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                            Resend in {resendTimer}s
+                          </p>
+                        ) : (
+                          <button 
+                            type="button"
+                            onClick={handleResend}
+                            className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
+                          >
+                            <RefreshCw size={12} /> Resend OTP
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
               </form>
             </>
           )}
