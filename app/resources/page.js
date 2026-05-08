@@ -10,7 +10,8 @@ import {
   Database,
   Code2,
   Network,
-  Loader2
+  Loader2,
+  Search
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -22,6 +23,7 @@ export default function ResourcesPage() {
   
   // Pagination State
   const [visibleCount, setVisibleCount] = useState(12);
+  const [searchQuery, setSearchQuery] = useState('');
   const observerTarget = useRef(null);
 
   useEffect(() => {
@@ -45,18 +47,28 @@ export default function ResourcesPage() {
     return Object.values(groups);
   }, []);
 
+  const filteredCourses = useMemo(() => {
+    if (!searchQuery) return allCourses;
+    const q = searchQuery.toLowerCase();
+    return allCourses.filter(c => 
+      c.title.toLowerCase().includes(q) || 
+      (c.code && c.code.toLowerCase().includes(q)) ||
+      (c.dept && c.dept.toLowerCase().includes(q))
+    );
+  }, [allCourses, searchQuery]);
+
   const visibleCourses = useMemo(() => {
-    return allCourses.slice(0, visibleCount);
-  }, [allCourses, visibleCount]);
+    return filteredCourses.slice(0, visibleCount);
+  }, [filteredCourses, visibleCount]);
 
   const handleObserver = useCallback((entries) => {
     const [target] = entries;
-    if (target.isIntersecting && visibleCount < allCourses.length) {
+    if (target.isIntersecting && visibleCount < filteredCourses.length) {
       setTimeout(() => {
         setVisibleCount(prev => prev + 12);
       }, 400);
     }
-  }, [visibleCount, allCourses.length]);
+  }, [visibleCount, filteredCourses.length]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(handleObserver, {
@@ -90,10 +102,35 @@ export default function ResourcesPage() {
 
       <div className="pt-24 md:pt-32 px-4 md:px-8">
         <div className="max-w-[1400px] mx-auto">
-          {/* Responsive Section Header */}
-          <div className="mb-8 md:mb-12 text-center space-y-2">
-            <p className="text-[8px] md:text-[9px] font-black tracking-[0.3em] md:tracking-[0.4em] text-blue-500 uppercase">Academic Repository</p>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight uppercase leading-none">Resource <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">Library</span></h1>
+          {/* Majestic Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
+            <div className="space-y-4 relative">
+              <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-500/10 blur-[80px] rounded-full -z-10" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-500 text-[9px] font-black uppercase tracking-[0.3em]">
+                <BookOpen size={12} strokeWidth={3} /> Academic Repository
+              </div>
+              <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase leading-none">
+                Resource <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">Library</span>
+              </h1>
+              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-widest max-w-[500px]">
+                Explore your faculty's complete collection of lectures, notes, and previous term materials.
+              </p>
+            </div>
+
+            {/* Premium Search */}
+            <div className="relative w-full md:w-[320px]">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+              <input 
+                type="text" 
+                placeholder="SEARCH RESOURCES..."
+                className="w-full bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-2xl py-3.5 pl-12 pr-6 text-[10px] font-black tracking-widest uppercase focus:outline-none focus:border-blue-500/30 transition-all shadow-xl dark:shadow-none"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setVisibleCount(12); // Reset infinite scroll on search
+                }}
+              />
+            </div>
           </div>
 
           {/* Majestic Course Grid (Responsive Columns) */}
