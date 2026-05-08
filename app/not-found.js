@@ -1,78 +1,162 @@
 'use client';
-
 import Link from 'next/link';
 import { Home, ArrowLeft } from 'lucide-react';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 
 export default function NotFound() {
   return (
-    <div className="relative min-h-screen bg-[#06080f] text-[#e8eaf0] flex flex-col items-center justify-center overflow-hidden p-6 text-center">
-      
-      {/* 🔮 Ambient Background Orbs */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[20%] left-[30%] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(59,130,246,0.08)_0%,transparent_70%)] rounded-full animate-pulse" />
-        <div className="absolute bottom-[10%] right-[20%] w-[400px] h-[400px] bg-[radial-gradient(circle,rgba(139,92,246,0.06)_0%,transparent_70%)] rounded-full animate-pulse delay-700" />
+    <div style={{
+      minHeight: '100vh',
+      background: '#06080f',
+      color: '#e8eaf0',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative',
+      overflow: 'hidden',
+      padding: '24px',
+      textAlign: 'center'
+    }}>
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-20px) scale(1.05); }
+        }
+        @keyframes pulse-glow {
+          0%, 100% { opacity: 0.5; transform: scale(1); }
+          50% { opacity: 0.8; transform: scale(1.1); }
+        }
+        .not-found-title {
+          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+          cursor: default;
+        }
+        .not-found-title:hover {
+          transform: scale(1.05);
+          filter: drop-shadow(0 0 30px rgba(96, 165, 250, 0.4));
+        }
+        .btn-hover {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary-hover:hover {
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 12px 40px rgba(37, 99, 235, 0.45);
+          background: #3b82f6 !important;
+        }
+        .btn-secondary-hover:hover {
+          transform: translateY(-2px);
+          background: rgba(255, 255, 255, 0.08) !important;
+          border-color: rgba(255, 255, 255, 0.2) !important;
+          color: #f1f5f9 !important;
+        }
+        .ambient-orb {
+          animation: float 15s infinite ease-in-out;
+        }
+        .ambient-orb-2 {
+          animation: float 20s infinite ease-in-out reverse;
+        }
+      `}</style>
+
+      {/* Ambient background glow */}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+        <div className="ambient-orb" style={{ position: 'absolute', top: '20%', left: '30%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)', borderRadius: '50%' }} />
+        <div className="ambient-orb-2" style={{ position: 'absolute', bottom: '10%', right: '20%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%)', borderRadius: '50%' }} />
       </div>
 
-      <div className="relative z-10 max-w-[480px]">
-        {/* 🏷️ Header Logo */}
-        <div className="mb-12 flex justify-center transform hover:scale-110 transition-transform duration-300 cursor-pointer">
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: 480 }}>
+        {/* Header Logo */}
+        <div style={{ marginBottom: 48, display: 'flex', justifyContent: 'center' }}>
           <StudyHubLogo size={40} textSize={20} />
         </div>
 
-        {/* 🚀 404 Text with Floating Animation */}
-        <div className="relative inline-block">
-          <h1 className="text-[clamp(6rem,15vw,10rem)] font-black leading-none m-0 bg-clip-text text-transparent bg-gradient-to-br from-[#60a5fa] via-[#818cf8] to-[#c084fc] tracking-tighter animate-float drop-shadow-[0_0_15px_rgba(96,165,250,0.3)]">
-            404
-          </h1>
-          {/* Subtle glow underneath */}
-          <div className="absolute -inset-2 bg-blue-500/20 blur-3xl -z-10 rounded-full" />
-        </div>
+        {/* 404 Text */}
+        <h1 className="not-found-title" style={{
+          fontSize: 'clamp(6rem, 15vw, 10rem)',
+          fontWeight: 900,
+          lineHeight: 1,
+          margin: '0 0 16px',
+          background: 'linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #c084fc 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          letterSpacing: '-0.05em',
+        }}>
+          404
+        </h1>
 
-        <h2 className="text-[clamp(1.5rem,4vw,2rem)] font-bold text-[#f1f5f9] mt-4 mb-4">
+        <h2 style={{
+          fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+          fontWeight: 700,
+          color: '#f1f5f9',
+          marginBottom: 16
+        }}>
           Lost in Space?
         </h2>
 
-        <p className="text-base text-[#94a3b8] leading-relaxed mb-10">
-          The page you&apos;re looking for has drifted away or never existed in this galaxy.
-          Let&apos;s get you back to your studies.
+        <p style={{
+          fontSize: 16,
+          color: '#94a3b8',
+          lineHeight: 1.6,
+          marginBottom: 40,
+        }}>
+          The page you're looking for has drifted away or never existed in this galaxy.
+          Let's get you back to your studies.
         </p>
 
-        {/* 🔘 Action Buttons with Premium Hover Effects */}
-        <div className="flex gap-4 justify-center flex-wrap">
-          <Link 
-            href="/" 
-            className="group relative inline-flex items-center gap-2 px-7 py-3.5 bg-[#2563eb] text-white font-bold text-[15px] rounded-xl transition-all duration-300 hover:bg-[#1d4ed8] hover:scale-105 hover:shadow-[0_0_30px_rgba(37,99,235,0.4)] active:scale-95"
-          >
-            <Home size={18} className="group-hover:rotate-12 transition-transform" />
-            <span>Back to Home</span>
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link href="/" className="btn-hover btn-primary-hover" style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '14px 28px',
+            background: '#2563eb',
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: 15,
+            textDecoration: 'none',
+            borderRadius: 12,
+            boxShadow: '0 4px 20px rgba(37,99,235,0.3)',
+          }}>
+            <Home size={18} />
+            Back to Home
           </Link>
           
           <button 
             onClick={() => window.history.back()}
-            className="inline-flex items-center gap-2 px-7 py-3.5 bg-white/5 border border-white/10 text-[#94a3b8] font-semibold text-[15px] rounded-xl transition-all duration-300 hover:bg-white/10 hover:text-white hover:border-white/20 active:scale-95"
+            className="btn-hover btn-secondary-hover"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '14px 28px',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              color: '#94a3b8',
+              fontWeight: 600,
+              fontSize: 15,
+              cursor: 'pointer',
+              borderRadius: 12,
+            }}
           >
             <ArrowLeft size={18} />
-            <span>Go Back</span>
+            Go Back
           </button>
         </div>
       </div>
 
-      {/* 🏛️ Decorative Footer */}
-      <div className="absolute bottom-8 text-[11px] text-slate-800 font-bold tracking-[0.2em] uppercase pointer-events-none select-none">
-        StudyHub Academic Error Handling — v1.0
+      {/* Decorative footer text */}
+      <div style={{
+        position: 'absolute',
+        bottom: 32,
+        fontSize: 12,
+        color: '#1e293b',
+        fontWeight: 600,
+        letterSpacing: '0.05em',
+        textTransform: 'uppercase'
+      }}>
+        StudyHub Academic Error Handling
       </div>
-
-      {/* 🎭 Custom Floating Animation */}
-      <style jsx global>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-20px); }
-        }
-        .animate-float {
-          animation: float 5s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
 }
