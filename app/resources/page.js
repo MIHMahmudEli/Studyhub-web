@@ -22,7 +22,6 @@ export default function ResourcesPage() {
   
   // Pagination State
   const [visibleCount, setVisibleCount] = useState(12);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const observerTarget = useRef(null);
 
   useEffect(() => {
@@ -46,21 +45,16 @@ export default function ResourcesPage() {
     return Object.values(groups);
   }, []);
 
-  // Visible courses based on infinite scroll
   const visibleCourses = useMemo(() => {
     return allCourses.slice(0, visibleCount);
   }, [allCourses, visibleCount]);
 
-  // Infinite Scroll Observer Logic
   const handleObserver = useCallback((entries) => {
     const [target] = entries;
     if (target.isIntersecting && visibleCount < allCourses.length) {
-      setIsLoadingMore(true);
-      // Artificial delay for smooth UX transition
       setTimeout(() => {
         setVisibleCount(prev => prev + 12);
-        setIsLoadingMore(false);
-      }, 600);
+      }, 400);
     }
   }, [visibleCount, allCourses.length]);
 
@@ -102,7 +96,7 @@ export default function ResourcesPage() {
             <h1 className="text-4xl font-black tracking-tight uppercase leading-none">Resource <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">Library</span></h1>
           </div>
 
-          {/* Majestic Course Grid (Paginated) */}
+          {/* Majestic Course Grid (With Department) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {visibleCourses.map((course, idx) => {
               const Icon = getCourseIcon(course.title);
@@ -110,21 +104,27 @@ export default function ResourcesPage() {
                 <div 
                   key={course.title}
                   onClick={() => router.push(`/resources/${course.slug}`)}
-                  className="group relative h-[340px] bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2.5rem] p-8 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-700 hover:-translate-y-2 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 animate-in fade-in slide-in-from-bottom-8 fill-mode-both"
+                  className="group relative h-[360px] bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2.5rem] p-8 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-700 hover:-translate-y-2 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 animate-in fade-in slide-in-from-bottom-8 fill-mode-both"
                   style={{ animationDelay: `${(idx % 12) * 40}ms` }}
                 >
                   <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                   
-                  <div className="relative z-10 w-20 h-20 rounded-[2rem] bg-white dark:bg-[var(--background)] border border-slate-200 dark:border-white/[0.05] flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 group-hover:border-blue-500/20">
+                  <div className="relative z-10 w-20 h-20 rounded-[2rem] bg-white dark:bg-[var(--background)] border border-slate-200 dark:border-white/[0.05] flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">
                     <Icon size={32} strokeWidth={1.5} />
                   </div>
 
-                  <div className="relative z-10 text-center space-y-3">
-                    <div className="space-y-1">
-                      <p className="text-[8px] font-black tracking-[0.2em] text-slate-500 uppercase">{course.code || 'CORE'}</p>
-                      <h3 className="text-[12px] font-black uppercase tracking-widest leading-relaxed max-w-[180px] mx-auto group-hover:text-blue-500 transition-colors duration-500">
-                        {course.title}
-                      </h3>
+                  {/* Course & Department Content */}
+                  <div className="relative z-10 text-center space-y-4">
+                    <div className="space-y-2">
+                      <p className="text-[7.5px] font-black tracking-[0.25em] text-blue-500/80 uppercase px-4 py-1 rounded-full bg-blue-500/5 border border-blue-500/10 inline-block">
+                        {course.dept || 'UNIVERSITY RESOURCE'}
+                      </p>
+                      <div className="space-y-1">
+                        <p className="text-[8px] font-black tracking-[0.2em] text-slate-500 uppercase">{course.code || 'CORE'}</p>
+                        <h3 className="text-[12px] font-black uppercase tracking-widest leading-relaxed max-w-[200px] mx-auto group-hover:text-blue-500 transition-colors duration-500">
+                          {course.title}
+                        </h3>
+                      </div>
                     </div>
                   </div>
 
@@ -144,25 +144,12 @@ export default function ResourcesPage() {
             })}
           </div>
 
-          {/* Infinite Scroll Sentinel */}
-          <div 
-            ref={observerTarget} 
-            className="w-full flex flex-col items-center justify-center pt-16 gap-4"
-          >
+          <div ref={observerTarget} className="w-full flex flex-col items-center justify-center pt-16 gap-4">
             {visibleCount < allCourses.length && (
               <>
-                <div className="w-8 h-8 rounded-full border border-white/[0.05] flex items-center justify-center animate-spin text-blue-500">
-                  <Loader2 size={20} />
-                </div>
-                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 animate-pulse">
-                  Unlocking More Resources...
-                </p>
+                <Loader2 size={20} className="animate-spin text-blue-500" />
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">Scanning Repositories...</p>
               </>
-            )}
-            {visibleCount >= allCourses.length && allCourses.length > 0 && (
-              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-600">
-                You've reached the academic core
-              </p>
             )}
           </div>
         </div>
