@@ -106,8 +106,23 @@ export default function UploadPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file || !formData.title || !formData.course) {
+    
+    // 1. Basic empty checks
+    if (!file || !formData.title.trim() || !formData.course) {
       setStatus({ type: 'error', message: 'Please complete all required fields.' });
+      return;
+    }
+
+    // 2. Title validation: At least 2 words, each at least 2 characters
+    const titleWords = formData.title.trim().split(/\s+/);
+    if (titleWords.length < 2) {
+      setStatus({ type: 'error', message: 'Title must be at least 2 words long.' });
+      return;
+    }
+
+    const isEachWordValid = titleWords.every(word => word.length >= 2);
+    if (!isEachWordValid) {
+      setStatus({ type: 'error', message: 'Each word in the title must be at least 2 characters long.' });
       return;
     }
 
