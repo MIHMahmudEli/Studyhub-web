@@ -1,4 +1,4 @@
-import StudyHubLogo from './StudyHubLogo';
+import StudyHubLogo from '@/components/ui/StudyHubLogo';
 
 const footerLinks = [
   { label: 'Features', href: '#features' },

@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Features from './components/Features';
-import HowItWorks from './components/HowItWorks';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
-import ScrollToTopButton from './components/ScrollToTopButton';
+import Navbar from '@/components/layout/Navbar';
+import Hero from '@/components/home/Hero';
+import Features from '@/components/home/Features';
+import HowItWorks from '@/components/home/HowItWorks';
+import Contact from '@/components/home/Contact';
+import Footer from '@/components/layout/Footer';
+import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 
 export default function Home() {
   const [showScrollBtn, setShowScrollBtn] = useState(false);

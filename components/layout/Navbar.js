@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import StudyHubLogo from './StudyHubLogo';
+import StudyHubLogo from '@/components/ui/StudyHubLogo';
 
 const NAV_LINKS = [
   { label: 'Features', href: '#features' },
