@@ -113,6 +113,13 @@ export default function UploadPage() {
       return;
     }
 
+    // 2. Strict Course Validation: Must be in the courses.json list
+    const isValidCourse = coursesData.some(c => c.name === formData.course);
+    if (!isValidCourse) {
+      setStatus({ type: 'error', message: 'Please select a valid course from the suggestions.' });
+      return;
+    }
+
     // 2. Title validation: At least 2 words, each at least 2 characters
     const titleWords = formData.title.trim().split(/\s+/);
     if (titleWords.length < 2) {
