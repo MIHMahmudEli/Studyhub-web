@@ -92,46 +92,14 @@ export default function BookmarkPage() {
           </div>
 
           <div className="space-y-20">
-            {/* 1. SAVED COURSES SECTION */}
-            {savedCourses.length > 0 && (
-              <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20 shadow-lg">
-                    <GraduationCap size={20} />
-                  </div>
-                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Bookmarked Courses</h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filterBySearch(savedCourses).map((course, idx) => (
-                    <Link 
-                      key={course.bookmark_id} 
-                      href={`/resources/${course.courseTitle.replace(/\s+/g, '-').toLowerCase()}`}
-                      className="group relative bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[1.5rem] p-6 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1 shadow-sm"
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center text-slate-400 group-hover:bg-blue-500 group-hover:text-white transition-all">
-                          <BookOpen size={16} />
-                        </div>
-                        <ArrowRight size={14} className="text-slate-300 group-hover:translate-x-1 transition-all" />
-                      </div>
-                      <h3 className="text-[11px] font-black uppercase tracking-widest leading-relaxed mb-2 pr-4">
-                        {course.courseTitle}
-                      </h3>
-                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Full Library Access</p>
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* 2. SAVED NOTES SECTION */}
+            {/* 1. SAVED NOTES SECTION */}
             {savedNotes.length > 0 && (
-              <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+              <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 border border-purple-500/20 shadow-lg">
                     <FileText size={20} />
                   </div>
-                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Archived Study Notes</h2>
+                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Notes</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filterBySearch(savedNotes).map((note) => (
@@ -165,14 +133,46 @@ export default function BookmarkPage() {
               </section>
             )}
 
-            {/* 3. SAVED RESOURCES SECTION */}
+            {/* 2. SAVED RESOURCES SECTION (Courses based on CourseTitle) */}
+            {savedCourses.length > 0 && (
+              <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20 shadow-lg">
+                    <BookOpen size={20} />
+                  </div>
+                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Resources</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filterBySearch(savedCourses).map((course, idx) => (
+                    <Link 
+                      key={course.bookmark_id} 
+                      href={`/resources/${course.courseTitle.replace(/\s+/g, '-').toLowerCase()}`}
+                      className="group relative bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[1.5rem] p-6 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1 shadow-sm"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center text-slate-400 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                          <GraduationCap size={16} />
+                        </div>
+                        <ArrowRight size={14} className="text-slate-300 group-hover:translate-x-1 transition-all" />
+                      </div>
+                      <h3 className="text-[11px] font-black uppercase tracking-widest leading-relaxed mb-2 pr-4">
+                        {course.courseTitle}
+                      </h3>
+                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Library Collection</p>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* 3. SAVED FILES SECTION (based on Resource ID) */}
             {savedResources.length > 0 && (
               <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 border border-green-500/20 shadow-lg">
                     <ExternalLink size={20} />
                   </div>
-                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Pinned Resources</h2>
+                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Files</h2>
                 </div>
                 <div className="space-y-3">
                   {filterBySearch(savedResources).map((resource) => (

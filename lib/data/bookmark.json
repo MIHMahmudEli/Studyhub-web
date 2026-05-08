@@ -943,12 +943,12 @@
   },
   {
     "bookmark_id": 127,
-    "user_id": 317,
+    "user_id": 2,
     "type": "note",
     "note_id": 100,
     "resource_id": null,
     "created_at": "2026-04-07 07:59:40",
-    "courseTitle": null,
+    "courseTitle": "Web Technologies",
     "matched_item": {
       "id": 100,
       "title": "WebTech Mid-Term Notes",
@@ -977,7 +977,7 @@
   },
   {
     "bookmark_id": 130,
-    "user_id": 317,
+    "user_id": 2,
     "type": "note",
     "note_id": 76,
     "resource_id": null,
@@ -994,7 +994,7 @@
   },
   {
     "bookmark_id": 131,
-    "user_id": 27,
+    "user_id": 2,
     "type": "resource/lecture",
     "note_id": null,
     "resource_id": 212,
@@ -1095,7 +1095,7 @@
   },
   {
     "bookmark_id": 142,
-    "user_id": 375,
+    "user_id": 2,
     "type": "note",
     "note_id": 67,
     "resource_id": null,
@@ -1112,7 +1112,7 @@
   },
   {
     "bookmark_id": 143,
-    "user_id": 375,
+    "user_id": 2,
     "type": "note",
     "note_id": 83,
     "resource_id": null,
@@ -1129,7 +1129,7 @@
   },
   {
     "bookmark_id": 144,
-    "user_id": 375,
+    "user_id": 2,
     "type": "note",
     "note_id": 69,
     "resource_id": null,
