@@ -154,14 +154,6 @@ export default function AuthPage() {
           </div>
         </div>
       </div>
-
-      {/* Trust Badge */}
-      <div className="mt-10 flex items-center gap-3 opacity-30 hover:opacity-60 transition-opacity duration-500 group cursor-default">
-        <Shield size={14} className="text-emerald-500 group-hover:animate-bounce" />
-        <p className="text-gray-400 text-[10px] font-bold tracking-[0.3em] uppercase">
-          End-to-End Encrypted &bull; 256-bit AES
-        </p>
-      </div>
     </div>
   );
 }
