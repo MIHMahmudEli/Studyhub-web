@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import coursesData from '@/lib/data/courses.json';
 
@@ -239,23 +240,20 @@ export default function UploadPage() {
     setStatus({ type: '', message: 'Uploading...' });
 
     try {
-      // 1. Upload to Cloudinary
-      const cloudinaryData = new FormData();
-      cloudinaryData.append('file', file);
-      cloudinaryData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
-      cloudinaryData.append('folder', 'notes');
-      
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-      const cloudinaryRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
-        method: 'POST',
-        body: cloudinaryData,
-      });
-      
-      const cloudinaryResult = await cloudinaryRes.json();
-      
-      if (!cloudinaryResult.secure_url) {
-        throw new Error(cloudinaryResult.error?.message || 'file upload failed');
-      }
+      // 1. Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('notes')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('notes')
+        .getPublicUrl(filePath);
 
       setStatus({ type: '', message: 'Saving to database...' });
 
@@ -267,10 +265,10 @@ export default function UploadPage() {
         title: formData.title,
         description: formData.description,
         courseTitle: courseObj.courseTitle,
-        code: courseObj.code || 'GEN', // Default to 'GEN' for General if code is empty in JSON
+        code: courseObj.code || 'N/A',
         dept: courseObj.dept,
-        file_path: cloudinaryResult.secure_url,
-        file_type: cloudinaryResult.format || file.type.split('/')[1] || 'pdf',
+        file_path: publicUrl,
+        file_type: fileExt || 'pdf',
       };
 
       // 4. Send to our API
