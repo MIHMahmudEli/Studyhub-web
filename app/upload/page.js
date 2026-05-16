@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import coursesData from '@/lib/data/courses.json';
 
@@ -239,25 +240,22 @@ export default function UploadPage() {
     setStatus({ type: '', message: 'Uploading...' });
 
     try {
-      // 1. Upload to Cloudinary
-      const cloudinaryData = new FormData();
-      cloudinaryData.append('file', file);
-      cloudinaryData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
-      cloudinaryData.append('folder', 'notes');
-      
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-      const cloudinaryRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
-        method: 'POST',
-        body: cloudinaryData,
-      });
-      
-      const cloudinaryResult = await cloudinaryRes.json();
-      
-      if (!cloudinaryResult.secure_url) {
-        throw new Error(cloudinaryResult.error?.message || 'file upload failed');
-      }
+      // 1. Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `${fileName}`;
 
-      setStatus({ type: '', message: 'Saving to database...' });
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('notes')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('notes')
+        .getPublicUrl(filePath);
+
+      // setStatus({ type: '', message: 'Saving to database...' });
 
       // 2. Find course details
       const courseObj = coursesData.find(c => c.courseTitle === formData.course);
@@ -267,10 +265,10 @@ export default function UploadPage() {
         title: formData.title,
         description: formData.description,
         courseTitle: courseObj.courseTitle,
-        code: courseObj.code || 'GEN', // Default to 'GEN' for General if code is empty in JSON
+        code: courseObj.code || 'N/A',
         dept: courseObj.dept,
-        file_path: cloudinaryResult.secure_url,
-        file_type: cloudinaryResult.format || file.type.split('/')[1] || 'pdf',
+        file_path: publicUrl,
+        file_type: fileExt || 'pdf',
       };
 
       // 4. Send to our API
@@ -279,11 +277,11 @@ export default function UploadPage() {
         body: payload,
       });
 
-      setStatus({ type: 'success', message: 'Note uploaded successfully! +5 Points earned.' });
+      setStatus({ type: 'success', message: 'Note uploaded successfully! Wait for the admin approval.' });
       setFile(null);
       setFormData({ title: '', course: '', description: '' });
       setCourseSearch('');
-      setTimeout(() => router.push('/notes'), 2000);
+      // Redirect removed as requested
     } catch (err) {
       console.error('Upload error:', err);
       setStatus({ type: 'error', message: err.message || 'Failed to upload note.' });
@@ -363,7 +361,7 @@ export default function UploadPage() {
                     {errors.course && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.course}</p>}
 
                     {showSuggestions && filteredCourses.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-hidden z-50 backdrop-blur-xl">
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-y-auto max-h-[300px] z-50 backdrop-blur-xl">
                         {filteredCourses.map((course) => (
                           <button
                             key={`${course.courseTitle}-${course.code}`}

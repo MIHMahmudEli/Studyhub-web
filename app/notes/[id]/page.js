@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
+import { useAuth } from '@/context/AuthContext';
 import { 
   ArrowLeft, 
   Download, 
@@ -11,24 +12,75 @@ import {
   FileText, 
   Star,
   Clock,
-  User
+  User,
+  ExternalLink,
+  Maximize2,
+  Minimize
 } from 'lucide-react';
-import notesDemoData from '@/lib/data/notesDemo.json';
+import { apiRequest } from '@/lib/api';
 
 export default function NotePreviewPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { checkUser } = useAuth();
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isReadingMode, setIsReadingMode] = useState(false);
 
   useEffect(() => {
-    // Simulate fetching the note
-    const foundNote = notesDemoData.find(n => n.id === parseInt(id));
-    if (foundNote) {
-      setNote(foundNote);
+    const fetchNote = async () => {
+      try {
+        setLoading(true);
+        const data = await apiRequest(`/notes/${id}`);
+        // Map backend fields to frontend expected fields
+        const mappedNote = {
+          ...data,
+          subject: data.courseTitle,
+          course_code: data.code,
+          created_at: data.created_at ? new Date(data.created_at).toLocaleDateString() : 'N/A'
+        };
+        setNote(mappedNote);
+      } catch (error) {
+        console.error('Failed to fetch note:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchNote();
     }
-    setLoading(false);
   }, [id]);
+
+  const handleDownload = async () => {
+    if (note?.file_path) {
+      try {
+        // 1. Increment download count in database
+        await apiRequest(`/notes/${id}/download`, { method: 'POST' });
+        
+        // 2. Refresh user points (this calls /auth/me and updates AuthContext)
+        checkUser();
+
+        // 3. Update local state for note downloads
+        setNote(prev => ({ ...prev, downloads: (prev.downloads || 0) + 1 }));
+
+        // 4. Trigger actual file download
+        const response = await fetch(note.file_path);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${note.title}.${note.file_type}`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error('Download failed:', err);
+        window.open(note.file_path, '_blank');
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -79,13 +131,32 @@ export default function NotePreviewPage() {
           </button>
 
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-5 py-3 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-xl text-[10px] font-black tracking-widest uppercase text-slate-500 hover:text-purple-500 transition-all shadow-sm">
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+              }}
+              className="flex items-center gap-2 px-5 py-3 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-xl text-[10px] font-black tracking-widest uppercase text-slate-500 hover:text-purple-500 transition-all shadow-sm"
+            >
               <Share2 size={14} /> Share
+            </button>
+            <button 
+              onClick={() => setIsReadingMode(!isReadingMode)}
+              className={`flex items-center gap-2 px-5 py-3 border rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm ${
+                isReadingMode 
+                ? 'bg-blue-500 text-white border-blue-400 hover:bg-blue-600' 
+                : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.05] text-slate-500 hover:text-blue-500'
+              }`}
+            >
+              {isReadingMode ? <><Minimize size={14} /> Exit Reading Mode</> : <><Maximize2 size={14} /> Reading Mode</>}
             </button>
             <button className="flex items-center gap-2 px-5 py-3 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-xl text-[10px] font-black tracking-widest uppercase text-slate-500 hover:text-blue-500 transition-all shadow-sm">
               <BookmarkPlus size={14} /> Save
             </button>
-            <button className="flex items-center gap-2 px-6 py-3 bg-purple-500 text-white rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-purple-600 transition-all shadow-xl shadow-purple-500/20">
+            <button 
+              onClick={handleDownload}
+              className="flex items-center gap-2 px-6 py-3 bg-purple-500 text-white rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-purple-600 transition-all shadow-xl shadow-purple-500/20"
+            >
               <Download size={14} /> Download
             </button>
           </div>
@@ -93,23 +164,45 @@ export default function NotePreviewPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Preview Area */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="w-full aspect-[4/3] md:aspect-[16/9] bg-slate-100 dark:bg-black/20 border border-slate-200 dark:border-white/[0.05] rounded-[2rem] flex flex-col items-center justify-center shadow-inner overflow-hidden relative group">
-              {/* Fallback preview UI if real PDF rendering isn't active */}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent z-0" />
-              <FileText size={64} className="text-purple-500/20 mb-6 z-10" />
-              <h3 className="text-lg font-black uppercase tracking-widest text-slate-400 z-10">Document Preview</h3>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-2 z-10">
-                {note.file_path.split('/').pop()}
-              </p>
-              
-              {/* Optional Iframe for real preview if files are hosted */}
-              {/* <iframe src={`/${note.file_path}`} className="absolute inset-0 w-full h-full" /> */}
+          <div className={`${isReadingMode ? 'lg:col-span-3' : 'lg:col-span-2'} space-y-6 transition-all duration-500`}>
+            <div className={`w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.05] rounded-[2rem] overflow-hidden shadow-2xl relative group transition-all duration-500 ${isReadingMode ? 'h-[85vh]' : 'aspect-[3/4] md:h-[800px]'}`}>
+              {note.file_path ? (
+                note.file_type?.toLowerCase() === 'pdf' ? (
+                  <iframe 
+                    src={`${note.file_path}#toolbar=0&navpanes=0`} 
+                    className="w-full h-full border-none"
+                    title={note.title}
+                  />
+                ) : ['jpg', 'jpeg', 'png', 'webp'].includes(note.file_type?.toLowerCase()) ? (
+                  <img 
+                    src={note.file_path} 
+                    alt={note.title}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full space-y-4">
+                    <FileText size={64} className="text-purple-500/20" />
+                    <h3 className="text-lg font-black uppercase tracking-widest text-slate-400">Preview Not Available</h3>
+                    <button 
+                      onClick={handleDownload}
+                      className="px-6 py-3 bg-purple-500/10 text-purple-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-purple-500 hover:text-white transition-all"
+                    >
+                      Download to View
+                    </button>
+                  </div>
+                )
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full">
+                  <FileText size={64} className="text-purple-500/20 mb-6" />
+                  <h3 className="text-lg font-black uppercase tracking-widest text-slate-400">No Document Found</h3>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Metadata Sidebar */}
-          <div className="space-y-6">
+          {!isReadingMode && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right duration-500">
             <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-8 shadow-sm">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-500 text-[9px] font-black uppercase tracking-[0.3em] mb-6">
                 {note.course_code || 'GENERAL STUDY'}
@@ -148,7 +241,7 @@ export default function NotePreviewPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Added</span>
                   <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
-                    <Clock size={12} /> {note.created_at.split(' ')[0]}
+                    <Clock size={12} /> {note.created_at}
                   </span>
                 </div>
               </div>
@@ -162,11 +255,12 @@ export default function NotePreviewPage() {
               <div>
                 <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Uploaded By</p>
                 <p className="text-[11px] font-black uppercase tracking-widest group-hover:text-purple-500 transition-colors">
-                  Student #{note.uploader_id}
+                  {note.uploader?.name || `Student #${note.uploader_id}`}
                 </p>
               </div>
             </div>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </main>

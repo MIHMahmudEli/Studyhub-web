@@ -20,6 +20,7 @@ import {
   Star,
   Download
 } from 'lucide-react';
+import { apiRequest } from '@/lib/api';
 import notesDemoData from '@/lib/data/notesDemo.json';
 
 // Helper to select icon based on subject
@@ -37,30 +38,51 @@ const getSubjectIcon = (subject, code) => {
 
 export default function NotesPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [allNotes, setAllNotes] = useState([]);
   const [displayedNotes, setDisplayedNotes] = useState([]);
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 12;
   
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const observer = useRef();
 
+  // Fetch notes from database
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/auth');
+    const fetchNotes = async () => {
+      try {
+        setLoading(true);
+        const data = await apiRequest('/notes');
+        // Map backend fields to frontend expected fields
+        const mappedNotes = data.map(note => ({
+          ...note,
+          subject: note.courseTitle,
+          course_code: note.code
+        }));
+        setAllNotes(mappedNotes);
+      } catch (error) {
+        console.error('Failed to fetch notes:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchNotes();
     }
-  }, [user, authLoading, router]);
+  }, [user]);
 
   // Filter notes based on search query
   const filteredNotes = useMemo(() => {
-    if (!searchQuery) return notesDemoData;
+    if (!searchQuery) return allNotes;
     const q = searchQuery.toLowerCase();
-    return notesDemoData.filter(note => 
+    return allNotes.filter(note => 
       note.title.toLowerCase().includes(q) || 
-      note.subject.toLowerCase().includes(q) ||
-      note.course_code.toLowerCase().includes(q)
+      (note.subject && note.subject.toLowerCase().includes(q)) ||
+      (note.course_code && note.course_code.toLowerCase().includes(q))
     );
-  }, [searchQuery]);
+  }, [searchQuery, allNotes]);
 
   // Handle infinite scroll pagination locally
   useEffect(() => {
@@ -79,7 +101,13 @@ export default function NotesPage() {
     if (node) observer.current.observe(node);
   }, [hasMore]);
 
-  if (authLoading || (!user && !authLoading)) return null;
+  if (authLoading || loading) return (
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+      <div className="w-10 h-10 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+    </div>
+  );
+
+  if (!user && !authLoading) return null;
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-32">
