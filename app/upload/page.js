@@ -236,17 +236,47 @@ export default function UploadPage() {
     }
 
     setLoading(true);
-    try {
-      const data = new FormData();
-      data.append('file', file);
-      data.append('title', formData.title);
-      data.append('course', formData.course);
-      data.append('description', formData.description);
+    setStatus({ type: '', message: 'Uploading...' });
 
-      await apiRequest('/notes/upload', {
+    try {
+      // 1. Upload to Cloudinary
+      const cloudinaryData = new FormData();
+      cloudinaryData.append('file', file);
+      cloudinaryData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+      cloudinaryData.append('folder', 'notes');
+      
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+      const cloudinaryRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
         method: 'POST',
-        body: data,
-        headers: { 'Content-Type': 'multipart/form-data' }
+        body: cloudinaryData,
+      });
+      
+      const cloudinaryResult = await cloudinaryRes.json();
+      
+      if (!cloudinaryResult.secure_url) {
+        throw new Error(cloudinaryResult.error?.message || 'file upload failed');
+      }
+
+      setStatus({ type: '', message: 'Saving to database...' });
+
+      // 2. Find course details
+      const courseObj = coursesData.find(c => c.courseTitle === formData.course);
+
+      // 3. Prepare payload for our API
+      const payload = {
+        title: formData.title,
+        description: formData.description,
+        courseTitle: courseObj.courseTitle,
+        code: courseObj.code || 'GEN', // Default to 'GEN' for General if code is empty in JSON
+        dept: courseObj.dept,
+        file_path: cloudinaryResult.secure_url,
+        file_type: cloudinaryResult.format || file.type.split('/')[1] || 'pdf',
+      };
+
+      // 4. Send to our API
+      await apiRequest('/notes', {
+        method: 'POST',
+        body: payload,
       });
 
       setStatus({ type: 'success', message: 'Note uploaded successfully! +5 Points earned.' });
@@ -255,6 +285,7 @@ export default function UploadPage() {
       setCourseSearch('');
       setTimeout(() => router.push('/notes'), 2000);
     } catch (err) {
+      console.error('Upload error:', err);
       setStatus({ type: 'error', message: err.message || 'Failed to upload note.' });
     } finally {
       setLoading(false);
