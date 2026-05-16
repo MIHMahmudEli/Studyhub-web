@@ -26,6 +26,7 @@ export default function NotePreviewPage() {
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isReadingMode, setIsReadingMode] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -47,10 +48,33 @@ export default function NotePreviewPage() {
       }
     };
 
+    const checkBookmarkStatus = async () => {
+      try {
+        const bookmarks = await apiRequest('/bookmarks');
+        const bookmarked = bookmarks.some(b => b.note_id === parseInt(id));
+        setIsBookmarked(bookmarked);
+      } catch (error) {
+        console.error('Failed to check bookmark status:', error);
+      }
+    };
+
     if (id) {
       fetchNote();
+      checkBookmarkStatus();
     }
   }, [id]);
+
+  const handleBookmarkToggle = async () => {
+    try {
+      const res = await apiRequest('/bookmarks/toggle', {
+        method: 'POST',
+        body: { note_id: parseInt(id) }
+      });
+      setIsBookmarked(res.bookmarked);
+    } catch (err) {
+      console.error('Failed to toggle bookmark:', err);
+    }
+  };
 
   const handleDownload = async () => {
     if (note?.file_path) {
@@ -150,8 +174,16 @@ export default function NotePreviewPage() {
             >
               {isReadingMode ? <><Minimize size={14} /> Exit Reading Mode</> : <><Maximize2 size={14} /> Reading Mode</>}
             </button>
-            <button className="flex items-center gap-2 px-5 py-3 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-xl text-[10px] font-black tracking-widest uppercase text-slate-500 hover:text-blue-500 transition-all shadow-sm">
-              <BookmarkPlus size={14} /> Save
+            <button 
+              onClick={handleBookmarkToggle}
+              className={`flex items-center gap-2 px-5 py-3 border rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm ${
+                isBookmarked 
+                ? 'bg-purple-500 text-white border-purple-400' 
+                : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.05] text-slate-500 hover:text-purple-500'
+              }`}
+            >
+              <BookmarkPlus size={14} className={isBookmarked ? "fill-white" : ""} /> 
+              {isBookmarked ? 'Saved' : 'Save'}
             </button>
             <button 
               onClick={handleDownload}

@@ -16,16 +16,18 @@ import {
   Globe,
   Database,
   Code2,
-  Network
+  Network,
+  Trash2
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import bookmarkData from '@/lib/data/bookmark.json';
-import { courseList as masterResources } from '@/lib/data/resourceData';
+import { apiRequest } from '@/lib/api';
 
 export default function BookmarkPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [bookmarks, setBookmarks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
@@ -33,52 +35,64 @@ export default function BookmarkPage() {
     if (!authLoading && !user) router.push('/auth');
   }, [user, authLoading, router]);
 
-  // Map master data for course details (counts, codes, depts)
-  const masterCourseMap = useMemo(() => {
-    const map = {};
-    masterResources.forEach(item => {
-      if (!map[item.courseTitle]) {
-        map[item.courseTitle] = {
-          code: item.course_code,
-          dept: item.dept,
-          count: 0
-        };
+  useEffect(() => {
+    const fetchBookmarks = async () => {
+      if (!user) return;
+      try {
+        setLoading(true);
+        const data = await apiRequest('/bookmarks');
+        setBookmarks(data);
+      } catch (err) {
+        console.error('Failed to fetch bookmarks:', err);
+      } finally {
+        setLoading(false);
       }
-      map[item.courseTitle].count += 1;
-    });
-    return map;
-  }, []);
+    };
+    fetchBookmarks();
+  }, [user]);
+
+  const handleRemoveBookmark = async (id) => {
+    try {
+      await apiRequest(`/bookmarks/${id}`, { method: 'DELETE' });
+      setBookmarks(prev => prev.filter(b => b.id !== id));
+    } catch (err) {
+      console.error('Failed to remove bookmark:', err);
+    }
+  };
 
   // Unified Filtering & Grouping Logic
   const { savedNotes, savedCourses, savedResources } = useMemo(() => {
-    if (!user) return { savedNotes: [], savedCourses: [], savedResources: [] };
-
-    // Strict User-Level Filtering
-    const myBookmarks = bookmarkData.filter(b => b.user_id === user.id);
-
     return {
-      savedNotes: myBookmarks.filter(b => b.note_id !== null),
-      savedResources: myBookmarks.filter(b => b.resource_id !== null),
-      savedCourses: myBookmarks.filter(b => b.courseTitle !== null && b.note_id === null && b.resource_id === null)
+      savedNotes: bookmarks.filter(b => b.note_id !== null),
+      savedResources: bookmarks.filter(b => b.resource_id !== null),
+      savedCourses: bookmarks.filter(b => b.subject_name !== null && !b.note_id && !b.resource_id)
     };
-  }, [user]);
+  }, [bookmarks]);
 
   // Search filtering
   const filterBySearch = (items) => {
     if (!searchQuery) return items;
     const q = searchQuery.toLowerCase();
     return items.filter(item => {
-      const target = item.matched_item || {};
+      const target = item.note || {};
       return (
-        item.courseTitle?.toLowerCase().includes(q) ||
+        item.subject_name?.toLowerCase().includes(q) ||
         target.title?.toLowerCase().includes(q) ||
-        target.subject?.toLowerCase().includes(q) ||
-        target.course_code?.toLowerCase().includes(q)
+        target.courseTitle?.toLowerCase().includes(q) ||
+        target.code?.toLowerCase().includes(q)
       );
     });
   };
 
+  const filteredCourses = useMemo(() => filterBySearch(savedCourses), [savedCourses, searchQuery]);
+  const filteredNotes = useMemo(() => filterBySearch(savedNotes), [savedNotes, searchQuery]);
+  const filteredResources = useMemo(() => filterBySearch(savedResources), [savedResources, searchQuery]);
+
+  const hasSearchResults = filteredCourses.length > 0 || filteredNotes.length > 0 || filteredResources.length > 0;
+  const isArchiveEmpty = savedNotes.length === 0 && savedCourses.length === 0 && savedResources.length === 0;
+
   const getCourseIcon = (title) => {
+    if (!title) return BookOpen;
     const t = title.toLowerCase();
     if (t.includes('network')) return Network;
     if (t.includes('compiler') || t.includes('software')) return Code2;
@@ -88,7 +102,14 @@ export default function BookmarkPage() {
     return BookOpen;
   };
 
-  if (authLoading || !user) return null;
+  if (authLoading || !user || loading) {
+    if (loading && user) return (
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+      </div>
+    );
+    return null;
+  }
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-32">
@@ -125,7 +146,7 @@ export default function BookmarkPage() {
 
           <div className="space-y-20">
             {/* 1. SAVED RESOURCES SECTION (Majestic Grid - Course Hub) */}
-            {savedCourses.length > 0 && (
+            {filteredCourses.length > 0 && (
               <section className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20 shadow-lg">
@@ -135,18 +156,29 @@ export default function BookmarkPage() {
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filterBySearch(savedCourses).map((course, idx) => {
-                    const masterData = masterCourseMap[course.courseTitle] || {};
-                    const Icon = getCourseIcon(course.courseTitle);
-                    const slug = course.courseTitle.replace(/\s+/g, '-').toLowerCase();
+                  {filteredCourses.map((course, idx) => {
+                    const Icon = getCourseIcon(course.subject_name);
+                    const slug = course.subject_name.replace(/\s+/g, '-').toLowerCase();
 
                     return (
                       <div 
-                        key={course.bookmark_id}
+                        key={course.id}
                         onClick={() => router.push(`/resources/${slug}`)}
                         className="group relative h-[300px] md:h-[360px] bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-700 hover:-translate-y-1 md:hover:-translate-y-2 shadow-sm animate-in fade-in slide-in-from-bottom-6 fill-mode-both"
                         style={{ animationDelay: `${idx * 40}ms` }}
                       >
+                        <div className="absolute top-6 right-6 z-20">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveBookmark(course.id);
+                            }}
+                            className="p-2 rounded-lg bg-red-500/10 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 hover:text-white"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+
                         <div className="absolute inset-0 rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                         
                         <div className="relative z-10 w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] md:rounded-[2rem] bg-white dark:bg-[var(--background)] border border-slate-200 dark:border-white/[0.05] flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-all duration-700">
@@ -156,12 +188,11 @@ export default function BookmarkPage() {
                         <div className="relative z-10 text-center space-y-3">
                           <div className="space-y-2">
                             <p className="text-[7px] md:text-[7.5px] font-black tracking-[0.2em] text-blue-500/80 uppercase px-3 py-1 rounded-full bg-blue-500/5 border border-blue-500/10 inline-block">
-                              {masterData.dept?.split(' ')[2] || 'FACULTY'}
+                              COURSE ARCHIVE
                             </p>
                             <div className="space-y-1">
-                              <p className="text-[8px] font-black tracking-[0.2em] text-slate-500 uppercase">{masterData.code || 'SAVED'}</p>
                               <h3 className="text-[11px] md:text-[12px] font-black uppercase tracking-widest leading-relaxed max-w-[180px] mx-auto group-hover:text-blue-500 transition-colors duration-500">
-                                {course.courseTitle}
+                                {course.subject_name}
                               </h3>
                             </div>
                           </div>
@@ -171,7 +202,7 @@ export default function BookmarkPage() {
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                             <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-400">
-                              {masterData.count || 0} Files
+                              View Resources
                             </span>
                           </div>
                           <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
@@ -186,7 +217,7 @@ export default function BookmarkPage() {
             )}
 
             {/* 2. SAVED NOTES SECTION */}
-            {savedNotes.length > 0 && (
+            {filteredNotes.length > 0 && (
               <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 border border-purple-500/20 shadow-lg">
@@ -195,39 +226,50 @@ export default function BookmarkPage() {
                   <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Notes</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filterBySearch(savedNotes).map((note) => (
-                    <Link 
-                      key={note.bookmark_id} 
-                      href={`/notes/${note.note_id}`}
-                      className="group bg-slate-50/50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.05] rounded-[1.5rem] p-6 hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 flex flex-col justify-between h-[180px] shadow-sm"
-                    >
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[7px] font-black px-2 py-0.5 rounded bg-blue-500/10 text-blue-500 uppercase tracking-widest">
-                            {note.matched_item?.course_code || 'STUDY'}
-                          </span>
-                          <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest truncate">
-                            {note.courseTitle || note.matched_item?.subject || 'GENERAL'}
-                          </span>
-                        </div>
-                        <h3 className="text-[11px] font-black uppercase tracking-widest leading-relaxed line-clamp-2 pr-6 group-hover:text-blue-500 transition-colors">
-                          {note.matched_item?.title || 'Course Notes'}
-                        </h3>
+                  {filteredNotes.map((bookmark) => {
+                    const note = bookmark.note;
+                    if (!note) return null;
+                    return (
+                      <div key={bookmark.id} className="relative group">
+                        <Link 
+                          href={`/notes/${note.id}`}
+                          className="block bg-slate-50/50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.05] rounded-[1.5rem] p-6 hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 flex flex-col justify-between h-[180px] shadow-sm"
+                        >
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[7px] font-black px-2 py-0.5 rounded bg-blue-500/10 text-blue-500 uppercase tracking-widest">
+                                {note.code || 'STUDY'}
+                              </span>
+                              <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest truncate">
+                                {note.courseTitle || 'GENERAL'}
+                              </span>
+                            </div>
+                            <h3 className="text-[11px] font-black uppercase tracking-widest leading-relaxed line-clamp-2 pr-6 group-hover:text-blue-500 transition-colors">
+                              {note.title}
+                            </h3>
+                          </div>
+                          <div className="mt-4 flex items-center justify-between border-t border-slate-200/50 dark:border-white/[0.05] pt-4">
+                            <div className="flex items-center gap-2 text-[8px] font-black text-slate-400 uppercase tracking-widest">
+                              <Clock size={10} /> {new Date(note.created_at).toLocaleDateString()}
+                            </div>
+                            <ChevronRight size={14} className="text-slate-300 group-hover:translate-x-1 transition-all" />
+                          </div>
+                        </Link>
+                        <button 
+                          onClick={() => handleRemoveBookmark(bookmark.id)}
+                          className="absolute top-4 right-4 p-2 rounded-lg bg-red-500/10 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-lg"
+                        >
+                          <Trash2 size={12} />
+                        </button>
                       </div>
-                      <div className="mt-4 flex items-center justify-between border-t border-slate-200/50 dark:border-white/[0.05] pt-4">
-                        <div className="flex items-center gap-2 text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                          <Clock size={10} /> {note.created_at?.split(' ')[0]}
-                        </div>
-                        <ChevronRight size={14} className="text-slate-300 group-hover:translate-x-1 transition-all" />
-                      </div>
-                    </Link>
-                  ))}
+                    );
+                  })}
                 </div>
               </section>
             )}
 
             {/* 3. SAVED FILES SECTION */}
-            {savedResources.length > 0 && (
+            {filteredResources.length > 0 && (
               <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 border border-green-500/20 shadow-lg">
@@ -236,9 +278,9 @@ export default function BookmarkPage() {
                   <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Files</h2>
                 </div>
                 <div className="space-y-3">
-                  {filterBySearch(savedResources).map((resource) => (
+                  {filteredResources.map((resource) => (
                     <div 
-                      key={resource.bookmark_id} 
+                      key={resource.id} 
                       className="group bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-2xl p-4 md:p-5 flex items-center justify-between hover:border-blue-500/30 transition-all duration-500 shadow-sm"
                     >
                       <div className="flex items-center gap-4 min-w-0">
@@ -247,33 +289,50 @@ export default function BookmarkPage() {
                         </div>
                         <div className="min-w-0">
                           <h4 className="text-[10px] md:text-[11px] font-black uppercase tracking-widest truncate pr-4 group-hover:text-blue-500 transition-colors">
-                            {resource.matched_item?.title || 'Resource File'}
+                            Resource File #{resource.resource_id}
                           </h4>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest">
-                              {resource.courseTitle || resource.matched_item?.course_code}
-                            </span>
-                            <div className="w-0.5 h-0.5 rounded-full bg-slate-300 dark:bg-white/[0.1]" />
-                            <span className="text-[7px] font-bold text-blue-500/70 uppercase tracking-widest">
-                              {resource.matched_item?.file_type || 'PDF'}
+                              RESOURCE ARCHIVE
                             </span>
                           </div>
                         </div>
                       </div>
-                      <button 
-                        onClick={() => router.push(`/resources/${(resource.courseTitle || resource.matched_item?.subject || '').replace(/\s+/g, '-').toLowerCase()}`)}
-                        className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.05] text-slate-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm"
-                      >
-                        <ArrowRight size={14} />
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button 
+                          onClick={() => handleRemoveBookmark(resource.id)}
+                          className="p-2.5 rounded-xl bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                        <button 
+                          onClick={() => router.push(`/resources`)}
+                          className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.05] text-slate-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm"
+                        >
+                          <ArrowRight size={14} />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
               </section>
             )}
 
-            {/* EMPTY STATE */}
-            {savedNotes.length === 0 && savedCourses.length === 0 && savedResources.length === 0 && (
+            {/* SEARCH EMPTY STATE */}
+            {searchQuery && !hasSearchResults && !isArchiveEmpty && (
+              <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-white/[0.03] flex items-center justify-center text-slate-300 mb-6">
+                  <Search size={32} />
+                </div>
+                <h3 className="text-lg font-black uppercase tracking-widest mb-2">No Matching Archives</h3>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest max-w-[250px]">
+                  We couldn't find any bookmarks matching "{searchQuery}". Try different keywords.
+                </p>
+              </div>
+            )}
+
+            {/* FULL EMPTY STATE */}
+            {isArchiveEmpty && (
               <div className="flex flex-col items-center justify-center py-20 text-center space-y-6">
                 <div className="w-20 h-20 rounded-[2rem] bg-slate-100 dark:bg-white/[0.03] flex items-center justify-center text-slate-300">
                   <Bookmark size={32} />
