@@ -13,7 +13,9 @@ import {
   Star,
   Clock,
   User,
-  ExternalLink
+  ExternalLink,
+  Maximize2,
+  Minimize
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 
@@ -23,6 +25,7 @@ export default function NotePreviewPage() {
   const { checkUser } = useAuth();
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isReadingMode, setIsReadingMode] = useState(false);
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -137,6 +140,16 @@ export default function NotePreviewPage() {
             >
               <Share2 size={14} /> Share
             </button>
+            <button 
+              onClick={() => setIsReadingMode(!isReadingMode)}
+              className={`flex items-center gap-2 px-5 py-3 border rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm ${
+                isReadingMode 
+                ? 'bg-blue-500 text-white border-blue-400 hover:bg-blue-600' 
+                : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.05] text-slate-500 hover:text-blue-500'
+              }`}
+            >
+              {isReadingMode ? <><Minimize size={14} /> Exit Reading Mode</> : <><Maximize2 size={14} /> Reading Mode</>}
+            </button>
             <button className="flex items-center gap-2 px-5 py-3 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-xl text-[10px] font-black tracking-widest uppercase text-slate-500 hover:text-blue-500 transition-all shadow-sm">
               <BookmarkPlus size={14} /> Save
             </button>
@@ -151,8 +164,8 @@ export default function NotePreviewPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Preview Area */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="w-full aspect-[4/3] md:aspect-[16/9] bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.05] rounded-[2rem] overflow-hidden shadow-2xl relative group">
+          <div className={`${isReadingMode ? 'lg:col-span-3' : 'lg:col-span-2'} space-y-6 transition-all duration-500`}>
+            <div className={`w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.05] rounded-[2rem] overflow-hidden shadow-2xl relative group transition-all duration-500 ${isReadingMode ? 'h-[85vh]' : 'aspect-[3/4] md:h-[800px]'}`}>
               {note.file_path ? (
                 note.file_type?.toLowerCase() === 'pdf' ? (
                   <iframe 
@@ -188,7 +201,8 @@ export default function NotePreviewPage() {
           </div>
 
           {/* Metadata Sidebar */}
-          <div className="space-y-6">
+          {!isReadingMode && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right duration-500">
             <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-8 shadow-sm">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-500 text-[9px] font-black uppercase tracking-[0.3em] mb-6">
                 {note.course_code || 'GENERAL STUDY'}
@@ -245,7 +259,8 @@ export default function NotePreviewPage() {
                 </p>
               </div>
             </div>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </main>
