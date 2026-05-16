@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
+import { useAuth } from '@/context/AuthContext';
 import { 
   ArrowLeft, 
   Download, 
@@ -19,6 +20,7 @@ import { apiRequest } from '@/lib/api';
 export default function NotePreviewPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { checkUser } = useAuth();
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -53,10 +55,13 @@ export default function NotePreviewPage() {
         // 1. Increment download count in database
         await apiRequest(`/notes/${id}/download`, { method: 'POST' });
         
-        // 2. Update local state
+        // 2. Refresh user points (this calls /auth/me and updates AuthContext)
+        checkUser();
+
+        // 3. Update local state for note downloads
         setNote(prev => ({ ...prev, downloads: (prev.downloads || 0) + 1 }));
 
-        // 3. Trigger actual file download
+        // 4. Trigger actual file download
         const response = await fetch(note.file_path);
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
