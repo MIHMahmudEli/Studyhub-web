@@ -44,6 +44,8 @@ export default function NotesPage() {
   const [loading, setLoading] = useState(true);
   const itemsPerPage = 12;
   
+  const [sortBy, setSortBy] = useState('latest');
+  
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const observer = useRef();
@@ -53,7 +55,7 @@ export default function NotesPage() {
     const fetchNotes = async () => {
       try {
         setLoading(true);
-        const data = await apiRequest('/notes');
+        const data = await apiRequest(`/notes?sort=${sortBy}`);
         // Map backend fields to frontend expected fields
         const mappedNotes = data.map(note => ({
           ...note,
@@ -71,7 +73,7 @@ export default function NotesPage() {
     if (user) {
       fetchNotes();
     }
-  }, [user]);
+  }, [user, sortBy]);
 
   // Filter notes based on search query
   const filteredNotes = useMemo(() => {
@@ -146,11 +148,25 @@ export default function NotesPage() {
                 />
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto">
-                <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-2xl text-[10px] font-black tracking-widest uppercase text-slate-500 hover:text-purple-500 transition-all shadow-sm">
-                  <Filter size={14} /> Filter
+                <button 
+                  onClick={() => setSortBy('most-downloaded')}
+                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 border rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm ${
+                    sortBy === 'most-downloaded' 
+                    ? 'bg-blue-500 text-white border-blue-400' 
+                    : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.05] text-slate-500 hover:text-blue-500'
+                  }`}
+                >
+                  <Download size={14} /> Trending
                 </button>
-                <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-2xl text-[10px] font-black tracking-widest uppercase text-slate-500 hover:text-purple-500 transition-all shadow-sm">
-                  <SortDesc size={14} /> Top Rated
+                <button 
+                  onClick={() => setSortBy(sortBy === 'top-rated' ? 'latest' : 'top-rated')}
+                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 border rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm ${
+                    sortBy === 'top-rated' 
+                    ? 'bg-amber-500 text-white border-amber-400' 
+                    : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.05] text-slate-500 hover:text-amber-500'
+                  }`}
+                >
+                  <Star size={14} /> Top Rated
                 </button>
               </div>
             </div>
