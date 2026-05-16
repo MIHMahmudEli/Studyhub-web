@@ -6,7 +6,8 @@ import PodiumCard from '@/components/leaderboard/PodiumCard';
 import RankingsTable from '@/components/leaderboard/RankingsTable';
 import { 
   Trophy,
-  Calendar
+  Calendar,
+  Users
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
@@ -27,43 +28,26 @@ export default function LeaderboardPage() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    const fetchLeaderboard = async () => {
-      setLoading(true);
+    const fetchLeaderboard = async (showSpinner = true) => {
+      if (showSpinner) setLoading(true);
       try {
-        // Assuming endpoint takes a month filter: /users/leaderboard?period=current
         const response = await apiRequest(`/users/leaderboard?period=${activeTab}`);
         setLeaders(response.data || response);
       } catch (err) {
-        // Mock data for different months
-        const mockCurrent = [
-          { id: 1, name: 'Sarah Jenkins', points: 2850, uploads: 42 },
-          { id: 2, name: 'Marcus Chen', points: 2420, uploads: 38 },
-          { id: 3, name: 'Elena Rodriguez', points: 2100, uploads: 31 },
-          { id: 4, name: 'David Kim', points: 1850, uploads: 25 },
-          { id: 5, name: 'Amara Okafor', points: 1620, uploads: 22 },
-          { id: 6, name: 'Julian Vance', points: 1400, uploads: 19 },
-          { id: 7, name: 'Sofia Rossi', points: 1250, uploads: 15 },
-          { id: 8, name: 'Liam O\'Brien', points: 1100, uploads: 12 },
-        ];
-        
-        const mockPrevious = [
-          { id: 10, name: 'Alex Rivera', points: 3100, uploads: 48 },
-          { id: 1, name: 'Sarah Jenkins', points: 2600, uploads: 39 },
-          { id: 2, name: 'Marcus Chen', points: 2150, uploads: 35 },
-          { id: 11, name: 'Zoe Thorne', points: 1900, uploads: 28 },
-          { id: 3, name: 'Elena Rodriguez', points: 1750, uploads: 24 },
-          { id: 12, name: 'Omar Sy', points: 1500, uploads: 21 },
-          { id: 13, name: 'Yuna Sato', points: 1300, uploads: 18 },
-          { id: 4, name: 'David Kim', points: 1200, uploads: 15 },
-        ];
-        
-        setLeaders(activeTab === 'current' ? mockCurrent : mockPrevious);
+        console.error('Failed to fetch leaderboard:', err);
+        setLeaders([]);
       } finally {
-        setLoading(false);
+        if (showSpinner) setLoading(false);
       }
     };
 
-    if (user) fetchLeaderboard();
+    if (user) {
+      fetchLeaderboard(true);
+      
+      // Auto-refresh every 30 seconds to keep points live
+      const interval = setInterval(() => fetchLeaderboard(false), 30000);
+      return () => clearInterval(interval);
+    }
   }, [user, activeTab]);
 
   const topThree = useMemo(() => leaders.slice(0, 3), [leaders]);
@@ -117,13 +101,34 @@ export default function LeaderboardPage() {
             <div className="flex items-center justify-center py-40">
               <div className="w-10 h-10 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
             </div>
+          ) : leaders.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-32 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <div className="w-24 h-24 bg-slate-100 dark:bg-white/[0.03] rounded-3xl flex items-center justify-center mb-8 border border-slate-200 dark:border-white/[0.05]">
+                <Users size={40} className="text-slate-300" />
+              </div>
+              <h3 className="text-xl font-black uppercase tracking-widest text-slate-400 mb-2">No Students Found</h3>
+              <p className="text-slate-500 text-sm max-w-xs font-medium">
+                It looks like no students joined during this period yet. Be the first one to lead the way!
+              </p>
+            </div>
           ) : (
             <div className="animate-in fade-in duration-700">
               {/* Podium Section */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20 items-end">
-                <PodiumCard user={topThree[1]} rank={2} color="silver" />
-                <PodiumCard user={topThree[0]} rank={1} color="gold" isLarge />
-                <PodiumCard user={topThree[2]} rank={3} color="bronze" />
+                {/* Gold (Rank 1) - First on mobile, Middle on desktop */}
+                <div className="order-1 md:order-2">
+                  <PodiumCard user={topThree[0]} rank={1} color="gold" isLarge />
+                </div>
+                
+                {/* Silver (Rank 2) - Second on mobile, Left on desktop */}
+                <div className="order-2 md:order-1">
+                  <PodiumCard user={topThree[1]} rank={2} color="silver" />
+                </div>
+                
+                {/* Bronze (Rank 3) - Third on both */}
+                <div className="order-3 md:order-3">
+                  <PodiumCard user={topThree[2]} rank={3} color="bronze" />
+                </div>
               </div>
 
               {/* Rankings Table */}
