@@ -50,6 +50,13 @@ export default function NotePreviewPage() {
   const handleDownload = async () => {
     if (note?.file_path) {
       try {
+        // 1. Increment download count in database
+        await apiRequest(`/notes/${id}/download`, { method: 'POST' });
+        
+        // 2. Update local state
+        setNote(prev => ({ ...prev, downloads: (prev.downloads || 0) + 1 }));
+
+        // 3. Trigger actual file download
         const response = await fetch(note.file_path);
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
