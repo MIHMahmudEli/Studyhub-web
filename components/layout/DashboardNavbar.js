@@ -63,17 +63,6 @@ export default function DashboardNavbar() {
           </div>
         </div>
 
-        {/* Search & Profile Section */}
-        <div className="flex-1 max-w-[500px] hidden md:block">
-          <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search for notes, subjects, or peers..." 
-              className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl py-2.5 pl-12 pr-4 text-sm text-[var(--foreground)] placeholder:text-slate-500 focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all"
-            />
-          </div>
-        </div>
 
         <div className="flex items-center gap-4">
           {/* Theme Toggle */}
