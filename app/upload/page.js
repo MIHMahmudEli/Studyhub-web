@@ -255,7 +255,7 @@ export default function UploadPage() {
         .from('notes')
         .getPublicUrl(filePath);
 
-      setStatus({ type: '', message: 'Saving to database...' });
+      // setStatus({ type: '', message: 'Saving to database...' });
 
       // 2. Find course details
       const courseObj = coursesData.find(c => c.courseTitle === formData.course);
@@ -277,11 +277,11 @@ export default function UploadPage() {
         body: payload,
       });
 
-      setStatus({ type: 'success', message: 'Note uploaded successfully! +5 Points earned.' });
+      setStatus({ type: 'success', message: 'Note uploaded successfully! Wait for the admin approval.' });
       setFile(null);
       setFormData({ title: '', course: '', description: '' });
       setCourseSearch('');
-      setTimeout(() => router.push('/notes'), 2000);
+      // Redirect removed as requested
     } catch (err) {
       console.error('Upload error:', err);
       setStatus({ type: 'error', message: err.message || 'Failed to upload note.' });
@@ -361,7 +361,7 @@ export default function UploadPage() {
                     {errors.course && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.course}</p>}
 
                     {showSuggestions && filteredCourses.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-hidden z-50 backdrop-blur-xl">
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-y-auto max-h-[300px] z-50 backdrop-blur-xl">
                         {filteredCourses.map((course) => (
                           <button
                             key={`${course.courseTitle}-${course.code}`}
