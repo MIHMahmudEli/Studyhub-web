@@ -496,40 +496,49 @@ export default function AdminDashboardPage() {
 
           {/* Section Tabs (Pending Notes vs Pending Resources vs User Management) */}
           <div className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
-            <div className="flex items-center gap-2 sm:gap-4 border-b border-[var(--card-border)] pb-4 overflow-x-auto scrollbar-none w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4 border-b border-[var(--card-border)] pb-4 w-full">
               <button
                 onClick={() => setActiveTab('pending')}
-                className={`px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all shrink-0 cursor-pointer ${
+                className={`w-full py-3 sm:py-3.5 px-4 rounded-xl sm:rounded-2xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer flex items-center justify-between sm:justify-center gap-2 ${
                   activeTab === 'pending'
-                    ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20'
+                    ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20 scale-[1.01] sm:scale-105'
                     : 'bg-[var(--card-bg)] text-slate-500 border border-[var(--card-border)] hover:text-[var(--foreground)]'
                 }`}
               >
-                Pending Notes ({pendingNotes.length})
+                <span>Pending Notes</span>
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${activeTab === 'pending' ? 'bg-white/20 text-white' : 'bg-purple-500/10 text-purple-500'}`}>
+                  {pendingNotes.length}
+                </span>
               </button>
               <button
                 onClick={() => setActiveTab('resources')}
-                className={`px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all shrink-0 cursor-pointer ${
+                className={`w-full py-3 sm:py-3.5 px-4 rounded-xl sm:rounded-2xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer flex items-center justify-between sm:justify-center gap-2 ${
                   activeTab === 'resources'
-                    ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20'
+                    ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20 scale-[1.01] sm:scale-105'
                     : 'bg-[var(--card-bg)] text-slate-500 border border-[var(--card-border)] hover:text-[var(--foreground)]'
                 }`}
               >
-                Pending Resources ({pendingResources.length})
+                <span>Pending Resources</span>
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${activeTab === 'resources' ? 'bg-white/20 text-white' : 'bg-amber-500/10 text-amber-500'}`}>
+                  {pendingResources.length}
+                </span>
               </button>
               <button
                 onClick={() => setActiveTab('users')}
-                className={`px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all shrink-0 cursor-pointer ${
+                className={`w-full py-3 sm:py-3.5 px-4 rounded-xl sm:rounded-2xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer flex items-center justify-between sm:justify-center gap-2 ${
                   activeTab === 'users'
-                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
+                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20 scale-[1.01] sm:scale-105'
                     : 'bg-[var(--card-bg)] text-slate-500 border border-[var(--card-border)] hover:text-[var(--foreground)]'
                 }`}
               >
-                User Directory ({totalUsersCount})
+                <span>User Directory</span>
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${activeTab === 'users' ? 'bg-white/20 text-white' : 'bg-blue-500/10 text-blue-500'}`}>
+                  {totalUsersCount}
+                </span>
               </button>
             </div>
 
-            {/* TAB 1: Pending Notes Table */}
+            {/* TAB 1: Pending Notes Table & Mobile Cards */}
             {activeTab === 'pending' && (
               <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-xl overflow-hidden backdrop-blur-xl animate-in fade-in duration-500">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
@@ -553,71 +562,122 @@ export default function AdminDashboardPage() {
                     <p className="text-xs font-bold text-slate-500">There are no pending notes awaiting moderation at this time.</p>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/[0.1]">
-                    <table className="w-full text-left border-collapse min-w-[650px]">
-                      <thead>
-                        <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
-                          <th className="pb-4 pl-4 whitespace-nowrap">Note Title & Course</th>
-                          <th className="pb-4 whitespace-nowrap">Uploader</th>
-                          <th className="pb-4 whitespace-nowrap">File Type</th>
-                          <th className="pb-4 text-right pr-4 whitespace-nowrap">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
-                        {pendingNotes.map((note) => (
-                          <tr key={note.id} className="hover:bg-white/[0.02] transition-colors">
-                            <td className="py-4 sm:py-5 pl-4 max-w-[250px] sm:max-w-[300px]">
-                              <p className="font-black text-sm text-[var(--foreground)] truncate">{note.title}</p>
-                              <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 truncate">{note.course_code} • {note.dept}</p>
-                            </td>
-                            <td className="py-4 sm:py-5 whitespace-nowrap">
-                              <div className="flex items-center gap-2">
-                                {note.uploader?.profile_pic ? (
-                                  <img src={note.uploader.profile_pic} alt="" className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
-                                ) : (
-                                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-[10px] font-black text-white shrink-0">
-                                    {note.uploader?.name?.[0] || 'U'}
-                                  </div>
-                                )}
-                                <span className="text-slate-300 truncate max-w-[120px]">{note.uploader?.name || `User #${note.uploader_id}`}</span>
-                              </div>
-                            </td>
-                            <td className="py-4 sm:py-5 whitespace-nowrap">
-                              <a 
-                                href={note.file_path} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-500 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition-colors uppercase text-[10px] tracking-widest font-black shrink-0"
-                              >
-                                {note.file_type || 'PDF'} <ArrowRight size={12} />
-                              </a>
-                            </td>
-                            <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap">
-                              <div className="inline-flex items-center gap-1.5 sm:gap-2">
-                                <button 
-                                  onClick={() => handleNoteStatus(note.id, 'approved')}
-                                  className="px-3.5 py-2 sm:px-4 sm:py-2 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-xl border border-emerald-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
-                                >
-                                  <CheckCircle2 size={14} /> Approve
-                                </button>
-                                <button 
-                                  onClick={() => handleNoteStatus(note.id, 'rejected')}
-                                  className="px-3.5 py-2 sm:px-4 sm:py-2 bg-red-500/10 text-red-50 hover:bg-red-50 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
-                                >
-                                  <XCircle size={14} /> Reject
-                                </button>
-                              </div>
-                            </td>
+                  <>
+                    {/* Desktop Table View (Hidden on mobile below md) */}
+                    <div className="hidden md:block overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/[0.1]">
+                      <table className="w-full text-left border-collapse min-w-[650px]">
+                        <thead>
+                          <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
+                            <th className="pb-4 pl-4 whitespace-nowrap">Note Title & Course</th>
+                            <th className="pb-4 whitespace-nowrap">Uploader</th>
+                            <th className="pb-4 whitespace-nowrap">File Type</th>
+                            <th className="pb-4 text-right pr-4 whitespace-nowrap">Actions</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </thead>
+                        <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
+                          {pendingNotes.map((note) => (
+                            <tr key={note.id} className="hover:bg-white/[0.02] transition-colors">
+                              <td className="py-4 sm:py-5 pl-4 max-w-[250px] sm:max-w-[300px]">
+                                <p className="font-black text-sm text-[var(--foreground)] truncate">{note.title}</p>
+                                <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 truncate">{note.course_code} • {note.dept}</p>
+                              </td>
+                              <td className="py-4 sm:py-5 whitespace-nowrap">
+                                <div className="flex items-center gap-2">
+                                  {note.uploader?.profile_pic ? (
+                                    <img src={note.uploader.profile_pic} alt="" className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
+                                  ) : (
+                                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                                      {note.uploader?.name?.[0] || 'U'}
+                                    </div>
+                                  )}
+                                  <span className="text-slate-300 truncate max-w-[120px]">{note.uploader?.name || `User #${note.uploader_id}`}</span>
+                                </div>
+                              </td>
+                              <td className="py-4 sm:py-5 whitespace-nowrap">
+                                <a 
+                                  href={note.file_path} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-500 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition-colors uppercase text-[10px] tracking-widest font-black shrink-0"
+                                >
+                                  {note.file_type || 'PDF'} <ArrowRight size={12} />
+                                </a>
+                              </td>
+                              <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap">
+                                <div className="inline-flex items-center gap-1.5 sm:gap-2">
+                                  <button 
+                                    onClick={() => handleNoteStatus(note.id, 'approved')}
+                                    className="px-3.5 py-2 sm:px-4 sm:py-2 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-xl border border-emerald-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
+                                  >
+                                    <CheckCircle2 size={14} /> Approve
+                                  </button>
+                                  <button 
+                                    onClick={() => handleNoteStatus(note.id, 'rejected')}
+                                    className="px-3.5 py-2 sm:px-4 sm:py-2 bg-red-500/10 text-red-50 hover:bg-red-50 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
+                                  >
+                                    <XCircle size={14} /> Reject
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Mobile Card View (Hidden on desktop md and above) */}
+                    <div className="block md:hidden space-y-4">
+                      {pendingNotes.map((note) => (
+                        <div key={note.id} className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-5 space-y-4 shadow-sm hover:border-purple-500/30 transition-all">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0 flex-1">
+                              <h4 className="font-black text-sm text-[var(--foreground)] truncate">{note.title}</h4>
+                              <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 truncate">{note.course_code} • {note.dept}</p>
+                            </div>
+                            <a 
+                              href={note.file_path} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-500/10 text-blue-500 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition-colors uppercase text-[9px] tracking-widest font-black shrink-0"
+                            >
+                              {note.file_type || 'PDF'} <ArrowRight size={10} />
+                            </a>
+                          </div>
+
+                          <div className="flex items-center gap-2 pt-2 border-t border-[var(--card-border)]">
+                            {note.uploader?.profile_pic ? (
+                              <img src={note.uploader.profile_pic} alt="" className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
+                            ) : (
+                              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                                {note.uploader?.name?.[0] || 'U'}
+                              </div>
+                            )}
+                            <span className="text-xs text-slate-300 truncate">{note.uploader?.name || `User #${note.uploader_id}`}</span>
+                          </div>
+
+                          <div className="flex items-center gap-2 pt-2 border-t border-[var(--card-border)]">
+                            <button 
+                              onClick={() => handleNoteStatus(note.id, 'approved')}
+                              className="flex-1 py-2.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-xl border border-emerald-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center justify-center gap-1.5 cursor-pointer"
+                            >
+                              <CheckCircle2 size={14} /> Approve
+                            </button>
+                            <button 
+                              onClick={() => handleNoteStatus(note.id, 'rejected')}
+                              className="flex-1 py-2.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center justify-center gap-1.5 cursor-pointer"
+                            >
+                              <XCircle size={14} /> Reject
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
                 )}
               </div>
             )}
 
-            {/* TAB 2: Pending Resources Table */}
+            {/* TAB 2: Pending Resources Table & Mobile Cards */}
             {activeTab === 'resources' && (
               <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-xl overflow-hidden backdrop-blur-xl animate-in fade-in duration-500">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
@@ -641,71 +701,122 @@ export default function AdminDashboardPage() {
                     <p className="text-xs font-bold text-slate-500">There are no pending resources awaiting moderation at this time.</p>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/[0.1]">
-                    <table className="w-full text-left border-collapse min-w-[650px]">
-                      <thead>
-                        <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
-                          <th className="pb-4 pl-4 whitespace-nowrap">Resource Title & Subject</th>
-                          <th className="pb-4 whitespace-nowrap">Uploader</th>
-                          <th className="pb-4 whitespace-nowrap">File Type</th>
-                          <th className="pb-4 text-right pr-4 whitespace-nowrap">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
-                        {pendingResources.map((res) => (
-                          <tr key={res.id} className="hover:bg-white/[0.02] transition-colors">
-                            <td className="py-4 sm:py-5 pl-4 max-w-[250px] sm:max-w-[300px]">
-                              <p className="font-black text-sm text-[var(--foreground)] truncate">{res.title}</p>
-                              <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 truncate">{res.subject || res.course_code || 'RESOURCE'} • {res.term?.toUpperCase() || 'MID'}</p>
-                            </td>
-                            <td className="py-4 sm:py-5 whitespace-nowrap">
-                              <div className="flex items-center gap-2">
-                                {res.uploader?.profile_pic ? (
-                                  <img src={res.uploader.profile_pic} alt="" className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
-                                ) : (
-                                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-[10px] font-black text-white shrink-0">
-                                    {res.uploader?.name?.[0] || 'U'}
-                                  </div>
-                                )}
-                                <span className="text-slate-300 truncate max-w-[120px]">{res.uploader?.name || `User #${res.uploader_id}`}</span>
-                              </div>
-                            </td>
-                            <td className="py-4 sm:py-5 whitespace-nowrap">
-                              <a 
-                                href={res.file_path} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-500 rounded-lg border border-amber-500/20 hover:bg-amber-500/20 transition-colors uppercase text-[10px] tracking-widest font-black shrink-0"
-                              >
-                                {res.file_type || 'PDF'} <ExternalLink size={12} />
-                              </a>
-                            </td>
-                            <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap">
-                              <div className="inline-flex items-center gap-1.5 sm:gap-2">
-                                <button 
-                                  onClick={() => handleResourceStatus(res.id, 'approved')}
-                                  className="px-3.5 py-2 sm:px-4 sm:py-2 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-xl border border-emerald-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
-                                >
-                                  <CheckCircle2 size={14} /> Approve
-                                </button>
-                                <button 
-                                  onClick={() => handleResourceStatus(res.id, 'rejected')}
-                                  className="px-3.5 py-2 sm:px-4 sm:py-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
-                                >
-                                  <XCircle size={14} /> Reject
-                                </button>
-                              </div>
-                            </td>
+                  <>
+                    {/* Desktop Table View (Hidden on mobile below md) */}
+                    <div className="hidden md:block overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/[0.1]">
+                      <table className="w-full text-left border-collapse min-w-[650px]">
+                        <thead>
+                          <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
+                            <th className="pb-4 pl-4 whitespace-nowrap">Resource Title & Subject</th>
+                            <th className="pb-4 whitespace-nowrap">Uploader</th>
+                            <th className="pb-4 whitespace-nowrap">File Type</th>
+                            <th className="pb-4 text-right pr-4 whitespace-nowrap">Actions</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </thead>
+                        <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
+                          {pendingResources.map((res) => (
+                            <tr key={res.id} className="hover:bg-white/[0.02] transition-colors">
+                              <td className="py-4 sm:py-5 pl-4 max-w-[250px] sm:max-w-[300px]">
+                                <p className="font-black text-sm text-[var(--foreground)] truncate">{res.title}</p>
+                                <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 truncate">{res.subject || res.course_code || 'RESOURCE'} • {res.term?.toUpperCase() || 'MID'}</p>
+                              </td>
+                              <td className="py-4 sm:py-5 whitespace-nowrap">
+                                <div className="flex items-center gap-2">
+                                  {res.uploader?.profile_pic ? (
+                                    <img src={res.uploader.profile_pic} alt="" className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
+                                  ) : (
+                                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                                      {res.uploader?.name?.[0] || 'U'}
+                                    </div>
+                                  )}
+                                  <span className="text-slate-300 truncate max-w-[120px]">{res.uploader?.name || `User #${res.uploader_id}`}</span>
+                                </div>
+                              </td>
+                              <td className="py-4 sm:py-5 whitespace-nowrap">
+                                <a 
+                                  href={res.file_path} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-500 rounded-lg border border-amber-500/20 hover:bg-amber-500/20 transition-colors uppercase text-[10px] tracking-widest font-black shrink-0"
+                                >
+                                  {res.file_type || 'PDF'} <ExternalLink size={12} />
+                                </a>
+                              </td>
+                              <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap">
+                                <div className="inline-flex items-center gap-1.5 sm:gap-2">
+                                  <button 
+                                    onClick={() => handleResourceStatus(res.id, 'approved')}
+                                    className="px-3.5 py-2 sm:px-4 sm:py-2 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-xl border border-emerald-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
+                                  >
+                                    <CheckCircle2 size={14} /> Approve
+                                  </button>
+                                  <button 
+                                    onClick={() => handleResourceStatus(res.id, 'rejected')}
+                                    className="px-3.5 py-2 sm:px-4 sm:py-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
+                                  >
+                                    <XCircle size={14} /> Reject
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Mobile Card View (Hidden on desktop md and above) */}
+                    <div className="block md:hidden space-y-4">
+                      {pendingResources.map((res) => (
+                        <div key={res.id} className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-5 space-y-4 shadow-sm hover:border-amber-500/30 transition-all">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0 flex-1">
+                              <h4 className="font-black text-sm text-[var(--foreground)] truncate">{res.title}</h4>
+                              <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 truncate">{res.subject || res.course_code || 'RESOURCE'} • {res.term?.toUpperCase() || 'MID'}</p>
+                            </div>
+                            <a 
+                              href={res.file_path} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-500/10 text-amber-500 rounded-lg border border-amber-500/20 hover:bg-amber-500/20 transition-colors uppercase text-[9px] tracking-widest font-black shrink-0"
+                            >
+                              {res.file_type || 'PDF'} <ExternalLink size={10} />
+                            </a>
+                          </div>
+
+                          <div className="flex items-center gap-2 pt-2 border-t border-[var(--card-border)]">
+                            {res.uploader?.profile_pic ? (
+                              <img src={res.uploader.profile_pic} alt="" className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
+                            ) : (
+                              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                                {res.uploader?.name?.[0] || 'U'}
+                              </div>
+                            )}
+                            <span className="text-xs text-slate-300 truncate">{res.uploader?.name || `User #${res.uploader_id}`}</span>
+                          </div>
+
+                          <div className="flex items-center gap-2 pt-2 border-t border-[var(--card-border)]">
+                            <button 
+                              onClick={() => handleResourceStatus(res.id, 'approved')}
+                              className="flex-1 py-2.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-xl border border-emerald-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center justify-center gap-1.5 cursor-pointer"
+                            >
+                              <CheckCircle2 size={14} /> Approve
+                            </button>
+                            <button 
+                              onClick={() => handleResourceStatus(res.id, 'rejected')}
+                              className="flex-1 py-2.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center justify-center gap-1.5 cursor-pointer"
+                            >
+                              <XCircle size={14} /> Reject
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
                 )}
               </div>
             )}
 
-            {/* TAB 3: User Management Table */}
+            {/* TAB 3: User Management Table & Mobile Cards */}
             {activeTab === 'users' && (
               <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-xl overflow-hidden backdrop-blur-xl animate-in fade-in duration-500">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
@@ -744,96 +855,168 @@ export default function AdminDashboardPage() {
                     <p className="text-xs font-bold text-slate-500">No users matched your search criteria.</p>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/[0.1]">
-                    <table className="w-full text-left border-collapse min-w-[750px]">
-                      <thead>
-                        <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
-                          <th className="pb-4 pl-4 whitespace-nowrap">User & Email</th>
-                          <th className="pb-4 whitespace-nowrap">Current Role</th>
-                          <th className="pb-4 whitespace-nowrap">Points</th>
-                          <th className="pb-4 text-right pr-4 whitespace-nowrap">Management Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
-                        {usersList.map((u) => (
-                          <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
-                            <td className="py-4 sm:py-5 pl-4 max-w-[220px] sm:max-w-[250px]">
-                              <div className="flex items-center gap-3">
-                                {u.profile_pic ? (
-                                  <img src={u.profile_pic} alt="" className="w-8 h-8 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
-                                ) : (
-                                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-black text-white shrink-0">
-                                    {u.name?.[0] || 'U'}
-                                  </div>
-                                )}
-                                <div className="truncate">
-                                  <p className="font-black text-sm text-[var(--foreground)] truncate flex items-center gap-2">
-                                    {u.name} {u.banned && <span className="text-[9px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded-md uppercase tracking-widest border border-red-500/20 shrink-0">Banned</span>}
-                                  </p>
-                                  <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email || 'No email available'}</p>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="py-4 sm:py-5 whitespace-nowrap">
-                              <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${
-                                u.role === 'admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                                u.role === 'moderator' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
-                                'bg-blue-500/10 text-blue-500 border-blue-500/20'
-                              }`}>
-                                {u.role || 'student'}
-                              </span>
-                            </td>
-                            <td className="py-4 sm:py-5 font-black text-amber-500 whitespace-nowrap">
-                              {u.points || 0} PTS
-                            </td>
-                            <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap">
-                              <div className="inline-flex items-center gap-1.5 sm:gap-2">
-                                {u.role !== 'admin' && (
-                                  <>
-                                    {u.role === 'student' && user.role === 'admin' && (
-                                      <button 
-                                        onClick={() => handlePromoteUser(u.id)}
-                                        className="px-3 py-2 bg-purple-500/10 text-purple-500 hover:bg-purple-500 hover:text-white rounded-xl border border-purple-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
-                                        title="Promote to Moderator"
-                                      >
-                                        <Award size={14} /> Promote
-                                      </button>
-                                    )}
-
-                                    {u.role === 'moderator' && user.role === 'admin' && (
-                                      <button 
-                                        onClick={() => handleDemoteUser(u.id)}
-                                        className="px-3 py-2 bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white rounded-xl border border-amber-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
-                                        title="Demote to Student"
-                                      >
-                                        <UserX size={14} /> Demote
-                                      </button>
-                                    )}
-
-                                    <button 
-                                      onClick={() => handleBanUser(u.id, u.banned)}
-                                      className={`px-3 py-2 rounded-xl border transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0 ${
-                                        u.banned 
-                                          ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white border-emerald-500/20' 
-                                          : 'bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border-red-500/20'
-                                      }`}
-                                    >
-                                      {u.banned ? <><UserCheck size={14} /> Unban</> : <><UserX size={14} /> Ban</>}
-                                    </button>
-                                  </>
-                                )}
-                              </div>
-                            </td>
+                  <>
+                    {/* Desktop Table View (Hidden on mobile below md) */}
+                    <div className="hidden md:block overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/[0.1]">
+                      <table className="w-full text-left border-collapse min-w-[750px]">
+                        <thead>
+                          <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
+                            <th className="pb-4 pl-4 whitespace-nowrap">User & Email</th>
+                            <th className="pb-4 whitespace-nowrap">Current Role</th>
+                            <th className="pb-4 whitespace-nowrap">Points</th>
+                            <th className="pb-4 text-right pr-4 whitespace-nowrap">Management Actions</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
+                          {usersList.map((u) => (
+                            <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
+                              <td className="py-4 sm:py-5 pl-4 max-w-[220px] sm:max-w-[250px]">
+                                <div className="flex items-center gap-3">
+                                  {u.profile_pic ? (
+                                    <img src={u.profile_pic} alt="" className="w-8 h-8 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
+                                  ) : (
+                                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-black text-white shrink-0">
+                                      {u.name?.[0] || 'U'}
+                                    </div>
+                                  )}
+                                  <div className="truncate">
+                                    <p className="font-black text-sm text-[var(--foreground)] truncate flex items-center gap-2">
+                                      {u.name} {u.banned && <span className="text-[9px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded-md uppercase tracking-widest border border-red-500/20 shrink-0">Banned</span>}
+                                    </p>
+                                    <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email || 'No email available'}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-4 sm:py-5 whitespace-nowrap">
+                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${
+                                  u.role === 'admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                                  u.role === 'moderator' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
+                                  'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                                }}`}>
+                                  {u.role || 'student'}
+                                </span>
+                              </td>
+                              <td className="py-4 sm:py-5 font-black text-amber-500 whitespace-nowrap">
+                                {u.points || 0} PTS
+                              </td>
+                              <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap">
+                                <div className="inline-flex items-center gap-1.5 sm:gap-2">
+                                  {u.role !== 'admin' && (
+                                    <>
+                                      {u.role === 'student' && user.role === 'admin' && (
+                                        <button 
+                                          onClick={() => handlePromoteUser(u.id)}
+                                          className="px-3 py-2 bg-purple-500/10 text-purple-500 hover:bg-purple-500 hover:text-white rounded-xl border border-purple-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
+                                          title="Promote to Moderator"
+                                        >
+                                          <Award size={14} /> Promote
+                                        </button>
+                                      )}
 
-                    {loadingUsers && usersList.length > 0 && (
-                      <div className="py-8 text-center text-xs font-bold text-slate-500 uppercase tracking-widest animate-pulse">
-                        Loading more users...
-                      </div>
-                    )}
+                                      {u.role === 'moderator' && user.role === 'admin' && (
+                                        <button 
+                                          onClick={() => handleDemoteUser(u.id)}
+                                          className="px-3 py-2 bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white rounded-xl border border-amber-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
+                                          title="Demote to Student"
+                                        >
+                                          <UserX size={14} /> Demote
+                                        </button>
+                                      )}
+
+                                      <button 
+                                        onClick={() => handleBanUser(u.id, u.banned)}
+                                        className={`px-3 py-2 rounded-xl border transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0 ${
+                                          u.banned 
+                                            ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white border-emerald-500/20' 
+                                            : 'bg-red-500/10 text-red-500 hover:bg-red-50 hover:text-white border-red-500/20'
+                                        }`}
+                                      >
+                                        {u.banned ? <><UserCheck size={14} /> Unban</> : <><UserX size={14} /> Ban</>}
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Mobile Card View (Hidden on desktop md and above) */}
+                    <div className="block md:hidden space-y-4">
+                      {usersList.map((u) => (
+                        <div key={u.id} className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-5 space-y-4 shadow-sm hover:border-blue-500/30 transition-all">
+                          <div className="flex items-center gap-3">
+                            {u.profile_pic ? (
+                              <img src={u.profile_pic} alt="" className="w-10 h-10 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
+                            ) : (
+                              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-black text-white shrink-0">
+                                {u.name?.[0] || 'U'}
+                              </div>
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="font-black text-sm text-[var(--foreground)] truncate flex items-center gap-2">
+                                {u.name} {u.banned && <span className="text-[9px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded-md uppercase tracking-widest border border-red-500/20 shrink-0">Banned</span>}
+                              </p>
+                              <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email || 'No email available'}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-2 border-t border-[var(--card-border)]">
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${
+                              u.role === 'admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                              u.role === 'moderator' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
+                              'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                            }`}>
+                              {u.role || 'student'}
+                            </span>
+                            <span className="font-black text-xs text-amber-500 shrink-0">
+                              {u.points || 0} PTS
+                            </span>
+                          </div>
+
+                          {u.role !== 'admin' && (
+                            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[var(--card-border)]">
+                              {u.role === 'student' && user.role === 'admin' && (
+                                <button 
+                                  onClick={() => handlePromoteUser(u.id)}
+                                  className="flex-1 py-2.5 bg-purple-500/10 text-purple-500 hover:bg-purple-500 hover:text-white rounded-xl border border-purple-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center justify-center gap-1 cursor-pointer"
+                                >
+                                  <Award size={14} /> Promote
+                                </button>
+                              )}
+
+                              {u.role === 'moderator' && user.role === 'admin' && (
+                                <button 
+                                  onClick={() => handleDemoteUser(u.id)}
+                                  className="flex-1 py-2.5 bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white rounded-xl border border-amber-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center justify-center gap-1 cursor-pointer"
+                                >
+                                  <UserX size={14} /> Demote
+                                </button>
+                              )}
+
+                              <button 
+                                onClick={() => handleBanUser(u.id, u.banned)}
+                                className={`flex-1 py-2.5 rounded-xl border transition-all uppercase text-[10px] tracking-widest font-black flex items-center justify-center gap-1 cursor-pointer ${
+                                  u.banned 
+                                    ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white border-emerald-500/20' 
+                                    : 'bg-red-500/10 text-red-500 hover:bg-red-50 hover:text-white border-red-500/20'
+                                }`}
+                              >
+                                {u.banned ? <><UserCheck size={14} /> Unban</> : <><UserX size={14} /> Ban</>}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {loadingUsers && usersList.length > 0 && (
+                  <div className="py-8 text-center text-xs font-bold text-slate-500 uppercase tracking-widest animate-pulse">
+                    Loading more users...
                   </div>
                 )}
               </div>
