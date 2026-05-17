@@ -372,7 +372,7 @@ export default function NotePreviewPage() {
               </div>
 
               {/* Interactive Rating Component */}
-              <RatingWidget noteId={note.id} onRateSuccess={handleRateSuccess} />
+              <RatingWidget noteId={note.id} uploaderId={note.uploader_id} onRateSuccess={handleRateSuccess} />
             </div>
           )}
         </div>

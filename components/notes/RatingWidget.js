@@ -5,7 +5,7 @@ import { Star, AlertCircle, CheckCircle2, X } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
-export default function RatingWidget({ noteId, onRateSuccess }) {
+export default function RatingWidget({ noteId, uploaderId, onRateSuccess }) {
   const { user } = useAuth();
   const [hoveredStar, setHoveredStar] = useState(0);
   const [currentRating, setCurrentRating] = useState(0);
@@ -13,6 +13,7 @@ export default function RatingWidget({ noteId, onRateSuccess }) {
   const [submitting, setSubmitting] = useState(false);
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [comment, setComment] = useState('');
+  const [allReviews, setAllReviews] = useState([]);
   const [toast, setToast] = useState({ show: false, message: '', type: 'error', isClosing: false });
 
   const showToast = (message, type = 'error') => {
@@ -30,12 +31,26 @@ export default function RatingWidget({ noteId, onRateSuccess }) {
   };
 
   useEffect(() => {
+    if (noteId) {
+      fetchAllReviews();
+    }
     if (user && noteId) {
       fetchMyRating();
     } else {
       setLoading(false);
     }
   }, [user, noteId]);
+
+  const fetchAllReviews = async () => {
+    try {
+      const data = await apiRequest(`/reviews/note/${noteId}`);
+      if (Array.isArray(data)) {
+        setAllReviews(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch reviews:', err);
+    }
+  };
 
   const fetchMyRating = async () => {
     try {
@@ -57,6 +72,10 @@ export default function RatingWidget({ noteId, onRateSuccess }) {
       showToast('Please log in to rate this note.', 'error');
       return;
     }
+    if (user.id === uploaderId) {
+      showToast('You cannot rate your own note.', 'error');
+      return;
+    }
     setCurrentRating(ratingValue);
     setShowCommentInput(true);
   };
@@ -71,6 +90,7 @@ export default function RatingWidget({ noteId, onRateSuccess }) {
       });
       setShowCommentInput(false);
       showToast('Rating saved successfully!', 'success');
+      fetchAllReviews(); // Refresh the comments list
       if (onRateSuccess) onRateSuccess();
     } catch (err) {
       console.error('Failed to submit rating:', err);
@@ -163,6 +183,40 @@ export default function RatingWidget({ noteId, onRateSuccess }) {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Reviews Display Section */}
+      {allReviews.length > 0 && (
+        <div className="mt-8 border-t border-slate-200 dark:border-white/[0.05] pt-6">
+          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 text-center">
+            {allReviews.length} Student {allReviews.length === 1 ? 'Review' : 'Reviews'}
+          </p>
+          <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+            {allReviews.map((review) => (
+              <div key={review.id} className="bg-slate-50 dark:bg-black/20 rounded-xl p-4 border border-slate-100 dark:border-white/[0.03]">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">
+                    {review.user?.name || `Student #${review.user_id}`}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <Star size={10} className="text-amber-400 fill-amber-400" />
+                    <span className="text-[9px] font-black text-amber-500">{review.rating}</span>
+                  </div>
+                </div>
+                {review.comment ? (
+                  <p className="text-[11px] font-semibold text-slate-500 leading-relaxed">
+                    "{review.comment}"
+                  </p>
+                ) : (
+                  <p className="text-[10px] font-bold text-slate-400 italic">No written feedback provided.</p>
+                )}
+                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider mt-2">
+                  {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
