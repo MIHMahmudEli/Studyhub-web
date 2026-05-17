@@ -369,16 +369,16 @@ export default function BookmarkPage() {
                         </div>
                         <div className="min-w-0">
                           <h4 className="text-[10px] md:text-[11px] font-black uppercase tracking-widest truncate pr-4 group-hover:text-blue-500 transition-colors">
-                            Resource File #{resource.resource_id}
+                            {resource.resource?.title || `Resource File #${resource.resource_id}`}
                           </h4>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest">
-                              RESOURCE ARCHIVE
+                              {resource.resource?.subject || resource.resource?.course_code || 'RESOURCE ARCHIVE'}
                             </span>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 shrink-0">
                         <button 
                           onClick={() => handleRemoveBookmark(resource.id)}
                           className="p-2.5 rounded-xl bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm"
@@ -386,10 +386,10 @@ export default function BookmarkPage() {
                           <Trash2 size={14} />
                         </button>
                         <button 
-                          onClick={() => router.push(`/resources`)}
+                          onClick={() => window.open(resource.resource?.file_path || '#', '_blank')}
                           className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.05] text-slate-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm"
                         >
-                          <ArrowRight size={14} />
+                          <Download size={14} />
                         </button>
                       </div>
                     </div>
