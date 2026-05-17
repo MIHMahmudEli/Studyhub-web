@@ -37,6 +37,11 @@ export default function DashboardNavbar() {
   const { theme, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const dynamicNavLinks = [
+    ...navLinks,
+    ...(user?.role === 'admin' || user?.role === 'moderator' ? [{ name: 'Publish Resource', href: '/resources/upload_resources', icon: UploadCloud }] : [])
+  ];
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] bg-[var(--background)]/40 backdrop-blur-xl border-b border-[var(--card-border)] px-6 py-3 transition-colors duration-500">
       <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-8">
@@ -49,7 +54,7 @@ export default function DashboardNavbar() {
 
           {/* Navigation Links - Desktop */}
           <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => {
+            {dynamicNavLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
               return (
@@ -112,7 +117,7 @@ export default function DashboardNavbar() {
                   </li>
                   <li className="flex items-center justify-between gap-3">
                     <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Approved notes</span>
-                    <span className="text-[9px] font-black text-emerald-500 shrink-0 bg-emerald-500/10 dark:bg-emerald-500/5 px-2 py-0.5 rounded-md border border-emerald-500/20">+5 PTS</span>
+                    <span className="text-[9px] font-black text-emerald-500 shrink-0 bg-emerald-500/10 dark:emerald-500/5 px-2 py-0.5 rounded-md border border-emerald-500/20">+5 PTS</span>
                   </li>
                 </ul>
               </div>
@@ -169,7 +174,7 @@ export default function DashboardNavbar() {
           {/* Nav Links */}
           <div className="flex flex-col gap-2">
             <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 px-4 mb-1">Navigation</p>
-            {navLinks.map((link) => {
+            {dynamicNavLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
               return (
