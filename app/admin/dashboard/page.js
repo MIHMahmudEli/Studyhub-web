@@ -28,7 +28,8 @@ import {
   Activity,
   Settings,
   TrendingUp,
-  Flame
+  Flame,
+  LayoutDashboard
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -583,6 +584,30 @@ export default function AdminDashboardPage() {
                   </h4>
                   <p className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1 truncate">
                     Review student notes <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform shrink-0" />
+                  </p>
+                </div>
+              </Link>
+
+              {/* Feature Card: Student Dashboard */}
+              <Link 
+                href="/dashboard"
+                className="group relative overflow-hidden p-6 sm:p-8 bg-gradient-to-br from-indigo-500/10 via-blue-500/5 to-[var(--card-bg)] border-2 border-indigo-500/30 rounded-[2rem] sm:rounded-[2.5rem] hover:border-indigo-500 shadow-lg hover:shadow-indigo-500/10 transition-all hover:-translate-y-1 duration-500 flex flex-col justify-between h-[180px] sm:h-[200px]"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl -z-10 group-hover:bg-indigo-500/20 transition-all" />
+                <div className="flex items-center justify-between">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-500/20 border border-indigo-500/30 rounded-2xl flex items-center justify-center text-indigo-500 shadow-md group-hover:scale-110 transition-transform duration-500 shrink-0">
+                    <LayoutDashboard size={20} />
+                  </div>
+                  <span className="text-[9px] font-black px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 rounded-full uppercase tracking-widest">
+                    Student View
+                  </span>
+                </div>
+                <div>
+                  <h4 className="text-base sm:text-lg font-black text-[var(--foreground)] uppercase tracking-tight group-hover:text-indigo-500 transition-colors truncate">
+                    My Student Dashboard
+                  </h4>
+                  <p className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1 truncate">
+                    Access your student portal <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform shrink-0" />
                   </p>
                 </div>
               </Link>
