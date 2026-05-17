@@ -336,7 +336,7 @@ export default function NotePreviewPage() {
                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Rating</span>
                     <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest">
                       <Star size={12} className={parseFloat(note.avg_rating) > 0 ? "text-amber-400 fill-amber-400" : "text-slate-400"} />
-                      {parseFloat(note.avg_rating) > 0 ? note.avg_rating : 'Not Rated'}
+                      {parseFloat(note.avg_rating) > 0 ? `${Number(note.avg_rating).toFixed(2)} / 5` : 'Not Rated'}
                     </div>
                   </div>
                   <div className="flex items-center justify-between">

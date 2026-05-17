@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Star, AlertCircle, CheckCircle2, X } from 'lucide-react';
+import { Star, AlertCircle, CheckCircle2, X, Edit2, Trash2 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
@@ -13,6 +13,8 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess }) {
   const [submitting, setSubmitting] = useState(false);
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [comment, setComment] = useState('');
+  const [originalRating, setOriginalRating] = useState(0);
+  const [originalComment, setOriginalComment] = useState('');
   const [allReviews, setAllReviews] = useState([]);
   const [toast, setToast] = useState({ show: false, message: '', type: 'error', isClosing: false });
 
@@ -59,6 +61,8 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess }) {
       if (data) {
         setCurrentRating(data.rating);
         setComment(data.comment || '');
+        setOriginalRating(data.rating);
+        setOriginalComment(data.comment || '');
       }
     } catch (err) {
       // 404 means no rating yet, ignore
@@ -82,6 +86,13 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess }) {
 
   const submitRating = async () => {
     if (!user) return;
+    
+    const newComment = comment.trim();
+    if (currentRating === originalRating && newComment === originalComment.trim()) {
+      showToast('No changes detected. Please modify your rating or comment to update.', 'error');
+      return;
+    }
+
     setSubmitting(true);
     try {
       await apiRequest(`/reviews/note/${noteId}`, {
@@ -89,6 +100,8 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess }) {
         body: { rating: currentRating, comment: comment.trim() || undefined }
       });
       setShowCommentInput(false);
+      setOriginalRating(currentRating);
+      setOriginalComment(comment);
       showToast('Rating saved successfully!', 'success');
       fetchAllReviews(); // Refresh the comments list
       if (onRateSuccess) onRateSuccess();
@@ -97,6 +110,23 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess }) {
       showToast(err.message || 'Failed to save rating. Please try again.', 'error');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!confirm('Are you sure you want to delete your review?')) return;
+    try {
+      await apiRequest(`/reviews/note/${noteId}`, { method: 'DELETE' });
+      showToast('Review deleted successfully!', 'success');
+      setCurrentRating(0);
+      setComment('');
+      setOriginalRating(0);
+      setOriginalComment('');
+      fetchAllReviews();
+      if (onRateSuccess) onRateSuccess();
+    } catch (err) {
+      console.error('Failed to delete review:', err);
+      showToast('Failed to delete review. Please try again.', 'error');
     }
   };
 
@@ -187,14 +217,14 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess }) {
       )}
 
       {/* Reviews Display Section */}
-      {allReviews.length > 0 && (
-        <div className="mt-8 border-t border-slate-200 dark:border-white/[0.05] pt-6">
+      {allReviews.filter(r => r.comment && r.comment.trim() !== '').length > 0 && (
+        <div className="mt-8 border-t border-slate-200 dark:border-white/[0.05] pt-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 text-center">
-            {allReviews.length} Student {allReviews.length === 1 ? 'Review' : 'Reviews'}
+            Student Feedback
           </p>
           <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-            {allReviews.map((review) => (
-              <div key={review.id} className="bg-slate-50 dark:bg-black/20 rounded-xl p-4 border border-slate-100 dark:border-white/[0.03]">
+            {allReviews.filter(r => r.comment && r.comment.trim() !== '').map((review) => (
+              <div key={review.id} className="bg-slate-50 dark:bg-black/20 rounded-xl p-4 border border-slate-100 dark:border-white/[0.03] group relative">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">
                     {review.user?.name || `Student #${review.user_id}`}
@@ -204,16 +234,39 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess }) {
                     <span className="text-[9px] font-black text-amber-500">{review.rating}</span>
                   </div>
                 </div>
-                {review.comment ? (
-                  <p className="text-[11px] font-semibold text-slate-500 leading-relaxed">
-                    "{review.comment}"
-                  </p>
-                ) : (
-                  <p className="text-[10px] font-bold text-slate-400 italic">No written feedback provided.</p>
-                )}
-                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider mt-2">
-                  {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                <p className="text-[11px] font-semibold text-slate-500 leading-relaxed break-words">
+                  "{review.comment}"
                 </p>
+                
+                <div className="flex items-center justify-between mt-3">
+                  <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">
+                    {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </p>
+                  
+                  {user && user.id === review.user_id && (
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={() => {
+                          setCurrentRating(review.rating);
+                          setComment(review.comment);
+                          setShowCommentInput(true);
+                          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                        }}
+                        className="w-6 h-6 rounded-md bg-blue-500/10 text-blue-500 flex items-center justify-center hover:bg-blue-500 hover:text-white transition-colors cursor-pointer"
+                        title="Edit Review"
+                      >
+                        <Edit2 size={10} />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteReview(review.id)}
+                        className="w-6 h-6 rounded-md bg-red-500/10 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
+                        title="Delete Review"
+                      >
+                        <Trash2 size={10} />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
