@@ -15,6 +15,7 @@ export function middleware(request) {
 // Define which routes should be protected by this middleware
 export const config = {
   matcher: [
+    '/dashboard/:path*',
     '/notes/:path*',
     '/upload/:path*',
     '/bookmarks/:path*',

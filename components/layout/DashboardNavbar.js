@@ -12,13 +12,15 @@ import {
   User, 
   Coins,
   Sun,
-  Moon
+  Moon,
+  LayoutDashboard
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 
 const navLinks = [
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Notes', href: '/notes', icon: FileText },
   { name: 'Resources', href: '/resources', icon: Layers },
   { name: 'Bookmarks', href: '/bookmarks', icon: Bookmark },
