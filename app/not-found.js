@@ -4,6 +4,25 @@ import { Home, ArrowLeft } from 'lucide-react';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 
 export default function NotFound() {
+  const handleGoBack = () => {
+    if (typeof window !== 'undefined') {
+      const referrer = document.referrer;
+      // If referrer is on the same host, perform a full-page load to it to clear any stuck state
+      if (referrer && referrer.includes(window.location.host)) {
+        window.location.href = referrer;
+      } else {
+        window.location.href = '/notes';
+      }
+    }
+  };
+
+  const handleGoHome = (e) => {
+    e.preventDefault();
+    if (typeof window !== 'undefined') {
+      window.location.href = '/notes';
+    }
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -115,25 +134,31 @@ export default function NotFound() {
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/" className="btn-hover btn-primary-hover" style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '14px 28px',
-            background: '#2563eb',
-            color: '#fff',
-            fontWeight: 700,
-            fontSize: 15,
-            textDecoration: 'none',
-            borderRadius: 12,
-            boxShadow: '0 4px 20px rgba(37,99,235,0.3)',
-          }}>
+          <button 
+            onClick={handleGoHome}
+            className="btn-hover btn-primary-hover" 
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '14px 28px',
+              background: '#2563eb',
+              color: '#fff',
+              fontWeight: 700,
+              fontSize: 15,
+              border: 'none',
+              cursor: 'pointer',
+              textDecoration: 'none',
+              borderRadius: 12,
+              boxShadow: '0 4px 20px rgba(37,99,235,0.3)',
+            }}
+          >
             <Home size={18} />
             Back to Home
-          </Link>
+          </button>
           
           <button 
-            onClick={() => window.history.back()}
+            onClick={handleGoBack}
             className="btn-hover btn-secondary-hover"
             style={{
               display: 'inline-flex',
