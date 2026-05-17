@@ -16,6 +16,7 @@ export function middleware(request) {
 export const config = {
   matcher: [
     '/dashboard/:path*',
+    '/settings/:path*',
     '/notes/:path*',
     '/upload/:path*',
     '/bookmarks/:path*',
