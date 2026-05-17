@@ -23,7 +23,8 @@ import {
   FileText,
   ExternalLink,
   X,
-  AlertTriangle
+  AlertTriangle,
+  Search
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -32,12 +33,19 @@ export default function AdminDashboardPage() {
   
   const [pendingNotes, setPendingNotes] = useState([]);
   const [pendingResources, setPendingResources] = useState([]);
-  const [usersList, setUsersList] = useState([]);
   const [resources, setResources] = useState([]);
   const [uploadVisibility, setUploadVisibility] = useState('approved'); // 'approved' or 'pending'
   const [loadingData, setLoadingData] = useState(true);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
   const [activeTab, setActiveTab] = useState('pending'); // 'pending', 'resources', 'users'
+
+  // --- User Directory Pagination & Search State ---
+  const [usersList, setUsersList] = useState([]);
+  const [totalUsersCount, setTotalUsersCount] = useState(0);
+  const [userSearch, setUserSearch] = useState('');
+  const [usersOffset, setUsersOffset] = useState(0);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [hasMoreUsers, setHasMoreUsers] = useState(true);
 
   // ─── Toast System ────────────────────────────────────────────────────────────
   const showToast = (message, type = 'success') => {
@@ -61,7 +69,7 @@ export default function AdminDashboardPage() {
     }
   }, [user, authLoading, router]);
 
-  // 2. Fetch Admin Data
+  // 2. Fetch Initial Admin Data (Notes, Resources, Settings)
   useEffect(() => {
     if (user && (user.role === 'admin' || user.role === 'moderator')) {
       fetchAdminData();
@@ -79,10 +87,6 @@ export default function AdminDashboardPage() {
       const pendingResData = await apiRequest('/resources/admin/pending');
       setPendingResources(pendingResData || []);
 
-      // Fetch users list
-      const usersData = await apiRequest('/users/leaderboard');
-      setUsersList(usersData || []);
-
       // Fetch resources
       const resourcesData = await apiRequest('/resources');
       setResources(resourcesData || []);
@@ -99,6 +103,60 @@ export default function AdminDashboardPage() {
       setLoadingData(false);
     }
   };
+
+  // 3. User Directory Fetch & Infinite Scroll Logic
+  const fetchUsersBatch = async (searchQuery = '', offsetVal = 0, reset = false) => {
+    try {
+      setLoadingUsers(true);
+      const res = await apiRequest(`/users?search=${encodeURIComponent(searchQuery)}&limit=20&offset=${offsetVal}`);
+      if (res && res.users) {
+        if (reset) {
+          setUsersList(res.users);
+        } else {
+          setUsersList(prev => [...prev, ...res.users]);
+        }
+        setTotalUsersCount(res.total || 0);
+        const newTotalLen = (reset ? 0 : usersList.length) + res.users.length;
+        setHasMoreUsers(newTotalLen < (res.total || 0));
+        setUsersOffset(offsetVal + 20);
+      }
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+      showToast(error.message || 'Failed to fetch users.', 'error');
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  // Debounced search effect
+  useEffect(() => {
+    if (user && (user.role === 'admin' || user.role === 'moderator')) {
+      const timer = setTimeout(() => {
+        fetchUsersBatch(userSearch, 0, true);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [user, userSearch]);
+
+  const loadMoreUsers = () => {
+    if (!loadingUsers && hasMoreUsers) {
+      fetchUsersBatch(userSearch, usersOffset, false);
+    }
+  };
+
+  // Infinite scroll listener
+  useEffect(() => {
+    if (activeTab !== 'users' || loadingUsers || !hasMoreUsers) return;
+
+    const handleScroll = () => {
+      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 200) {
+        loadMoreUsers();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [activeTab, loadingUsers, hasMoreUsers, userSearch, usersOffset]);
 
   // --- Handler for Changing Visibility Setting ---
   const handleVisibilityChange = async (newVal) => {
@@ -236,7 +294,7 @@ export default function AdminDashboardPage() {
                   <Sparkles size={12} /> System Setting
                 </div>
                 <h3 className="text-xl font-black uppercase tracking-tight">Resource Upload Visibility</h3>
-                <p className="text-xs font-bold text-slate-50:0 max-w-[600px]">
+                <p className="text-xs font-bold text-slate-500 max-w-[600px]">
                   Configure the default approval status for newly uploaded academic resources. If set to PENDING, an admin must approve them before they appear in the public library.
                 </p>
               </div>
@@ -325,7 +383,7 @@ export default function AdminDashboardPage() {
                 <div className="space-y-3">
                   <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Total Users</span>
                   <h3 className="text-4xl font-black tracking-tight text-blue-500">
-                    {loadingData ? '...' : usersList.length}
+                    {totalUsersCount}
                   </h3>
                   <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Registered students</p>
                 </div>
@@ -467,7 +525,7 @@ export default function AdminDashboardPage() {
                     : 'bg-[var(--card-bg)] text-slate-500 border border-[var(--card-border)] hover:text-[var(--foreground)]'
                 }`}
               >
-                User Directory ({usersList.length})
+                User Directory ({totalUsersCount})
               </button>
             </div>
 
@@ -544,7 +602,7 @@ export default function AdminDashboardPage() {
                                 </button>
                                 <button 
                                   onClick={() => handleNoteStatus(note.id, 'rejected')}
-                                  className="px-4 py-2 bg-red-500/10 text-red-500 hover:bg-red-50 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer"
+                                  className="px-4 py-2 bg-red-500/10 text-red-50 hover:bg-red-50 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer"
                                 >
                                   <XCircle size={14} /> Reject
                                 </button>
@@ -650,18 +708,41 @@ export default function AdminDashboardPage() {
             {/* TAB 3: User Management Table */}
             {activeTab === 'users' && (
               <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-xl overflow-hidden backdrop-blur-xl animate-in fade-in duration-500">
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                   <div>
                     <h3 className="text-lg font-black uppercase tracking-tight">Platform User Directory</h3>
                     <p className="text-xs font-bold text-slate-500">Manage student access, ban violators, and assign moderator privileges.</p>
                   </div>
-                  <span className="text-xs font-black px-3 py-1 bg-blue-500/10 text-blue-500 rounded-full border border-blue-500/20 uppercase tracking-widest">
-                    Total: {usersList.length}
-                  </span>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-full sm:w-64">
+                      <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input
+                        type="text"
+                        placeholder="Search user by name, email, dept..."
+                        value={userSearch}
+                        onChange={(e) => setUserSearch(e.target.value)}
+                        className="w-full bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.05] rounded-2xl pl-10 pr-4 py-3 text-xs font-semibold focus:outline-none focus:border-blue-500/40 transition-colors text-[var(--foreground)]"
+                      />
+                      {userSearch && (
+                        <button onClick={() => setUserSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer">
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                    <span className="text-xs font-black px-4 py-3 bg-blue-500/10 text-blue-500 rounded-2xl border border-blue-500/20 uppercase tracking-widest shrink-0">
+                      Total: {totalUsersCount}
+                    </span>
+                  </div>
                 </div>
 
-                {loadingData ? (
+                {loadingUsers && usersList.length === 0 ? (
                   <div className="py-12 text-center text-xs font-bold text-slate-500 uppercase tracking-widest animate-pulse">Loading user directory...</div>
+                ) : usersList.length === 0 ? (
+                  <div className="py-16 text-center space-y-2 border-2 border-dashed border-[var(--card-border)] rounded-[2rem]">
+                    <p className="text-sm font-black uppercase tracking-widest text-[var(--foreground)]">No Users Found</p>
+                    <p className="text-xs font-bold text-slate-500">No users matched your search criteria.</p>
+                  </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
@@ -747,6 +828,12 @@ export default function AdminDashboardPage() {
                         ))}
                       </tbody>
                     </table>
+
+                    {loadingUsers && usersList.length > 0 && (
+                      <div className="py-8 text-center text-xs font-bold text-slate-500 uppercase tracking-widest animate-pulse">
+                        Loading more users...
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
