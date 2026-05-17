@@ -135,6 +135,14 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
   const saveEditComment = async () => {
     const text = editingCommentText.trim();
     if (!text) { showToast('Comment cannot be empty.', 'error'); return; }
+    
+    // Find the original comment text to avoid a pointless DB write
+    const original = allComments.find(r => r.id === editingCommentId);
+    if (original && text === original.comment.trim()) {
+      showToast('No changes — your comment is already up to date.', 'error');
+      return;
+    }
+    
     try {
       await apiRequest(`/reviews/${editingCommentId}`, {
         method: 'PUT',
@@ -150,10 +158,14 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
   };
 
   const deleteComment = async (reviewId) => {
-    if (!confirm('Delete this comment?')) return;
     try {
       await apiRequest(`/reviews/${reviewId}`, { method: 'DELETE' });
       showToast('Comment deleted.', 'success');
+      // If the deleted comment was being edited, clear the editor
+      if (editingCommentId === reviewId) {
+        setEditingCommentId(null);
+        setEditingCommentText('');
+      }
       fetchComments();
       if (onRateSuccess) onRateSuccess();
     } catch (err) {
