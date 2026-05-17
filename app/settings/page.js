@@ -22,11 +22,17 @@ import {
   Info
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import coursesData from '@/lib/data/courses.json';
 
 export default function SettingsPage() {
   const { user, loading: authLoading, checkUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
+
+  // Extract unique departments dynamically from courses.json
+  const departments = useMemo(() => {
+    return Array.from(new Set(coursesData.map(course => course.dept))).filter(Boolean).sort();
+  }, []);
 
   // Navigation tab state
   const [activeTab, setActiveTab] = useState('profile'); // profile, security, preferences
@@ -331,14 +337,19 @@ export default function SettingsPage() {
 
                       <div className="space-y-2">
                         <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Department / Major (Optional)</label>
-                        <input 
-                          type="text" 
+                        <select 
                           name="dept" 
                           value={profileForm.dept} 
                           onChange={handleProfileChange}
-                          className="w-full px-5 py-4 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors"
-                          placeholder="Leave blank or enter CS, EEE, BBA..."
-                        />
+                          className="w-full px-5 py-4 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors cursor-pointer text-slate-800 dark:text-slate-200"
+                        >
+                          <option value="" className="bg-[var(--card-bg)] text-slate-400">Select Department</option>
+                          {departments.map((d, index) => (
+                            <option key={index} value={d} className="bg-[var(--card-bg)] text-[var(--foreground)] font-semibold py-2">
+                              {d}
+                            </option>
+                          ))}
+                        </select>
                       </div>
 
                       <div className="space-y-2">
