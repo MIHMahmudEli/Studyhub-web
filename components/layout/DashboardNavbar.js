@@ -20,7 +20,6 @@ import { useTheme } from '@/context/ThemeContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 
 const navLinks = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Notes', href: '/notes', icon: FileText },
   { name: 'Resources', href: '/resources', icon: Layers },
   { name: 'Bookmarks', href: '/bookmarks', icon: Bookmark },
@@ -76,16 +75,19 @@ export default function DashboardNavbar() {
           </button>
 
           {/* User Stats */}
-          <div className="flex items-center gap-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl px-4 py-2">
+          <Link 
+            href="/dashboard" 
+            className="flex items-center gap-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl px-4 py-2 hover:border-blue-500/30 transition-all cursor-pointer group"
+          >
             <div className="flex items-center gap-2 text-amber-500">
               <Coins size={16} />
               <span className="text-xs font-black tracking-tighter">{user?.points || 0}</span>
             </div>
             <div className="w-px h-3 bg-[var(--card-border)]" />
-            <span className="text-[12px] font-black text-[var(--foreground)] uppercase tracking-tighter truncate max-w-[120px]">
+            <span className="text-[12px] font-black text-[var(--foreground)] uppercase tracking-tighter truncate max-w-[120px] group-hover:text-blue-500 transition-colors">
               {user?.name?.split(' ')[0]}
             </span>
-          </div>
+          </Link>
         </div>
       </div>
     </nav>
