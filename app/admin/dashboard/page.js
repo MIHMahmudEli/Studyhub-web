@@ -535,28 +535,30 @@ export default function AdminDashboardPage() {
                 </div>
               </Link>
 
-              {/* Feature Card: Pending Resources Tab Shortcut */}
-              <Link 
-                href="/admin/pending_resources"
-                className="group relative overflow-hidden p-6 sm:p-8 bg-[var(--card-bg)] border-2 border-[var(--card-border)] hover:border-amber-500/50 rounded-[2rem] sm:rounded-[2.5rem] shadow-lg transition-all hover:-translate-y-1 duration-500 flex flex-col justify-between h-[180px] sm:h-[200px] text-left cursor-pointer block"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-500 shadow-md group-hover:scale-110 transition-transform duration-500 shrink-0">
-                    <Layers size={20} />
+              {/* Feature Card: Pending Resources Tab Shortcut (Admin Only) */}
+              {user.role === 'admin' && (
+                <Link 
+                  href="/admin/pending_resources"
+                  className="group relative overflow-hidden p-6 sm:p-8 bg-[var(--card-bg)] border-2 border-[var(--card-border)] hover:border-amber-500/50 rounded-[2rem] sm:rounded-[2.5rem] shadow-lg transition-all hover:-translate-y-1 duration-500 flex flex-col justify-between h-[180px] sm:h-[200px] text-left cursor-pointer block"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-500 shadow-md group-hover:scale-110 transition-transform duration-500 shrink-0">
+                      <Layers size={20} />
+                    </div>
+                    <span className="text-[9px] font-black px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-full uppercase tracking-widest">
+                      {pendingResources.length} Pending
+                    </span>
                   </div>
-                  <span className="text-[9px] font-black px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-full uppercase tracking-widest">
-                    {pendingResources.length} Pending
-                  </span>
-                </div>
-                <div>
-                  <h4 className="text-base sm:text-lg font-black text-[var(--foreground)] uppercase tracking-tight group-hover:text-amber-500 transition-colors truncate">
-                    Resources Moderation
-                  </h4>
-                  <p className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1 truncate">
-                    Review library uploads <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform shrink-0" />
-                  </p>
-                </div>
-              </Link>
+                  <div>
+                    <h4 className="text-base sm:text-lg font-black text-[var(--foreground)] uppercase tracking-tight group-hover:text-amber-500 transition-colors truncate">
+                      Resources Moderation
+                    </h4>
+                    <p className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1 truncate">
+                      Review library uploads <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform shrink-0" />
+                    </p>
+                  </div>
+                </Link>
+              )}
 
               {/* Feature Card: Pending Notes Tab Shortcut */}
               <Link 
