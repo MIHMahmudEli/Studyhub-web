@@ -27,7 +27,8 @@ import {
   Search,
   Activity,
   Settings,
-  TrendingUp
+  TrendingUp,
+  Flame
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -37,6 +38,7 @@ export default function AdminDashboardPage() {
   const [pendingNotes, setPendingNotes] = useState([]);
   const [pendingResources, setPendingResources] = useState([]);
   const [resources, setResources] = useState([]);
+  const [notes, setNotes] = useState([]);
   const [uploadVisibility, setUploadVisibility] = useState('approved'); // 'approved' or 'pending'
   const [activeUsersCount, setActiveUsersCount] = useState(0);
   const [loadingData, setLoadingData] = useState(true);
@@ -94,6 +96,10 @@ export default function AdminDashboardPage() {
       // Fetch resources
       const resourcesData = await apiRequest('/resources');
       setResources(resourcesData || []);
+
+      // Fetch notes
+      const notesData = await apiRequest('/notes');
+      setNotes(notesData || []);
 
       // Fetch upload visibility setting
       const visibilityData = await apiRequest('/admin/settings/resource_upload_visibility');
@@ -351,7 +357,7 @@ export default function AdminDashboardPage() {
           )}
 
           {/* Admin Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             
             {/* Active Users (Admin Only) */}
             {user.role === 'admin' && (
@@ -470,10 +476,30 @@ export default function AdminDashboardPage() {
                   <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-orange-500">
                     {loadingData ? '...' : resources.filter(r => r.downloads > 0 || r.avg_rating > 0).length || resources.length}
                   </h3>
-                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Top rated & downloaded</p>
+                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Top downloaded</p>
                 </div>
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
                   <TrendingUp size={20} className="animate-bounce" />
+                </div>
+              </div>
+            </Link>
+
+            {/* Trending Notes Card (Admin & Moderator) */}
+            <Link 
+              href="/admin/trending_notes"
+              className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-rose-500/30 block cursor-pointer"
+            >
+              <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-rose-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="flex justify-between items-start relative z-10">
+                <div className="space-y-2 sm:space-y-3">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Trending Notes</span>
+                  <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-rose-500">
+                    {loadingData ? '...' : notes.filter(n => n.downloads > 0).length || notes.length}
+                  </h3>
+                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Top downloaded</p>
+                </div>
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
+                  <Flame size={20} className="animate-pulse" />
                 </div>
               </div>
             </Link>
