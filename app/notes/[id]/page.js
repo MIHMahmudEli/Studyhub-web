@@ -37,6 +37,7 @@ export default function NotePreviewPage() {
   // Modal display states
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [totalRatings, setTotalRatings] = useState(0);
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -336,7 +337,7 @@ export default function NotePreviewPage() {
                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Rating</span>
                     <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest">
                       <Star size={12} className={parseFloat(note.avg_rating) > 0 ? "text-amber-400 fill-amber-400" : "text-slate-400"} />
-                      {parseFloat(note.avg_rating) > 0 ? `${Number(note.avg_rating).toFixed(2)} / 5` : 'Not Rated'}
+                      {parseFloat(note.avg_rating) > 0 ? `${Number(note.avg_rating).toFixed(2)} (${totalRatings} ${totalRatings === 1 ? 'Rating' : 'Ratings'})` : 'Not Rated'}
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
@@ -372,7 +373,12 @@ export default function NotePreviewPage() {
               </div>
 
               {/* Interactive Rating Component */}
-              <RatingWidget noteId={note.id} uploaderId={note.uploader_id} onRateSuccess={handleRateSuccess} />
+              <RatingWidget 
+                noteId={note.id} 
+                uploaderId={note.uploader_id} 
+                onRateSuccess={handleRateSuccess} 
+                onReviewsFetched={setTotalRatings} 
+              />
             </div>
           )}
         </div>

@@ -5,7 +5,7 @@ import { Star, AlertCircle, CheckCircle2, X, Edit2, Trash2 } from 'lucide-react'
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
-export default function RatingWidget({ noteId, uploaderId, onRateSuccess }) {
+export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onReviewsFetched }) {
   const { user } = useAuth();
   const [hoveredStar, setHoveredStar] = useState(0);
   const [currentRating, setCurrentRating] = useState(0);
@@ -48,6 +48,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess }) {
       const data = await apiRequest(`/reviews/note/${noteId}`);
       if (Array.isArray(data)) {
         setAllReviews(data);
+        if (onReviewsFetched) onReviewsFetched(data.length);
       }
     } catch (err) {
       console.error('Failed to fetch reviews:', err);
