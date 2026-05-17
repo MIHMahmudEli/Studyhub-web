@@ -382,11 +382,9 @@ export default function AdminDashboardPage() {
             )}
 
             {/* Pending Notes */}
-            <div 
-              onClick={() => setActiveTab('pending')}
-              className={`group relative bg-[var(--card-bg)] border rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 cursor-pointer ${
-                activeTab === 'pending' ? 'border-purple-500 bg-purple-500/5' : 'border-[var(--card-border)] hover:border-purple-500/30'
-              }`}
+            <Link 
+              href="/admin/pending_notes"
+              className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-purple-500/30 block cursor-pointer"
             >
               <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-purple-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="flex justify-between items-start relative z-10">
@@ -401,7 +399,7 @@ export default function AdminDashboardPage() {
                   <Clock size={20} className="animate-pulse" />
                 </div>
               </div>
-            </div>
+            </Link>
 
             {/* Pending Resources */}
             <div 
