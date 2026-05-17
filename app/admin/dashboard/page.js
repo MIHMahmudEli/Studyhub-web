@@ -24,7 +24,8 @@ import {
   ExternalLink,
   X,
   AlertTriangle,
-  Search
+  Search,
+  Activity
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -35,6 +36,7 @@ export default function AdminDashboardPage() {
   const [pendingResources, setPendingResources] = useState([]);
   const [resources, setResources] = useState([]);
   const [uploadVisibility, setUploadVisibility] = useState('approved'); // 'approved' or 'pending'
+  const [activeUsersCount, setActiveUsersCount] = useState(0);
   const [loadingData, setLoadingData] = useState(true);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
   const [activeTab, setActiveTab] = useState('pending'); // 'pending', 'resources', 'users'
@@ -69,7 +71,7 @@ export default function AdminDashboardPage() {
     }
   }, [user, authLoading, router]);
 
-  // 2. Fetch Initial Admin Data (Notes, Resources, Settings)
+  // 2. Fetch Initial Admin Data (Notes, Resources, Settings, Active Users)
   useEffect(() => {
     if (user && (user.role === 'admin' || user.role === 'moderator')) {
       fetchAdminData();
@@ -95,6 +97,17 @@ export default function AdminDashboardPage() {
       const visibilityData = await apiRequest('/admin/settings/resource_upload_visibility');
       if (visibilityData && visibilityData.value) {
         setUploadVisibility(visibilityData.value);
+      }
+
+      // Fetch today's active users count (Admin only)
+      if (user?.role === 'admin') {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+        const activeData = await apiRequest(`/users/active?date=${todayStr}`);
+        setActiveUsersCount(activeData?.total || 0);
       }
 
     } catch (error) {
@@ -325,8 +338,30 @@ export default function AdminDashboardPage() {
           )}
 
           {/* Admin Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
             
+            {/* Active Users (Admin Only) */}
+            {user.role === 'admin' && (
+              <Link 
+                href="/admin/active_users"
+                className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-emerald-500/30 block cursor-pointer"
+              >
+                <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-emerald-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="flex justify-between items-start relative z-10">
+                  <div className="space-y-2 sm:space-y-3">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Active Users</span>
+                    <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-emerald-500">
+                      {loadingData ? '...' : activeUsersCount}
+                    </h3>
+                    <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Online today</p>
+                  </div>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
+                    <Activity size={20} className="animate-pulse" />
+                  </div>
+                </div>
+              </Link>
+            )}
+
             {/* Pending Notes */}
             <div 
               onClick={() => setActiveTab('pending')}
@@ -363,7 +398,7 @@ export default function AdminDashboardPage() {
                   <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-amber-500">
                     {loadingData ? '...' : pendingResources.length}
                   </h3>
-                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Awaiting admin approval</p>
+                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Awaiting approval</p>
                 </div>
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
                   <Layers size={20} className="animate-pulse" />
@@ -402,7 +437,7 @@ export default function AdminDashboardPage() {
                   <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-emerald-500">
                     {loadingData ? '...' : resources.length}
                   </h3>
-                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Official course materials</p>
+                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Official materials</p>
                 </div>
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
                   <ShieldCheck size={20} />
@@ -607,7 +642,7 @@ export default function AdminDashboardPage() {
                                 <div className="inline-flex items-center gap-1.5 sm:gap-2">
                                   <button 
                                     onClick={() => handleNoteStatus(note.id, 'approved')}
-                                    className="px-3.5 py-2 sm:px-4 sm:py-2 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-xl border border-emerald-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
+                                    className="px-3.5 py-2 sm:px-4 sm:py-2 bg-emerald-500/10 text-emerald-50 hover:bg-emerald-50 hover:text-white rounded-xl border border-emerald-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
                                   >
                                     <CheckCircle2 size={14} /> Approve
                                   </button>
@@ -916,7 +951,7 @@ export default function AdminDashboardPage() {
                                       {u.role === 'moderator' && user.role === 'admin' && (
                                         <button 
                                           onClick={() => handleDemoteUser(u.id)}
-                                          className="px-3 py-2 bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white rounded-xl border border-amber-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
+                                          className="px-3 py-2 bg-amber-500/10 text-amber-500 hover:bg-amber-50 hover:text-white rounded-xl border border-amber-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
                                           title="Demote to Student"
                                         >
                                           <UserX size={14} /> Demote
