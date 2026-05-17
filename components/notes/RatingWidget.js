@@ -13,6 +13,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
   const [submitting, setSubmitting] = useState(false);
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [comment, setComment] = useState('');
+  const [editingReviewId, setEditingReviewId] = useState(null);
   const [originalRating, setOriginalRating] = useState(0);
   const [originalComment, setOriginalComment] = useState('');
   const [allReviews, setAllReviews] = useState([]);
@@ -36,12 +37,8 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
     if (noteId) {
       fetchAllReviews();
     }
-    if (user && noteId) {
-      fetchMyRating();
-    } else {
-      setLoading(false);
-    }
-  }, [user, noteId]);
+    setLoading(false);
+  }, [noteId]);
 
   const fetchAllReviews = async () => {
     try {
@@ -55,23 +52,6 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
     }
   };
 
-  const fetchMyRating = async () => {
-    try {
-      setLoading(true);
-      const data = await apiRequest(`/reviews/note/${noteId}/me`);
-      if (data) {
-        setCurrentRating(data.rating);
-        setComment(data.comment || '');
-        setOriginalRating(data.rating);
-        setOriginalComment(data.comment || '');
-      }
-    } catch (err) {
-      // 404 means no rating yet, ignore
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleRate = async (ratingValue) => {
     if (!user) {
       showToast('Please log in to rate this note.', 'error');
@@ -81,8 +61,17 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
       showToast('You cannot rate your own note.', 'error');
       return;
     }
-    setCurrentRating(ratingValue);
-    setShowCommentInput(true);
+    if (editingReviewId) {
+      setCurrentRating(ratingValue);
+      setShowCommentInput(true);
+    } else {
+      // New review
+      setCurrentRating(ratingValue);
+      setShowCommentInput(true);
+      setOriginalRating(0);
+      setOriginalComment('');
+      setEditingReviewId(null);
+    }
   };
 
   const submitRating = async () => {
@@ -96,13 +85,25 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
 
     setSubmitting(true);
     try {
-      await apiRequest(`/reviews/note/${noteId}`, {
-        method: 'POST',
-        body: { rating: currentRating, comment: comment.trim() || undefined }
-      });
+      if (editingReviewId) {
+        await apiRequest(`/reviews/${editingReviewId}`, {
+          method: 'PUT',
+          body: { rating: currentRating, comment: newComment || undefined }
+        });
+      } else {
+        await apiRequest(`/reviews/note/${noteId}`, {
+          method: 'POST',
+          body: { rating: currentRating, comment: newComment || undefined }
+        });
+      }
+      
       setShowCommentInput(false);
-      setOriginalRating(currentRating);
-      setOriginalComment(comment);
+      setCurrentRating(0);
+      setComment('');
+      setOriginalRating(0);
+      setOriginalComment('');
+      setEditingReviewId(null);
+      
       showToast('Rating saved successfully!', 'success');
       fetchAllReviews(); // Refresh the comments list
       if (onRateSuccess) onRateSuccess();
@@ -117,12 +118,16 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
   const handleDeleteReview = async (reviewId) => {
     if (!confirm('Are you sure you want to delete your review?')) return;
     try {
-      await apiRequest(`/reviews/note/${noteId}`, { method: 'DELETE' });
+      await apiRequest(`/reviews/${reviewId}`, { method: 'DELETE' });
       showToast('Review deleted successfully!', 'success');
-      setCurrentRating(0);
-      setComment('');
-      setOriginalRating(0);
-      setOriginalComment('');
+      if (editingReviewId === reviewId) {
+        setCurrentRating(0);
+        setComment('');
+        setOriginalRating(0);
+        setOriginalComment('');
+        setEditingReviewId(null);
+        setShowCommentInput(false);
+      }
       fetchAllReviews();
       if (onRateSuccess) onRateSuccess();
     } catch (err) {
@@ -248,8 +253,11 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
                         onClick={() => {
+                          setEditingReviewId(review.id);
                           setCurrentRating(review.rating);
-                          setComment(review.comment);
+                          setComment(review.comment || '');
+                          setOriginalRating(review.rating);
+                          setOriginalComment(review.comment || '');
                           setShowCommentInput(true);
                           window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                         }}
