@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { useAuth } from '@/context/AuthContext';
@@ -13,16 +13,15 @@ import {
   Star,
   Clock,
   User,
-  ExternalLink,
   Maximize2,
   Minimize,
   Edit,
   Trash2
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
-import { NoteDetailSkeleton, Skeleton } from '@/components/ui/Skeleton';
-import coursesData from '@/lib/data/courses.json';
-import { supabase } from '@/lib/supabase';
+import { NoteDetailSkeleton } from '@/components/ui/Skeleton';
+import EditNoteModal from '@/components/notes/EditNoteModal';
+import DeleteConfirmModal from '@/components/notes/DeleteConfirmModal';
 
 export default function NotePreviewPage() {
   const { id } = useParams();
@@ -34,64 +33,15 @@ export default function NotePreviewPage() {
   const [isReadingMode, setIsReadingMode] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
 
-  // Note Action states
+  // Modal display states
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
-  const [updating, setUpdating] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-
-  // Edit form state
-  const [editForm, setEditForm] = useState({
-    title: '',
-    courseTitle: '',
-    code: '',
-    dept: '',
-    description: ''
-  });
-  const [newFile, setNewFile] = useState(null);
-
-  // Auto-suggest search state
-  const [courseSearch, setCourseSearch] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const suggestionsRef = useRef(null);
-
-  // Click outside auto-suggest to close
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Filter courses based on user input
-  const filteredCourses = useMemo(() => {
-    if (courseSearch.length < 2) return [];
-    return coursesData.filter(course => 
-      course.courseTitle.toLowerCase().includes(courseSearch.toLowerCase()) ||
-      course.code?.toLowerCase().includes(courseSearch.toLowerCase())
-    ).slice(0, 5);
-  }, [courseSearch]);
-
-  const selectCourse = (course) => {
-    setEditForm(prev => ({
-      ...prev,
-      courseTitle: course.courseTitle,
-      code: course.code,
-      dept: course.dept
-    }));
-    setCourseSearch(course.courseTitle);
-    setShowSuggestions(false);
-  };
 
   useEffect(() => {
     const fetchNote = async () => {
       try {
         setLoading(true);
         const data = await apiRequest(`/notes/${id}`);
-        // Map backend fields to frontend expected fields
         const mappedNote = {
           ...data,
           subject: data.courseTitle,
@@ -122,20 +72,6 @@ export default function NotePreviewPage() {
     }
   }, [id]);
 
-  useEffect(() => {
-    if (note) {
-      setEditForm({
-        title: note.title || '',
-        courseTitle: note.courseTitle || '',
-        code: note.code || '',
-        dept: note.dept || '',
-        description: note.description || ''
-      });
-      setCourseSearch(note.courseTitle || note.subject || '');
-      setNewFile(null);
-    }
-  }, [note]);
-
   const handleBookmarkToggle = async () => {
     try {
       const res = await apiRequest('/bookmarks/toggle', {
@@ -151,16 +87,10 @@ export default function NotePreviewPage() {
   const handleDownload = async () => {
     if (note?.file_path) {
       try {
-        // 1. Increment download count in database
         await apiRequest(`/notes/${id}/download`, { method: 'POST' });
-        
-        // 2. Refresh user points (this calls /auth/me and updates AuthContext)
         checkUser();
-
-        // 3. Update local state for note downloads
         setNote(prev => ({ ...prev, downloads: (prev.downloads || 0) + 1 }));
 
-        // 4. Trigger actual file download
         const response = await fetch(note.file_path);
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -178,124 +108,18 @@ export default function NotePreviewPage() {
     }
   };
 
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
-    
-    // 1. Strict course selection validation
-    const isValidCourse = coursesData.some(c => c.courseTitle === editForm.courseTitle);
-    if (!isValidCourse) {
-      alert('Please select a valid course from the suggestions list.');
-      return;
-    }
-
-    // 2. Prevent submitting if no changes were made to save database load
-    const hasChanges = 
-      editForm.title !== (note.title || '') ||
-      editForm.courseTitle !== (note.courseTitle || '') ||
-      editForm.code !== (note.code || '') ||
-      editForm.dept !== (note.dept || '') ||
-      editForm.description !== (note.description || '') ||
-      newFile !== null;
-
-    if (!hasChanges) {
-      alert('No changes detected.');
-      return;
-    }
-
-    setUpdating(true);
-    try {
-      let filePayload = {};
-      if (newFile) {
-        // 1. Upload new file to Supabase storage
-        const fileExt = newFile.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const filePath = `${fileName}`;
-
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('notes')
-          .upload(filePath, newFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('notes')
-          .getPublicUrl(filePath);
-
-        filePayload = {
-          file_path: publicUrl,
-          file_type: fileExt || 'pdf'
-        };
-
-        // 2. Delete the old file from Supabase storage to save space
-        if (note.file_path) {
-          try {
-            const oldFileName = note.file_path.split('/notes/').pop();
-            if (oldFileName) {
-              await supabase.storage
-                .from('notes')
-                .remove([oldFileName]);
-            }
-          } catch (err) {
-            console.warn('Failed to delete old file from storage:', err);
-          }
-        }
-      }
-
-      const updatedData = await apiRequest(`/notes/${id}`, {
-        method: 'PATCH',
-        body: {
-          ...editForm,
-          ...filePayload
-        }
-      });
-      
-      // Update local note state
-      setNote(prev => ({
-        ...prev,
-        ...updatedData,
-        subject: updatedData.courseTitle,
-        course_code: updatedData.code
-      }));
-      setIsEditModalOpen(false);
-      setNewFile(null);
-      setContentLoaded(false); // Reload preview frame
-    } catch (err) {
-      console.error('Failed to update note details:', err);
-      alert(err.message || 'Failed to update note details.');
-    } finally {
-      setUpdating(false);
-    }
+  const handleEditSave = (updatedData) => {
+    setNote(prev => ({
+      ...prev,
+      ...updatedData,
+      subject: updatedData.courseTitle,
+      course_code: updatedData.code
+    }));
+    setContentLoaded(false); // Trigger preview frame reload
   };
 
-  const handleDeleteSubmit = async () => {
-    setDeleting(true);
-    try {
-      // 1. Delete the file from Supabase storage
-      if (note.file_path) {
-        try {
-          const fileName = note.file_path.split('/notes/').pop();
-          if (fileName) {
-            await supabase.storage
-              .from('notes')
-              .remove([fileName]);
-          }
-        } catch (err) {
-          console.warn('Failed to delete note file from storage:', err);
-        }
-      }
-
-      // 2. Delete note record from backend database
-      await apiRequest(`/notes/${id}`, {
-        method: 'DELETE'
-      });
-      setIsDeleteConfirmOpen(false);
-      router.push('/notes');
-    } catch (err) {
-      console.error('Failed to delete note:', err);
-      alert(err.message || 'Failed to delete note.');
-    } finally {
-      setDeleting(false);
-    }
+  const handleDeleteComplete = () => {
+    router.push('/notes');
   };
 
   if (loading) {
@@ -452,7 +276,7 @@ export default function NotePreviewPage() {
           {!isReadingMode && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right duration-500">
               
-              {/* Document Control Panel for Uploader/Admin */}
+              {/* Document Control Panel uploader/admin */}
               {isUploaderOrAdmin && (
                 <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-6 shadow-sm space-y-4">
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Document Control</p>
@@ -538,183 +362,21 @@ export default function NotePreviewPage() {
         </div>
       </div>
 
-      {/* 1. Edit Details Modal */}
-      {isEditModalOpen && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className="bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-white/[0.08] w-full max-w-[600px] max-h-[85vh] overflow-y-auto rounded-[2rem] p-8 shadow-2xl space-y-6 relative text-slate-800 dark:text-slate-100 animate-scale-in">
-            <div>
-              <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Edit Note Details</h3>
-              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mt-1">Modify metadata, description, or replace your publication file.</p>
-            </div>
+      {/* Modular Interactive Edit Modal */}
+      <EditNoteModal 
+        isOpen={isEditModalOpen} 
+        onClose={() => setIsEditModalOpen(false)} 
+        note={note} 
+        onSave={handleEditSave} 
+      />
 
-            <form onSubmit={handleEditSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Title</label>
-                <input 
-                  type="text" 
-                  value={editForm.title} 
-                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                  required
-                  className="w-full px-5 py-3.5 bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/[0.08] rounded-2xl text-xs font-semibold focus:outline-none focus:border-purple-500/50 transition-colors text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500"
-                  placeholder="Document Title"
-                />
-              </div>
-
-              {/* Subject / Course Name Auto-Suggest */}
-              <div className="space-y-2 relative" ref={suggestionsRef}>
-                <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Subject / Course Name</label>
-                <input 
-                  type="text" 
-                  value={courseSearch} 
-                  onChange={(e) => {
-                    setCourseSearch(e.target.value);
-                    setShowSuggestions(true);
-                  }}
-                  onFocus={() => setShowSuggestions(true)}
-                  required
-                  className="w-full px-5 py-3.5 bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/[0.08] rounded-2xl text-xs font-semibold focus:outline-none focus:border-purple-500/50 transition-colors text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500"
-                  placeholder="Type to search and select course..."
-                />
-                
-                {/* Real-time Validation Warning */}
-                {courseSearch && !coursesData.some(c => c.courseTitle === courseSearch) && (
-                  <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest mt-1.5 animate-pulse flex items-center gap-1.5">
-                    <span>⚠️</span> Please select a valid course from the suggested list
-                  </p>
-                )}
-                
-                {showSuggestions && filteredCourses.length > 0 && (
-                  <div className="absolute left-0 right-0 top-full mt-2 z-[999999] bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden max-h-[220px] overflow-y-auto">
-                    {filteredCourses.map((c, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => selectCourse(c)}
-                        className="w-full text-left px-5 py-3.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-all text-xs font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-white/[0.03] last:border-b-0 cursor-pointer flex flex-col gap-0.5"
-                      >
-                        <span className="text-slate-900 dark:text-white font-bold">{c.courseTitle}</span>
-                        <span className="text-[9px] font-black tracking-wider uppercase text-purple-500">{c.code} • {c.dept}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Dynamic Auto-Populated Read-Only Metadata Fields */}
-              {editForm.courseTitle && (
-                <div className="grid grid-cols-2 gap-4 animate-fade-in">
-                  <div className="space-y-1 px-5 py-3 bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/[0.08] rounded-2xl">
-                    <span className="text-[8px] font-black uppercase tracking-wider text-slate-400">Selected Code</span>
-                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200">{editForm.code || 'N/A'}</p>
-                  </div>
-                  <div className="space-y-1 px-5 py-3 bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/[0.08] rounded-2xl">
-                    <span className="text-[8px] font-black uppercase tracking-wider text-slate-400">Selected Department</span>
-                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{editForm.dept || 'N/A'}</p>
-                  </div>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Description</label>
-                <textarea 
-                  value={editForm.description} 
-                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                  rows={3}
-                  className="w-full px-5 py-3.5 bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/[0.08] rounded-2xl text-xs font-semibold focus:outline-none focus:border-purple-500/50 transition-colors text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 resize-none"
-                  placeholder="Summarize these study notes..."
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Replace Note File (Optional)</label>
-                <div className="relative group">
-                  <input 
-                    type="file" 
-                    accept=".pdf,image/*"
-                    onChange={(e) => setNewFile(e.target.files[0])}
-                    className="hidden" 
-                    id="replace-file-input"
-                  />
-                  <label 
-                    htmlFor="replace-file-input"
-                    className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-200 dark:border-white/[0.08] rounded-2xl cursor-pointer hover:border-purple-500/50 transition-all bg-slate-50 dark:bg-black/30"
-                  >
-                    <FileText size={24} className="text-purple-500 mb-2 group-hover:scale-110 transition-transform" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 max-w-[400px] truncate">
-                      {newFile ? newFile.name : 'Choose New File (PDF or Image)'}
-                    </span>
-                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">
-                      {newFile ? `${(newFile.size / 1024 / 1024).toFixed(2)} MB` : 'Leave blank to keep existing file'}
-                    </span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-slate-200 dark:border-white/[0.08] flex justify-end gap-3">
-                <button 
-                  type="button"
-                  onClick={() => {
-                    setIsEditModalOpen(false);
-                    setNewFile(null);
-                  }}
-                  className="px-5 py-3 border border-slate-200 dark:border-white/[0.08] rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 cursor-pointer font-bold"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
-                  disabled={updating}
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-md shadow-purple-500/10 cursor-pointer disabled:opacity-50 font-bold"
-                >
-                  {updating ? (
-                    <div className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    'Save Changes'
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* 2. Delete Confirmation Modal */}
-      {isDeleteConfirmOpen && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className="bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-white/[0.08] w-full max-w-[400px] rounded-[2rem] p-8 shadow-2xl space-y-6 relative text-center text-slate-800 dark:text-slate-100 animate-scale-in">
-            <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl flex items-center justify-center mx-auto animate-bounce">
-              <Trash2 size={28} />
-            </div>
-
-            <div className="space-y-2">
-              <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Delete Publication?</h3>
-              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-loose">
-                This action is permanent and cannot be undone. All points earned and downloaded data will be archived.
-              </p>
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <button 
-                onClick={() => setIsDeleteConfirmOpen(false)}
-                className="w-1/2 py-3.5 border border-slate-200 dark:border-white/[0.08] rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 cursor-pointer font-bold"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleDeleteSubmit}
-                disabled={deleting}
-                className="w-1/2 py-3.5 bg-red-500 hover:bg-red-600 text-white rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-md shadow-red-500/10 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 font-bold"
-              >
-                {deleting ? (
-                  <div className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                ) : (
-                  'Delete Note'
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Modular Interactive Delete Confirm Modal */}
+      <DeleteConfirmModal 
+        isOpen={isDeleteConfirmOpen} 
+        onClose={() => setIsDeleteConfirmOpen(false)} 
+        note={note} 
+        onDelete={handleDeleteComplete} 
+      />
     </main>
   );
 }
