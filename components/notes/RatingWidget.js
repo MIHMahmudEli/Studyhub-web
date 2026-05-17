@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Star, AlertCircle, CheckCircle2, X, Edit2, Trash2, MessageSquarePlus, SendHorizonal } from 'lucide-react';
+import { Star, AlertCircle, CheckCircle2, X, Edit2, Trash2, MessageSquarePlus, SendHorizonal, AlertTriangle } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
@@ -22,6 +22,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentText, setEditingCommentText] = useState('');
+  const [showAllComments, setShowAllComments] = useState(false);
   const commentInputRef = useRef(null);
 
   // ─── Toast ───────────────────────────────────────────────────────────────────
@@ -84,7 +85,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
   const submitRating = async () => {
     if (!user || pendingRating === 0) return;
     if (pendingRating === myRating) {
-      showToast('This is already your saved rating.', 'error');
+      showToast('No rating changes detected.', 'warning');
       return;
     }
     setRatingSubmitting(true);
@@ -109,7 +110,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
     if (!user) { showToast('Please log in to leave a comment.', 'error'); return; }
     if (user.id === uploaderId) { showToast('You cannot comment on your own note.', 'error'); return; }
     const text = newComment.trim();
-    if (!text) { showToast('Comment cannot be empty.', 'error'); return; }
+    if (!text) { showToast('Comment cannot be empty.', 'warning'); return; }
     setCommentSubmitting(true);
     try {
       await apiRequest(`/reviews/note/${noteId}/comment`, {
@@ -134,12 +135,12 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
 
   const saveEditComment = async () => {
     const text = editingCommentText.trim();
-    if (!text) { showToast('Comment cannot be empty.', 'error'); return; }
+    if (!text) { showToast('Comment cannot be empty.', 'warning'); return; }
     
     // Find the original comment text to avoid a pointless DB write
     const original = allComments.find(r => r.id === editingCommentId);
     if (original && text === original.comment.trim()) {
-      showToast('No changes — your comment is already up to date.', 'error');
+      showToast('Comment has not been changed.', 'warning');
       return;
     }
     
@@ -160,7 +161,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
   const deleteComment = async (reviewId) => {
     try {
       await apiRequest(`/reviews/${reviewId}`, { method: 'DELETE' });
-      showToast('Comment deleted.', 'success');
+      showToast('Comment deleted successfully.', 'success');
       // If the deleted comment was being edited, clear the editor
       if (editingCommentId === reviewId) {
         setEditingCommentId(null);
@@ -269,8 +270,8 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
 
         {/* Comments list */}
         {allComments.length > 0 ? (
-          <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1 custom-scrollbar">
-            {allComments.map((review) => (
+          <div className="space-y-3">
+            {(showAllComments ? allComments : allComments.slice(0, 3)).map((review) => (
               <div key={review.id} className="bg-slate-50 dark:bg-black/20 rounded-xl p-4 border border-slate-100 dark:border-white/[0.03] group">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
@@ -328,6 +329,26 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
                 </div>
               </div>
             ))}
+
+            {/* Expand / Collapse toggle — industry-standard pattern */}
+            {allComments.length > 3 && (
+              <button
+                onClick={() => setShowAllComments(prev => !prev)}
+                className="w-full flex items-center justify-center gap-2 py-2.5 mt-1 rounded-xl border border-dashed border-slate-200 dark:border-white/[0.08] text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:border-slate-300 dark:hover:border-white/20 transition-all cursor-pointer group"
+              >
+                {showAllComments ? (
+                  <>
+                    <svg className="w-3 h-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 15l-6-6-6 6"/></svg>
+                    Show less
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3 h-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M6 9l6 6 6-6"/></svg>
+                    View {allComments.length - 3} more comment{allComments.length - 3 === 1 ? '' : 's'}
+                  </>
+                )}
+              </button>
+            )}
           </div>
         ) : (
           <div className="text-center py-6">
@@ -345,9 +366,17 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
           <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-xl max-w-xs ${
             toast.type === 'error'
               ? 'bg-red-500/10 border-red-500/20 text-red-500'
-              : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
+              : toast.type === 'warning'
+                ? 'bg-amber-500/10 border-amber-500/20 text-amber-500'
+                : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
           }`}>
-            {toast.type === 'error' ? <AlertCircle size={16} className="shrink-0" /> : <CheckCircle2 size={16} className="shrink-0" />}
+            {toast.type === 'error' ? (
+              <AlertCircle size={16} className="shrink-0" />
+            ) : toast.type === 'warning' ? (
+              <AlertTriangle size={16} className="shrink-0" />
+            ) : (
+              <CheckCircle2 size={16} className="shrink-0" />
+            )}
             <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed flex-1">{toast.message}</p>
 
             <div className="relative w-6 h-6 shrink-0 flex items-center justify-center ml-1">
