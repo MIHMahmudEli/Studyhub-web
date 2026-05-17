@@ -219,16 +219,16 @@ export default function NotesPage() {
                   {/* Metadata & Title */}
                   <div className="relative z-10 text-center space-y-3 w-full">
                     <div className="space-y-2">
-                      <p className="text-[7px] md:text-[7.5px] font-black tracking-[0.2em] text-purple-500/80 uppercase px-3 py-1 rounded-full bg-purple-500/5 border border-purple-500/10 inline-block truncate max-w-full">
-                        {note.subject}
-                      </p>
-                      <div className="space-y-1">
+                      <h3 className="text-[11px] md:text-[12px] font-black uppercase tracking-widest leading-relaxed max-w-[200px] mx-auto group-hover:text-purple-500 transition-colors duration-500 line-clamp-2">
+                        {note.title}
+                      </h3>
+                      <div className="space-y-1 pt-1">
                         <p className="text-[8px] font-black tracking-[0.2em] text-slate-500 uppercase">
                           {note.course_code || 'GENERAL'}
                         </p>
-                        <h3 className="text-[11px] md:text-[12px] font-black uppercase tracking-widest leading-relaxed max-w-[200px] mx-auto group-hover:text-purple-500 transition-colors duration-500 line-clamp-2">
-                          {note.title}
-                        </h3>
+                        <p className="text-[7px] md:text-[7.5px] font-black tracking-[0.15em] text-purple-500/80 uppercase px-3 py-1 rounded-full bg-purple-500/5 border border-purple-500/10 inline-block">
+                          {note.subject}
+                        </p>
                       </div>
                     </div>
                   </div>

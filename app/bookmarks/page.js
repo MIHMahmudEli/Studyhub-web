@@ -266,17 +266,17 @@ export default function BookmarkPage() {
                           className="block bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] p-6 hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 flex flex-col justify-between h-[180px] shadow-sm"
                         >
                           <div className="space-y-3">
-                            <div className="flex items-center gap-2">
-                              <span className="text-[7px] font-black px-2 py-0.5 rounded bg-blue-500/10 text-blue-500 uppercase tracking-widest">
-                                {note.code || 'STUDY'}
-                              </span>
-                              <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest truncate">
-                                {note.courseTitle || 'GENERAL'}
-                              </span>
-                            </div>
                             <h3 className="text-[11px] font-black uppercase tracking-widest leading-relaxed line-clamp-2 pr-6 group-hover:text-blue-500 transition-colors">
                               {note.title}
                             </h3>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                              <span className="text-[7px] font-black px-2 py-0.5 rounded bg-blue-500/10 text-blue-500 uppercase tracking-widest w-fit">
+                                {note.code || 'STUDY'}
+                              </span>
+                              <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest">
+                                {note.courseTitle || 'GENERAL'}
+                              </span>
+                            </div>
                           </div>
                           <div className="mt-4 flex items-center justify-between border-t border-[var(--card-border)] pt-4">
                             <div className="flex items-center gap-2 text-[8px] font-black text-slate-400 uppercase tracking-widest">
