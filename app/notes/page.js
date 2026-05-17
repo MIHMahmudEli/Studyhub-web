@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import notesDemoData from '@/lib/data/notesDemo.json';
+import { NoteCardSkeleton } from '@/components/ui/Skeleton';
 
 // Helper to select icon based on subject
 const getSubjectIcon = (subject, code) => {
@@ -104,9 +105,32 @@ export default function NotesPage() {
   }, [hasMore]);
 
   if (authLoading || loading) return (
-    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
-    </div>
+    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-32">
+      <DashboardNavbar />
+      <div className="pt-24 md:pt-32 px-4 md:px-8">
+        <div className="max-w-[1400px] mx-auto">
+          {/* Skeleton Header Area */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16 animate-pulse">
+            <div className="space-y-4 w-full max-w-md">
+              <div className="w-24 h-6 bg-slate-200 dark:bg-slate-800/50 rounded-full" />
+              <div className="w-3/4 h-12 bg-slate-200 dark:bg-slate-800/50 rounded-lg" />
+              <div className="w-full h-4 bg-slate-200 dark:bg-slate-800/50 rounded-full" />
+            </div>
+            <div className="flex gap-4 w-full md:w-auto">
+              <div className="w-full sm:w-[280px] h-12 bg-slate-200 dark:bg-slate-800/50 rounded-2xl" />
+              <div className="w-32 h-12 bg-slate-200 dark:bg-slate-800/50 rounded-2xl" />
+              <div className="w-32 h-12 bg-slate-200 dark:bg-slate-800/50 rounded-2xl" />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
+              <NoteCardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </main>
   );
 
   if (!user && !authLoading) return null;
@@ -150,7 +174,7 @@ export default function NotesPage() {
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button 
                   onClick={() => setSortBy('most-downloaded')}
-                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 border rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm ${
+                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 border rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer ${
                     sortBy === 'most-downloaded' 
                     ? 'bg-blue-500 text-white border-blue-400' 
                     : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.05] text-slate-500 hover:text-blue-500'
@@ -160,7 +184,7 @@ export default function NotesPage() {
                 </button>
                 <button 
                   onClick={() => setSortBy(sortBy === 'top-rated' ? 'latest' : 'top-rated')}
-                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 border rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm ${
+                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 border rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer ${
                     sortBy === 'top-rated' 
                     ? 'bg-amber-500 text-white border-amber-400' 
                     : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.05] text-slate-500 hover:text-amber-500'

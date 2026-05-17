@@ -18,6 +18,7 @@ import {
   Minimize
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
+import { NoteDetailSkeleton } from '@/components/ui/Skeleton';
 
 export default function NotePreviewPage() {
   const { id } = useParams();
@@ -108,9 +109,12 @@ export default function NotePreviewPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
-      </div>
+      <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-20">
+        <DashboardNavbar />
+        <div className="pt-24 md:pt-32 px-4 md:px-8 max-w-[1400px] mx-auto">
+          <NoteDetailSkeleton />
+        </div>
+      </main>
     );
   }
 

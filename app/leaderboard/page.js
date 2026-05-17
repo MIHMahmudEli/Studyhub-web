@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import PodiumCard from '@/components/leaderboard/PodiumCard';
 import RankingsTable from '@/components/leaderboard/RankingsTable';
+import { LeaderboardSkeleton } from '@/components/ui/Skeleton';
 import { 
   Trophy,
   Calendar,
@@ -98,9 +99,7 @@ export default function LeaderboardPage() {
           </div>
 
           {loading ? (
-            <div className="flex items-center justify-center py-40">
-              <div className="w-10 h-10 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
-            </div>
+            <LeaderboardSkeleton />
           ) : leaders.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-32 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="w-24 h-24 bg-slate-100 dark:bg-white/[0.03] rounded-3xl flex items-center justify-center mb-8 border border-slate-200 dark:border-white/[0.05]">

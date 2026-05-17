@@ -23,6 +23,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiRequest } from '@/lib/api';
+import { BookmarkListSkeleton, NoteCardSkeleton, ResourceListSkeleton } from '@/components/ui/Skeleton';
 
 export default function BookmarkPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -104,9 +105,38 @@ export default function BookmarkPage() {
 
   if (authLoading || !user || loading) {
     if (loading && user) return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
-      </div>
+      <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-32">
+        <DashboardNavbar />
+        <div className="pt-24 md:pt-32 px-4 md:px-8">
+          <div className="max-w-[1400px] mx-auto">
+            {/* Header Skeleton */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16 animate-pulse">
+              <div className="space-y-4 w-full max-w-md">
+                <div className="w-32 h-6 bg-slate-200 dark:bg-slate-800/50 rounded-full" />
+                <div className="w-3/4 h-12 bg-slate-200 dark:bg-slate-800/50 rounded-lg" />
+              </div>
+              <div className="w-full md:w-[320px] h-12 bg-slate-200 dark:bg-slate-800/50 rounded-2xl" />
+            </div>
+
+            <div className="space-y-20">
+              <section className="space-y-8">
+                <div className="flex items-center gap-4 animate-pulse">
+                  <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800/50" />
+                  <div className="w-32 h-4 bg-slate-200 dark:bg-slate-800/50 rounded" />
+                </div>
+                <BookmarkListSkeleton />
+              </section>
+              <section className="space-y-6">
+                 <div className="flex items-center gap-4 animate-pulse">
+                  <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800/50" />
+                  <div className="w-32 h-4 bg-slate-200 dark:bg-slate-800/50 rounded" />
+                </div>
+                <ResourceListSkeleton />
+              </section>
+            </div>
+          </div>
+        </div>
+      </main>
     );
     return null;
   }
