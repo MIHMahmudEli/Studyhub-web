@@ -121,18 +121,18 @@ export default function StudentDashboard() {
               <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase leading-none">
                 Student <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-amber-500">Dashboard</span>
               </h1>
-              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-widest max-w-[500px]">
+              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest max-w-[500px]">
                 Manage your notes, view points, track download statistics, and lead the leaderboard.
               </p>
             </div>
 
-            <div className="flex items-center gap-4 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-3xl p-4 shadow-sm backdrop-blur-xl">
+            <div className="flex items-center gap-4 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl p-4 shadow-sm backdrop-blur-xl">
               <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500">
                 <Calendar size={20} />
               </div>
               <div>
-                <p className="text-[8px] font-black uppercase text-slate-500 tracking-wider">Today's Date</p>
-                <p className="text-xs font-black uppercase text-slate-700 dark:text-slate-200 mt-0.5">
+                <p className="text-[8px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">Today's Date</p>
+                <p className="text-xs font-black uppercase text-slate-800 dark:text-slate-200 mt-0.5">
                   {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                 </p>
               </div>
@@ -142,15 +142,15 @@ export default function StudentDashboard() {
           {/* Premium Overview Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Card 1: Academic Points */}
-            <div className="group relative bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2.5rem] p-8 shadow-sm hover:border-amber-500/30 transition-all duration-500 hover:-translate-y-1">
+            <div className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm hover:border-amber-500/30 transition-all duration-500 hover:-translate-y-1">
               <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-amber-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="flex justify-between items-start relative z-10">
                 <div className="space-y-3">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Academic Points</span>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Academic Points</span>
                   <h3 className="text-4xl font-black tracking-tight text-amber-500">
-                    {loadingNotes ? <Skeleton className="w-16 h-10 rounded-lg" /> : stats.points}
+                    {loadingNotes ? <Skeleton className="w-16 h-10 rounded-lg animate-pulse" /> : stats.points}
                   </h3>
-                  <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Currency for downloads</p>
+                  <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">Currency for downloads</p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shadow-xl group-hover:scale-110 transition-transform duration-500">
                   <Coins size={22} className="animate-pulse" />
@@ -159,15 +159,15 @@ export default function StudentDashboard() {
             </div>
 
             {/* Card 2: Uploaded Notes */}
-            <div className="group relative bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2.5rem] p-8 shadow-sm hover:border-purple-500/30 transition-all duration-500 hover:-translate-y-1">
+            <div className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm hover:border-purple-500/30 transition-all duration-500 hover:-translate-y-1">
               <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-purple-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="flex justify-between items-start relative z-10">
                 <div className="space-y-3">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Total Uploaded</span>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Total Uploaded</span>
                   <h3 className="text-4xl font-black tracking-tight text-purple-500">
-                    {loadingNotes ? <Skeleton className="w-16 h-10 rounded-lg" /> : stats.uploads}
+                    {loadingNotes ? <Skeleton className="w-16 h-10 rounded-lg animate-pulse" /> : stats.uploads}
                   </h3>
-                  <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Shared study materials</p>
+                  <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">Shared study materials</p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 shadow-xl group-hover:scale-110 transition-transform duration-500">
                   <UploadCloud size={22} />
@@ -176,15 +176,15 @@ export default function StudentDashboard() {
             </div>
 
             {/* Card 3: Total Downloads Received */}
-            <div className="group relative bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2.5rem] p-8 shadow-sm hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1">
+            <div className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1">
               <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="flex justify-between items-start relative z-10">
                 <div className="space-y-3">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Total Downloads</span>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Total Downloads</span>
                   <h3 className="text-4xl font-black tracking-tight text-blue-500">
-                    {loadingNotes ? <Skeleton className="w-16 h-10 rounded-lg" /> : stats.downloads}
+                    {loadingNotes ? <Skeleton className="w-16 h-10 rounded-lg animate-pulse" /> : stats.downloads}
                   </h3>
-                  <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Generated by other peers</p>
+                  <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">Generated by other peers</p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-transform duration-500">
                   <Download size={22} />
@@ -193,15 +193,15 @@ export default function StudentDashboard() {
             </div>
 
             {/* Card 4: Leaderboard Position */}
-            <Link href="/leaderboard" className="group relative bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2.5rem] p-8 shadow-sm hover:border-emerald-500/30 transition-all duration-500 hover:-translate-y-1 block">
+            <Link href="/leaderboard" className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm hover:border-emerald-500/30 transition-all duration-500 hover:-translate-y-1 block">
               <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-emerald-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="flex justify-between items-start relative z-10">
                 <div className="space-y-3">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Leaderboard Rank</span>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Leaderboard Rank</span>
                   <h3 className="text-4xl font-black tracking-tight text-emerald-500">
-                    {loadingNotes ? <Skeleton className="w-20 h-10 rounded-lg" /> : stats.rank}
+                    {loadingNotes ? <Skeleton className="w-20 h-10 rounded-lg animate-pulse" /> : stats.rank}
                   </h3>
-                  <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Top peers list position</p>
+                  <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">Top peers list position</p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 shadow-xl group-hover:scale-110 transition-transform duration-500">
                   <Trophy size={22} />
@@ -212,36 +212,36 @@ export default function StudentDashboard() {
 
           {/* Quick Shortcuts Hub */}
           <div className="space-y-6">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Quick shortcuts</h3>
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Quick shortcuts</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Link href="/upload" className="group flex items-center justify-between p-6 bg-slate-50/50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.05] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500">
+              <Link href="/upload" className="group flex items-center justify-between p-6 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500 shadow-sm">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-purple-500/10 border border-purple-500/20 rounded-2xl flex items-center justify-center text-purple-500"><UploadCloud size={16} /></div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">Upload new note</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Upload new note</span>
                 </div>
                 <ArrowRight size={14} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
               </Link>
               
-              <Link href="/notes" className="group flex items-center justify-between p-6 bg-slate-50/50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.05] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500">
+              <Link href="/notes" className="group flex items-center justify-between p-6 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500 shadow-sm">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center text-blue-500"><BookOpen size={16} /></div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">Browse repository</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Browse repository</span>
                 </div>
                 <ArrowRight size={14} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
               </Link>
               
-              <Link href="/bookmarks" className="group flex items-center justify-between p-6 bg-slate-50/50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.05] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500">
+              <Link href="/bookmarks" className="group flex items-center justify-between p-6 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500 shadow-sm">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-pink-500/10 border border-pink-500/20 rounded-2xl flex items-center justify-center text-pink-500"><Bookmark size={16} /></div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">Saved bookmarks</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Saved bookmarks</span>
                 </div>
                 <ArrowRight size={14} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
               </Link>
 
-              <Link href="/leaderboard" className="group flex items-center justify-between p-6 bg-slate-50/50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.05] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500">
+              <Link href="/leaderboard" className="group flex items-center justify-between p-6 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500 shadow-sm">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-500"><Trophy size={16} /></div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">Leaderboard standings</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Leaderboard standings</span>
                 </div>
                 <ArrowRight size={14} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
               </Link>
@@ -252,8 +252,8 @@ export default function StudentDashboard() {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Manage uploaded notes</h3>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Review the status of your submissions or delete them.</p>
+                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Manage uploaded notes</h3>
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-1">Review the status of your submissions or delete them.</p>
               </div>
               
               <Link 
@@ -265,31 +265,31 @@ export default function StudentDashboard() {
             </div>
 
             {loadingNotes ? (
-              <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-6 space-y-4">
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 space-y-4 shadow-sm">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50 dark:bg-white/[0.01] rounded-2xl gap-4">
+                  <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-500/5 rounded-2xl gap-4">
                     <div className="flex items-center gap-4">
-                      <Skeleton className="w-10 h-10 rounded-xl" />
+                      <Skeleton className="w-10 h-10 rounded-xl animate-pulse" />
                       <div className="space-y-2">
-                        <Skeleton className="w-48 h-4 rounded" />
-                        <Skeleton className="w-24 h-3 rounded" />
+                        <Skeleton className="w-48 h-4 rounded animate-pulse" />
+                        <Skeleton className="w-24 h-3 rounded animate-pulse" />
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <Skeleton className="w-16 h-6 rounded-full" />
-                      <Skeleton className="w-8 h-8 rounded-xl" />
-                      <Skeleton className="w-8 h-8 rounded-xl" />
+                      <Skeleton className="w-16 h-6 rounded-full animate-pulse" />
+                      <Skeleton className="w-8 h-8 rounded-xl animate-pulse" />
+                      <Skeleton className="w-8 h-8 rounded-xl animate-pulse" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : myNotes.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2.5rem] p-8">
-                <div className="w-20 h-20 bg-slate-100 dark:bg-white/[0.03] rounded-3xl flex items-center justify-center mb-6 border border-slate-200 dark:border-white/[0.05]">
-                  <FileText size={32} className="text-slate-300" />
+              <div className="flex flex-col items-center justify-center py-20 text-center bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm">
+                <div className="w-20 h-20 bg-slate-500/5 rounded-3xl flex items-center justify-center mb-6 border border-[var(--card-border)]">
+                  <FileText size={32} className="text-slate-400 dark:text-slate-600" />
                 </div>
-                <h3 className="text-lg font-black uppercase tracking-widest text-slate-400 mb-2">No notes uploaded yet</h3>
-                <p className="text-slate-500 text-xs max-w-xs font-semibold uppercase tracking-wider mb-6">
+                <h3 className="text-lg font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">No notes uploaded yet</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-xs max-w-xs font-semibold uppercase tracking-wider mb-6">
                   You haven't uploaded any study materials. Upload your notes to earn academic points.
                 </p>
                 <Link 
@@ -300,11 +300,11 @@ export default function StudentDashboard() {
                 </Link>
               </div>
             ) : (
-              <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] overflow-hidden shadow-sm">
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-100 dark:border-white/[0.05] text-[9px] font-black uppercase tracking-[0.25em] text-slate-400 bg-slate-50/50 dark:bg-white/[0.01]">
+                      <tr className="border-b border-[var(--card-border)] text-[9px] font-black uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400 bg-slate-500/5">
                         <th className="py-5 px-6">Note & details</th>
                         <th className="py-5 px-4 text-center">Status</th>
                         <th className="py-5 px-4 text-center">Downloads</th>
@@ -312,21 +312,21 @@ export default function StudentDashboard() {
                         <th className="py-5 px-6 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-white/[0.05] text-xs font-medium">
+                    <tbody className="divide-y divide-[var(--card-border)] text-xs font-semibold text-slate-800 dark:text-slate-200">
                       {myNotes.map((note) => (
-                        <tr key={note.id} className="hover:bg-slate-50/30 dark:hover:bg-white/[0.01] transition-colors">
+                        <tr key={note.id} className="hover:bg-slate-500/5 transition-colors">
                           <td className="py-5 px-6 max-w-xs md:max-w-md">
                             <div className="flex items-center gap-4">
                               <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 flex-shrink-0">
                                 <FileText size={18} />
                               </div>
                               <div className="min-w-0">
-                                <p className="font-bold text-slate-700 dark:text-slate-200 truncate">{note.title}</p>
+                                <p className="font-bold text-slate-800 dark:text-slate-100 truncate">{note.title}</p>
                                 <div className="flex flex-wrap items-center gap-2 mt-1">
-                                  <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 bg-slate-100 dark:bg-white/[0.05] px-2 py-0.5 rounded">
+                                  <span className="text-[8px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-slate-500/5 px-2 py-0.5 rounded border border-[var(--card-border)]">
                                     {note.code}
                                   </span>
-                                  <span className="text-[8px] font-bold text-slate-400 uppercase">
+                                  <span className="text-[8px] font-bold text-slate-500 dark:text-slate-400 uppercase">
                                     {new Date(note.created_at).toLocaleDateString()}
                                   </span>
                                 </div>
@@ -335,25 +335,25 @@ export default function StudentDashboard() {
                           </td>
                           <td className="py-5 px-4 text-center">
                             {note.status === 'approved' && (
-                              <span className="inline-flex px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-wider bg-emerald-500/10 border border-emerald-500/20 text-emerald-500">
+                              <span className="inline-flex px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-wider bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10">
                                 Approved
                               </span>
                             )}
                             {note.status === 'pending' && (
-                              <span className="inline-flex px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-wider bg-amber-500/10 border border-amber-500/20 text-amber-500">
+                              <span className="inline-flex px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-wider bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-500/10">
                                 Pending
                               </span>
                             )}
                             {note.status === 'rejected' && (
-                              <span className="inline-flex px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-wider bg-red-500/10 border border-red-500/20 text-red-500">
+                              <span className="inline-flex px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-wider bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-500 bg-red-50 dark:bg-red-500/10">
                                 Rejected
                               </span>
                             )}
                           </td>
-                          <td className="py-5 px-4 text-center font-bold text-slate-600 dark:text-slate-300">
+                          <td className="py-5 px-4 text-center font-bold text-slate-800 dark:text-slate-200">
                             {note.downloads}
                           </td>
-                          <td className="py-5 px-4 text-center font-bold text-slate-600 dark:text-slate-300">
+                          <td className="py-5 px-4 text-center font-bold text-slate-800 dark:text-slate-200">
                             {parseFloat(note.avg_rating) > 0 ? (
                               <span className="inline-flex items-center gap-1">
                                 <Sparkles size={12} className="text-amber-500 fill-amber-500" />
@@ -366,7 +366,7 @@ export default function StudentDashboard() {
                               {note.status === 'approved' && (
                                 <Link 
                                   href={`/notes/${note.id}`}
-                                  className="w-8 h-8 rounded-xl bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] flex items-center justify-center text-slate-500 hover:text-purple-500 hover:border-purple-500/30 transition-all shadow-sm cursor-pointer"
+                                  className="w-8 h-8 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-slate-500 hover:text-purple-500 hover:border-purple-500/30 transition-all shadow-sm cursor-pointer"
                                   title="View Note"
                                 >
                                   <Eye size={14} />
