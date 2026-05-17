@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -14,7 +15,9 @@ import {
   Sun,
   Moon,
   LayoutDashboard,
-  LogOut
+  LogOut,
+  Menu,
+  X
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -32,10 +35,12 @@ export default function DashboardNavbar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] bg-[var(--background)]/40 backdrop-blur-xl border-b border-[var(--card-border)] px-6 py-3 transition-colors duration-500">
       <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-8">
+        
         {/* Logo Section */}
         <div className="flex items-center gap-10">
           <Link href="/notes" className="transition-transform hover:scale-105 active:scale-95">
@@ -65,8 +70,8 @@ export default function DashboardNavbar() {
           </div>
         </div>
 
-
-        <div className="flex items-center gap-4">
+        {/* User Actions & Stats - Desktop */}
+        <div className="hidden lg:flex items-center gap-4">
           {/* Theme Toggle */}
           <button 
             onClick={toggleTheme}
@@ -133,7 +138,81 @@ export default function DashboardNavbar() {
             <LogOut size={18} />
           </button>
         </div>
+
+        {/* Mobile Hamburger Toggle */}
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="lg:hidden p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-[var(--foreground)] hover:border-blue-500/30 transition-all cursor-pointer flex items-center justify-center"
+          title="Toggle Navigation Menu"
+        >
+          {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+        </button>
       </div>
+
+      {/* Mobile Navigation Dropdown Menu */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-[var(--background)]/95 border-b border-[var(--card-border)] backdrop-blur-2xl shadow-2xl p-6 flex flex-col gap-6 animate-in slide-in-from-top-4 duration-300 ease-out z-[99]">
+          
+          {/* Nav Links */}
+          <div className="flex flex-col gap-2">
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 px-4 mb-1">Navigation</p>
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-bold tracking-wide transition-all duration-300 ${
+                    isActive 
+                      ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' 
+                      : 'text-slate-400 hover:text-[var(--foreground)] hover:bg-[var(--card-bg)] border border-transparent'
+                  }`}
+                >
+                  <Icon size={16} />
+                  {link.name}
+                </Link>
+              );
+            })}
+          </div>
+
+          <div className="h-px bg-[var(--card-border)]" />
+
+          {/* User Controls and Stats */}
+          <div className="flex flex-col gap-4">
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 px-4">User & Controls</p>
+            
+            <div className="flex items-center justify-between gap-4 px-4 py-2 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl">
+              <span className={`text-[12px] font-black uppercase tracking-tighter truncate max-w-[120px] transition-colors ${
+                pathname === '/dashboard' ? 'text-blue-500' : 'text-[var(--foreground)]'
+              }`}>
+                {user?.name?.split(' ')[0]}
+              </span>
+              <div className="w-px h-3 bg-[var(--card-border)]" />
+              <div className="relative group/mobile-points flex items-center gap-1.5 text-amber-500 font-black text-xs">
+                <Coins size={14} />
+                <span>{user?.points || 0} PTS</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button 
+                onClick={() => { toggleTheme(); setIsMobileMenuOpen(false); }}
+                className="flex items-center justify-center gap-2 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-[var(--foreground)] rounded-xl text-[10px] font-black tracking-widest uppercase transition-all cursor-pointer"
+              >
+                {theme === 'dark' ? <><Sun size={14} /> Light Mode</> : <><Moon size={14} /> Dark Mode</>}
+              </button>
+              <button 
+                onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                className="flex items-center justify-center gap-2 py-3 bg-red-500/10 hover:bg-red-500 hover:text-white border border-red-500/20 text-red-500 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all cursor-pointer"
+              >
+                <LogOut size={14} /> Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
