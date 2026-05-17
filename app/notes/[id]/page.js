@@ -158,8 +158,8 @@ export default function NotePreviewPage() {
             The requested document could not be located in the archives.
           </p>
           <button 
-            onClick={() => router.push('/notes')}
-            className="px-8 py-3 bg-purple-500 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-purple-600 transition-all"
+            onClick={() => window.location.href = '/notes'}
+            className="px-8 py-3 bg-purple-500 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-purple-600 transition-all cursor-pointer"
           >
             Return to Feed
           </button>
