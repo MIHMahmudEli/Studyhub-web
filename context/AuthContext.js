@@ -43,10 +43,10 @@ export function AuthProvider({ children }) {
     setUser(loggedUser); 
 
     // Role-based redirection
-    if (loggedUser.role === 'student') {
-      router.push('/notes');
+    if (loggedUser.role === 'admin' || loggedUser.role === 'moderator') {
+      router.push('/admin/dashboard');
     } else {
-      router.push('/');
+      router.push('/notes');
     }
     
     return data;

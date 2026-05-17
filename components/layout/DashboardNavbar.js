@@ -37,9 +37,12 @@ export default function DashboardNavbar() {
   const { theme, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const isAdminOrMod = user?.role === 'admin' || user?.role === 'moderator';
+  const dashboardHref = isAdminOrMod ? '/admin/dashboard' : '/dashboard';
+
   const dynamicNavLinks = [
     ...navLinks,
-    ...(user?.role === 'admin' || user?.role === 'moderator' ? [{ name: 'Publish Resource', href: '/resources/upload_resources', icon: UploadCloud }] : [])
+    ...(isAdminOrMod ? [{ name: 'Publish Resource', href: '/resources/upload_resources', icon: UploadCloud }] : [])
   ];
 
   return (
@@ -88,9 +91,9 @@ export default function DashboardNavbar() {
 
           {/* User Stats */}
           <Link 
-            href="/dashboard" 
+            href={dashboardHref} 
             className={`relative flex items-center gap-3 rounded-2xl px-4 py-2 transition-all cursor-pointer border group ${
-              pathname === '/dashboard'
+              pathname === dashboardHref
                 ? 'bg-blue-500/10 border-blue-500/30'
                 : 'bg-[var(--card-bg)] border-[var(--card-border)] hover:border-blue-500/30'
             }`}
@@ -138,7 +141,7 @@ export default function DashboardNavbar() {
                 </div>
               )}
               <span className={`text-[12px] font-black uppercase tracking-tighter truncate max-w-[100px] transition-colors ${
-                pathname === '/dashboard'
+                pathname === dashboardHref
                   ? 'text-blue-500'
                   : 'text-[var(--foreground)] group-hover:text-blue-500'
               }`}>
@@ -202,10 +205,10 @@ export default function DashboardNavbar() {
             <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 px-4">User & Controls</p>
             
             <Link 
-              href="/dashboard"
+              href={dashboardHref}
               onClick={() => setIsMobileMenuOpen(false)}
               className={`flex items-center justify-between gap-4 px-4 py-3 border rounded-2xl transition-all cursor-pointer ${
-                pathname === '/dashboard' 
+                pathname === dashboardHref 
                   ? 'bg-blue-500/10 border-blue-500/20' 
                   : 'bg-[var(--card-bg)] border-[var(--card-border)] active:border-blue-500/30'
               }`}
@@ -223,7 +226,7 @@ export default function DashboardNavbar() {
                   </div>
                 )}
                 <span className={`text-[12px] font-black uppercase tracking-tighter truncate max-w-[100px] transition-colors ${
-                  pathname === '/dashboard' ? 'text-blue-500' : 'text-[var(--foreground)]'
+                  pathname === dashboardHref ? 'text-blue-500' : 'text-[var(--foreground)]'
                 }`}>
                   {user?.name?.split(' ')[0]}
                 </span>
