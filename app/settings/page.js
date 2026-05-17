@@ -115,6 +115,9 @@ export default function SettingsPage() {
         .from('profile-pics')
         .getPublicUrl(filePath);
 
+      // Save previous picture URL to delete after successful update
+      const oldPicUrl = user.profile_pic;
+
       // 6. Save the image public URL to the user profile via our backend API
       await apiRequest('/users/profile', {
         method: 'PATCH',
@@ -125,6 +128,19 @@ export default function SettingsPage() {
 
       // 7. Refresh user profile in global AuthContext
       await checkUser();
+
+      // 8. Delete the old picture from Supabase Storage to keep space clean
+      if (oldPicUrl) {
+        const oldFileName = oldPicUrl.split('/profile-pics/').pop();
+        if (oldFileName) {
+          try {
+            await supabase.storage.from('profile-pics').remove([oldFileName]);
+          } catch (delErr) {
+            console.warn('Failed to delete old profile picture:', delErr);
+          }
+        }
+      }
+
       setSuccessMsg('Profile picture updated successfully!');
     } catch (err) {
       console.error('Profile pic upload error:', err);
@@ -140,8 +156,10 @@ export default function SettingsPage() {
     setUploadingPic(true);
     clearAlerts();
 
+    const oldPicUrl = user.profile_pic;
+
     try {
-      // Clear profile_pic in backend database
+      // 1. Clear profile_pic in backend database first
       await apiRequest('/users/profile', {
         method: 'PATCH',
         body: {
@@ -149,8 +167,21 @@ export default function SettingsPage() {
         }
       });
 
-      // Refresh user profile in global AuthContext
+      // 2. Refresh user profile in global AuthContext
       await checkUser();
+
+      // 3. Delete the old picture from Supabase Storage
+      if (oldPicUrl) {
+        const oldFileName = oldPicUrl.split('/profile-pics/').pop();
+        if (oldFileName) {
+          try {
+            await supabase.storage.from('profile-pics').remove([oldFileName]);
+          } catch (delErr) {
+            console.warn('Failed to delete old profile picture:', delErr);
+          }
+        }
+      }
+
       setSuccessMsg('Profile picture deleted successfully!');
     } catch (err) {
       console.error('Profile pic delete error:', err);
