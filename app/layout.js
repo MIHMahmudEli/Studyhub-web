@@ -16,6 +16,13 @@ export default function RootLayout({ children }) {
       <body className="font-sans antialiased">
         <ThemeProvider>
           <AuthProvider>
+            {/* Global Nebula Effect */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none -z-50">
+              <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[var(--nebula-1)] blur-[100px] animate-nebula" />
+              <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-[var(--nebula-2)] blur-[120px] animate-nebula" style={{ animationDelay: '-5s' }} />
+              <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] rounded-full bg-[var(--nebula-3)] blur-[90px] animate-nebula" style={{ animationDelay: '-10s' }} />
+            </div>
+            
             {children}
           </AuthProvider>
         </ThemeProvider>
