@@ -215,11 +215,11 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
   };
 
   return (
-    <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2.5rem] p-8 shadow-sm">
+    <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         
         {/* ─── COLUMN 1: RATINGS SUMMARY & ACTION ───────────────────────────────── */}
-        <div className="lg:col-span-1 space-y-6 lg:border-r lg:border-slate-100 lg:dark:border-white/[0.05] lg:pr-8">
+        <div className="lg:col-span-1 space-y-6 lg:border-r lg:border-[var(--card-border)] lg:pr-8">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Reviews Summary</p>
             
@@ -242,20 +242,20 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
           </div>
 
           {/* Star Rating Progress Breakdown */}
-          <div className="space-y-2.5 pt-4 border-t border-slate-100 dark:border-white/[0.05]">
+          <div className="space-y-2.5 pt-4 border-t border-[var(--card-border)]">
             {[5, 4, 3, 2, 1].map((stars) => {
               const count = starCounts[stars] || 0;
               const percentage = totalRatingsCount > 0 ? Math.round((count / totalRatingsCount) * 100) : 0;
               return (
                 <div key={stars} className="flex items-center gap-3 text-xs">
-                  <span className="w-8 text-[9px] font-black text-slate-400 uppercase tracking-wider shrink-0">{stars} Star</span>
+                  <span className="w-8 text-[9px] font-black text-slate-700 dark:text-slate-400 uppercase tracking-wider shrink-0">{stars} Star</span>
                   <div className="flex-1 h-2 bg-slate-100 dark:bg-white/[0.05] rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-amber-400 rounded-full transition-all duration-500" 
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
-                  <span className="w-8 text-right text-[9px] font-black text-slate-500 dark:text-slate-400 shrink-0">{percentage}%</span>
+                  <span className="w-8 text-right text-[9px] font-black text-slate-700 dark:text-slate-400 shrink-0">{percentage}%</span>
                 </div>
               );
             })}
@@ -263,8 +263,8 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
 
           {/* User's Interactive Star Rater */}
           {user && user.id !== uploaderId && (
-            <div className="bg-slate-50 dark:bg-black/20 rounded-[1.5rem] p-5 border border-slate-100 dark:border-white/[0.02] text-center space-y-4">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <div className="bg-slate-50 dark:bg-white/[0.02] rounded-[1.5rem] p-5 border border-[var(--card-border)] text-center space-y-4">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">
                 {myRating > 0 ? 'Your Rating' : 'Rate this Document'}
               </p>
               
@@ -321,9 +321,9 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
           )}
 
           {user && user.id === uploaderId && (
-            <div className="bg-slate-50 dark:bg-black/20 rounded-[1.5rem] p-5 border border-slate-100 dark:border-white/[0.02] text-center">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Your Document</p>
-              <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 mt-2 uppercase tracking-wide">
+            <div className="bg-slate-50 dark:bg-white/[0.02] rounded-[1.5rem] p-5 border border-[var(--card-border)] text-center">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Your Document</p>
+              <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 mt-2 uppercase tracking-wide">
                 You cannot rate your own study notes.
               </p>
             </div>
@@ -332,11 +332,11 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
 
         {/* ─── COLUMN 2 & 3: COMMENTS SECTION ───────────────────────────────────── */}
         <div className="lg:col-span-2 space-y-6">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Student Comments ({allComments.length})</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-700 dark:text-slate-400">Student Comments ({allComments.length})</p>
 
           {/* New Comment Textarea Form */}
           {user && user.id !== uploaderId && (
-            <div className="flex gap-3 bg-slate-50 dark:bg-black/20 p-3 rounded-2xl border border-slate-100 dark:border-white/[0.03]">
+            <div className="flex gap-3 bg-slate-50 dark:bg-white/[0.02] p-3 rounded-2xl border border-[var(--card-border)] focus-within:border-purple-500/40 transition-colors">
               <textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
@@ -364,7 +364,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
               {(showAllComments ? allComments : allComments.slice(0, 4)).map((review) => {
                 const authorInitial = review.user?.name ? review.user.name.charAt(0) : '#';
                 return (
-                  <div key={review.id} className="bg-slate-50/50 dark:bg-black/10 rounded-2xl p-5 border border-slate-100 dark:border-white/[0.02] group transition-all hover:bg-slate-50 dark:hover:bg-black/25">
+                  <div key={review.id} className="bg-slate-50 dark:bg-white/[0.02] rounded-2xl p-5 border border-[var(--card-border)] group transition-all hover:bg-slate-100/50 dark:hover:bg-white/[0.04]">
                     <div className="flex items-start gap-4">
                       
                       {/* Avatar Bubble */}
@@ -396,7 +396,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
                               ref={commentInputRef}
                               value={editingCommentText}
                               onChange={(e) => setEditingCommentText(e.target.value)}
-                              className="w-full bg-white dark:bg-black/50 border border-purple-500/40 rounded-xl px-4 py-3 text-xs font-semibold focus:outline-none transition-colors text-slate-800 dark:text-slate-200 resize-none h-16"
+                              className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl px-4 py-3 text-xs font-semibold focus:outline-none transition-colors text-[var(--foreground)] resize-none h-16 focus:border-purple-500/40"
                             />
                             <div className="flex gap-2">
                               <button 
@@ -414,7 +414,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
                             </div>
                           </div>
                         ) : (
-                          <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 leading-relaxed break-words pl-0.5">
+                          <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-400 leading-relaxed break-words pl-0.5">
                             "{review.comment}"
                           </p>
                         )}
@@ -465,7 +465,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
               )}
             </div>
           ) : (
-            <div className="text-center py-10 bg-slate-50/50 dark:bg-black/10 rounded-2xl border border-dashed border-slate-200 dark:border-white/[0.05]">
+            <div className="text-center py-10 bg-[var(--card-bg)] rounded-2xl border border-dashed border-[var(--card-border)]">
               <MessageSquarePlus size={32} className="text-slate-300 dark:text-slate-700 mx-auto mb-2" />
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No comments left yet.</p>
               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Be the first to share your thoughts!</p>
