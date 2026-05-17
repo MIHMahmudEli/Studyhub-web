@@ -13,7 +13,8 @@ import {
   Coins,
   Sun,
   Moon,
-  LayoutDashboard
+  LayoutDashboard,
+  LogOut
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -69,9 +70,19 @@ export default function DashboardNavbar() {
           {/* Theme Toggle */}
           <button 
             onClick={toggleTheme}
-            className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-[var(--foreground)] transition-all"
+            className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-[var(--foreground)] transition-all cursor-pointer"
+            title="Toggle Theme"
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+
+          {/* Logout Button */}
+          <button 
+            onClick={logout}
+            className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/20 transition-all cursor-pointer"
+            title="Sign Out"
+          >
+            <LogOut size={18} />
           </button>
 
           {/* User Stats */}
