@@ -22,6 +22,7 @@ import { apiRequest } from '@/lib/api';
 import { NoteDetailSkeleton } from '@/components/ui/Skeleton';
 import EditNoteModal from '@/components/notes/EditNoteModal';
 import DeleteConfirmModal from '@/components/notes/DeleteConfirmModal';
+import RatingWidget from '@/components/notes/RatingWidget';
 
 export default function NotePreviewPage() {
   const { id } = useParams();
@@ -120,6 +121,18 @@ export default function NotePreviewPage() {
 
   const handleDeleteComplete = () => {
     router.push('/notes');
+  };
+
+  const handleRateSuccess = async () => {
+    try {
+      const data = await apiRequest(`/notes/${id}`);
+      setNote(prev => ({
+        ...prev,
+        avg_rating: data.avg_rating
+      }));
+    } catch (err) {
+      console.error('Failed to refresh rating:', err);
+    }
   };
 
   if (loading) {
@@ -357,6 +370,9 @@ export default function NotePreviewPage() {
                   </p>
                 </div>
               </div>
+
+              {/* Interactive Rating Component */}
+              <RatingWidget noteId={note.id} onRateSuccess={handleRateSuccess} />
             </div>
           )}
         </div>
