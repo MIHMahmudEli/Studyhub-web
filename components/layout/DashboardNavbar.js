@@ -40,10 +40,7 @@ export default function DashboardNavbar() {
   const isAdminOrMod = user?.role === 'admin' || user?.role === 'moderator';
   const dashboardHref = isAdminOrMod ? '/admin/dashboard' : '/dashboard';
 
-  const dynamicNavLinks = [
-    ...navLinks,
-    ...(isAdminOrMod ? [{ name: 'Publish Resource', href: '/resources/upload_resources', icon: UploadCloud }] : [])
-  ];
+  const dynamicNavLinks = navLinks;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] bg-[var(--background)]/40 backdrop-blur-xl border-b border-[var(--card-border)] px-6 py-3 transition-colors duration-500">
