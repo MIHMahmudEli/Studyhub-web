@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { apiRequest } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { 
   Trophy, 
@@ -85,7 +86,25 @@ export default function StudentDashboard() {
     
     try {
       setDeletingId(id);
+
+      // 1. Delete file from Supabase storage first to save space
+      const noteToDelete = myNotes.find(n => n.id === id);
+      if (noteToDelete && noteToDelete.file_path) {
+        try {
+          const fileName = noteToDelete.file_path.split('/notes/').pop();
+          if (fileName) {
+            await supabase.storage
+              .from('notes')
+              .remove([fileName]);
+          }
+        } catch (err) {
+          console.warn('Failed to delete file from Supabase storage:', err);
+        }
+      }
+
+      // 2. Call the backend DELETE API
       await apiRequest(`/notes/${id}`, { method: 'DELETE' });
+      
       // Update local state
       setMyNotes(prev => prev.filter(n => n.id !== id));
       // Re-trigger auth context update to refresh points
