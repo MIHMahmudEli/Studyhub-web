@@ -183,7 +183,15 @@ export default function DashboardNavbar() {
           <div className="flex flex-col gap-4">
             <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 px-4">User & Controls</p>
             
-            <div className="flex items-center justify-between gap-4 px-4 py-2 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl">
+            <Link 
+              href="/dashboard"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center justify-between gap-4 px-4 py-3 border rounded-2xl transition-all cursor-pointer ${
+                pathname === '/dashboard' 
+                  ? 'bg-blue-500/10 border-blue-500/20' 
+                  : 'bg-[var(--card-bg)] border-[var(--card-border)] active:border-blue-500/30'
+              }`}
+            >
               <span className={`text-[12px] font-black uppercase tracking-tighter truncate max-w-[120px] transition-colors ${
                 pathname === '/dashboard' ? 'text-blue-500' : 'text-[var(--foreground)]'
               }`}>
@@ -194,7 +202,7 @@ export default function DashboardNavbar() {
                 <Coins size={14} />
                 <span>{user?.points || 0} PTS</span>
               </div>
-            </div>
+            </Link>
 
             <div className="grid grid-cols-2 gap-3">
               <button 
