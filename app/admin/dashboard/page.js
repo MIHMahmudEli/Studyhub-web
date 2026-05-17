@@ -21,7 +21,9 @@ import {
   Calendar,
   AlertCircle,
   FileText,
-  ExternalLink
+  ExternalLink,
+  X,
+  AlertTriangle
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -34,8 +36,19 @@ export default function AdminDashboardPage() {
   const [resources, setResources] = useState([]);
   const [uploadVisibility, setUploadVisibility] = useState('approved'); // 'approved' or 'pending'
   const [loadingData, setLoadingData] = useState(true);
-  const [statusMsg, setStatusMsg] = useState({ type: '', text: '' });
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
   const [activeTab, setActiveTab] = useState('pending'); // 'pending', 'resources', 'users'
+
+  // ─── Toast System ────────────────────────────────────────────────────────────
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type, isClosing: false });
+    setTimeout(() => closeToast(), 5000);
+  };
+  
+  const closeToast = () => {
+    setToast(prev => ({ ...prev, isClosing: true }));
+    setTimeout(() => setToast(prev => ({ ...prev, show: false, isClosing: false })), 500);
+  };
 
   // 1. Role & Auth Verification
   useEffect(() => {
@@ -95,11 +108,10 @@ export default function AdminDashboardPage() {
         body: { key: 'resource_upload_visibility', value: newVal }
       });
       setUploadVisibility(newVal);
-      setStatusMsg({ type: 'success', text: `Resource upload visibility set to "${newVal.toUpperCase()}" by default.` });
-      setTimeout(() => setStatusMsg({ type: '', text: '' }), 3000);
+      showToast(`Resource upload visibility set to "${newVal.toUpperCase()}" by default.`, 'success');
     } catch (error) {
       console.error('Failed to update visibility setting:', error);
-      setStatusMsg({ type: 'error', text: error.message || 'Failed to update visibility setting.' });
+      showToast(error.message || 'Failed to update visibility setting.', 'error');
     }
   };
 
@@ -110,12 +122,11 @@ export default function AdminDashboardPage() {
         method: 'PATCH',
         body: { status: newStatus }
       });
-      setStatusMsg({ type: 'success', text: `Note #${id} has been ${newStatus} successfully.` });
+      showToast(`Note #${id} has been ${newStatus} successfully.`, 'success');
       setPendingNotes(prev => prev.filter(n => n.id !== id));
-      setTimeout(() => setStatusMsg({ type: '', text: '' }), 3000);
     } catch (error) {
       console.error(`Failed to update note status:`, error);
-      setStatusMsg({ type: 'error', text: error.message || `Failed to update note status.` });
+      showToast(error.message || `Failed to update note status.`, 'error');
     }
   };
 
@@ -126,7 +137,7 @@ export default function AdminDashboardPage() {
         method: 'PATCH',
         body: { status: newStatus }
       });
-      setStatusMsg({ type: 'success', text: `Resource #${id} has been ${newStatus} successfully.` });
+      showToast(`Resource #${id} has been ${newStatus} successfully.`, 'success');
       setPendingResources(prev => prev.filter(r => r.id !== id));
       // If approved, add to resources list
       if (newStatus === 'approved') {
@@ -135,10 +146,9 @@ export default function AdminDashboardPage() {
           setResources(prev => [approvedRes, ...prev]);
         }
       }
-      setTimeout(() => setStatusMsg({ type: '', text: '' }), 3000);
     } catch (error) {
       console.error(`Failed to update resource status:`, error);
-      setStatusMsg({ type: 'error', text: error.message || `Failed to update resource status.` });
+      showToast(error.message || `Failed to update resource status.`, 'error');
     }
   };
 
@@ -147,13 +157,12 @@ export default function AdminDashboardPage() {
     try {
       const endpoint = isBanned ? `/users/${id}/unban` : `/users/${id}/ban`;
       await apiRequest(endpoint, { method: 'POST' });
-      setStatusMsg({ type: 'success', text: `User #${id} has been ${isBanned ? 'unbanned' : 'banned'} successfully.` });
+      showToast(`User #${id} has been ${isBanned ? 'unbanned' : 'banned'} successfully.`, 'success');
       // Update local state
       setUsersList(prev => prev.map(u => u.id === id ? { ...u, is_banned: !isBanned } : u));
-      setTimeout(() => setStatusMsg({ type: '', text: '' }), 3000);
     } catch (error) {
       console.error(`Failed to update user ban status:`, error);
-      setStatusMsg({ type: 'error', text: error.message || `Failed to update user ban status.` });
+      showToast(error.message || `Failed to update user ban status.`, 'error');
     }
   };
 
@@ -161,12 +170,11 @@ export default function AdminDashboardPage() {
     if (!confirm('Are you sure you want to promote this user to Moderator?')) return;
     try {
       await apiRequest(`/users/${id}/promote`, { method: 'POST' });
-      setStatusMsg({ type: 'success', text: `User #${id} has been promoted to Moderator.` });
+      showToast(`User #${id} has been promoted to Moderator.`, 'success');
       setUsersList(prev => prev.map(u => u.id === id ? { ...u, role: 'moderator' } : u));
-      setTimeout(() => setStatusMsg({ type: '', text: '' }), 3000);
     } catch (error) {
       console.error(`Failed to promote user:`, error);
-      setStatusMsg({ type: 'error', text: error.message || `Failed to promote user.` });
+      showToast(error.message || `Failed to promote user.`, 'error');
     }
   };
 
@@ -208,16 +216,6 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Status Alert Banner */}
-          {statusMsg.text && (
-            <div className={`p-4 rounded-2xl flex items-center gap-3 border animate-in fade-in ${
-              statusMsg.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'
-            }`}>
-              {statusMsg.type === 'success' ? <CheckCircle2 size={20} className="shrink-0" /> : <AlertCircle size={20} className="shrink-0" />}
-              <p className="text-[11px] font-bold uppercase tracking-widest">{statusMsg.text}</p>
-            </div>
-          )}
-
           {/* Platform Configuration Card (Admin Only) */}
           {user.role === 'admin' && (
             <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-6 animate-in fade-in duration-500 hover:border-blue-500/30 transition-all">
@@ -236,7 +234,7 @@ export default function AdminDashboardPage() {
                   onClick={() => handleVisibilityChange('approved')}
                   className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shrink-0 ${
                     uploadVisibility === 'approved'
-                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-105'
+                      ? 'bg-emerald-50 text-emerald-500 shadow-lg shadow-emerald-500/20 scale-105 border border-emerald-500/20 font-black'
                       : 'text-slate-400 hover:text-[var(--foreground)]'
                   }`}
                 >
@@ -246,7 +244,7 @@ export default function AdminDashboardPage() {
                   onClick={() => handleVisibilityChange('pending')}
                   className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shrink-0 ${
                     uploadVisibility === 'pending'
-                      ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20 scale-105'
+                      ? 'bg-amber-50 text-amber-500 shadow-lg shadow-amber-500/20 scale-105 border border-amber-500/20 font-black'
                       : 'text-slate-400 hover:text-[var(--foreground)]'
                   }`}
                 >
@@ -534,7 +532,7 @@ export default function AdminDashboardPage() {
                                 </button>
                                 <button 
                                   onClick={() => handleNoteStatus(note.id, 'rejected')}
-                                  className="px-4 py-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer"
+                                  className="px-4 py-2 bg-red-500/10 text-red-500 hover:bg-red-50 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer"
                                 >
                                   <XCircle size={14} /> Reject
                                 </button>
@@ -686,7 +684,7 @@ export default function AdminDashboardPage() {
                             <td className="py-5">
                               <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
                                 u.role === 'admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                                u.role === 'moderator' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
+                                u.role === 'moderator' ? 'bg-purple-500/10 text-purple-50 border-purple-500/20' :
                                 'bg-blue-500/10 text-blue-500 border-blue-500/20'
                               }`}>
                                 {u.role}
@@ -736,6 +734,58 @@ export default function AdminDashboardPage() {
 
         </div>
       </div>
+
+      {/* ─── TOAST NOTIFICATION CONTAINER ─────────────────────────────────────── */}
+      {toast.show && (
+        <div className={`fixed top-24 right-6 z-[999999] transition-all duration-500 ease-in-out ${
+          toast.isClosing ? 'translate-x-20 opacity-0 pointer-events-none' : 'animate-in slide-in-from-right fade-in'
+        }`}>
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-xl max-w-xs ${
+            toast.type === 'error'
+              ? 'bg-red-500/10 border-red-500/20 text-red-500'
+              : toast.type === 'warning'
+                ? 'bg-amber-500/10 border-amber-500/20 text-amber-500'
+                : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
+          }`}>
+            {toast.type === 'error' ? (
+              <AlertCircle size={16} className="shrink-0" />
+            ) : toast.type === 'warning' ? (
+              <AlertTriangle size={16} className="shrink-0" />
+            ) : (
+              <CheckCircle2 size={16} className="shrink-0" />
+            )}
+            <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed flex-1">{toast.message}</p>
+
+            <div className="relative w-6 h-6 shrink-0 flex items-center justify-center ml-1">
+              <svg className="absolute inset-0 w-full h-full -rotate-90 overflow-visible" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" className="opacity-20" />
+                <circle
+                  cx="12" cy="12" r="10"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  fill="none"
+                  strokeDasharray="62.8"
+                  strokeDashoffset="62.8"
+                  style={{ animation: 'toastProgress 5s linear forwards', strokeLinecap: 'round' }}
+                />
+              </svg>
+              <button
+                onClick={closeToast}
+                className="absolute inset-0 flex items-center justify-center hover:scale-110 transition-transform z-10 focus:outline-none cursor-pointer"
+              >
+                <X size={10} />
+              </button>
+            </div>
+          </div>
+
+          <style jsx>{`
+            @keyframes toastProgress {
+              from { stroke-dashoffset: 62.8; }
+              to { stroke-dashoffset: 0; }
+            }
+          `}</style>
+        </div>
+      )}
     </main>
   );
 }
