@@ -38,13 +38,13 @@ export default function Navbar() {
     <nav 
       className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
         scrolled 
-          ? 'bg-[#06080f]/80 backdrop-blur-2xl border-b border-white/5 py-3' 
+          ? 'bg-white/80 dark:bg-[#06080f]/80 backdrop-blur-2xl border-b border-slate-200/50 dark:border-white/5 py-3' 
           : 'bg-transparent py-5'
       }`}
     >
       {/* Navbar space glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[600px] h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent shadow-[0_0_20px_rgba(59,130,246,0.3)]" />
-      <div className="absolute top-0 left-1/4 w-[300px] h-[100px] bg-blue-600/5 blur-[60px] rounded-full -z-10 animate-nebula" />
+      <div className="absolute top-0 left-1/4 w-[300px] h-[100px] bg-[var(--nebula-1)] blur-[60px] rounded-full -z-10 animate-nebula" />
       <div className="max-w-[1120px] mx-auto px-6 flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="transition-transform duration-300 hover:scale-105 active:scale-95">
@@ -58,7 +58,7 @@ export default function Navbar() {
               key={link.id}
               href={`#${link.id}`}
               onClick={(e) => handleScrollTo(e, link.id)}
-              className="px-4 py-2 text-slate-400 font-medium text-sm no-underline rounded-lg transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[#f1f5f9] hover:bg-white/10 hover:-translate-y-[1px]"
+              className="px-4 py-2 text-slate-600 dark:text-slate-400 font-medium text-sm no-underline rounded-lg transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-slate-900 dark:hover:text-[#f1f5f9] hover:bg-slate-100 dark:hover:bg-white/10 hover:-translate-y-[1px]"
             >
               {link.label}
             </a>
@@ -73,18 +73,18 @@ export default function Navbar() {
 
         {/* Hamburger */}
         <button 
-          className="md:hidden w-10 h-10 flex flex-col justify-center items-center gap-1.5 rounded-lg border border-white/5 transition-colors hover:bg-white/5"
+          className="md:hidden w-10 h-10 flex flex-col justify-center items-center gap-1.5 rounded-lg border border-slate-200/50 dark:border-white/5 transition-colors hover:bg-slate-100 dark:hover:bg-white/5"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          <span className={`block w-5 h-0.5 bg-slate-400 rounded-full transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-          <span className={`block w-5 h-0.5 bg-slate-400 rounded-full transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`} />
-          <span className={`block w-5 h-0.5 bg-slate-400 rounded-full transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+          <span className={`block w-5 h-0.5 bg-slate-600 dark:bg-slate-400 rounded-full transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+          <span className={`block w-5 h-0.5 bg-slate-600 dark:bg-slate-400 rounded-full transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`} />
+          <span className={`block w-5 h-0.5 bg-slate-600 dark:bg-slate-400 rounded-full transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
         </button>
       </div>
 
       {/* Mobile Dropdown */}
       <div 
-        className={`md:hidden overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] bg-[#06080f]/95 backdrop-blur-xl border-b border-white/5 ${
+        className={`md:hidden overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] bg-white/95 dark:bg-[#06080f]/95 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 ${
           mobileMenuOpen ? 'max-h-[300px] py-4' : 'max-h-0'
         }`}
       >
@@ -94,7 +94,7 @@ export default function Navbar() {
               key={link.id}
               href={`#${link.id}`}
               onClick={(e) => handleScrollTo(e, link.id)}
-              className="py-3 text-slate-400 font-medium text-base no-underline transition-colors hover:text-white"
+              className="py-3 text-slate-600 dark:text-slate-400 font-medium text-base no-underline transition-colors hover:text-slate-900 dark:hover:text-white"
             >
               {link.label}
             </a>
