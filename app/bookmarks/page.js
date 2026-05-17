@@ -22,7 +22,10 @@ import {
   Download,
   Calculator,
   Brain,
-  Atom
+  Atom,
+  AlertCircle,
+  CheckCircle2,
+  X
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -45,10 +48,22 @@ const getSubjectIcon = (subject, code) => {
 
 export default function BookmarkPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState('all'); // 'all', 'notes', 'files', 'courses'
   const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type, isClosing: false });
+    setTimeout(() => closeToast(), 5000);
+  };
+  
+  const closeToast = () => {
+    setToast(prev => ({ ...prev, isClosing: true }));
+    setTimeout(() => setToast(prev => ({ ...prev, show: false, isClosing: false })), 500);
+  };
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/auth');
@@ -74,8 +89,10 @@ export default function BookmarkPage() {
     try {
       await apiRequest(`/bookmarks/${id}`, { method: 'DELETE' });
       setBookmarks(prev => prev.filter(b => b.id !== id));
+      showToast('Item removed from your bookmarks archive.', 'success');
     } catch (err) {
       console.error('Failed to remove bookmark:', err);
+      showToast('Failed to remove bookmark.', 'error');
     }
   };
 
@@ -106,6 +123,10 @@ export default function BookmarkPage() {
   const filteredCourses = useMemo(() => filterBySearch(savedCourses), [savedCourses, searchQuery]);
   const filteredNotes = useMemo(() => filterBySearch(savedNotes), [savedNotes, searchQuery]);
   const filteredResources = useMemo(() => filterBySearch(savedResources), [savedResources, searchQuery]);
+
+  const displayCourses = activeTab === 'all' || activeTab === 'courses' ? filteredCourses : [];
+  const displayNotes = activeTab === 'all' || activeTab === 'notes' ? filteredNotes : [];
+  const displayResources = activeTab === 'all' || activeTab === 'files' ? filteredResources : [];
 
   const hasSearchResults = filteredCourses.length > 0 || filteredNotes.length > 0 || filteredResources.length > 0;
   const isArchiveEmpty = savedNotes.length === 0 && savedCourses.length === 0 && savedResources.length === 0;
@@ -166,7 +187,7 @@ export default function BookmarkPage() {
       <div className="pt-24 md:pt-32 px-4 md:px-8">
         <div className="max-w-[1400px] mx-auto">
           {/* Majestic Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-500 text-[9px] font-black uppercase tracking-[0.3em]">
                 <Bookmark size={12} strokeWidth={3} /> Archived Content
@@ -192,19 +213,46 @@ export default function BookmarkPage() {
             </div>
           </div>
 
+          {/* Category Filter Tabs */}
+          {!isArchiveEmpty && (
+            <div className="flex items-center gap-2 mb-12 overflow-x-auto pb-2 scrollbar-none animate-in fade-in slide-in-from-bottom-4 duration-700">
+              {[
+                { id: 'all', label: 'All Archives', count: savedNotes.length + savedCourses.length + savedResources.length },
+                { id: 'notes', label: 'Saved Notes', count: savedNotes.length },
+                { id: 'files', label: 'Saved Files', count: savedResources.length },
+                { id: 'courses', label: 'Saved Courses', count: savedCourses.length }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shrink-0 cursor-pointer ${
+                    activeTab === tab.id
+                      ? 'bg-blue-500 text-white scale-105 shadow-blue-500/20'
+                      : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-[var(--foreground)] hover:border-blue-500/30'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  <span className={`px-2 py-0.5 rounded-full text-[8px] ${activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-white/[0.05] text-slate-400'}`}>
+                    {tab.count}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="space-y-20">
             {/* 1. SAVED RESOURCES SECTION (Majestic Grid - Course Hub) */}
-            {filteredCourses.length > 0 && (
+            {displayCourses.length > 0 && (
               <section className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20 shadow-lg">
                     <BookOpen size={20} />
                   </div>
-                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Resources</h2>
+                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Courses</h2>
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filteredCourses.map((course, idx) => {
+                  {displayCourses.map((course) => {
                     const Icon = getCourseIcon(course.subject_name);
                     const slug = course.subject_name.replace(/\s+/g, '-').toLowerCase();
 
@@ -270,7 +318,7 @@ export default function BookmarkPage() {
             )}
 
             {/* 2. SAVED NOTES SECTION */}
-            {filteredNotes.length > 0 && (
+            {displayNotes.length > 0 && (
               <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 border border-purple-500/20 shadow-lg">
@@ -279,7 +327,7 @@ export default function BookmarkPage() {
                   <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Notes</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filteredNotes.map((bookmark) => {
+                  {displayNotes.map((bookmark) => {
                     const note = bookmark.note;
                     if (!note) return null;
                     const Icon = getSubjectIcon(note.courseTitle, note.code);
@@ -349,7 +397,7 @@ export default function BookmarkPage() {
             )}
 
             {/* 3. SAVED FILES SECTION */}
-            {filteredResources.length > 0 && (
+            {displayResources.length > 0 && (
               <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 border border-green-500/20 shadow-lg">
@@ -358,7 +406,7 @@ export default function BookmarkPage() {
                   <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Files</h2>
                 </div>
                 <div className="space-y-3">
-                  {filteredResources.map((resource) => (
+                  {displayResources.map((resource) => (
                     <div 
                       key={resource.id} 
                       className="group bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-4 md:p-5 flex items-center justify-between hover:border-blue-500/30 transition-all duration-500 shadow-sm"
@@ -398,6 +446,19 @@ export default function BookmarkPage() {
               </section>
             )}
 
+            {/* TAB EMPTY STATE */}
+            {activeTab !== 'all' && displayCourses.length === 0 && displayNotes.length === 0 && displayResources.length === 0 && !isArchiveEmpty && (
+              <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-white/[0.03] flex items-center justify-center text-slate-300 mb-6">
+                  <Bookmark size={32} />
+                </div>
+                <h3 className="text-lg font-black uppercase tracking-widest mb-2">No Saved Items in this Category</h3>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest max-w-[250px]">
+                  You don't have any items bookmarked under "{activeTab === 'notes' ? 'Saved Notes' : activeTab === 'files' ? 'Saved Files' : 'Saved Courses'}".
+                </p>
+              </div>
+            )}
+
             {/* SEARCH EMPTY STATE */}
             {searchQuery && !hasSearchResults && !isArchiveEmpty && (
               <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -434,6 +495,54 @@ export default function BookmarkPage() {
           </div>
         </div>
       </div>
+
+      {/* ─── TOAST NOTIFICATION CONTAINER ─────────────────────────────────────── */}
+      {toast.show && (
+        <div className={`fixed top-24 right-6 z-[999999] transition-all duration-500 ease-in-out ${
+          toast.isClosing ? 'translate-x-20 opacity-0 pointer-events-none' : 'animate-in slide-in-from-right fade-in'
+        }`}>
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-xl max-w-xs ${
+            toast.type === 'error'
+              ? 'bg-red-500/10 border-red-500/20 text-red-500'
+              : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
+          }`}>
+            {toast.type === 'error' ? (
+              <AlertCircle size={16} className="shrink-0" />
+            ) : (
+              <CheckCircle2 size={16} className="shrink-0" />
+            )}
+            <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed flex-1">{toast.message}</p>
+
+            <div className="relative w-6 h-6 shrink-0 flex items-center justify-center ml-1">
+              <svg className="absolute inset-0 w-full h-full -rotate-90 overflow-visible" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" className="opacity-20" />
+                <circle
+                  cx="12" cy="12" r="10"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  fill="none"
+                  strokeDasharray="62.8"
+                  strokeDashoffset="62.8"
+                  style={{ animation: 'toastProgress 5s linear forwards', strokeLinecap: 'round' }}
+                />
+              </svg>
+              <button
+                onClick={closeToast}
+                className="absolute inset-0 flex items-center justify-center hover:scale-110 transition-transform z-10 focus:outline-none cursor-pointer"
+              >
+                <X size={10} />
+              </button>
+            </div>
+          </div>
+
+          <style jsx>{`
+            @keyframes toastProgress {
+              from { stroke-dashoffset: 62.8; }
+              to { stroke-dashoffset: 0; }
+            }
+          `}</style>
+        </div>
+      )}
     </main>
   );
 }

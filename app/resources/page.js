@@ -12,7 +12,11 @@ import {
   Network,
   Loader2,
   Search,
-  ChevronRight
+  ChevronRight,
+  Bookmark,
+  AlertCircle,
+  CheckCircle2,
+  X
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -27,8 +31,20 @@ export default function ResourcesPage() {
   const [visibleCount, setVisibleCount] = useState(12);
   const [searchQuery, setSearchQuery] = useState('');
   const [resources, setResources] = useState([]);
+  const [bookmarks, setBookmarks] = useState([]);
   const [loadingResources, setLoadingResources] = useState(true);
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
   const observerTarget = useRef(null);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type, isClosing: false });
+    setTimeout(() => closeToast(), 5000);
+  };
+  
+  const closeToast = () => {
+    setToast(prev => ({ ...prev, isClosing: true }));
+    setTimeout(() => setToast(prev => ({ ...prev, show: false, isClosing: false })), 500);
+  };
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/auth');
@@ -37,6 +53,7 @@ export default function ResourcesPage() {
   useEffect(() => {
     if (user) {
       fetchResources();
+      fetchBookmarks();
     }
   }, [user]);
 
@@ -52,13 +69,41 @@ export default function ResourcesPage() {
     }
   };
 
+  const fetchBookmarks = async () => {
+    try {
+      const data = await apiRequest('/bookmarks');
+      setBookmarks(data || []);
+    } catch (err) {
+      console.error('Failed to fetch bookmarks:', err);
+    }
+  };
+
+  const handleToggleBookmark = async (subjectName) => {
+    try {
+      const res = await apiRequest('/bookmarks/toggle', {
+        method: 'POST',
+        body: JSON.stringify({ subject_name: subjectName })
+      });
+      if (res.bookmarked) {
+        setBookmarks(prev => [...prev, { subject_name: subjectName }]);
+        showToast(`"${subjectName}" added to your bookmarks archive!`, 'success');
+      } else {
+        setBookmarks(prev => prev.filter(b => b.subject_name !== subjectName));
+        showToast(`"${subjectName}" removed from your bookmarks archive.`, 'success');
+      }
+    } catch (err) {
+      console.error('Failed to toggle bookmark:', err);
+      showToast(err.message || 'Failed to update bookmark.', 'error');
+    }
+  };
+
   const getCourseDept = (code, title) => {
     if (!code) return 'CSE';
     const c = code.toUpperCase();
     if (c.startsWith('CSC') || c.startsWith('COE') || c.startsWith('CSE')) {
       const t = title.toLowerCase();
       if (t.includes('network') || t.includes('architecture') || t.includes('organization') || t.includes('hardware')) {
-        return 'CoE';
+        return 'CS-SYSTEMS';
       }
       return 'CSE';
     }
@@ -122,30 +167,33 @@ export default function ResourcesPage() {
     return filteredCourses.slice(0, visibleCount);
   }, [filteredCourses, visibleCount]);
 
-  const handleObserver = useCallback((entries) => {
-    const [target] = entries;
-    if (target.isIntersecting && visibleCount < filteredCourses.length) {
-      setTimeout(() => {
-        setVisibleCount(prev => prev + 12);
-      }, 400);
-    }
-  }, [visibleCount, filteredCourses.length]);
+  const loadMore = useCallback(() => {
+    setVisibleCount(prev => Math.min(prev + 12, filteredCourses.length));
+  }, [filteredCourses.length]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(handleObserver, {
-      root: null,
-      rootMargin: '200px',
-      threshold: 0.1
-    });
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 1.0 }
+    );
 
     if (observerTarget.current) {
       observer.observe(observerTarget.current);
     }
 
-    return () => observer.disconnect();
-  }, [handleObserver]);
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [loadMore]);
 
   const getCourseIcon = (title) => {
+    if (!title) return BookOpen;
     const t = title.toLowerCase();
     if (t.includes('network')) return Network;
     if (t.includes('compiler') || t.includes('software')) return Code2;
@@ -199,6 +247,7 @@ export default function ResourcesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {visibleCourses.map((course, idx) => {
               const Icon = getCourseIcon(course.title);
+              const isBookmarked = bookmarks.some(b => b.subject_name === course.title);
               return (
                 <div 
                   key={course.title}
@@ -208,6 +257,21 @@ export default function ResourcesPage() {
                 >
                   <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   
+                  {/* Bookmark Button */}
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleBookmark(course.title);
+                    }}
+                    className={`absolute top-4 right-4 z-20 p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all flex items-center justify-center shadow-lg cursor-pointer ${
+                      isBookmarked 
+                        ? 'bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 opacity-100' 
+                        : 'bg-slate-100 dark:bg-white/[0.05] text-slate-400 hover:bg-blue-500 hover:text-white opacity-0 group-hover:opacity-100'
+                    }`}
+                  >
+                    <Bookmark size={14} className={isBookmarked ? "fill-current" : ""} />
+                  </button>
+
                   {/* Centered Majestic Icon */}
                   <div className="relative z-10 w-12 h-12 rounded-[1.2rem] bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-blue-500 shadow-md group-hover:scale-105 transition-all duration-700">
                     <Icon size={20} strokeWidth={1.5} />
@@ -253,6 +317,54 @@ export default function ResourcesPage() {
           </div>
         </div>
       </div>
+
+      {/* ─── TOAST NOTIFICATION CONTAINER ─────────────────────────────────────── */}
+      {toast.show && (
+        <div className={`fixed top-24 right-6 z-[999999] transition-all duration-500 ease-in-out ${
+          toast.isClosing ? 'translate-x-20 opacity-0 pointer-events-none' : 'animate-in slide-in-from-right fade-in'
+        }`}>
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-xl max-w-xs ${
+            toast.type === 'error'
+              ? 'bg-red-500/10 border-red-500/20 text-red-500'
+              : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
+          }`}>
+            {toast.type === 'error' ? (
+              <AlertCircle size={16} className="shrink-0" />
+            ) : (
+              <CheckCircle2 size={16} className="shrink-0" />
+            )}
+            <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed flex-1">{toast.message}</p>
+
+            <div className="relative w-6 h-6 shrink-0 flex items-center justify-center ml-1">
+              <svg className="absolute inset-0 w-full h-full -rotate-90 overflow-visible" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" className="opacity-20" />
+                <circle
+                  cx="12" cy="12" r="10"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  fill="none"
+                  strokeDasharray="62.8"
+                  strokeDashoffset="62.8"
+                  style={{ animation: 'toastProgress 5s linear forwards', strokeLinecap: 'round' }}
+                />
+              </svg>
+              <button
+                onClick={closeToast}
+                className="absolute inset-0 flex items-center justify-center hover:scale-110 transition-transform z-10 focus:outline-none cursor-pointer"
+              >
+                <X size={10} />
+              </button>
+            </div>
+          </div>
+
+          <style jsx>{`
+            @keyframes toastProgress {
+              from { stroke-dashoffset: 62.8; }
+              to { stroke-dashoffset: 0; }
+            }
+          `}</style>
+        </div>
+      )}
     </main>
   );
 }
