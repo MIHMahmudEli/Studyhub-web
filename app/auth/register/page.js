@@ -121,14 +121,20 @@ export default function RegisterPage() {
       <div className={`absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[120px] transition-opacity duration-1000 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
       <div className={`absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[120px] transition-opacity duration-1000 delay-300 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
 
-      <Link href="/" className={`absolute top-8 left-8 transition-all duration-700 delay-100 hover:scale-105 active:scale-95 group z-50 ${mounted ? 'opacity-100' : 'opacity-0 -translate-x-4'}`}>
+      <Link href="/" className={`hidden sm:flex absolute top-8 left-8 transition-all duration-700 delay-100 hover:scale-105 active:scale-95 group z-50 ${mounted ? 'opacity-100' : 'opacity-0 -translate-x-4'}`}>
         <StudyHubLogo size={32} textSize={18} />
       </Link>
 
       <div className={`w-full max-w-[420px] bg-[#0d111c]/70 border border-white/10 backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <div className="h-1.5 w-full bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-cyan-600/50 opacity-30" />
 
-        <div className="p-10">
+        <div className="p-6 sm:p-10">
+          {/* Mobile-only Top Logo */}
+          <div className="flex sm:hidden justify-center mb-6">
+            <Link href="/" className="transition-all hover:scale-105 active:scale-95">
+              <StudyHubLogo size={32} textSize={18} />
+            </Link>
+          </div>
           <div className="text-center mb-8">
             <h1 className="text-3xl font-black text-white mb-2 tracking-tight bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
               {step === 'register' ? 'Create Account' : 'Verify Email'}
@@ -192,7 +198,7 @@ export default function RegisterPage() {
                     value={digit}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
-                    className="w-12 h-14 bg-white/5 border border-white/10 rounded-xl text-center text-white text-xl font-black focus:border-blue-500/50 focus:bg-blue-500/5 outline-none transition-all"
+                    className="w-9 h-11 sm:w-12 sm:h-14 bg-white/5 border border-white/10 rounded-xl text-center text-white text-base sm:text-xl font-black focus:border-blue-500/50 focus:bg-blue-500/5 outline-none transition-all"
                   />
                 ))}
               </div>

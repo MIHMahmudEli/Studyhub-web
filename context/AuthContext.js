@@ -44,7 +44,7 @@ export function AuthProvider({ children }) {
 
     // Role-based redirection
     if (loggedUser.role === 'student') {
-      router.push('/dashboard');
+      router.push('/notes');
     } else {
       router.push('/');
     }
