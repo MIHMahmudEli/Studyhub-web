@@ -158,8 +158,8 @@ export default function AdminDashboardPage() {
       const endpoint = isBanned ? `/users/${id}/unban` : `/users/${id}/ban`;
       await apiRequest(endpoint, { method: 'POST' });
       showToast(`User #${id} has been ${isBanned ? 'unbanned' : 'banned'} successfully.`, 'success');
-      // Update local state
-      setUsersList(prev => prev.map(u => u.id === id ? { ...u, is_banned: !isBanned } : u));
+      // Update local state matching 'banned' property from backend
+      setUsersList(prev => prev.map(u => u.id === id ? { ...u, banned: !isBanned } : u));
     } catch (error) {
       console.error(`Failed to update user ban status:`, error);
       showToast(error.message || `Failed to update user ban status.`, 'error');
@@ -175,6 +175,18 @@ export default function AdminDashboardPage() {
     } catch (error) {
       console.error(`Failed to promote user:`, error);
       showToast(error.message || `Failed to promote user.`, 'error');
+    }
+  };
+
+  const handleDemoteUser = async (id) => {
+    if (!confirm('Are you sure you want to demote this Moderator back to Student?')) return;
+    try {
+      await apiRequest(`/users/${id}/demote`, { method: 'POST' });
+      showToast(`User #${id} has been demoted to Student.`, 'success');
+      setUsersList(prev => prev.map(u => u.id === id ? { ...u, role: 'student' } : u));
+    } catch (error) {
+      console.error(`Failed to demote user:`, error);
+      showToast(error.message || `Failed to demote user.`, 'error');
     }
   };
 
@@ -224,7 +236,7 @@ export default function AdminDashboardPage() {
                   <Sparkles size={12} /> System Setting
                 </div>
                 <h3 className="text-xl font-black uppercase tracking-tight">Resource Upload Visibility</h3>
-                <p className="text-xs font-bold text-slate-500 max-w-[600px]">
+                <p className="text-xs font-bold text-slate-50:0 max-w-[600px]">
                   Configure the default approval status for newly uploaded academic resources. If set to PENDING, an admin must approve them before they appear in the public library.
                 </p>
               </div>
@@ -675,19 +687,19 @@ export default function AdminDashboardPage() {
                                 )}
                                 <div className="truncate">
                                   <p className="font-black text-sm text-[var(--foreground)] truncate flex items-center gap-2">
-                                    {u.name} {u.is_banned && <span className="text-[9px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded-md uppercase tracking-widest border border-red-500/20">Banned</span>}
+                                    {u.name} {u.banned && <span className="text-[9px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded-md uppercase tracking-widest border border-red-500/20">Banned</span>}
                                   </p>
-                                  <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email}</p>
+                                  <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email || 'No email available'}</p>
                                 </div>
                               </div>
                             </td>
                             <td className="py-5">
                               <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
                                 u.role === 'admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                                u.role === 'moderator' ? 'bg-purple-500/10 text-purple-50 border-purple-500/20' :
+                                u.role === 'moderator' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
                                 'bg-blue-500/10 text-blue-500 border-blue-500/20'
                               }`}>
-                                {u.role}
+                                {u.role || 'student'}
                               </span>
                             </td>
                             <td className="py-5 font-black text-amber-500">
@@ -700,22 +712,32 @@ export default function AdminDashboardPage() {
                                     {u.role === 'student' && user.role === 'admin' && (
                                       <button 
                                         onClick={() => handlePromoteUser(u.id)}
-                                        className="px-3 py-2 bg-purple-500/10 text-purple-500 hover:bg-purple-50 hover:text-white rounded-xl border border-purple-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer"
+                                        className="px-3 py-2 bg-purple-500/10 text-purple-500 hover:bg-purple-500 hover:text-white rounded-xl border border-purple-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer"
                                         title="Promote to Moderator"
                                       >
                                         <Award size={14} /> Promote
                                       </button>
                                     )}
 
+                                    {u.role === 'moderator' && user.role === 'admin' && (
+                                      <button 
+                                        onClick={() => handleDemoteUser(u.id)}
+                                        className="px-3 py-2 bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white rounded-xl border border-amber-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer"
+                                        title="Demote to Student"
+                                      >
+                                        <UserX size={14} /> Demote
+                                      </button>
+                                    )}
+
                                     <button 
-                                      onClick={() => handleBanUser(u.id, u.is_banned)}
+                                      onClick={() => handleBanUser(u.id, u.banned)}
                                       className={`px-3 py-2 rounded-xl border transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer ${
-                                        u.is_banned 
+                                        u.banned 
                                           ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white border-emerald-500/20' 
                                           : 'bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border-red-500/20'
                                       }`}
                                     >
-                                      {u.is_banned ? <><UserCheck size={14} /> Unban</> : <><UserX size={14} /> Ban</>}
+                                      {u.banned ? <><UserCheck size={14} /> Unban</> : <><UserX size={14} /> Ban</>}
                                     </button>
                                   </>
                                 )}
