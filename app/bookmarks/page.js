@@ -17,13 +17,31 @@ import {
   Database,
   Code2,
   Network,
-  Trash2
+  Trash2,
+  Star,
+  Download,
+  Calculator,
+  Brain,
+  Atom
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiRequest } from '@/lib/api';
 import { BookmarkListSkeleton, NoteCardSkeleton, ResourceListSkeleton } from '@/components/ui/Skeleton';
+
+// Helper to select icon based on subject
+const getSubjectIcon = (subject, code) => {
+  const s = ((subject || '') + ' ' + (code || '')).toLowerCase();
+  if (s.includes('physics')) return Atom;
+  if (s.includes('math') || s.includes('calculus')) return Calculator;
+  if (s.includes('artificial') || s.includes('machine')) return Brain;
+  if (s.includes('web')) return Globe;
+  if (s.includes('database')) return Database;
+  if (s.includes('programming') || s.includes('software') || s.includes('compiler')) return Code2;
+  if (s.includes('microprocessor') || s.includes('architecture')) return Cpu;
+  return FileText;
+};
 
 export default function BookmarkPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -259,35 +277,62 @@ export default function BookmarkPage() {
                   {filteredNotes.map((bookmark) => {
                     const note = bookmark.note;
                     if (!note) return null;
+                    const Icon = getSubjectIcon(note.courseTitle, note.code);
                     return (
                       <div key={bookmark.id} className="relative group">
-                        <Link 
-                          href={`/notes/${note.id}`}
-                          className="block bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] p-6 hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 flex flex-col justify-between h-[180px] shadow-sm"
+                        <div 
+                          onClick={() => router.push(`/notes/${note.id}`)}
+                          className="relative h-[280px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1 shadow-sm"
                         >
-                          <div className="space-y-3">
-                            <h3 className="text-[11px] font-black uppercase tracking-widest leading-relaxed line-clamp-2 pr-6 group-hover:text-blue-500 transition-colors">
-                              {note.title}
-                            </h3>
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                              <span className="text-[7px] font-black px-2 py-0.5 rounded bg-blue-500/10 text-blue-500 uppercase tracking-widest w-fit">
-                                {note.code || 'STUDY'}
-                              </span>
-                              <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest">
-                                {note.courseTitle || 'GENERAL'}
-                              </span>
+                          <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                          
+                          {/* Centered Majestic Icon */}
+                          <div className="relative z-10 w-12 h-12 rounded-[1.2rem] bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-blue-500 shadow-md group-hover:scale-105 transition-all duration-500">
+                            <Icon size={20} strokeWidth={1.5} />
+                          </div>
+
+                          {/* Metadata & Title */}
+                          <div className="relative z-10 text-center space-y-2 w-full">
+                            <div className="space-y-1">
+                              <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-widest leading-relaxed max-w-[180px] mx-auto group-hover:text-blue-500 transition-colors duration-500 line-clamp-2">
+                                {note.title}
+                              </h3>
+                              <div className="space-y-1 pt-1">
+                                <p className="text-[7.5px] font-black tracking-[0.2em] text-slate-500 uppercase">
+                                  {note.code || 'GENERAL'}
+                                </p>
+                                <p className="text-[6.5px] font-black tracking-[0.15em] text-blue-500/80 uppercase px-2 py-0.5 rounded-full bg-blue-500/5 border border-blue-500/10 inline-block">
+                                  {note.courseTitle || 'GENERAL STUDY'}
+                                </p>
+                              </div>
                             </div>
                           </div>
-                          <div className="mt-4 flex items-center justify-between border-t border-[var(--card-border)] pt-4">
-                            <div className="flex items-center gap-2 text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                              <Clock size={10} /> {new Date(note.created_at).toLocaleDateString()}
+
+                          {/* High-Contrast Footer */}
+                          <div className="relative z-10 w-full flex items-center justify-between pt-3 border-t border-[var(--card-border)]">
+                            <div className="flex items-center gap-2.5">
+                              <div className="flex items-center gap-1 text-[8px] font-black uppercase tracking-widest text-slate-400">
+                                <Star size={9} className={parseFloat(note.avg_rating) > 0 ? "text-amber-400 fill-amber-400" : ""} /> 
+                                {parseFloat(note.avg_rating) > 0 ? note.avg_rating : 'NEW'}
+                              </div>
+                              <div className="w-0.5 h-0.5 rounded-full bg-slate-300 dark:bg-slate-700" />
+                              <div className="flex items-center gap-1 text-[8px] font-black uppercase tracking-widest text-slate-400">
+                                <Download size={9} /> {note.downloads}
+                              </div>
                             </div>
-                            <ChevronRight size={14} className="text-slate-300 group-hover:translate-x-1 transition-all" />
+                            <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
+                              <ChevronRight size={10} className="group-hover:translate-x-0.5 transition-all" />
+                            </div>
                           </div>
-                        </Link>
+                        </div>
+
+                        {/* Remove Bookmark Button */}
                         <button 
-                          onClick={() => handleRemoveBookmark(bookmark.id)}
-                          className="absolute top-4 right-4 p-2 rounded-lg bg-red-500/10 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-lg"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveBookmark(bookmark.id);
+                          }}
+                          className="absolute top-4 right-4 z-20 p-2 rounded-lg bg-red-500/10 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-lg cursor-pointer"
                         >
                           <Trash2 size={12} />
                         </button>
