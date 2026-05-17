@@ -149,13 +149,6 @@ export default function UploadResourcePage() {
         body: payload,
       });
 
-      // Immediately approve it so it appears in the public library
-      if (resData && resData.id) {
-        await apiRequest(`/resources/${resData.id}/status`, {
-          method: 'PATCH',
-          body: { status: 'approved' }
-        });
-      }
 
       setStatus({ type: 'success', message: 'Resource published successfully!' });
       setFile(null);

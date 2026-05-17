@@ -19,7 +19,9 @@ import {
   Award,
   Sparkles,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  FileText,
+  ExternalLink
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -27,11 +29,13 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   
   const [pendingNotes, setPendingNotes] = useState([]);
+  const [pendingResources, setPendingResources] = useState([]);
   const [usersList, setUsersList] = useState([]);
   const [resources, setResources] = useState([]);
+  const [uploadVisibility, setUploadVisibility] = useState('approved'); // 'approved' or 'pending'
   const [loadingData, setLoadingData] = useState(true);
   const [statusMsg, setStatusMsg] = useState({ type: '', text: '' });
-  const [activeTab, setActiveTab] = useState('pending'); // 'pending', 'users'
+  const [activeTab, setActiveTab] = useState('pending'); // 'pending', 'resources', 'users'
 
   // 1. Role & Auth Verification
   useEffect(() => {
@@ -58,6 +62,10 @@ export default function AdminDashboardPage() {
       const pendingData = await apiRequest('/notes/pending');
       setPendingNotes(pendingData || []);
 
+      // Fetch pending resources
+      const pendingResData = await apiRequest('/resources/admin/pending');
+      setPendingResources(pendingResData || []);
+
       // Fetch users list
       const usersData = await apiRequest('/users/leaderboard');
       setUsersList(usersData || []);
@@ -66,10 +74,32 @@ export default function AdminDashboardPage() {
       const resourcesData = await apiRequest('/resources');
       setResources(resourcesData || []);
 
+      // Fetch upload visibility setting
+      const visibilityData = await apiRequest('/admin/settings/resource_upload_visibility');
+      if (visibilityData && visibilityData.value) {
+        setUploadVisibility(visibilityData.value);
+      }
+
     } catch (error) {
       console.error('Failed to load admin dashboard data:', error);
     } finally {
       setLoadingData(false);
+    }
+  };
+
+  // --- Handler for Changing Visibility Setting ---
+  const handleVisibilityChange = async (newVal) => {
+    try {
+      await apiRequest('/admin/settings', {
+        method: 'POST',
+        body: { key: 'resource_upload_visibility', value: newVal }
+      });
+      setUploadVisibility(newVal);
+      setStatusMsg({ type: 'success', text: `Resource upload visibility set to "${newVal.toUpperCase()}" by default.` });
+      setTimeout(() => setStatusMsg({ type: '', text: '' }), 3000);
+    } catch (error) {
+      console.error('Failed to update visibility setting:', error);
+      setStatusMsg({ type: 'error', text: error.message || 'Failed to update visibility setting.' });
     }
   };
 
@@ -86,6 +116,29 @@ export default function AdminDashboardPage() {
     } catch (error) {
       console.error(`Failed to update note status:`, error);
       setStatusMsg({ type: 'error', text: error.message || `Failed to update note status.` });
+    }
+  };
+
+  // --- Handlers for Resources Moderation ---
+  const handleResourceStatus = async (id, newStatus) => {
+    try {
+      await apiRequest(`/resources/${id}/status`, {
+        method: 'PATCH',
+        body: { status: newStatus }
+      });
+      setStatusMsg({ type: 'success', text: `Resource #${id} has been ${newStatus} successfully.` });
+      setPendingResources(prev => prev.filter(r => r.id !== id));
+      // If approved, add to resources list
+      if (newStatus === 'approved') {
+        const approvedRes = pendingResources.find(r => r.id === id);
+        if (approvedRes) {
+          setResources(prev => [approvedRes, ...prev]);
+        }
+      }
+      setTimeout(() => setStatusMsg({ type: '', text: '' }), 3000);
+    } catch (error) {
+      console.error(`Failed to update resource status:`, error);
+      setStatusMsg({ type: 'error', text: error.message || `Failed to update resource status.` });
     }
   };
 
@@ -138,7 +191,7 @@ export default function AdminDashboardPage() {
                 Platform <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-red-500">Management</span>
               </h1>
               <p className="text-[10px] md:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest max-w-[600px]">
-                Review pending notes, manage platform users, publish academic resources, and monitor system metrics.
+                Review pending notes, manage platform users, configure resource visibility, and monitor system metrics.
               </p>
             </div>
 
@@ -165,72 +218,123 @@ export default function AdminDashboardPage() {
             </div>
           )}
 
+          {/* Platform Configuration Card (Admin Only) */}
+          {user.role === 'admin' && (
+            <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-6 animate-in fade-in duration-500 hover:border-blue-500/30 transition-all">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-500 text-[9px] font-black uppercase tracking-[0.3em]">
+                  <Sparkles size={12} /> System Setting
+                </div>
+                <h3 className="text-xl font-black uppercase tracking-tight">Resource Upload Visibility</h3>
+                <p className="text-xs font-bold text-slate-500 max-w-[600px]">
+                  Configure the default approval status for newly uploaded academic resources. If set to PENDING, an admin must approve them before they appear in the public library.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 bg-slate-100 dark:bg-white/[0.05] p-1.5 rounded-2xl border border-slate-200 dark:border-white/[0.05] shrink-0 overflow-x-auto">
+                <button
+                  onClick={() => handleVisibilityChange('approved')}
+                  className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shrink-0 ${
+                    uploadVisibility === 'approved'
+                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-105'
+                      : 'text-slate-400 hover:text-[var(--foreground)]'
+                  }`}
+                >
+                  Approved by Default
+                </button>
+                <button
+                  onClick={() => handleVisibilityChange('pending')}
+                  className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shrink-0 ${
+                    uploadVisibility === 'pending'
+                      ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20 scale-105'
+                      : 'text-slate-400 hover:text-[var(--foreground)]'
+                  }`}
+                >
+                  Pending by Default
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Admin Stats Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* Pending Notes */}
-            <div className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm hover:border-amber-500/30 transition-all duration-500 hover:-translate-y-1">
-              <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-amber-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div 
+              onClick={() => setActiveTab('pending')}
+              className={`group relative bg-[var(--card-bg)] border rounded-[2.5rem] p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 cursor-pointer ${
+                activeTab === 'pending' ? 'border-purple-500 bg-purple-500/5' : 'border-[var(--card-border)] hover:border-purple-500/30'
+              }`}
+            >
+              <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-purple-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="flex justify-between items-start relative z-10">
                 <div className="space-y-3">
                   <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Pending Notes</span>
-                  <h3 className="text-4xl font-black tracking-tight text-amber-500">
+                  <h3 className="text-4xl font-black tracking-tight text-purple-500">
                     {loadingData ? '...' : pendingNotes.length}
                   </h3>
                   <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Awaiting moderation</p>
                 </div>
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shadow-xl group-hover:scale-110 transition-transform duration-500">
+                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 shadow-xl group-hover:scale-110 transition-transform duration-500">
                   <Clock size={22} className="animate-pulse" />
                 </div>
               </div>
             </div>
 
+            {/* Pending Resources */}
+            <div 
+              onClick={() => setActiveTab('resources')}
+              className={`group relative bg-[var(--card-bg)] border rounded-[2.5rem] p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 cursor-pointer ${
+                activeTab === 'resources' ? 'border-amber-500 bg-amber-500/5' : 'border-[var(--card-border)] hover:border-amber-500/30'
+              }`}
+            >
+              <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-amber-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="flex justify-between items-start relative z-10">
+                <div className="space-y-3">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Pending Resources</span>
+                  <h3 className="text-4xl font-black tracking-tight text-amber-500">
+                    {loadingData ? '...' : pendingResources.length}
+                  </h3>
+                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Awaiting admin approval</p>
+                </div>
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shadow-xl group-hover:scale-110 transition-transform duration-500">
+                  <Layers size={22} className="animate-pulse" />
+                </div>
+              </div>
+            </div>
+
             {/* Total Users */}
-            <div className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm hover:border-purple-500/30 transition-all duration-500 hover:-translate-y-1">
-              <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-purple-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div 
+              onClick={() => setActiveTab('users')}
+              className={`group relative bg-[var(--card-bg)] border rounded-[2.5rem] p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 cursor-pointer ${
+                activeTab === 'users' ? 'border-blue-500 bg-blue-500/5' : 'border-[var(--card-border)] hover:border-blue-500/30'
+              }`}
+            >
+              <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="flex justify-between items-start relative z-10">
                 <div className="space-y-3">
                   <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Total Users</span>
-                  <h3 className="text-4xl font-black tracking-tight text-purple-500">
+                  <h3 className="text-4xl font-black tracking-tight text-blue-500">
                     {loadingData ? '...' : usersList.length}
                   </h3>
                   <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Registered students</p>
                 </div>
-                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 shadow-xl group-hover:scale-110 transition-transform duration-500">
+                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-transform duration-500">
                   <Users size={22} />
                 </div>
               </div>
             </div>
 
             {/* Published Resources */}
-            <div className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1">
-              <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="flex justify-between items-start relative z-10">
-                <div className="space-y-3">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Library Resources</span>
-                  <h3 className="text-4xl font-black tracking-tight text-blue-500">
-                    {loadingData ? '...' : resources.length}
-                  </h3>
-                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Official course materials</p>
-                </div>
-                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-transform duration-500">
-                  <Layers size={22} />
-                </div>
-              </div>
-            </div>
-
-            {/* System Status */}
             <div className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm hover:border-emerald-500/30 transition-all duration-500 hover:-translate-y-1">
               <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-emerald-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="flex justify-between items-start relative z-10">
                 <div className="space-y-3">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">System Health</span>
-                  <h3 className="text-3xl font-black tracking-tight text-emerald-500 mt-1">
-                    100%
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Library Resources</span>
+                  <h3 className="text-4xl font-black tracking-tight text-emerald-500">
+                    {loadingData ? '...' : resources.length}
                   </h3>
-                  <p className="text-[9px] font-bold text-emerald-500/80 uppercase tracking-widest mt-1 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Fully Operational
-                  </p>
+                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Official course materials</p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 shadow-xl group-hover:scale-110 transition-transform duration-500">
                   <ShieldCheck size={22} />
@@ -269,10 +373,35 @@ export default function AdminDashboardPage() {
                 </div>
               </Link>
 
+              {/* Feature Card: Pending Resources Tab Shortcut */}
+              <button 
+                onClick={() => setActiveTab('resources')}
+                className={`group relative overflow-hidden p-8 bg-[var(--card-bg)] border-2 rounded-[2.5rem] shadow-lg transition-all hover:-translate-y-1 duration-500 flex flex-col justify-between h-[200px] text-left cursor-pointer ${
+                  activeTab === 'resources' ? 'border-amber-500 bg-amber-500/5' : 'border-[var(--card-border)] hover:border-amber-500/50'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-500 shadow-md group-hover:scale-110 transition-transform duration-500">
+                    <Layers size={24} />
+                  </div>
+                  <span className="text-[9px] font-black px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-full uppercase tracking-widest">
+                    {pendingResources.length} Pending
+                  </span>
+                </div>
+                <div>
+                  <h4 className="text-lg font-black text-[var(--foreground)] uppercase tracking-tight group-hover:text-amber-500 transition-colors">
+                    Resources Moderation
+                  </h4>
+                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
+                    Review and approve library uploads <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  </p>
+                </div>
+              </button>
+
               {/* Feature Card: Pending Notes Tab Shortcut */}
               <button 
                 onClick={() => setActiveTab('pending')}
-                className={`group relative overflow-hidden p-8 bg-[var(--card-bg)] border-2 rounded-[2.5rem] shadow-lg transition-all hover:-translate-y-1 duration-500 flex flex-col justify-between h-[200px] text-left ${
+                className={`group relative overflow-hidden p-8 bg-[var(--card-bg)] border-2 rounded-[2.5rem] shadow-lg transition-all hover:-translate-y-1 duration-500 flex flex-col justify-between h-[200px] text-left cursor-pointer ${
                   activeTab === 'pending' ? 'border-purple-500 bg-purple-500/5' : 'border-[var(--card-border)] hover:border-purple-500/50'
                 }`}
               >
@@ -294,40 +423,15 @@ export default function AdminDashboardPage() {
                 </div>
               </button>
 
-              {/* Feature Card: User Management Tab Shortcut */}
-              <button 
-                onClick={() => setActiveTab('users')}
-                className={`group relative overflow-hidden p-8 bg-[var(--card-bg)] border-2 rounded-[2.5rem] shadow-lg transition-all hover:-translate-y-1 duration-500 flex flex-col justify-between h-[200px] text-left ${
-                  activeTab === 'users' ? 'border-blue-500 bg-blue-500/5' : 'border-[var(--card-border)] hover:border-blue-500/50'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center text-blue-500 shadow-md group-hover:scale-110 transition-transform duration-500">
-                    <Users size={24} />
-                  </div>
-                  <span className="text-[9px] font-black px-3 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-500 rounded-full uppercase tracking-widest">
-                    {usersList.length} Users
-                  </span>
-                </div>
-                <div>
-                  <h4 className="text-lg font-black text-[var(--foreground)] uppercase tracking-tight group-hover:text-blue-500 transition-colors">
-                    User Access & Roles
-                  </h4>
-                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
-                    Manage bans and promote moderators <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                  </p>
-                </div>
-              </button>
-
             </div>
           </div>
 
-          {/* Section Tabs (Pending Notes vs User Management) */}
+          {/* Section Tabs (Pending Notes vs Pending Resources vs User Management) */}
           <div className="space-y-6 pt-6">
-            <div className="flex items-center gap-4 border-b border-[var(--card-border)] pb-4">
+            <div className="flex items-center gap-4 border-b border-[var(--card-border)] pb-4 overflow-x-auto scrollbar-none">
               <button
                 onClick={() => setActiveTab('pending')}
-                className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${
+                className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shrink-0 cursor-pointer ${
                   activeTab === 'pending'
                     ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20'
                     : 'bg-[var(--card-bg)] text-slate-500 border border-[var(--card-border)] hover:text-[var(--foreground)]'
@@ -336,8 +440,18 @@ export default function AdminDashboardPage() {
                 Pending Notes ({pendingNotes.length})
               </button>
               <button
+                onClick={() => setActiveTab('resources')}
+                className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shrink-0 cursor-pointer ${
+                  activeTab === 'resources'
+                    ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20'
+                    : 'bg-[var(--card-bg)] text-slate-500 border border-[var(--card-border)] hover:text-[var(--foreground)]'
+                }`}
+              >
+                Pending Resources ({pendingResources.length})
+              </button>
+              <button
                 onClick={() => setActiveTab('users')}
-                className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${
+                className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shrink-0 cursor-pointer ${
                   activeTab === 'users'
                     ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
                     : 'bg-[var(--card-bg)] text-slate-500 border border-[var(--card-border)] hover:text-[var(--foreground)]'
@@ -349,7 +463,7 @@ export default function AdminDashboardPage() {
 
             {/* TAB 1: Pending Notes Table */}
             {activeTab === 'pending' && (
-              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-xl overflow-hidden backdrop-blur-xl">
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-xl overflow-hidden backdrop-blur-xl animate-in fade-in duration-500">
                 <div className="flex items-center justify-between mb-8">
                   <div>
                     <h3 className="text-lg font-black uppercase tracking-tight">Notes Awaiting Approval</h3>
@@ -414,13 +528,13 @@ export default function AdminDashboardPage() {
                               <div className="inline-flex items-center gap-2">
                                 <button 
                                   onClick={() => handleNoteStatus(note.id, 'approved')}
-                                  className="px-4 py-2 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-xl border border-emerald-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1"
+                                  className="px-4 py-2 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-xl border border-emerald-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer"
                                 >
                                   <CheckCircle2 size={14} /> Approve
                                 </button>
                                 <button 
                                   onClick={() => handleNoteStatus(note.id, 'rejected')}
-                                  className="px-4 py-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1"
+                                  className="px-4 py-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer"
                                 >
                                   <XCircle size={14} /> Reject
                                 </button>
@@ -435,9 +549,97 @@ export default function AdminDashboardPage() {
               </div>
             )}
 
-            {/* TAB 2: User Management Table */}
+            {/* TAB 2: Pending Resources Table */}
+            {activeTab === 'resources' && (
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-xl overflow-hidden backdrop-blur-xl animate-in fade-in duration-500">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h3 className="text-lg font-black uppercase tracking-tight">Resources Awaiting Approval</h3>
+                    <p className="text-xs font-bold text-slate-500">Review uploaded academic materials before publishing them to the course library.</p>
+                  </div>
+                  <span className="text-xs font-black px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full border border-amber-500/20 uppercase tracking-widest">
+                    Queue: {pendingResources.length}
+                  </span>
+                </div>
+
+                {loadingData ? (
+                  <div className="py-12 text-center text-xs font-bold text-slate-500 uppercase tracking-widest animate-pulse">Loading pending resources...</div>
+                ) : pendingResources.length === 0 ? (
+                  <div className="py-16 text-center space-y-3 border-2 border-dashed border-[var(--card-border)] rounded-[2rem]">
+                    <div className="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20">
+                      <CheckCircle2 size={24} />
+                    </div>
+                    <p className="text-sm font-black uppercase tracking-widest text-[var(--foreground)]">All Caught Up!</p>
+                    <p className="text-xs font-bold text-slate-500">There are no pending resources awaiting moderation at this time.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
+                          <th className="pb-4 pl-4">Resource Title & Subject</th>
+                          <th className="pb-4">Uploader</th>
+                          <th className="pb-4">File Type</th>
+                          <th className="pb-4 text-right pr-4">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
+                        {pendingResources.map((res) => (
+                          <tr key={res.id} className="hover:bg-white/[0.02] transition-colors">
+                            <td className="py-5 pl-4 max-w-[300px]">
+                              <p className="font-black text-sm text-[var(--foreground)] truncate">{res.title}</p>
+                              <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">{res.subject || res.course_code || 'RESOURCE'} • {res.term?.toUpperCase() || 'MID'}</p>
+                            </td>
+                            <td className="py-5">
+                              <div className="flex items-center gap-2">
+                                {res.uploader?.profile_pic ? (
+                                  <img src={res.uploader.profile_pic} alt="" className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)]" />
+                                ) : (
+                                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-[10px] font-black text-white">
+                                    {res.uploader?.name?.[0] || 'U'}
+                                  </div>
+                                )}
+                                <span className="text-slate-300 truncate max-w-[120px]">{res.uploader?.name || `User #${res.uploader_id}`}</span>
+                              </div>
+                            </td>
+                            <td className="py-5">
+                              <a 
+                                href={res.file_path} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-500 rounded-lg border border-amber-500/20 hover:bg-amber-500/20 transition-colors uppercase text-[10px] tracking-widest font-black"
+                              >
+                                {res.file_type || 'PDF'} <ExternalLink size={12} />
+                              </a>
+                            </td>
+                            <td className="py-5 text-right pr-4">
+                              <div className="inline-flex items-center gap-2">
+                                <button 
+                                  onClick={() => handleResourceStatus(res.id, 'approved')}
+                                  className="px-4 py-2 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-xl border border-emerald-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer"
+                                >
+                                  <CheckCircle2 size={14} /> Approve
+                                </button>
+                                <button 
+                                  onClick={() => handleResourceStatus(res.id, 'rejected')}
+                                  className="px-4 py-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer"
+                                >
+                                  <XCircle size={14} /> Reject
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB 3: User Management Table */}
             {activeTab === 'users' && (
-              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-xl overflow-hidden backdrop-blur-xl">
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-xl overflow-hidden backdrop-blur-xl animate-in fade-in duration-500">
                 <div className="flex items-center justify-between mb-8">
                   <div>
                     <h3 className="text-lg font-black uppercase tracking-tight">Platform User Directory</h3>
@@ -500,7 +702,7 @@ export default function AdminDashboardPage() {
                                     {u.role === 'student' && user.role === 'admin' && (
                                       <button 
                                         onClick={() => handlePromoteUser(u.id)}
-                                        className="px-3 py-2 bg-purple-500/10 text-purple-500 hover:bg-purple-500 hover:text-white rounded-xl border border-purple-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1"
+                                        className="px-3 py-2 bg-purple-500/10 text-purple-500 hover:bg-purple-50 hover:text-white rounded-xl border border-purple-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer"
                                         title="Promote to Moderator"
                                       >
                                         <Award size={14} /> Promote
@@ -509,7 +711,7 @@ export default function AdminDashboardPage() {
 
                                     <button 
                                       onClick={() => handleBanUser(u.id, u.is_banned)}
-                                      className={`px-3 py-2 rounded-xl border transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 ${
+                                      className={`px-3 py-2 rounded-xl border transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer ${
                                         u.is_banned 
                                           ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white border-emerald-500/20' 
                                           : 'bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border-red-500/20'
