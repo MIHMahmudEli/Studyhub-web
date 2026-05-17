@@ -149,6 +149,8 @@ export default function TermResourcesPage() {
                         {res.title}
                       </h4>
                       <div className="flex items-center gap-3 md:gap-4 text-[7px] md:text-[8px] font-black uppercase tracking-widest text-slate-400">
+                        <span className="text-blue-500 font-black">BY {res.uploader?.name || 'ADMIN'}</span>
+                        <div className="w-1 h-1 bg-slate-300 dark:bg-slate-800 rounded-full" />
                         <span>{res.file_type || 'PDF'}</span>
                         <div className="w-1 h-1 bg-slate-300 dark:bg-slate-800 rounded-full" />
                         <span>{res.downloads || 0} DL</span>
