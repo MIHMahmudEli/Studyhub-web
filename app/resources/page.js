@@ -16,7 +16,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { courseList } from '@/lib/data/resourceData';
+import { apiRequest } from '@/lib/api';
+import coursesData from '@/lib/data/courses.json';
 
 export default function ResourcesPage() {
   const { user, loading: authLoading } = useAuth();
@@ -25,28 +26,85 @@ export default function ResourcesPage() {
   // Pagination State
   const [visibleCount, setVisibleCount] = useState(12);
   const [searchQuery, setSearchQuery] = useState('');
+  const [resources, setResources] = useState([]);
+  const [loadingResources, setLoadingResources] = useState(true);
   const observerTarget = useRef(null);
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/auth');
   }, [user, authLoading, router]);
 
+  useEffect(() => {
+    if (user) {
+      fetchResources();
+    }
+  }, [user]);
+
+  const fetchResources = async () => {
+    try {
+      setLoadingResources(true);
+      const data = await apiRequest('/resources');
+      setResources(data || []);
+    } catch (err) {
+      console.error('Failed to fetch resources:', err);
+    } finally {
+      setLoadingResources(false);
+    }
+  };
+
+  const getCourseDept = (code, title) => {
+    if (!code) return 'CSE';
+    const c = code.toUpperCase();
+    if (c.startsWith('CSC') || c.startsWith('COE') || c.startsWith('CSE')) {
+      const t = title.toLowerCase();
+      if (t.includes('network') || t.includes('architecture') || t.includes('organization') || t.includes('hardware')) {
+        return 'CoE';
+      }
+      return 'CSE';
+    }
+    if (c.startsWith('EEE')) return 'EEE';
+    if (c.startsWith('MGT')) return 'BBA';
+    if (c.startsWith('MAT') || c.startsWith('MTH')) return 'MATH';
+    if (c.startsWith('PHY')) return 'PHYSICS';
+    if (c.startsWith('CHM') || c.startsWith('CHE')) return 'CHEMISTRY';
+    if (c.startsWith('ENG')) return 'ENGLISH';
+    return 'CSE';
+  };
+
   const allCourses = useMemo(() => {
     const groups = {};
-    courseList.forEach(item => {
+
+    // 1. Initialize with courses from courses.json
+    coursesData.forEach(item => {
       if (!groups[item.courseTitle]) {
         groups[item.courseTitle] = {
           title: item.courseTitle,
-          code: item.course_code,
+          code: item.code,
           dept: item.dept,
           resourceCount: 0,
           slug: item.courseTitle.replace(/\s+/g, '-').toLowerCase()
         };
       }
-      groups[item.courseTitle].resourceCount += 1;
     });
-    return Object.values(groups);
-  }, []);
+
+    // 2. Count real resources from database
+    resources.forEach(item => {
+      const courseTitle = item.subject || item.course_code || 'General Course';
+      if (!groups[courseTitle]) {
+        groups[courseTitle] = {
+          title: courseTitle,
+          code: item.course_code || 'N/A',
+          dept: getCourseDept(item.course_code, courseTitle),
+          resourceCount: 0,
+          slug: courseTitle.replace(/\s+/g, '-').toLowerCase()
+        };
+      }
+      groups[courseTitle].resourceCount += 1;
+    });
+
+    // 3. Sort so courses with resources appear first
+    return Object.values(groups).sort((a, b) => b.resourceCount - a.resourceCount);
+  }, [resources]);
 
   const filteredCourses = useMemo(() => {
     if (!searchQuery) return allCourses;
@@ -95,24 +153,6 @@ export default function ResourcesPage() {
     return BookOpen;
   };
 
-  const getCourseDept = (code, title) => {
-    if (!code) return 'CSE';
-    const c = code.toUpperCase();
-    if (c.startsWith('CSC') || c.startsWith('COE') || c.startsWith('CSE')) {
-      const t = title.toLowerCase();
-      if (t.includes('network') || t.includes('architecture') || t.includes('organization') || t.includes('hardware')) {
-        return 'CoE';
-      }
-      return 'CSE';
-    }
-    if (c.startsWith('EEE')) return 'EEE';
-    if (c.startsWith('MGT')) return 'BBA';
-    if (c.startsWith('MAT') || c.startsWith('MTH')) return 'MATH';
-    if (c.startsWith('PHY')) return 'PHYSICS';
-    if (c.startsWith('CHM') || c.startsWith('CHE')) return 'CHEMISTRY';
-    if (c.startsWith('ENG')) return 'ENGLISH';
-    return 'CSE';
-  };
 
   if (authLoading) return null;
 

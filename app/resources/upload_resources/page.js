@@ -144,10 +144,18 @@ export default function UploadResourcePage() {
       };
 
       // 3. Send POST request to backend API
-      await apiRequest('/resources', {
+      const resData = await apiRequest('/resources', {
         method: 'POST',
         body: payload,
       });
+
+      // Immediately approve it so it appears in the public library
+      if (resData && resData.id) {
+        await apiRequest(`/resources/${resData.id}/status`, {
+          method: 'PATCH',
+          body: { status: 'approved' }
+        });
+      }
 
       setStatus({ type: 'success', message: 'Resource published successfully!' });
       setFile(null);

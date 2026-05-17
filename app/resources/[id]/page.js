@@ -12,6 +12,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useParams } from 'next/navigation';
 import { courseList } from '@/lib/data/resourceData';
+import coursesData from '@/lib/data/courses.json';
 
 export default function CourseDetailPage() {
   const { id: slug } = useParams();
@@ -19,6 +20,10 @@ export default function CourseDetailPage() {
   const router = useRouter();
   
   const courseInfo = useMemo(() => {
+    const fromJson = coursesData.find(c => c.courseTitle.replace(/\s+/g, '-').toLowerCase() === slug);
+    if (fromJson) {
+      return { ...fromJson, course_code: fromJson.code };
+    }
     return courseList.find(c => c.courseTitle.replace(/\s+/g, '-').toLowerCase() === slug);
   }, [slug]);
 
