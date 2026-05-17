@@ -373,13 +373,16 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-200">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 mb-2">
+                          <div className="flex flex-wrap items-center gap-1.5 min-w-0">
+                            <span 
+                              className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-200 truncate max-w-[130px] xs:max-w-[180px] sm:max-w-none"
+                              title={review.user?.name || `Student #${review.user_id}`}
+                            >
                               {review.user?.name || `Student #${review.user_id}`}
                             </span>
                             {review.rating > 0 && (
-                              <div className="flex items-center gap-0.5 px-1.5 py-0.5 bg-amber-500/10 text-amber-500 rounded text-[8px] font-black">
+                              <div className="flex items-center gap-0.5 px-1.5 py-0.5 bg-amber-500/10 text-amber-500 rounded text-[8px] font-black shrink-0">
                                 {review.rating} ★
                               </div>
                             )}
@@ -422,7 +425,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
 
                       {/* Comment Mod Actions */}
                       {user && user.id === review.user_id && editingCommentId !== review.id && (
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                        <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all shrink-0">
                           <button
                             onClick={() => startEditComment(review)}
                             className="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center hover:bg-blue-500 hover:text-white transition-colors cursor-pointer"
