@@ -155,10 +155,7 @@ export default function UploadResourcePage() {
       setFormData({ title: '', courseTitle: '', code: '', dept: '', term: 'mid', description: '' });
       setCourseSearch('');
       
-      // Redirect to resources page after success
-      setTimeout(() => {
-        router.push('/resources');
-      }, 1500);
+      // Redirect removed as requested
 
     } catch (err) {
       console.error('Resource upload error:', err);
