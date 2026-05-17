@@ -26,8 +26,8 @@ export default function NotFound() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#06080f',
-      color: '#e8eaf0',
+      background: 'var(--background)',
+      color: 'var(--foreground)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -35,7 +35,8 @@ export default function NotFound() {
       position: 'relative',
       overflow: 'hidden',
       padding: '24px',
-      textAlign: 'center'
+      textAlign: 'center',
+      transition: 'background 0.5s ease, color 0.5s ease'
     }}>
       <style>{`
         @keyframes float {
@@ -51,11 +52,11 @@ export default function NotFound() {
           cursor: default;
           background: linear-gradient(
             to right, 
-            #60a5fa 20%, 
-            #818cf8 40%, 
-            #c084fc 60%, 
-            #818cf8 80%, 
-            #60a5fa 100%
+            #3b82f6 20%, 
+            #6366f1 40%, 
+            #a855f7 60%, 
+            #6366f1 80%, 
+            #3b82f6 100%
           ) !important;
           background-size: 200% auto !important;
           -webkit-background-clip: text !important;
@@ -65,7 +66,7 @@ export default function NotFound() {
         }
         .not-found-title:hover {
           transform: scale(1.05) rotate(-1deg);
-          filter: drop-shadow(0 0 30px rgba(96, 165, 250, 0.4));
+          filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.4));
           animation-play-state: paused;
         }
         .btn-hover {
@@ -73,14 +74,15 @@ export default function NotFound() {
         }
         .btn-primary-hover:hover {
           transform: translateY(-4px) scale(1.02);
-          box-shadow: 0 12px 40px rgba(37, 99, 235, 0.45);
-          background: #3b82f6 !important;
+          box-shadow: 0 12px 40px rgba(99, 102, 241, 0.35);
+          background: #4f46e5 !important;
         }
         .btn-secondary-hover:hover {
           transform: translateY(-2px);
-          background: rgba(255, 255, 255, 0.08) !important;
-          border-color: rgba(255, 255, 255, 0.2) !important;
-          color: #f1f5f9 !important;
+          background: var(--card-bg) !important;
+          opacity: 0.9;
+          border-color: var(--card-border) !important;
+          color: var(--foreground) !important;
         }
         .ambient-orb {
           animation: float 15s infinite ease-in-out;
@@ -92,8 +94,8 @@ export default function NotFound() {
 
       {/* Ambient background glow */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-        <div className="ambient-orb" style={{ position: 'absolute', top: '20%', left: '30%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)', borderRadius: '50%' }} />
-        <div className="ambient-orb-2" style={{ position: 'absolute', bottom: '10%', right: '20%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%)', borderRadius: '50%' }} />
+        <div className="ambient-orb" style={{ position: 'absolute', top: '20%', left: '30%', width: 500, height: 500, background: 'radial-gradient(circle, var(--nebula-1) 0%, transparent 70%)', borderRadius: '50%' }} />
+        <div className="ambient-orb-2" style={{ position: 'absolute', bottom: '10%', right: '20%', width: 400, height: 400, background: 'radial-gradient(circle, var(--nebula-2) 0%, transparent 70%)', borderRadius: '50%' }} />
       </div>
 
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 480 }}>
@@ -116,7 +118,7 @@ export default function NotFound() {
         <h2 style={{
           fontSize: 'clamp(1.5rem, 4vw, 2rem)',
           fontWeight: 700,
-          color: '#f1f5f9',
+          color: 'var(--foreground)',
           marginBottom: 16
         }}>
           Lost in Space?
@@ -124,7 +126,7 @@ export default function NotFound() {
 
         <p style={{
           fontSize: 16,
-          color: '#94a3b8',
+          color: 'var(--muted)',
           lineHeight: 1.6,
           marginBottom: 40,
         }}>
@@ -142,7 +144,7 @@ export default function NotFound() {
               alignItems: 'center',
               gap: 8,
               padding: '14px 28px',
-              background: '#2563eb',
+              background: 'rgb(99, 102, 241)',
               color: '#fff',
               fontWeight: 700,
               fontSize: 15,
@@ -150,7 +152,7 @@ export default function NotFound() {
               cursor: 'pointer',
               textDecoration: 'none',
               borderRadius: 12,
-              boxShadow: '0 4px 20px rgba(37,99,235,0.3)',
+              boxShadow: '0 4px 20px rgba(99,102,241,0.25)',
             }}
           >
             <Home size={18} />
@@ -165,9 +167,9 @@ export default function NotFound() {
               alignItems: 'center',
               gap: 8,
               padding: '14px 28px',
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              color: '#94a3b8',
+              background: 'var(--card-bg)',
+              border: '1px solid var(--card-border)',
+              color: 'var(--foreground)',
               fontWeight: 600,
               fontSize: 15,
               cursor: 'pointer',
@@ -184,10 +186,11 @@ export default function NotFound() {
       <div style={{
         position: 'absolute',
         bottom: 32,
-        fontSize: 12,
-        color: '#1e293b',
-        fontWeight: 600,
-        letterSpacing: '0.05em',
+        fontSize: 10,
+        color: 'var(--muted)',
+        opacity: 0.7,
+        fontWeight: 800,
+        letterSpacing: '0.2em',
         textTransform: 'uppercase'
       }}>
         StudyHub Academic Error Handling
