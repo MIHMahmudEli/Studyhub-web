@@ -5,7 +5,7 @@ import { Sparkles, Settings, Calendar } from 'lucide-react';
 
 export default function DashboardHeader({ user }) {
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative">
+    <div className="flex flex-col items-center md:items-start md:flex-row md:items-center justify-between gap-6 relative text-center md:text-left">
       <div className="absolute -top-10 -left-10 w-40 h-40 bg-purple-500/10 blur-[80px] rounded-full -z-10 animate-pulse" />
       
       <div className="space-y-4">
@@ -20,22 +20,23 @@ export default function DashboardHeader({ user }) {
         </p>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 w-full md:w-auto">
         <Link 
           href="/settings"
-          className="w-14 h-14 rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] hover:border-purple-500/30 flex items-center justify-center text-slate-500 hover:text-purple-500 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm backdrop-blur-xl"
+          className="flex-1 md:w-14 md:h-14 md:flex-initial flex items-center justify-center gap-2.5 rounded-[1.25rem] bg-[var(--card-bg)] border border-[var(--card-border)] hover:border-purple-500/30 text-slate-500 hover:text-purple-500 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm backdrop-blur-xl py-4 md:py-0"
           title="Account Settings"
         >
-          <Settings size={20} className="animate-spin-slow" />
+          <Settings size={20} className="animate-spin-slow flex-shrink-0" />
+          <span className="text-[10px] font-black uppercase tracking-widest md:hidden">Settings</span>
         </Link>
         
-        <div className="flex items-center gap-4 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl p-4 shadow-sm backdrop-blur-xl">
-          <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500">
-            <Calendar size={20} />
+        <div className="flex-1 md:flex-initial flex items-center gap-3.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.25rem] p-3.5 shadow-sm backdrop-blur-xl min-w-0">
+          <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 flex-shrink-0">
+            <Calendar size={18} />
           </div>
-          <div>
-            <p className="text-[8px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">Today's Date</p>
-            <p className="text-xs font-black uppercase text-slate-800 dark:text-slate-200 mt-0.5">
+          <div className="min-w-0 text-left">
+            <p className="text-[8px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider leading-none">Today's Date</p>
+            <p className="text-[10px] font-black uppercase text-slate-800 dark:text-slate-200 mt-1.5 truncate leading-none">
               {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
             </p>
           </div>

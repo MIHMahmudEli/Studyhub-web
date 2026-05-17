@@ -68,7 +68,7 @@ export default function LeaderboardPage() {
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-500 text-[10px] font-black uppercase tracking-[0.2em] mb-6">
               <Trophy size={14} /> Academic Rankings
             </div>
-            <h1 className="text-5xl font-black tracking-tight mb-4">Community Leaderboard</h1>
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-4">Community Leaderboard</h1>
             <p className="text-slate-500 font-medium max-w-[600px] mx-auto text-lg mb-10">
               Celebrating the students who contribute the most to the StudyHub ecosystem.
             </p>

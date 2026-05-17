@@ -189,29 +189,29 @@ export default function NotePreviewPage() {
             </span>
           </button>
 
-          <div className="flex items-center gap-3">
+          <div className="grid grid-cols-2 md:flex md:items-center gap-2 md:gap-3 w-full md:w-auto">
             <button 
               onClick={() => {
                 navigator.clipboard.writeText(window.location.href);
                 alert('Link copied to clipboard!');
               }}
-              className="flex items-center gap-2 px-5 py-3 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-xl text-[10px] font-black tracking-widest uppercase text-slate-500 hover:text-purple-500 transition-all shadow-sm"
+              className="flex items-center justify-center gap-2 px-5 py-3 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-xl text-[10px] font-black tracking-widest uppercase text-slate-500 hover:text-purple-500 transition-all shadow-sm cursor-pointer"
             >
               <Share2 size={14} /> Share
             </button>
             <button 
               onClick={() => setIsReadingMode(!isReadingMode)}
-              className={`flex items-center gap-2 px-5 py-3 border rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm ${
+              className={`flex items-center justify-center gap-2 px-5 py-3 border rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer ${
                 isReadingMode 
                 ? 'bg-blue-500 text-white border-blue-400 hover:bg-blue-600' 
                 : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.05] text-slate-500 hover:text-blue-500'
               }`}
             >
-              {isReadingMode ? <><Minimize size={14} /> Exit Reading Mode</> : <><Maximize2 size={14} /> Reading Mode</>}
+              {isReadingMode ? <><Minimize size={14} /> Exit</> : <><Maximize2 size={14} /> Preview</>}
             </button>
             <button 
               onClick={handleBookmarkToggle}
-              className={`flex items-center gap-2 px-5 py-3 border rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm ${
+              className={`flex items-center justify-center gap-2 px-5 py-3 border rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer ${
                 isBookmarked 
                 ? 'bg-purple-500 text-white border-purple-400' 
                 : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.05] text-slate-500 hover:text-purple-500'
@@ -222,7 +222,7 @@ export default function NotePreviewPage() {
             </button>
             <button 
               onClick={handleDownload}
-              className="flex items-center gap-2 px-6 py-3 bg-purple-500 text-white rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-purple-600 transition-all shadow-xl shadow-purple-500/20"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-purple-500 text-white rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-purple-600 transition-all shadow-xl shadow-purple-500/20 cursor-pointer"
             >
               <Download size={14} /> Download
             </button>
@@ -232,7 +232,7 @@ export default function NotePreviewPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Preview Area */}
           <div className={`${isReadingMode ? 'lg:col-span-3' : 'lg:col-span-2'} space-y-6 transition-all duration-500`}>
-            <div className={`w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.05] rounded-[2rem] overflow-hidden shadow-2xl relative group transition-all duration-500 ${isReadingMode ? 'h-[85vh]' : 'aspect-[3/4] md:h-[800px]'}`}>
+            <div className={`w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.05] rounded-[2rem] overflow-hidden shadow-2xl relative group transition-all duration-500 ${isReadingMode ? 'h-[85vh]' : 'h-[500px] md:h-[800px]'}`}>
               {note.file_path ? (
                 <>
                   {!contentLoaded && (note.file_type?.toLowerCase() === 'pdf' || ['jpg', 'jpeg', 'png', 'webp'].includes(note.file_type?.toLowerCase())) && (

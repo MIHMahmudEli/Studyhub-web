@@ -18,7 +18,7 @@ export default function PodiumCard({ user, rank, color, isLarge = false }) {
   };
 
   return (
-    <div className={`relative flex flex-col items-center group ${isLarge ? 'mb-4 scale-110 z-10' : ''}`}>
+    <div className={`relative flex flex-col items-center group w-full ${isLarge ? 'mb-4 md:scale-110 z-10' : ''}`}>
       {/* Rank Indicator */}
       <div className={`absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-2xl bg-gradient-to-br ${colors[color]} flex items-center justify-center text-white shadow-xl ${glows[color]} z-20 group-hover:scale-110 transition-transform duration-500`}>
         {rank === 1 ? <Crown size={24} /> : <span className="font-black text-lg">{rank}</span>}

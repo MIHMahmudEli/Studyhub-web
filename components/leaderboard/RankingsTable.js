@@ -14,7 +14,39 @@ export default function RankingsTable({ leaders }) {
         </span>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Mobile Scholar List Layout - Hidden on Desktop */}
+      <div className="md:hidden divide-y divide-[var(--card-border)]">
+        {leaders.map((player, index) => (
+          <div key={player.id} className="flex items-center justify-between p-5 hover:bg-blue-500/[0.01] transition-colors gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="text-xs font-black text-slate-500 shrink-0 w-8 text-center bg-slate-500/5 py-1 rounded-lg border border-[var(--card-border)]">
+                #{index + 4}
+              </span>
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-[var(--card-border)] flex items-center justify-center text-blue-500 font-black text-xs shrink-0">
+                {player.name.charAt(0)}
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">{player.name}</p>
+                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Verified Student</p>
+              </div>
+            </div>
+            
+            <div className="text-right shrink-0 flex flex-col items-end gap-1">
+              <div className="inline-flex items-center gap-1 text-amber-500 font-black text-xs">
+                <Coins size={12} />
+                <span>{player.points.toLocaleString()}</span>
+              </div>
+              <div className="flex items-center gap-1 text-slate-400 text-[9px] font-semibold">
+                <Star size={10} />
+                <span>{player.uploads} Shared</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Table Layout - Hidden on Mobile */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/[0.01]">
