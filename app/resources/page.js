@@ -95,6 +95,25 @@ export default function ResourcesPage() {
     return BookOpen;
   };
 
+  const getCourseDept = (code, title) => {
+    if (!code) return 'CSE';
+    const c = code.toUpperCase();
+    if (c.startsWith('CSC') || c.startsWith('COE') || c.startsWith('CSE')) {
+      const t = title.toLowerCase();
+      if (t.includes('network') || t.includes('architecture') || t.includes('organization') || t.includes('hardware')) {
+        return 'CoE';
+      }
+      return 'CSE';
+    }
+    if (c.startsWith('EEE')) return 'EEE';
+    if (c.startsWith('MGT')) return 'BBA';
+    if (c.startsWith('MAT') || c.startsWith('MTH')) return 'MATH';
+    if (c.startsWith('PHY')) return 'PHYSICS';
+    if (c.startsWith('CHM') || c.startsWith('CHE')) return 'CHEMISTRY';
+    if (c.startsWith('ENG')) return 'ENGLISH';
+    return 'CSE';
+  };
+
   if (authLoading) return null;
 
   return (
@@ -163,7 +182,7 @@ export default function ResourcesPage() {
                           {course.code || 'CORE'}
                         </p>
                         <p className="text-[6.5px] font-black tracking-[0.15em] text-blue-500/80 uppercase px-2 py-0.5 rounded-full bg-blue-500/5 border border-blue-500/10 inline-block">
-                          {course.dept?.split(' ')[2] || 'FACULTY'}
+                          {getCourseDept(course.code, course.title)}
                         </p>
                       </div>
                     </div>
