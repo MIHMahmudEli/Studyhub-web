@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { useAuth } from '@/context/AuthContext';
@@ -15,20 +15,43 @@ import {
   User,
   ExternalLink,
   Maximize2,
-  Minimize
+  Minimize,
+  Edit,
+  Trash2
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { NoteDetailSkeleton, Skeleton } from '@/components/ui/Skeleton';
+import coursesData from '@/lib/data/courses.json';
 
 export default function NotePreviewPage() {
   const { id } = useParams();
   const router = useRouter();
-  const { checkUser } = useAuth();
+  const { user, checkUser } = useAuth();
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [contentLoaded, setContentLoaded] = useState(false);
   const [isReadingMode, setIsReadingMode] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+
+  // Note Action states
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  // Edit form state
+  const [editForm, setEditForm] = useState({
+    title: '',
+    courseTitle: '',
+    code: '',
+    dept: '',
+    description: ''
+  });
+
+  // Extract unique departments dynamically from courses.json
+  const departments = useMemo(() => {
+    return Array.from(new Set(coursesData.map(course => course.dept))).filter(Boolean).sort();
+  }, []);
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -65,6 +88,18 @@ export default function NotePreviewPage() {
       checkBookmarkStatus();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (note) {
+      setEditForm({
+        title: note.title || '',
+        courseTitle: note.courseTitle || '',
+        code: note.code || '',
+        dept: note.dept || '',
+        description: note.description || ''
+      });
+    }
+  }, [note]);
 
   const handleBookmarkToggle = async () => {
     try {
@@ -108,6 +143,47 @@ export default function NotePreviewPage() {
     }
   };
 
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setUpdating(true);
+    try {
+      const updatedData = await apiRequest(`/notes/${id}`, {
+        method: 'PATCH',
+        body: editForm
+      });
+      
+      // Update local note state
+      setNote(prev => ({
+        ...prev,
+        ...updatedData,
+        subject: updatedData.courseTitle,
+        course_code: updatedData.code
+      }));
+      setIsEditModalOpen(false);
+    } catch (err) {
+      console.error('Failed to update note details:', err);
+      alert(err.message || 'Failed to update note details.');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleDeleteSubmit = async () => {
+    setDeleting(true);
+    try {
+      await apiRequest(`/notes/${id}`, {
+        method: 'DELETE'
+      });
+      setIsDeleteConfirmOpen(false);
+      router.push('/notes');
+    } catch (err) {
+      console.error('Failed to delete note:', err);
+      alert(err.message || 'Failed to delete note.');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loading) {
     return (
       <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-20">
@@ -139,6 +215,8 @@ export default function NotePreviewPage() {
       </main>
     );
   }
+
+  const isUploaderOrAdmin = user && (user.id === note.uploader_id || user.role === 'admin' || user.role === 'moderator');
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-20">
@@ -259,66 +337,231 @@ export default function NotePreviewPage() {
           {/* Metadata Sidebar */}
           {!isReadingMode && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right duration-500">
-            <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-8 shadow-sm">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-500 text-[9px] font-black uppercase tracking-[0.3em] mb-6">
-                {note.course_code || 'GENERAL STUDY'}
-              </div>
               
-              <h1 className="text-xl md:text-2xl font-black uppercase tracking-widest leading-relaxed mb-4">
-                {note.title}
-              </h1>
-              
-              <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500 leading-loose mb-8">
-                {note.description || `Comprehensive study notes for ${note.subject}. Essential materials for exam preparation and conceptual review.`}
-              </p>
-
-              <div className="space-y-4 pt-6 border-t border-slate-100 dark:border-white/[0.05]">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Subject</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest">{note.subject}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Rating</span>
-                  <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest">
-                    <Star size={12} className={parseFloat(note.avg_rating) > 0 ? "text-amber-400 fill-amber-400" : "text-slate-400"} />
-                    {parseFloat(note.avg_rating) > 0 ? note.avg_rating : 'Not Rated'}
+              {/* Document Control Panel for Uploader/Admin */}
+              {isUploaderOrAdmin && (
+                <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-6 shadow-sm space-y-4">
+                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Document Control</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button 
+                      onClick={() => setIsEditModalOpen(true)}
+                      className="flex items-center justify-center gap-2 py-3 bg-blue-500/10 hover:bg-blue-500 hover:text-white border border-blue-500/20 text-blue-500 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all cursor-pointer font-bold"
+                    >
+                      <Edit size={14} /> Edit Details
+                    </button>
+                    <button 
+                      onClick={() => setIsDeleteConfirmOpen(true)}
+                      className="flex items-center justify-center gap-2 py-3 bg-red-500/10 hover:bg-red-500 hover:text-white border border-red-500/20 text-red-500 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all cursor-pointer font-bold"
+                    >
+                      <Trash2 size={14} /> Delete Note
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Downloads</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest">{note.downloads}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">File Type</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-purple-500 bg-purple-500/10 px-2 py-0.5 rounded">
-                    {note.file_type.toUpperCase()}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Added</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
-                    <Clock size={12} /> {note.created_at}
-                  </span>
-                </div>
-              </div>
-            </div>
+              )}
 
-            {/* Author Card */}
-            <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-6 flex items-center gap-4 shadow-sm group cursor-pointer hover:border-purple-500/30 transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center text-slate-400 group-hover:bg-purple-500 group-hover:text-white transition-all">
-                <User size={20} />
-              </div>
-              <div>
-                <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Uploaded By</p>
-                <p className="text-[11px] font-black uppercase tracking-widest group-hover:text-purple-500 transition-colors">
-                  {note.uploader?.name || `Student #${note.uploader_id}`}
+              <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-8 shadow-sm">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-500 text-[9px] font-black uppercase tracking-[0.3em] mb-6">
+                  {note.course_code || 'GENERAL STUDY'}
+                </div>
+                
+                <h1 className="text-xl md:text-2xl font-black uppercase tracking-widest leading-relaxed mb-4">
+                  {note.title}
+                </h1>
+                
+                <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500 leading-loose mb-8">
+                  {note.description || `Comprehensive study notes for ${note.subject}. Essential materials for exam preparation and conceptual review.`}
                 </p>
+
+                <div className="space-y-4 pt-6 border-t border-slate-100 dark:border-white/[0.05]">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Subject</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">{note.subject}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Department</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-right max-w-[150px] truncate">{note.dept || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Rating</span>
+                    <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest">
+                      <Star size={12} className={parseFloat(note.avg_rating) > 0 ? "text-amber-400 fill-amber-400" : "text-slate-400"} />
+                      {parseFloat(note.avg_rating) > 0 ? note.avg_rating : 'Not Rated'}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Downloads</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">{note.downloads}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">File Type</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-purple-500 bg-purple-500/10 px-2 py-0.5 rounded">
+                      {note.file_type.toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Added</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
+                      <Clock size={12} /> {note.created_at}
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
+
+              {/* Author Card */}
+              <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-6 flex items-center gap-4 shadow-sm group cursor-pointer hover:border-purple-500/30 transition-all">
+                <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center text-slate-400 group-hover:bg-purple-500 group-hover:text-white transition-all">
+                  <User size={20} />
+                </div>
+                <div>
+                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Uploaded By</p>
+                  <p className="text-[11px] font-black uppercase tracking-widest group-hover:text-purple-500 transition-colors">
+                    {note.uploader?.name || `Student #${note.uploader_id}`}
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* 1. Edit Details Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] w-full max-w-[600px] rounded-[2rem] p-8 shadow-2xl space-y-6 relative text-[var(--foreground)] animate-scale-in">
+            <div>
+              <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Edit Note Details</h3>
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mt-1">Modify metadata and details for this publication.</p>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Title</label>
+                <input 
+                  type="text" 
+                  value={editForm.title} 
+                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                  required
+                  className="w-full px-5 py-3.5 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-purple-500/50 transition-colors text-[var(--foreground)]"
+                  placeholder="Document Title"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Subject / Course Name</label>
+                  <input 
+                    type="text" 
+                    value={editForm.courseTitle} 
+                    onChange={(e) => setEditForm({ ...editForm, courseTitle: e.target.value })}
+                    required
+                    className="w-full px-5 py-3.5 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-purple-500/50 transition-colors text-[var(--foreground)]"
+                    placeholder="e.g. Physics 1"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Course Code</label>
+                  <input 
+                    type="text" 
+                    value={editForm.code} 
+                    onChange={(e) => setEditForm({ ...editForm, code: e.target.value })}
+                    required
+                    className="w-full px-5 py-3.5 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-purple-500/50 transition-colors text-[var(--foreground)]"
+                    placeholder="e.g. PHY101"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Department</label>
+                <select 
+                  value={editForm.dept} 
+                  onChange={(e) => setEditForm({ ...editForm, dept: e.target.value })}
+                  required
+                  className="w-full px-5 py-3.5 bg-slate-500/5 dark:bg-black border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-purple-500/50 transition-colors cursor-pointer text-slate-800 dark:text-slate-200"
+                >
+                  <option value="" className="bg-white dark:bg-black text-slate-400">Select Department</option>
+                  {departments.map((d, index) => (
+                    <option key={index} value={d} className="bg-white dark:bg-black text-slate-800 dark:text-slate-100 font-semibold py-2">
+                      {d}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Description</label>
+                <textarea 
+                  value={editForm.description} 
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  rows={4}
+                  className="w-full px-5 py-3.5 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-purple-500/50 transition-colors text-[var(--foreground)] resize-none"
+                  placeholder="Summarize these study notes..."
+                />
+              </div>
+
+              <div className="pt-4 border-t border-[var(--card-border)] flex justify-end gap-3">
+                <button 
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-5 py-3 border border-[var(--card-border)] rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all hover:bg-slate-500/5 text-slate-500 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  disabled={updating}
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-md shadow-purple-500/10 cursor-pointer disabled:opacity-50"
+                >
+                  {updating ? (
+                    <div className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    'Save Changes'
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Delete Confirmation Modal */}
+      {isDeleteConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] w-full max-w-[400px] rounded-[2rem] p-8 shadow-2xl space-y-6 relative text-center text-[var(--foreground)] animate-scale-in">
+            <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl flex items-center justify-center mx-auto animate-bounce">
+              <Trash2 size={28} />
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Delete Publication?</h3>
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-loose">
+                This action is permanent and cannot be undone. All points earned and downloaded data will be archived.
+              </p>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button 
+                onClick={() => setIsDeleteConfirmOpen(false)}
+                className="w-1/2 py-3.5 border border-[var(--card-border)] rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all hover:bg-slate-500/5 text-slate-500 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleDeleteSubmit}
+                disabled={deleting}
+                className="w-1/2 py-3.5 bg-red-500 hover:bg-red-600 text-white rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-md shadow-red-500/10 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {deleting ? (
+                  <div className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                ) : (
+                  'Delete Note'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
