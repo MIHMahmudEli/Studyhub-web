@@ -22,8 +22,16 @@ export default function RankingsTable({ leaders }) {
               <span className="text-xs font-black text-slate-500 shrink-0 w-8 text-center bg-slate-500/5 py-1 rounded-lg border border-[var(--card-border)]">
                 #{index + 4}
               </span>
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-[var(--card-border)] flex items-center justify-center text-blue-500 font-black text-xs shrink-0">
-                {player.name.charAt(0)}
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-[var(--card-border)] overflow-hidden flex items-center justify-center text-blue-500 font-black text-xs shrink-0">
+                {player.profile_pic ? (
+                  <img 
+                    src={player.profile_pic} 
+                    alt={player.name} 
+                    className="w-full h-full object-cover rounded-[inherit]"
+                  />
+                ) : (
+                  player.name.charAt(0)
+                )}
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">{player.name}</p>
@@ -64,8 +72,16 @@ export default function RankingsTable({ leaders }) {
                 </td>
                 <td className="px-8 py-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-[var(--card-border)] flex items-center justify-center text-blue-500 font-black text-xs">
-                      {player.name.charAt(0)}
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-[var(--card-border)] overflow-hidden flex items-center justify-center text-blue-500 font-black text-xs">
+                      {player.profile_pic ? (
+                        <img 
+                          src={player.profile_pic} 
+                          alt={player.name} 
+                          className="w-full h-full object-cover rounded-[inherit]"
+                        />
+                      ) : (
+                        player.name.charAt(0)
+                      )}
                     </div>
                     <div>
                       <p className="text-sm font-bold group-hover:text-blue-500 transition-colors">{player.name}</p>

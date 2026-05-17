@@ -120,13 +120,26 @@ export default function DashboardNavbar() {
 
             <div className="w-px h-3 bg-[var(--card-border)]" />
             
-            <span className={`text-[12px] font-black uppercase tracking-tighter truncate max-w-[120px] transition-colors ${
-              pathname === '/dashboard'
-                ? 'text-blue-500'
-                : 'text-[var(--foreground)] group-hover:text-blue-500'
-            }`}>
-              {user?.name?.split(' ')[0]}
-            </span>
+            <div className="flex items-center gap-2 shrink-0">
+              {user?.profile_pic ? (
+                <img 
+                  src={user.profile_pic} 
+                  alt={user?.name} 
+                  className="w-5 h-5 rounded-md object-cover border border-[var(--card-border)]"
+                />
+              ) : (
+                <div className="w-5 h-5 rounded-md bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-black text-[9px] uppercase shadow-sm shrink-0">
+                  {user?.name ? user.name[0] : 'U'}
+                </div>
+              )}
+              <span className={`text-[12px] font-black uppercase tracking-tighter truncate max-w-[100px] transition-colors ${
+                pathname === '/dashboard'
+                  ? 'text-blue-500'
+                  : 'text-[var(--foreground)] group-hover:text-blue-500'
+              }`}>
+                {user?.name?.split(' ')[0]}
+              </span>
+            </div>
           </Link>
 
           {/* Logout Button */}
@@ -192,11 +205,24 @@ export default function DashboardNavbar() {
                   : 'bg-[var(--card-bg)] border-[var(--card-border)] active:border-blue-500/30'
               }`}
             >
-              <span className={`text-[12px] font-black uppercase tracking-tighter truncate max-w-[120px] transition-colors ${
-                pathname === '/dashboard' ? 'text-blue-500' : 'text-[var(--foreground)]'
-              }`}>
-                {user?.name?.split(' ')[0]}
-              </span>
+              <div className="flex items-center gap-2 min-w-0">
+                {user?.profile_pic ? (
+                  <img 
+                    src={user.profile_pic} 
+                    alt={user?.name} 
+                    className="w-5 h-5 rounded-md object-cover border border-[var(--card-border)]"
+                  />
+                ) : (
+                  <div className="w-5 h-5 rounded-md bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-black text-[9px] uppercase shadow-sm shrink-0">
+                    {user?.name ? user.name[0] : 'U'}
+                  </div>
+                )}
+                <span className={`text-[12px] font-black uppercase tracking-tighter truncate max-w-[100px] transition-colors ${
+                  pathname === '/dashboard' ? 'text-blue-500' : 'text-[var(--foreground)]'
+                }`}>
+                  {user?.name?.split(' ')[0]}
+                </span>
+              </div>
               <div className="w-px h-3 bg-[var(--card-border)]" />
               <div className="relative group/mobile-points flex items-center gap-1.5 text-amber-500 font-black text-xs">
                 <Coins size={14} />

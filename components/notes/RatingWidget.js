@@ -368,9 +368,17 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
                     <div className="flex items-start gap-4">
                       
                       {/* Avatar Bubble */}
-                      <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-xs font-black uppercase shrink-0 select-none shadow-inner">
-                        {authorInitial}
-                      </div>
+                      {review.user?.profile_pic ? (
+                        <img 
+                          src={review.user.profile_pic} 
+                          alt={review.user?.name} 
+                          className="w-9 h-9 rounded-xl object-cover border border-[var(--card-border)] shadow-md shrink-0 select-none"
+                        />
+                      ) : (
+                        <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-xs font-black uppercase shrink-0 select-none shadow-inner">
+                          {authorInitial}
+                        </div>
+                      )}
 
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 mb-2">

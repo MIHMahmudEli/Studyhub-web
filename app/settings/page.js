@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { apiRequest } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 import { 
   User, 
   Lock, 
@@ -19,7 +20,10 @@ import {
   Sun,
   Moon,
   ChevronRight,
-  Info
+  Info,
+  Camera,
+  UploadCloud,
+  Trash2
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import coursesData from '@/lib/data/courses.json';
@@ -61,6 +65,100 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [uploadingPic, setUploadingPic] = useState(false);
+
+  const handleProfilePicUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    clearAlerts();
+
+    // 1. Enforce size limit of 2MB
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxSize) {
+      setErrorMsg('File size must not exceed 2MB. Please select a smaller image.');
+      return;
+    }
+
+    // 2. Validate file type (image only)
+    if (!file.type.startsWith('image/')) {
+      setErrorMsg('Invalid file type. Please upload a valid image (PNG, JPG, WEBP).');
+      return;
+    }
+
+    setUploadingPic(true);
+
+    try {
+      // 3. Programmatically try to create the bucket 'profile-pics' if needed
+      try {
+        await supabase.storage.createBucket('profile-pics', { public: true });
+      } catch (err) {
+        // Safe to ignore if bucket already exists or permissions don't allow bucket creation
+      }
+
+      // 4. Upload file to Supabase Storage in 'profile-pics' bucket
+      const fileExt = file.name.split('.').pop() || 'png';
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('profile-pics')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      // 5. Get the Public URL of the uploaded image
+      const { data: { publicUrl } } = supabase.storage
+        .from('profile-pics')
+        .getPublicUrl(filePath);
+
+      // 6. Save the image public URL to the user profile via our backend API
+      await apiRequest('/users/profile', {
+        method: 'PATCH',
+        body: {
+          profile_pic: publicUrl
+        }
+      });
+
+      // 7. Refresh user profile in global AuthContext
+      await checkUser();
+      setSuccessMsg('Profile picture updated successfully!');
+    } catch (err) {
+      console.error('Profile pic upload error:', err);
+      setErrorMsg(err.message || 'Failed to upload profile picture. Please try again.');
+    } finally {
+      setUploadingPic(false);
+    }
+  };
+
+  const handleProfilePicDelete = async () => {
+    if (!user.profile_pic) return;
+
+    setUploadingPic(true);
+    clearAlerts();
+
+    try {
+      // Clear profile_pic in backend database
+      await apiRequest('/users/profile', {
+        method: 'PATCH',
+        body: {
+          profile_pic: null
+        }
+      });
+
+      // Refresh user profile in global AuthContext
+      await checkUser();
+      setSuccessMsg('Profile picture deleted successfully!');
+    } catch (err) {
+      console.error('Profile pic delete error:', err);
+      setErrorMsg(err.message || 'Failed to remove profile picture. Please try again.');
+    } finally {
+      setUploadingPic(false);
+    }
+  };
 
   // Password rules validation
   const passwordRules = useMemo(() => ({
@@ -241,9 +339,17 @@ export default function SettingsPage() {
                 
                 {/* Profile Card Summary */}
                 <div className="flex items-center gap-4 pb-6 border-b border-[var(--card-border)] mb-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-black text-2xl shadow-lg uppercase">
-                    {user.name ? user.name[0] : 'U'}
-                  </div>
+                  {user.profile_pic ? (
+                    <img 
+                      src={user.profile_pic} 
+                      alt={user.name} 
+                      className="w-14 h-14 rounded-2xl object-cover shadow-lg border border-[var(--card-border)]"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-black text-2xl shadow-lg uppercase">
+                      {user.name ? user.name[0] : 'U'}
+                    </div>
+                  )}
                   <div className="min-w-0">
                     <p className="font-bold text-slate-800 dark:text-slate-100 truncate text-sm">{user.name}</p>
                     <span className="text-[8px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-slate-500/5 px-2 py-0.5 rounded border border-[var(--card-border)] mt-1 inline-block">
@@ -307,6 +413,67 @@ export default function SettingsPage() {
                     <div>
                       <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Personal Info</h3>
                       <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mt-1">Review and update your university profile details.</p>
+                    </div>
+
+                    {/* Profile Picture Uploader */}
+                    <div className="p-6 bg-slate-500/5 border border-[var(--card-border)] rounded-[2rem] flex flex-col md:flex-row items-center gap-6">
+                      <div className="relative group shrink-0 w-24 h-24">
+                        {user.profile_pic ? (
+                          <img 
+                            src={user.profile_pic} 
+                            alt={user.name} 
+                            className="w-24 h-24 rounded-3xl object-cover border border-[var(--card-border)] shadow-md group-hover:brightness-75 transition-all duration-300"
+                          />
+                        ) : (
+                          <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-black text-3xl shadow-lg uppercase group-hover:brightness-90 transition-all duration-300">
+                            {user.name ? user.name[0] : 'U'}
+                          </div>
+                        )}
+                        
+                        {/* Interactive upload trigger overlay */}
+                        <label 
+                          htmlFor="profile-pic-input"
+                          className="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                        >
+                          <Camera size={20} className="scale-90 group-hover:scale-100 transition-transform duration-300" />
+                        </label>
+                        
+                        <input 
+                          type="file"
+                          id="profile-pic-input"
+                          accept="image/png, image/jpeg, image/jpg, image/webp"
+                          className="hidden"
+                          onChange={handleProfilePicUpload}
+                          disabled={uploadingPic}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2 text-center md:text-left w-full">
+                        <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-800 dark:text-slate-200">Profile Picture</h4>
+                        <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-relaxed">
+                          Supported formats: PNG, JPG, WEBP. Max allowed size: 2MB.
+                        </p>
+                        
+                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-1">
+                          <label 
+                            htmlFor="profile-pic-input"
+                            className="px-4 py-2.5 bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500 hover:text-white text-blue-500 rounded-xl text-[9px] font-black tracking-widest uppercase transition-all duration-300 cursor-pointer flex items-center gap-1.5"
+                          >
+                            <UploadCloud size={12} /> {uploadingPic ? 'Uploading...' : 'Choose Image'}
+                          </label>
+                          
+                          {user.profile_pic && (
+                            <button 
+                              type="button"
+                              onClick={handleProfilePicDelete}
+                              disabled={uploadingPic}
+                              className="px-4 py-2.5 bg-red-500/10 border border-red-500/20 hover:bg-red-500 hover:text-white text-red-500 rounded-xl text-[9px] font-black tracking-widest uppercase transition-all duration-300 flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <Trash2 size={12} /> Remove
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

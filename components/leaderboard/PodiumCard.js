@@ -29,8 +29,16 @@ export default function PodiumCard({ user, rank, color, isLarge = false }) {
         <div className={`absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br ${colors[color]} opacity-5 blur-[40px] rounded-full`} />
         
         <div className={`w-20 h-20 rounded-3xl mx-auto mb-6 bg-gradient-to-br ${colors[color]} p-[2px] shadow-lg group-hover:rotate-3 transition-transform duration-500`}>
-          <div className="w-full h-full rounded-[inherit] bg-[var(--background)] flex items-center justify-center text-2xl font-black">
-            {user.name.charAt(0)}
+          <div className="w-full h-full rounded-[inherit] bg-[var(--background)] overflow-hidden flex items-center justify-center text-2xl font-black">
+            {user.profile_pic ? (
+              <img 
+                src={user.profile_pic} 
+                alt={user.name} 
+                className="w-full h-full object-cover rounded-[inherit]"
+              />
+            ) : (
+              user.name.charAt(0)
+            )}
           </div>
         </div>
 
