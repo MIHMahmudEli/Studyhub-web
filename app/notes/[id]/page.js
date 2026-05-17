@@ -16,13 +16,35 @@ import {
   Maximize2,
   Minimize,
   Edit,
-  Trash2
+  Trash2,
+  GraduationCap,
+  BookOpen,
+  Layers,
+  Calendar
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { NoteDetailSkeleton } from '@/components/ui/Skeleton';
 import EditNoteModal from '@/components/notes/EditNoteModal';
 import DeleteConfirmModal from '@/components/notes/DeleteConfirmModal';
 import RatingWidget from '@/components/notes/RatingWidget';
+
+const getDepartmentName = (code, subject, dept) => {
+  if (!code) return dept || 'CSE';
+  const c = code.toUpperCase();
+  if (c.startsWith('CSC') || c.startsWith('COE') || c.startsWith('CSE')) {
+    const s = subject?.toLowerCase() || '';
+    if (s.includes('network') || s.includes('architecture') || s.includes('organization') || s.includes('hardware')) {
+      return 'Computer Engineering (CoE)';
+    }
+    return 'Computer Science & Engineering (CSE)';
+  }
+  if (c.startsWith('EEE')) return 'Electrical & Electronic Engineering (EEE)';
+  if (c.startsWith('MGT')) return 'Engineering Management / BBA';
+  if (c.startsWith('MAT') || c.startsWith('MTH')) return 'Mathematics (MATH)';
+  if (c.startsWith('PHY')) return 'Physics';
+  if (c.startsWith('CHM') || c.startsWith('CHE')) return 'Chemistry';
+  return dept || 'Computer Science (CSE)';
+};
 
 export default function NotePreviewPage() {
   const { id } = useParams();
@@ -312,62 +334,104 @@ export default function NotePreviewPage() {
                 </div>
               )}
 
-              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-8 shadow-sm">
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-500 text-[9px] font-black uppercase tracking-[0.3em] mb-6">
-                  {note.course_code || 'GENERAL STUDY'}
-                </div>
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-xl relative overflow-hidden group">
+                {/* Decorative background glow */}
+                <div className="absolute -top-12 -right-12 w-32 h-32 bg-purple-500/10 blur-[50px] rounded-full" />
                 
-                <h1 className="text-xl md:text-2xl font-black uppercase tracking-widest leading-relaxed mb-4">
+                {/* Tag */}
+                <div className="relative z-10 flex items-center justify-between mb-6">
+                  <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-500 text-[9px] font-black uppercase tracking-[0.3em]">
+                    {note.course_code || 'GENERAL STUDY'}
+                  </span>
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-1">
+                    <Clock size={11} /> {note.created_at}
+                  </span>
+                </div>
+
+                {/* Document Title */}
+                <h1 className="relative z-10 text-xl font-black uppercase tracking-wider leading-relaxed text-[var(--foreground)] mb-3 group-hover:text-purple-500 transition-colors duration-500">
                   {note.title}
                 </h1>
-                
-                <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500 leading-loose mb-8">
+
+                {/* Document Description */}
+                <p className="relative z-10 text-[11px] font-bold uppercase tracking-widest text-slate-500 leading-loose mb-8">
                   {note.description || `Comprehensive study notes for ${note.subject}. Essential materials for exam preparation and conceptual review.`}
                 </p>
 
-                <div className="space-y-4 pt-6 border-t border-[var(--card-border)]">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Subject</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest">{note.subject}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Department</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-right max-w-[150px] truncate">{note.dept || 'N/A'}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Rating</span>
-                    <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest">
-                      <Star size={12} className={parseFloat(note.avg_rating) > 0 ? "text-amber-400 fill-amber-400" : "text-slate-400"} />
-                      {parseFloat(note.avg_rating) > 0 ? `${Number(note.avg_rating).toFixed(2)} (${totalRatings} ${totalRatings === 1 ? 'Rating' : 'Ratings'})` : 'Not Rated'}
+                {/* Premium Structural Grid of Details */}
+                <div className="relative z-10 space-y-4 pt-6 border-t border-[var(--card-border)]">
+                  
+                  {/* Course/Subject Detail Card */}
+                  <div className="bg-slate-50 dark:bg-white/[0.02] border border-[var(--card-border)] rounded-2xl p-4 flex gap-4 items-start transition-all hover:bg-slate-100/50 dark:hover:bg-white/[0.04] duration-300">
+                    <div className="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 border border-purple-500/10 shrink-0">
+                      <BookOpen size={16} />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[8px] font-black uppercase tracking-[0.25em] text-slate-400 block">Course Subject</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest leading-relaxed text-[var(--foreground)] block">
+                        {note.subject}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Downloads</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest">{note.downloads}</span>
+
+                  {/* Department Detail Card */}
+                  <div className="bg-slate-50 dark:bg-white/[0.02] border border-[var(--card-border)] rounded-2xl p-4 flex gap-4 items-start transition-all hover:bg-slate-100/50 dark:hover:bg-white/[0.04] duration-300">
+                    <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/10 shrink-0">
+                      <GraduationCap size={16} />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[8px] font-black uppercase tracking-[0.25em] text-slate-400 block">Department Faculty</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest leading-relaxed text-[var(--foreground)] block">
+                        {getDepartmentName(note.course_code, note.subject, note.dept)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">File Type</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-purple-500 bg-purple-500/10 px-2 py-0.5 rounded">
-                      {note.file_type.toUpperCase()}
+
+                  {/* Stats Row Cards */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-slate-50 dark:bg-white/[0.02] border border-[var(--card-border)] rounded-2xl p-4 flex gap-3.5 items-center transition-all hover:bg-slate-100/50 dark:hover:bg-white/[0.04] duration-300">
+                      <Star size={16} className={parseFloat(note.avg_rating) > 0 ? "text-amber-400 fill-amber-400" : "text-slate-400"} />
+                      <div className="space-y-0.5">
+                        <span className="text-[7.5px] font-black uppercase tracking-[0.25em] text-slate-400 block">Rating</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[var(--foreground)] block">
+                          {parseFloat(note.avg_rating) > 0 ? `${Number(note.avg_rating).toFixed(2)} (${totalRatings})` : 'NEW'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-50 dark:bg-white/[0.02] border border-[var(--card-border)] rounded-2xl p-4 flex gap-3.5 items-center transition-all hover:bg-slate-100/50 dark:hover:bg-white/[0.04] duration-300">
+                      <Download size={16} className="text-purple-500" />
+                      <div className="space-y-0.5">
+                        <span className="text-[7.5px] font-black uppercase tracking-[0.25em] text-slate-400 block">Downloads</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[var(--foreground)] block">
+                          {note.downloads}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Format Card */}
+                  <div className="bg-slate-50 dark:bg-white/[0.02] border border-[var(--card-border)] rounded-2xl p-4 flex justify-between items-center transition-all hover:bg-slate-100/50 dark:hover:bg-white/[0.04] duration-300">
+                    <div className="flex gap-3.5 items-center">
+                      <Layers size={16} className="text-slate-500" />
+                      <span className="text-[8px] font-black uppercase tracking-[0.25em] text-slate-400">File Type Format</span>
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-purple-500 bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-lg">
+                      {note.file_type?.toUpperCase()}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Added</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
-                      <Clock size={12} /> {note.created_at}
-                    </span>
-                  </div>
+
                 </div>
               </div>
 
               {/* Author Card */}
-              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex items-center gap-4 shadow-sm group cursor-pointer hover:border-purple-500/30 transition-all">
-                <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center text-slate-400 group-hover:bg-purple-500 group-hover:text-white transition-all">
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex items-center gap-4 shadow-sm group cursor-pointer hover:border-purple-500/30 transition-all duration-300">
+                <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center text-slate-400 group-hover:bg-purple-500 group-hover:text-white transition-all duration-500">
                   <User size={20} />
                 </div>
                 <div>
                   <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Uploaded By</p>
-                  <p className="text-[11px] font-black uppercase tracking-widest group-hover:text-purple-500 transition-colors">
+                  <p className="text-[11px] font-black uppercase tracking-widest group-hover:text-purple-500 transition-colors duration-500">
                     {note.uploader?.name || `Student #${note.uploader_id}`}
                   </p>
                 </div>
