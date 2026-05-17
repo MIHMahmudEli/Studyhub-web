@@ -10,12 +10,10 @@ import {
   ArrowLeft, 
   TrendingUp, 
   Download, 
-  Star, 
   Layers, 
   FileText, 
   ExternalLink,
-  Sparkles,
-  Award
+  Sparkles
 } from 'lucide-react';
 
 export default function TrendingResourcesPage() {
@@ -83,7 +81,7 @@ export default function TrendingResourcesPage() {
                 Trending <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-500 to-red-500">Resources</span>
               </h1>
               <p className="text-[10px] md:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest max-w-[600px] mx-auto md:mx-0">
-                Explore the most popular academic resources ranked by download volume and student ratings.
+                Explore the most popular academic resources ranked by student download volume.
               </p>
             </div>
 
@@ -108,7 +106,7 @@ export default function TrendingResourcesPage() {
                 <h3 className="text-base sm:text-lg font-black uppercase tracking-tight flex items-center gap-2">
                   <Sparkles size={20} className="text-orange-500 animate-pulse" /> Popular Academic Materials
                 </h3>
-                <p className="text-xs font-bold text-slate-500">Ranked by overall community engagement and satisfaction.</p>
+                <p className="text-xs font-bold text-slate-500">Ranked by overall community download engagement.</p>
               </div>
               <span className="text-xs font-black px-4 py-2.5 bg-orange-500/10 text-orange-500 rounded-2xl border border-orange-500/20 uppercase tracking-widest text-center shrink-0">
                 Total Trending: {trendingResources.length}
@@ -136,13 +134,12 @@ export default function TrendingResourcesPage() {
               <>
                 {/* Desktop Table View (Hidden on mobile below md) */}
                 <div className="hidden md:block overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/[0.1]">
-                  <table className="w-full text-left border-collapse min-w-[800px]">
+                  <table className="w-full text-left border-collapse min-w-[750px]">
                     <thead>
                       <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
                         <th className="pb-4 pl-4 whitespace-nowrap w-16">Rank</th>
                         <th className="pb-4 whitespace-nowrap">Resource Title & Subject</th>
                         <th className="pb-4 whitespace-nowrap">Course & Term</th>
-                        <th className="pb-4 whitespace-nowrap">Rating</th>
                         <th className="pb-4 whitespace-nowrap">Downloads</th>
                         <th className="pb-4 text-right pr-4 whitespace-nowrap">Action</th>
                       </tr>
@@ -182,24 +179,20 @@ export default function TrendingResourcesPage() {
                             </div>
                           </td>
                           <td className="py-4 sm:py-5 whitespace-nowrap">
-                            <div className="flex items-center gap-1.5 font-black text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-xl w-fit shrink-0">
-                              <Star size={14} className="fill-amber-500" />
-                              <span>{Number(r.avg_rating || 0).toFixed(1)}</span>
-                            </div>
-                          </td>
-                          <td className="py-4 sm:py-5 whitespace-nowrap">
                             <div className="flex items-center gap-1.5 font-black text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-xl w-fit shrink-0">
                               <Download size={14} />
                               <span>{r.downloads || 0}</span>
                             </div>
                           </td>
                           <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap">
-                            <Link 
-                              href={`/resources/${r.id}`}
+                            <a 
+                              href={r.file_path}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/10 hover:bg-orange-500 hover:text-white border border-orange-500/20 text-orange-500 rounded-xl text-xs font-black uppercase tracking-widest transition-all cursor-pointer shadow-sm shrink-0"
                             >
                               <span>Inspect</span> <ExternalLink size={14} />
-                            </Link>
+                            </a>
                           </td>
                         </tr>
                       ))}
@@ -231,10 +224,6 @@ export default function TrendingResourcesPage() {
                       </div>
 
                       <div className="flex items-center justify-between pt-2 border-t border-[var(--card-border)]">
-                        <div className="flex items-center gap-1.5 font-black text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-xl shrink-0 text-xs">
-                          <Star size={14} className="fill-amber-500" />
-                          <span>{Number(r.avg_rating || 0).toFixed(1)} Rating</span>
-                        </div>
                         <div className="flex items-center gap-1.5 font-black text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-xl shrink-0 text-xs">
                           <Download size={14} />
                           <span>{r.downloads || 0} DLs</span>
@@ -242,12 +231,14 @@ export default function TrendingResourcesPage() {
                       </div>
 
                       <div className="pt-2 border-t border-[var(--card-border)]">
-                        <Link 
-                          href={`/resources/${r.id}`}
+                        <a 
+                          href={r.file_path}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="w-full flex items-center justify-center gap-2 py-3 bg-orange-500/10 hover:bg-orange-500 hover:text-white border border-orange-500/20 text-orange-500 rounded-xl text-xs font-black uppercase tracking-widest transition-all cursor-pointer shadow-sm shrink-0"
                         >
                           <span>Inspect Resource</span> <ExternalLink size={14} />
-                        </Link>
+                        </a>
                       </div>
                     </div>
                   ))}
