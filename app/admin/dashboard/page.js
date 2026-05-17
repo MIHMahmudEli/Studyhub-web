@@ -85,13 +85,19 @@ export default function AdminDashboardPage() {
   const fetchAdminData = async () => {
     try {
       setLoadingData(true);
-      // Fetch pending notes
+      // Fetch pending notes (admin + moderator)
       const pendingData = await apiRequest('/notes/pending');
       setPendingNotes(pendingData || []);
 
-      // Fetch pending resources
-      const pendingResData = await apiRequest('/resources/admin/pending');
-      setPendingResources(pendingResData || []);
+      // Fetch pending resources (admin only)
+      if (user?.role === 'admin') {
+        try {
+          const pendingResData = await apiRequest('/resources/admin/pending');
+          setPendingResources(pendingResData || []);
+        } catch (resErr) {
+          console.warn('Could not fetch pending resources:', resErr);
+        }
+      }
 
       // Fetch resources
       const resourcesData = await apiRequest('/resources');
@@ -381,27 +387,25 @@ export default function AdminDashboardPage() {
               </Link>
             )}
 
-            {/* Pending Notes (Admin Only) */}
-            {user.role === 'admin' && (
-              <Link 
-                href="/admin/pending_notes"
-                className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-purple-500/30 block cursor-pointer"
-              >
-                <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-purple-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="flex justify-between items-start relative z-10">
-                  <div className="space-y-2 sm:space-y-3">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Pending Notes</span>
-                    <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-purple-500">
-                      {loadingData ? '...' : pendingNotes.length}
-                    </h3>
-                    <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Awaiting moderation</p>
-                  </div>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
-                    <Clock size={20} className="animate-pulse" />
-                  </div>
+            {/* Pending Notes (Admin & Moderator) */}
+            <Link 
+              href="/admin/pending_notes"
+              className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-purple-500/30 block cursor-pointer"
+            >
+              <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-purple-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="flex justify-between items-start relative z-10">
+                <div className="space-y-2 sm:space-y-3">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Pending Notes</span>
+                  <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-purple-500">
+                    {loadingData ? '...' : pendingNotes.length}
+                  </h3>
+                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Awaiting moderation</p>
                 </div>
-              </Link>
-            )}
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
+                  <Clock size={20} className="animate-pulse" />
+                </div>
+              </div>
+            </Link>
 
             {/* Pending Resources (Admin Only) */}
             {user.role === 'admin' && (
