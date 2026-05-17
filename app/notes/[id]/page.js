@@ -181,7 +181,7 @@ export default function NotePreviewPage() {
             onClick={() => router.back()}
             className="group flex items-center gap-3 w-fit"
           >
-            <div className="w-10 h-10 rounded-xl bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] flex items-center justify-center text-slate-500 group-hover:bg-purple-500 group-hover:text-white transition-all shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-slate-500 group-hover:bg-purple-500 group-hover:text-white transition-all shadow-sm">
               <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
             </div>
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-[var(--foreground)] transition-colors">
@@ -195,7 +195,7 @@ export default function NotePreviewPage() {
                 navigator.clipboard.writeText(window.location.href);
                 alert('Link copied to clipboard!');
               }}
-              className="flex items-center justify-center gap-2 px-5 py-3 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-xl text-[10px] font-black tracking-widest uppercase text-slate-500 hover:text-purple-500 transition-all shadow-sm cursor-pointer"
+              className="flex items-center justify-center gap-2 px-5 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-[10px] font-black tracking-widest uppercase text-slate-500 hover:text-purple-500 transition-all shadow-sm cursor-pointer"
             >
               <Share2 size={14} /> Share
             </button>
@@ -204,7 +204,7 @@ export default function NotePreviewPage() {
               className={`flex items-center justify-center gap-2 px-5 py-3 border rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer ${
                 isReadingMode 
                 ? 'bg-blue-500 text-white border-blue-400 hover:bg-blue-600' 
-                : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.05] text-slate-500 hover:text-blue-500'
+                : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-500 hover:text-blue-500'
               }`}
             >
               {isReadingMode ? <><Minimize size={14} /> Exit</> : <><Maximize2 size={14} /> Preview</>}
@@ -214,7 +214,7 @@ export default function NotePreviewPage() {
               className={`flex items-center justify-center gap-2 px-5 py-3 border rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer ${
                 isBookmarked 
                 ? 'bg-purple-500 text-white border-purple-400' 
-                : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.05] text-slate-500 hover:text-purple-500'
+                : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-500 hover:text-purple-500'
               }`}
             >
               <BookmarkPlus size={14} className={isBookmarked ? "fill-white" : ""} /> 
@@ -232,7 +232,7 @@ export default function NotePreviewPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Preview Area */}
           <div className={`${isReadingMode ? 'lg:col-span-3' : 'lg:col-span-2'} space-y-6 transition-all duration-500`}>
-            <div className={`w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.05] rounded-[2rem] overflow-hidden shadow-2xl relative group transition-all duration-500 ${isReadingMode ? 'h-[85vh]' : 'h-[500px] md:h-[800px]'}`}>
+            <div className={`w-full bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] overflow-hidden shadow-2xl relative group transition-all duration-500 ${isReadingMode ? 'h-[85vh]' : 'h-[500px] md:h-[800px]'}`}>
               {note.file_path ? (
                 <>
                   {!contentLoaded && (note.file_type?.toLowerCase() === 'pdf' || ['jpg', 'jpeg', 'png', 'webp'].includes(note.file_type?.toLowerCase())) && (
@@ -293,7 +293,7 @@ export default function NotePreviewPage() {
               
               {/* Document Control Panel uploader/admin */}
               {isUploaderOrAdmin && (
-                <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-6 shadow-sm space-y-4">
+                <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 shadow-sm space-y-4">
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Document Control</p>
                   <div className="grid grid-cols-2 gap-3">
                     <button 
@@ -312,7 +312,7 @@ export default function NotePreviewPage() {
                 </div>
               )}
 
-              <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-8 shadow-sm">
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-8 shadow-sm">
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-500 text-[9px] font-black uppercase tracking-[0.3em] mb-6">
                   {note.course_code || 'GENERAL STUDY'}
                 </div>
@@ -325,7 +325,7 @@ export default function NotePreviewPage() {
                   {note.description || `Comprehensive study notes for ${note.subject}. Essential materials for exam preparation and conceptual review.`}
                 </p>
 
-                <div className="space-y-4 pt-6 border-t border-slate-100 dark:border-white/[0.05]">
+                <div className="space-y-4 pt-6 border-t border-[var(--card-border)]">
                   <div className="flex items-center justify-between">
                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Subject</span>
                     <span className="text-[10px] font-black uppercase tracking-widest">{note.subject}</span>
@@ -361,7 +361,7 @@ export default function NotePreviewPage() {
               </div>
 
               {/* Author Card */}
-              <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-6 flex items-center gap-4 shadow-sm group cursor-pointer hover:border-purple-500/30 transition-all">
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex items-center gap-4 shadow-sm group cursor-pointer hover:border-purple-500/30 transition-all">
                 <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center text-slate-400 group-hover:bg-purple-500 group-hover:text-white transition-all">
                   <User size={20} />
                 </div>

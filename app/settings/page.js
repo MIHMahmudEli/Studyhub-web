@@ -311,41 +311,41 @@ export default function SettingsPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Full Name</label>
+                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400">Full Name</label>
                         <input 
                           type="text" 
                           name="name" 
                           value={profileForm.name} 
                           onChange={handleProfileChange}
                           required
-                          className="w-full px-5 py-4 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors"
+                          className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors"
                           placeholder="Your full name"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Email Address (Read-only)</label>
+                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400">Email Address (Read-only)</label>
                         <input 
                           type="email" 
                           name="email" 
                           value={profileForm.email} 
                           disabled
-                          className="w-full px-5 py-4 bg-slate-500/[0.02] border border-[var(--card-border)] rounded-2xl text-xs font-semibold text-slate-400 dark:text-slate-500 cursor-not-allowed"
+                          className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-xs font-semibold text-slate-400 dark:text-slate-500 cursor-not-allowed opacity-60"
                           placeholder="yourname@student.edu"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Department / Major (Optional)</label>
+                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400">Department / Major (Optional)</label>
                         <select 
                           name="dept" 
                           value={profileForm.dept} 
                           onChange={handleProfileChange}
-                          className="w-full px-5 py-4 bg-slate-500/5 dark:bg-black border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors cursor-pointer text-slate-800 dark:text-slate-200"
+                          className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors cursor-pointer text-[var(--foreground)]"
                         >
-                          <option value="" className="bg-white dark:bg-black text-slate-400">Select Department</option>
+                          <option value="" className="bg-[var(--card-bg)] text-slate-400">Select Department</option>
                           {departments.map((d, index) => (
-                            <option key={index} value={d} className="bg-white dark:bg-black text-slate-800 dark:text-slate-100 font-semibold py-2">
+                            <option key={index} value={d} className="bg-[var(--card-bg)] text-[var(--foreground)] font-semibold py-2">
                               {d}
                             </option>
                           ))}
@@ -353,13 +353,13 @@ export default function SettingsPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Student ID / Code (Optional)</label>
+                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400">Student ID / Code (Optional)</label>
                         <input 
                           type="text" 
                           name="code" 
                           value={profileForm.code} 
                           onChange={handleProfileChange}
-                          className="w-full px-5 py-4 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors"
+                          className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors"
                           placeholder="Leave blank or enter Student Code"
                         />
                       </div>
@@ -394,7 +394,7 @@ export default function SettingsPage() {
                     <div className="space-y-5">
                       {/* Current Password Field */}
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Current Password</label>
+                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400">Current Password</label>
                         <div className="relative">
                           <input 
                             type={showPassword.current ? "text" : "password"} 
@@ -402,7 +402,7 @@ export default function SettingsPage() {
                             value={securityForm.currentPassword} 
                             onChange={handleSecurityChange}
                             required
-                            className="w-full px-5 py-4 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors pr-12"
+                            className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors pr-12"
                             placeholder="Enter current password to verify"
                           />
                           <button 
@@ -417,7 +417,7 @@ export default function SettingsPage() {
 
                       {/* New Password Field */}
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">New Password</label>
+                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400">New Password</label>
                         <div className="relative">
                           <input 
                             type={showPassword.new ? "text" : "password"} 
@@ -425,7 +425,7 @@ export default function SettingsPage() {
                             value={securityForm.newPassword} 
                             onChange={handleSecurityChange}
                             required
-                            className="w-full px-5 py-4 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors pr-12"
+                            className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors pr-12"
                             placeholder="Min. 8 characters"
                           />
                           <button 
@@ -458,7 +458,7 @@ export default function SettingsPage() {
 
                       {/* Confirm New Password Field */}
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Confirm New Password</label>
+                        <label className="text-[9px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400">Confirm New Password</label>
                         <div className="relative">
                           <input 
                             type={showPassword.confirm ? "text" : "password"} 
@@ -466,7 +466,7 @@ export default function SettingsPage() {
                             value={securityForm.confirmPassword} 
                             onChange={handleSecurityChange}
                             required
-                            className="w-full px-5 py-4 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors pr-12"
+                            className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors pr-12"
                             placeholder="Repeat new password"
                           />
                           <button 
