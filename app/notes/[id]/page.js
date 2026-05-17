@@ -181,10 +181,24 @@ export default function NotePreviewPage() {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     
-    // Strict course selection validation
+    // 1. Strict course selection validation
     const isValidCourse = coursesData.some(c => c.courseTitle === editForm.courseTitle);
     if (!isValidCourse) {
       alert('Please select a valid course from the suggestions list.');
+      return;
+    }
+
+    // 2. Prevent submitting if no changes were made to save database load
+    const hasChanges = 
+      editForm.title !== (note.title || '') ||
+      editForm.courseTitle !== (note.courseTitle || '') ||
+      editForm.code !== (note.code || '') ||
+      editForm.dept !== (note.dept || '') ||
+      editForm.description !== (note.description || '') ||
+      newFile !== null;
+
+    if (!hasChanges) {
+      alert('No changes detected.');
       return;
     }
 
@@ -561,6 +575,13 @@ export default function NotePreviewPage() {
                   className="w-full px-5 py-3.5 bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/[0.08] rounded-2xl text-xs font-semibold focus:outline-none focus:border-purple-500/50 transition-colors text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500"
                   placeholder="Type to search and select course..."
                 />
+                
+                {/* Real-time Validation Warning */}
+                {courseSearch && !coursesData.some(c => c.courseTitle === courseSearch) && (
+                  <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest mt-1.5 animate-pulse flex items-center gap-1.5">
+                    <span>⚠️</span> Please select a valid course from the suggested list
+                  </p>
+                )}
                 
                 {showSuggestions && filteredCourses.length > 0 && (
                   <div className="absolute left-0 right-0 top-full mt-2 z-[999999] bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden max-h-[220px] overflow-y-auto">
