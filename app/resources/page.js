@@ -102,8 +102,10 @@ export default function ResourcesPage() {
       groups[courseTitle].resourceCount += 1;
     });
 
-    // 3. Sort so courses with resources appear first
-    return Object.values(groups).sort((a, b) => b.resourceCount - a.resourceCount);
+    // 3. Filter to only include courses with at least 1 resource, then sort
+    return Object.values(groups)
+      .filter(g => g.resourceCount > 0)
+      .sort((a, b) => b.resourceCount - a.resourceCount);
   }, [resources]);
 
   const filteredCourses = useMemo(() => {

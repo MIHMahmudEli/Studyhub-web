@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useParams } from 'next/navigation';
-import { courseList } from '@/lib/data/resourceData';
 import coursesData from '@/lib/data/courses.json';
 import { apiRequest } from '@/lib/api';
 
@@ -53,19 +52,12 @@ export default function TermResourcesPage() {
              (item.term || 'mid').toLowerCase() === term.toLowerCase();
     });
 
-    // 2. Fallback to legacy dummy resources if DB is empty
-    const legacyResources = courseList.filter(item => 
-      item.courseTitle.replace(/\s+/g, '-').toLowerCase() === slug &&
-      item.term.toLowerCase() === term.toLowerCase()
-    );
-
-    const activeResources = dbResources.length > 0 ? dbResources : legacyResources;
+    const activeResources = dbResources;
 
     // 3. Find course info from courses.json or active list
     const fromJson = coursesData.find(c => c.courseTitle.replace(/\s+/g, '-').toLowerCase() === slug);
     const info = fromJson ? { ...fromJson, course_code: fromJson.code, courseTitle: fromJson.courseTitle } : 
-                 activeResources[0] || 
-                 courseList.find(c => c.courseTitle.replace(/\s+/g, '-').toLowerCase() === slug);
+                 activeResources[0] || null;
 
     return {
       courseInfo: info,

@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useParams } from 'next/navigation';
-import { courseList } from '@/lib/data/resourceData';
 import coursesData from '@/lib/data/courses.json';
 
 export default function CourseDetailPage() {
@@ -24,7 +23,7 @@ export default function CourseDetailPage() {
     if (fromJson) {
       return { ...fromJson, course_code: fromJson.code };
     }
-    return courseList.find(c => c.courseTitle.replace(/\s+/g, '-').toLowerCase() === slug);
+    return null;
   }, [slug]);
 
   useEffect(() => {
