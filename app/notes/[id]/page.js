@@ -284,6 +284,7 @@ export default function NotePreviewPage() {
                 </div>
               )}
             </div>
+
           </div>
 
           {/* Metadata Sidebar */}
@@ -371,17 +372,21 @@ export default function NotePreviewPage() {
                   </p>
                 </div>
               </div>
-
-              {/* Interactive Rating Component */}
-              <RatingWidget 
-                noteId={note.id} 
-                uploaderId={note.uploader_id} 
-                onRateSuccess={handleRateSuccess} 
-                onReviewsFetched={setTotalRatings} 
-              />
             </div>
           )}
         </div>
+
+        {/* Interactive Rating & Feedback Thread (Full Width Screen Layout) */}
+        {!isReadingMode && (
+          <div className="mt-12 animate-in fade-in slide-in-from-bottom duration-700">
+            <RatingWidget 
+              noteId={note.id} 
+              uploaderId={note.uploader_id} 
+              onRateSuccess={handleRateSuccess} 
+              onReviewsFetched={setTotalRatings} 
+            />
+          </div>
+        )}
       </div>
 
       {/* Modular Interactive Edit Modal */}
