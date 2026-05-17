@@ -43,7 +43,7 @@ export default function AdminDashboardPage() {
   const [activeUsersCount, setActiveUsersCount] = useState(0);
   const [loadingData, setLoadingData] = useState(true);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
-  const [activeTab, setActiveTab] = useState('pending'); // 'pending', 'resources', 'users'
+  const [activeTab, setActiveTab] = useState('resources'); // 'resources', 'users'
 
   // --- User Directory Pagination & Search State ---
   const [usersList, setUsersList] = useState([]);
@@ -559,11 +559,9 @@ export default function AdminDashboardPage() {
               </button>
 
               {/* Feature Card: Pending Notes Tab Shortcut */}
-              <button 
-                onClick={() => setActiveTab('pending')}
-                className={`group relative overflow-hidden p-6 sm:p-8 bg-[var(--card-bg)] border-2 rounded-[2rem] sm:rounded-[2.5rem] shadow-lg transition-all hover:-translate-y-1 duration-500 flex flex-col justify-between h-[180px] sm:h-[200px] text-left cursor-pointer ${
-                  activeTab === 'pending' ? 'border-purple-500 bg-purple-500/5' : 'border-[var(--card-border)] hover:border-purple-500/50'
-                }`}
+              <Link 
+                href="/admin/pending_notes"
+                className="group relative overflow-hidden p-6 sm:p-8 bg-[var(--card-bg)] border-2 border-[var(--card-border)] hover:border-purple-500/50 rounded-[2rem] sm:rounded-[2.5rem] shadow-lg transition-all hover:-translate-y-1 duration-500 flex flex-col justify-between h-[180px] sm:h-[200px] text-left cursor-pointer block"
               >
                 <div className="flex items-center justify-between">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-500/10 border border-purple-500/20 rounded-2xl flex items-center justify-center text-purple-500 shadow-md group-hover:scale-110 transition-transform duration-500 shrink-0">
@@ -581,27 +579,14 @@ export default function AdminDashboardPage() {
                     Review student notes <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform shrink-0" />
                   </p>
                 </div>
-              </button>
+              </Link>
 
             </div>
           </div>
 
-          {/* Section Tabs (Pending Notes vs Pending Resources vs User Management) */}
+          {/* Section Tabs (Pending Resources vs User Management) */}
           <div className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4 border-b border-[var(--card-border)] pb-4 w-full">
-              <button
-                onClick={() => setActiveTab('pending')}
-                className={`w-full py-3 sm:py-3.5 px-4 rounded-xl sm:rounded-2xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer flex items-center justify-between sm:justify-center gap-2 ${
-                  activeTab === 'pending'
-                    ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20 scale-[1.01] sm:scale-105'
-                    : 'bg-[var(--card-bg)] text-slate-500 border border-[var(--card-border)] hover:text-[var(--foreground)]'
-                }`}
-              >
-                <span>Pending Notes</span>
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${activeTab === 'pending' ? 'bg-white/20 text-white' : 'bg-purple-500/10 text-purple-500'}`}>
-                  {pendingNotes.length}
-                </span>
-              </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4 border-b border-[var(--card-border)] pb-4 w-full">
               <button
                 onClick={() => setActiveTab('resources')}
                 className={`w-full py-3 sm:py-3.5 px-4 rounded-xl sm:rounded-2xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer flex items-center justify-between sm:justify-center gap-2 ${
@@ -630,146 +615,7 @@ export default function AdminDashboardPage() {
               </button>
             </div>
 
-            {/* TAB 1: Pending Notes Table & Mobile Cards */}
-            {activeTab === 'pending' && (
-              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-xl overflow-hidden backdrop-blur-xl animate-in fade-in duration-500">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
-                  <div>
-                    <h3 className="text-base sm:text-lg font-black uppercase tracking-tight">Notes Awaiting Approval</h3>
-                    <p className="text-xs font-bold text-slate-500">Review content before it becomes public in the repository.</p>
-                  </div>
-                  <span className="text-xs font-black px-4 py-2 bg-purple-500/10 text-purple-500 rounded-2xl border border-purple-500/20 uppercase tracking-widest text-center shrink-0">
-                    Queue: {pendingNotes.length}
-                  </span>
-                </div>
-
-                {loadingData ? (
-                  <div className="py-12 text-center text-xs font-bold text-slate-500 uppercase tracking-widest animate-pulse">Loading pending notes...</div>
-                ) : pendingNotes.length === 0 ? (
-                  <div className="py-16 text-center space-y-3 border-2 border-dashed border-[var(--card-border)] rounded-[2rem]">
-                    <div className="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20 shrink-0">
-                      <CheckCircle2 size={24} />
-                    </div>
-                    <p className="text-sm font-black uppercase tracking-widest text-[var(--foreground)]">All Caught Up!</p>
-                    <p className="text-xs font-bold text-slate-500">There are no pending notes awaiting moderation at this time.</p>
-                  </div>
-                ) : (
-                  <>
-                    {/* Desktop Table View (Hidden on mobile below md) */}
-                    <div className="hidden md:block overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/[0.1]">
-                      <table className="w-full text-left border-collapse min-w-[650px]">
-                        <thead>
-                          <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
-                            <th className="pb-4 pl-4 whitespace-nowrap">Note Title & Course</th>
-                            <th className="pb-4 whitespace-nowrap">Uploader</th>
-                            <th className="pb-4 whitespace-nowrap">File Type</th>
-                            <th className="pb-4 text-right pr-4 whitespace-nowrap">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
-                          {pendingNotes.map((note) => (
-                            <tr key={note.id} className="hover:bg-white/[0.02] transition-colors">
-                              <td className="py-4 sm:py-5 pl-4 max-w-[250px] sm:max-w-[300px]">
-                                <p className="font-black text-sm text-[var(--foreground)] truncate">{note.title}</p>
-                                <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 truncate">{note.course_code} • {note.dept}</p>
-                              </td>
-                              <td className="py-4 sm:py-5 whitespace-nowrap">
-                                <div className="flex items-center gap-2">
-                                  {note.uploader?.profile_pic ? (
-                                    <img src={note.uploader.profile_pic} alt="" className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
-                                  ) : (
-                                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-[10px] font-black text-white shrink-0">
-                                      {note.uploader?.name?.[0] || 'U'}
-                                    </div>
-                                  )}
-                                  <span className="text-slate-300 truncate max-w-[120px]">{note.uploader?.name || `User #${note.uploader_id}`}</span>
-                                </div>
-                              </td>
-                              <td className="py-4 sm:py-5 whitespace-nowrap">
-                                <a 
-                                  href={note.file_path} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer" 
-                                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-500 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition-colors uppercase text-[10px] tracking-widest font-black shrink-0"
-                                >
-                                  {note.file_type || 'PDF'} <ArrowRight size={12} />
-                                </a>
-                              </td>
-                              <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap">
-                                <div className="inline-flex items-center gap-1.5 sm:gap-2">
-                                  <button 
-                                    onClick={() => handleNoteStatus(note.id, 'approved')}
-                                    className="px-3.5 py-2 sm:px-4 sm:py-2 bg-emerald-500/10 text-emerald-50 hover:bg-emerald-50 hover:text-white rounded-xl border border-emerald-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
-                                  >
-                                    <CheckCircle2 size={14} /> Approve
-                                  </button>
-                                  <button 
-                                    onClick={() => handleNoteStatus(note.id, 'rejected')}
-                                    className="px-3.5 py-2 sm:px-4 sm:py-2 bg-red-500/10 text-red-50 hover:bg-red-50 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
-                                  >
-                                    <XCircle size={14} /> Reject
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {/* Mobile Card View (Hidden on desktop md and above) */}
-                    <div className="block md:hidden space-y-4">
-                      {pendingNotes.map((note) => (
-                        <div key={note.id} className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-5 space-y-4 shadow-sm hover:border-purple-500/30 transition-all">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0 flex-1">
-                              <h4 className="font-black text-sm text-[var(--foreground)] truncate">{note.title}</h4>
-                              <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 truncate">{note.course_code} • {note.dept}</p>
-                            </div>
-                            <a 
-                              href={note.file_path} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-500/10 text-blue-500 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition-colors uppercase text-[9px] tracking-widest font-black shrink-0"
-                            >
-                              {note.file_type || 'PDF'} <ArrowRight size={10} />
-                            </a>
-                          </div>
-
-                          <div className="flex items-center gap-2 pt-2 border-t border-[var(--card-border)]">
-                            {note.uploader?.profile_pic ? (
-                              <img src={note.uploader.profile_pic} alt="" className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
-                            ) : (
-                              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-[10px] font-black text-white shrink-0">
-                                {note.uploader?.name?.[0] || 'U'}
-                              </div>
-                            )}
-                            <span className="text-xs text-slate-300 truncate">{note.uploader?.name || `User #${note.uploader_id}`}</span>
-                          </div>
-
-                          <div className="flex items-center gap-2 pt-2 border-t border-[var(--card-border)]">
-                            <button 
-                              onClick={() => handleNoteStatus(note.id, 'approved')}
-                              className="flex-1 py-2.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-xl border border-emerald-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center justify-center gap-1.5 cursor-pointer"
-                            >
-                              <CheckCircle2 size={14} /> Approve
-                            </button>
-                            <button 
-                              onClick={() => handleNoteStatus(note.id, 'rejected')}
-                              className="flex-1 py-2.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center justify-center gap-1.5 cursor-pointer"
-                            >
-                              <XCircle size={14} /> Reject
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* TAB 2: Pending Resources Table & Mobile Cards */}
+            {/* TAB 1: Pending Resources Table & Mobile Cards */}
             {activeTab === 'resources' && (
               <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-xl overflow-hidden backdrop-blur-xl animate-in fade-in duration-500">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
