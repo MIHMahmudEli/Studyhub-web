@@ -341,11 +341,11 @@ export default function SettingsPage() {
                           name="dept" 
                           value={profileForm.dept} 
                           onChange={handleProfileChange}
-                          className="w-full px-5 py-4 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors cursor-pointer text-slate-800 dark:text-slate-200"
+                          className="w-full px-5 py-4 bg-slate-500/5 dark:bg-black border border-[var(--card-border)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors cursor-pointer text-slate-800 dark:text-slate-200"
                         >
-                          <option value="" className="bg-[var(--card-bg)] text-slate-400">Select Department</option>
+                          <option value="" className="bg-white dark:bg-black text-slate-400">Select Department</option>
                           {departments.map((d, index) => (
-                            <option key={index} value={d} className="bg-[var(--card-bg)] text-[var(--foreground)] font-semibold py-2">
+                            <option key={index} value={d} className="bg-white dark:bg-black text-slate-800 dark:text-slate-100 font-semibold py-2">
                               {d}
                             </option>
                           ))}
