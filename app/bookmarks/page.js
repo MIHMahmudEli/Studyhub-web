@@ -209,54 +209,59 @@ export default function BookmarkPage() {
                     const slug = course.subject_name.replace(/\s+/g, '-').toLowerCase();
 
                     return (
-                      <div 
-                        key={course.id}
-                        onClick={() => router.push(`/resources/${slug}`)}
-                        className="group relative h-[300px] md:h-[360px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-700 hover:-translate-y-1 md:hover:-translate-y-2 shadow-sm animate-in fade-in slide-in-from-bottom-6 fill-mode-both"
-                        style={{ animationDelay: `${idx * 40}ms` }}
-                      >
-                        <div className="absolute top-6 right-6 z-20">
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveBookmark(course.id);
-                            }}
-                            className="p-2 rounded-lg bg-red-500/10 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 hover:text-white"
-                          >
-                            <Trash2 size={12} />
-                          </button>
-                        </div>
- 
-                        <div className="absolute inset-0 rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                        
-                        <div className="relative z-10 w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] md:rounded-[2rem] bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-all duration-700">
-                          <Icon size={28} strokeWidth={1.5} className="md:w-8 md:h-8" />
-                        </div>
+                      <div key={course.id} className="relative group">
+                        <div 
+                          onClick={() => router.push(`/resources/${slug}`)}
+                          className="relative h-[280px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1 shadow-sm"
+                        >
+                          <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                          
+                          {/* Centered Majestic Icon */}
+                          <div className="relative z-10 w-12 h-12 rounded-[1.2rem] bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-blue-500 shadow-md group-hover:scale-105 transition-all duration-700">
+                            <Icon size={20} strokeWidth={1.5} />
+                          </div>
 
-                        <div className="relative z-10 text-center space-y-3">
-                          <div className="space-y-2">
-                            <p className="text-[7px] md:text-[7.5px] font-black tracking-[0.2em] text-blue-500/80 uppercase px-3 py-1 rounded-full bg-blue-500/5 border border-blue-500/10 inline-block">
-                              COURSE ARCHIVE
-                            </p>
+                          {/* Metadata & Title */}
+                          <div className="relative z-10 text-center space-y-2 w-full">
                             <div className="space-y-1">
-                              <h3 className="text-[11px] md:text-[12px] font-black uppercase tracking-widest leading-relaxed max-w-[180px] mx-auto group-hover:text-blue-500 transition-colors duration-500">
+                              <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-widest leading-relaxed max-w-[180px] mx-auto group-hover:text-blue-500 transition-colors duration-500 line-clamp-2">
                                 {course.subject_name}
                               </h3>
+                              <div className="space-y-1 pt-1">
+                                <p className="text-[7.5px] font-black tracking-[0.2em] text-slate-500 uppercase">
+                                  COURSE ARCHIVE
+                                </p>
+                                <p className="text-[6.5px] font-black tracking-[0.15em] text-blue-500/80 uppercase px-2 py-0.5 rounded-full bg-blue-500/5 border border-blue-500/10 inline-block">
+                                  RESOURCES
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Footer */}
+                          <div className="relative z-10 w-full flex items-center justify-between pt-3 border-t border-[var(--card-border)]">
+                            <div className="flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                              <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">
+                                View Resources
+                              </span>
+                            </div>
+                            <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
+                              <ChevronRight size={10} className="group-hover:translate-x-0.5 transition-all" />
                             </div>
                           </div>
                         </div>
 
-                        <div className="relative z-10 w-full flex items-center justify-between pt-4 border-t border-[var(--card-border)]">
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                            <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-400">
-                              View Resources
-                            </span>
-                          </div>
-                          <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
-                            <ArrowRight size={10} className="md:w-3 md:h-3" />
-                          </div>
-                        </div>
+                        {/* Remove Bookmark Button */}
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveBookmark(course.id);
+                          }}
+                          className="absolute top-4 right-4 z-20 p-2 rounded-lg bg-red-500/10 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-lg cursor-pointer"
+                        >
+                          <Trash2 size={12} />
+                        </button>
                       </div>
                     );
                   })}
