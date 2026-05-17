@@ -25,7 +25,8 @@ import {
   X,
   AlertTriangle,
   Search,
-  Activity
+  Activity,
+  Settings
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -286,15 +287,26 @@ export default function AdminDashboardPage() {
               </p>
             </div>
 
-            <div className="flex items-center gap-3.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.25rem] p-3.5 shadow-sm backdrop-blur-xl min-w-0 w-full md:w-auto justify-center md:justify-start">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 flex-shrink-0">
-                <Calendar size={18} />
-              </div>
-              <div className="min-w-0 text-left">
-                <p className="text-[8px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider leading-none">System Date</p>
-                <p className="text-[10px] font-black uppercase text-slate-800 dark:text-slate-200 mt-1.5 truncate leading-none">
-                  {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                </p>
+            <div className="flex items-center gap-4 w-full md:w-auto justify-center md:justify-end">
+              <Link 
+                href="/settings"
+                className="flex-1 md:w-14 md:h-14 md:flex-initial flex items-center justify-center gap-2.5 rounded-[1.25rem] bg-[var(--card-bg)] border border-[var(--card-border)] hover:border-amber-500/30 text-slate-500 hover:text-amber-500 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm backdrop-blur-xl py-4 md:py-0"
+                title="Account Settings"
+              >
+                <Settings size={20} className="animate-spin-slow flex-shrink-0" />
+                <span className="text-[10px] font-black uppercase tracking-widest md:hidden">Settings</span>
+              </Link>
+              
+              <div className="flex-1 md:flex-initial flex items-center gap-3.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.25rem] p-3.5 shadow-sm backdrop-blur-xl min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 flex-shrink-0">
+                  <Calendar size={18} />
+                </div>
+                <div className="min-w-0 text-left">
+                  <p className="text-[8px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider leading-none">System Date</p>
+                  <p className="text-[10px] font-black uppercase text-slate-800 dark:text-slate-200 mt-1.5 truncate leading-none">
+                    {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
