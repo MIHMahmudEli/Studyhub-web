@@ -77,38 +77,49 @@ export default function DashboardNavbar() {
           {/* User Stats */}
           <Link 
             href="/dashboard" 
-            className="relative flex items-center gap-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl px-4 py-2 hover:border-blue-500/30 transition-all cursor-pointer group"
+            className={`relative flex items-center gap-3 rounded-2xl px-4 py-2 transition-all cursor-pointer border group ${
+              pathname === '/dashboard'
+                ? 'bg-blue-500/10 border-blue-500/30'
+                : 'bg-[var(--card-bg)] border-[var(--card-border)] hover:border-blue-500/30'
+            }`}
           >
-            <div className="flex items-center gap-2 text-amber-500">
+            {/* Points Section with its own hover popover group */}
+            <div className="relative group/points flex items-center gap-2 text-amber-500 py-0.5 px-1 hover:bg-amber-500/5 dark:hover:bg-amber-500/10 rounded-lg transition-colors">
               <Coins size={16} />
               <span className="text-xs font-black tracking-tighter">{user?.points || 0}</span>
+
+              {/* Points Accumulation Rules Popover */}
+              <div className="absolute right-0 top-full mt-3.5 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/[0.08] rounded-2xl p-4 shadow-2xl opacity-0 translate-y-2 pointer-events-none group-hover/points:opacity-100 group-hover/points:translate-y-0 transition-all duration-300 z-[9999] backdrop-blur-xl">
+                <div className="flex items-center gap-2 pb-2 mb-2.5 border-b border-slate-100 dark:border-white/[0.05]">
+                  <Coins size={14} className="text-amber-500 animate-pulse" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-200">Points System</span>
+                </div>
+                <ul className="space-y-2.5">
+                  <li className="flex items-center justify-between gap-3">
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Download a note</span>
+                    <span className="text-[9px] font-black text-amber-500 shrink-0 bg-amber-500/10 dark:bg-amber-500/5 px-2 py-0.5 rounded-md border border-amber-500/20">+1 PTS</span>
+                  </li>
+                  <li className="flex items-center justify-between gap-3">
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Notes Owner reward</span>
+                    <span className="text-[9px] font-black text-amber-500 shrink-0 bg-amber-500/10 dark:bg-amber-500/5 px-2 py-0.5 rounded-md border border-amber-500/20">+1 PTS</span>
+                  </li>
+                  <li className="flex items-center justify-between gap-3">
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Approved notes</span>
+                    <span className="text-[9px] font-black text-emerald-500 shrink-0 bg-emerald-500/10 dark:bg-emerald-500/5 px-2 py-0.5 rounded-md border border-emerald-500/20">+5 PTS</span>
+                  </li>
+                </ul>
+              </div>
             </div>
+
             <div className="w-px h-3 bg-[var(--card-border)]" />
-            <span className="text-[12px] font-black text-[var(--foreground)] uppercase tracking-tighter truncate max-w-[120px] group-hover:text-blue-500 transition-colors">
+            
+            <span className={`text-[12px] font-black uppercase tracking-tighter truncate max-w-[120px] transition-colors ${
+              pathname === '/dashboard'
+                ? 'text-blue-500'
+                : 'text-[var(--foreground)] group-hover:text-blue-500'
+            }`}>
               {user?.name?.split(' ')[0]}
             </span>
-
-            {/* Points Accumulation Rules Popover */}
-            <div className="absolute right-0 top-full mt-2.5 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/[0.08] rounded-2xl p-4 shadow-2xl opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-[9999] backdrop-blur-xl">
-              <div className="flex items-center gap-2 pb-2 mb-2.5 border-b border-slate-100 dark:border-white/[0.05]">
-                <Coins size={14} className="text-amber-500 animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-200">Points System</span>
-              </div>
-              <ul className="space-y-2.5">
-                <li className="flex items-center justify-between gap-3">
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Download a note</span>
-                  <span className="text-[9px] font-black text-amber-500 shrink-0 bg-amber-500/10 dark:bg-amber-500/5 px-2 py-0.5 rounded-md border border-amber-500/20">+1 PTS</span>
-                </li>
-                <li className="flex items-center justify-between gap-3">
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Notes Owner reward</span>
-                  <span className="text-[9px] font-black text-amber-500 shrink-0 bg-amber-500/10 dark:bg-amber-500/5 px-2 py-0.5 rounded-md border border-amber-500/20">+1 PTS</span>
-                </li>
-                <li className="flex items-center justify-between gap-3">
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Approved notes</span>
-                  <span className="text-[9px] font-black text-emerald-500 shrink-0 bg-emerald-500/10 dark:bg-emerald-500/5 px-2 py-0.5 rounded-md border border-emerald-500/20">+5 PTS</span>
-                </li>
-              </ul>
-            </div>
           </Link>
         </div>
       </div>
