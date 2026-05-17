@@ -123,7 +123,7 @@ export default function ResourcesPage() {
               <input 
                 type="text" 
                 placeholder="SEARCH RESOURCES..."
-                className="w-full bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-2xl py-3.5 pl-12 pr-6 text-[10px] font-black tracking-widest uppercase focus:outline-none focus:border-blue-500/30 transition-all shadow-xl dark:shadow-none"
+                className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl py-3.5 pl-12 pr-6 text-[10px] font-black tracking-widest uppercase focus:outline-none focus:border-blue-500/30 transition-all shadow-xl"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -141,12 +141,12 @@ export default function ResourcesPage() {
                 <div 
                   key={course.title}
                   onClick={() => router.push(`/resources/${course.slug}`)}
-                  className="group relative h-[300px] md:h-[360px] bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-700 hover:-translate-y-1 md:hover:-translate-y-2 shadow-sm animate-in fade-in slide-in-from-bottom-6 fill-mode-both"
+                  className="group relative h-[300px] md:h-[360px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-700 hover:-translate-y-1 md:hover:-translate-y-2 shadow-sm animate-in fade-in slide-in-from-bottom-6 fill-mode-both"
                   style={{ animationDelay: `${(idx % 12) * 40}ms` }}
                 >
                   <div className="absolute inset-0 rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                   
-                  <div className="relative z-10 w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] md:rounded-[2rem] bg-white dark:bg-[var(--background)] border border-slate-200 dark:border-white/[0.05] flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-all duration-700">
+                  <div className="relative z-10 w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] md:rounded-[2rem] bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-all duration-700">
                     <Icon size={28} strokeWidth={1.5} className="md:w-8 md:h-8" />
                   </div>
 
@@ -165,7 +165,7 @@ export default function ResourcesPage() {
                     </div>
                   </div>
 
-                  <div className="relative z-10 w-full flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/[0.05]">
+                  <div className="relative z-10 w-full flex items-center justify-between pt-4 border-t border-[var(--card-border)]">
                     <div className="flex items-center gap-2">
                       <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                       <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-400">

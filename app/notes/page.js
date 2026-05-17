@@ -163,7 +163,7 @@ export default function NotesPage() {
                 <input 
                   type="text" 
                   placeholder="SEARCH NOTES..."
-                  className="w-full bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-2xl py-3.5 pl-12 pr-6 text-[10px] font-black tracking-widest uppercase focus:outline-none focus:border-purple-500/30 transition-all shadow-xl dark:shadow-none"
+                  className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl py-3.5 pl-12 pr-6 text-[10px] font-black tracking-widest uppercase focus:outline-none focus:border-purple-500/30 transition-all shadow-xl"
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -177,7 +177,7 @@ export default function NotesPage() {
                   className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 border rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer ${
                     sortBy === 'most-downloaded' 
                     ? 'bg-blue-500 text-white border-blue-400' 
-                    : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.05] text-slate-500 hover:text-blue-500'
+                    : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-500 hover:text-blue-500'
                   }`}
                 >
                   <Download size={14} /> Trending
@@ -187,7 +187,7 @@ export default function NotesPage() {
                   className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 border rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer ${
                     sortBy === 'top-rated' 
                     ? 'bg-amber-500 text-white border-amber-400' 
-                    : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.05] text-slate-500 hover:text-amber-500'
+                    : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-500 hover:text-amber-500'
                   }`}
                 >
                   <Star size={14} /> Top Rated
@@ -206,13 +206,13 @@ export default function NotesPage() {
                   ref={displayedNotes.length === idx + 1 ? lastNoteElementRef : null}
                   key={note.id}
                   onClick={() => router.push(`/notes/${note.id}`)}
-                  className="group relative h-[300px] md:h-[360px] bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-purple-500/30 transition-all duration-700 hover:-translate-y-1 md:hover:-translate-y-2 shadow-sm animate-in fade-in slide-in-from-bottom-6 fill-mode-both"
+                  className="group relative h-[300px] md:h-[360px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-purple-500/30 transition-all duration-700 hover:-translate-y-1 md:hover:-translate-y-2 shadow-sm animate-in fade-in slide-in-from-bottom-6 fill-mode-both"
                   style={{ animationDelay: `${(idx % itemsPerPage) * 40}ms` }}
                 >
                   <div className="absolute inset-0 rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-purple-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                   
                   {/* Centered Majestic Icon */}
-                  <div className="relative z-10 w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] md:rounded-[2rem] bg-white dark:bg-[var(--background)] border border-slate-200 dark:border-white/[0.05] flex items-center justify-center text-purple-500 shadow-xl group-hover:scale-110 group-hover:shadow-purple-500/20 transition-all duration-700">
+                  <div className="relative z-10 w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] md:rounded-[2rem] bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-purple-500 shadow-xl group-hover:scale-110 group-hover:shadow-purple-500/20 transition-all duration-700">
                     <Icon size={28} strokeWidth={1.5} className="md:w-8 md:h-8" />
                   </div>
 
@@ -234,7 +234,7 @@ export default function NotesPage() {
                   </div>
 
                   {/* High-Contrast Footer */}
-                  <div className="relative z-10 w-full flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/[0.05]">
+                  <div className="relative z-10 w-full flex items-center justify-between pt-4 border-t border-[var(--card-border)]">
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-400">
                         <Star size={10} className={parseFloat(note.avg_rating) > 0 ? "text-amber-400 fill-amber-400" : ""} /> 

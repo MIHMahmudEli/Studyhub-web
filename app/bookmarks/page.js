@@ -167,7 +167,7 @@ export default function BookmarkPage() {
               <input 
                 type="text" 
                 placeholder="SEARCH ARCHIVES..."
-                className="w-full bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.05] rounded-2xl py-3.5 pl-12 pr-6 text-[10px] font-black tracking-widest uppercase focus:outline-none focus:border-blue-500/30 transition-all shadow-xl dark:shadow-none"
+                className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl py-3.5 pl-12 pr-6 text-[10px] font-black tracking-widest uppercase focus:outline-none focus:border-blue-500/30 transition-all shadow-xl"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -194,7 +194,7 @@ export default function BookmarkPage() {
                       <div 
                         key={course.id}
                         onClick={() => router.push(`/resources/${slug}`)}
-                        className="group relative h-[300px] md:h-[360px] bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-700 hover:-translate-y-1 md:hover:-translate-y-2 shadow-sm animate-in fade-in slide-in-from-bottom-6 fill-mode-both"
+                        className="group relative h-[300px] md:h-[360px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-700 hover:-translate-y-1 md:hover:-translate-y-2 shadow-sm animate-in fade-in slide-in-from-bottom-6 fill-mode-both"
                         style={{ animationDelay: `${idx * 40}ms` }}
                       >
                         <div className="absolute top-6 right-6 z-20">
@@ -208,10 +208,10 @@ export default function BookmarkPage() {
                             <Trash2 size={12} />
                           </button>
                         </div>
-
+ 
                         <div className="absolute inset-0 rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                         
-                        <div className="relative z-10 w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] md:rounded-[2rem] bg-white dark:bg-[var(--background)] border border-slate-200 dark:border-white/[0.05] flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-all duration-700">
+                        <div className="relative z-10 w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] md:rounded-[2rem] bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-all duration-700">
                           <Icon size={28} strokeWidth={1.5} className="md:w-8 md:h-8" />
                         </div>
 
@@ -228,7 +228,7 @@ export default function BookmarkPage() {
                           </div>
                         </div>
 
-                        <div className="relative z-10 w-full flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/[0.05]">
+                        <div className="relative z-10 w-full flex items-center justify-between pt-4 border-t border-[var(--card-border)]">
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                             <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-400">
@@ -263,7 +263,7 @@ export default function BookmarkPage() {
                       <div key={bookmark.id} className="relative group">
                         <Link 
                           href={`/notes/${note.id}`}
-                          className="block bg-slate-50/50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.05] rounded-[1.5rem] p-6 hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 flex flex-col justify-between h-[180px] shadow-sm"
+                          className="block bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] p-6 hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 flex flex-col justify-between h-[180px] shadow-sm"
                         >
                           <div className="space-y-3">
                             <div className="flex items-center gap-2">
@@ -278,7 +278,7 @@ export default function BookmarkPage() {
                               {note.title}
                             </h3>
                           </div>
-                          <div className="mt-4 flex items-center justify-between border-t border-slate-200/50 dark:border-white/[0.05] pt-4">
+                          <div className="mt-4 flex items-center justify-between border-t border-[var(--card-border)] pt-4">
                             <div className="flex items-center gap-2 text-[8px] font-black text-slate-400 uppercase tracking-widest">
                               <Clock size={10} /> {new Date(note.created_at).toLocaleDateString()}
                             </div>
@@ -311,10 +311,10 @@ export default function BookmarkPage() {
                   {filteredResources.map((resource) => (
                     <div 
                       key={resource.id} 
-                      className="group bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-2xl p-4 md:p-5 flex items-center justify-between hover:border-blue-500/30 transition-all duration-500 shadow-sm"
+                      className="group bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-4 md:p-5 flex items-center justify-between hover:border-blue-500/30 transition-all duration-500 shadow-sm"
                     >
                       <div className="flex items-center gap-4 min-w-0">
-                        <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center text-slate-400 shrink-0 group-hover:text-blue-500 transition-colors">
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-[var(--card-border)] flex items-center justify-center text-slate-400 shrink-0 group-hover:text-blue-500 transition-colors">
                           <FileText size={18} />
                         </div>
                         <div className="min-w-0">
