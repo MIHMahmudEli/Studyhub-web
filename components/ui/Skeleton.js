@@ -1,7 +1,7 @@
 'use client';
 
 // New modular default export for shimmery loading skeletons on admin/resources pages
-export default function Skeleton({ type = 'list', count = 3 }) {
+export default function ModernSkeleton({ type = 'list', count = 3 }) {
   // Shimmer class with pulsing animation and modern border radii
   const shimmerClass = "bg-slate-200 dark:bg-white/[0.05] animate-pulse rounded-xl";
 
