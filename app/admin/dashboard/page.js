@@ -9,6 +9,7 @@ import Toast from '@/components/ui/Toast';
 import { apiRequest } from '@/lib/api';
 import { Skeleton } from '@/components/ui/Skeleton';
 import StatsCard from '@/components/admin/StatsCard';
+import ConfigCard from '@/components/admin/ConfigCard';
 import { 
   ShieldCheck, 
   Users, 
@@ -329,41 +330,35 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Platform Configuration Card (Admin Only) */}
-          {user.role === 'admin' && (
-            <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-6 animate-in fade-in duration-500 hover:border-blue-500/30 transition-all">
-              <div className="space-y-2 text-center sm:text-left">
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-500 text-[9px] font-black uppercase tracking-[0.3em]">
-                  <Sparkles size={12} /> System Setting
-                </div>
-                <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight">Resource Upload Visibility</h3>
-                <p className="text-xs font-bold text-slate-500 max-w-[600px] mx-auto sm:mx-0">
-                  Configure the default approval status for newly uploaded academic resources. If set to PENDING, an admin must approve them before they appear in the public library.
-                </p>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center gap-2 bg-slate-100 dark:bg-white/[0.05] p-1.5 rounded-2xl border border-slate-200 dark:border-white/[0.05] shrink-0 w-full sm:w-auto justify-center">
-                <button
-                  onClick={() => handleVisibilityChange('approved')}
-                  className={`w-full sm:w-auto px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all cursor-pointer shrink-0 ${
-                    uploadVisibility === 'approved'
-                      ? 'bg-emerald-50 text-emerald-500 shadow-lg shadow-emerald-500/20 scale-[1.02] sm:scale-105 border border-emerald-500/20 font-black'
-                      : 'text-slate-400 hover:text-[var(--foreground)]'
-                  }`}
-                >
-                  Approved by Default
-                </button>
-                <button
-                  onClick={() => handleVisibilityChange('pending')}
-                  className={`w-full sm:w-auto px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all cursor-pointer shrink-0 ${
-                    uploadVisibility === 'pending'
-                      ? 'bg-amber-50 text-amber-500 shadow-lg shadow-amber-500/20 scale-[1.02] sm:scale-105 border border-amber-500/20 font-black'
-                      : 'text-slate-400 hover:text-[var(--foreground)]'
-                  }`}
-                >
-                  Pending by Default
-                </button>
-              </div>
-            </div>
+          {user?.role === 'admin' && (
+            <ConfigCard
+              title="Resource Upload Visibility"
+              subtitle="Configure the default approval status for newly uploaded academic resources. If set to PENDING, an admin must approve them before they appear in the public library."
+              badgeText="System Setting"
+              badgeIcon={Sparkles}
+              loading={loadingData}
+            >
+              <button
+                onClick={() => handleVisibilityChange('approved')}
+                className={`w-full sm:w-auto px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all cursor-pointer shrink-0 ${
+                  uploadVisibility === 'approved'
+                    ? 'bg-emerald-50 text-emerald-500 shadow-lg shadow-emerald-500/20 scale-[1.02] sm:scale-105 border border-emerald-500/20 font-black'
+                    : 'text-slate-400 hover:text-[var(--foreground)]'
+                }`}
+              >
+                Approved by Default
+              </button>
+              <button
+                onClick={() => handleVisibilityChange('pending')}
+                className={`w-full sm:w-auto px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all cursor-pointer shrink-0 ${
+                  uploadVisibility === 'pending'
+                    ? 'bg-amber-50 text-amber-500 shadow-lg shadow-amber-500/20 scale-[1.02] sm:scale-105 border border-amber-500/20 font-black'
+                    : 'text-slate-400 hover:text-[var(--foreground)]'
+                }`}
+              >
+                Pending by Default
+              </button>
+            </ConfigCard>
           )}
 
           {/* Admin Stats Grid */}
