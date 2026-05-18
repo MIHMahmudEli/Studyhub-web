@@ -8,6 +8,8 @@ import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import Skeleton from '@/components/ui/Skeleton';
 import { apiRequest } from '@/lib/api';
 import UserCard from '@/components/admin/UserCard';
+import AdminHeader from '@/components/admin/AdminHeader';
+import AdminPanel from '@/components/admin/AdminPanel';
 import { 
   ShieldCheck, 
   Users, 
@@ -181,110 +183,91 @@ export default function ActiveUsersPage() {
             </div>
           </div>
 
-          {/* Active Users Table & Mobile Cards */}
-          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-xl overflow-hidden backdrop-blur-xl animate-in fade-in duration-500">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
-              <div>
-                <h3 className="text-base sm:text-lg font-black uppercase tracking-tight flex items-center gap-2">
-                  <Activity size={20} className="text-emerald-500 animate-pulse" /> Users Online on {selectedDate}
-                </h3>
-                <p className="text-xs font-bold text-slate-500">Displaying students who logged in or performed actions on this date.</p>
-              </div>
-              <span className="text-xs font-black px-4 py-2.5 bg-emerald-500/10 text-emerald-500 rounded-2xl border border-emerald-500/20 uppercase tracking-widest text-center shrink-0">
-                Active Count: {totalCount}
-              </span>
+          {/* Reusable Admin Panel Container */}
+          <AdminPanel
+            panelIcon={Activity}
+            panelIconClass="text-emerald-500 animate-pulse"
+            panelTitle={`Users Online on ${selectedDate}`}
+            panelSubtitle="Displaying students who logged in or performed actions on this date."
+            badgeText={`Active Count: ${totalCount}`}
+            badgeColorClass="bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+            loading={loading}
+            error={error}
+            isEmpty={activeUsers.length === 0}
+            emptyIcon={Users}
+            emptyTitle="No Activity Found"
+            emptyDescription={`No users were recorded active on ${selectedDate}.`}
+          >
+            {/* Desktop Table View (Hidden on mobile below md) */}
+            <div className="hidden md:block overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/[0.1]">
+              <table className="w-full text-left border-collapse min-w-[750px]">
+                <thead>
+                  <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
+                    <th className="pb-4 pl-4 whitespace-nowrap">User & Email</th>
+                    <th className="pb-4 whitespace-nowrap">Department</th>
+                    <th className="pb-4 whitespace-nowrap">Role</th>
+                    <th className="pb-4 whitespace-nowrap">Points</th>
+                    <th className="pb-4 text-right pr-4 whitespace-nowrap">Last Active Time</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
+                  {activeUsers.map((u) => (
+                    <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="py-4 sm:py-5 pl-4 max-w-[220px] sm:max-w-[250px]">
+                        <div className="flex items-center gap-3">
+                          {u.profile_pic ? (
+                            <img src={u.profile_pic} alt="" className="w-8 h-8 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-xs font-black text-white shrink-0">
+                              {u.name?.[0] || 'U'}
+                            </div>
+                          )}
+                          <div className="truncate">
+                            <p className="font-black text-sm text-[var(--foreground)] truncate flex items-center gap-2">
+                              {u.name} {u.banned && <span className="text-[9px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded-md uppercase tracking-widest border border-red-500/20 shrink-0">Banned</span>}
+                            </p>
+                            <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email || 'No email available'}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4 sm:py-5 whitespace-nowrap text-slate-300">
+                        {u.dept?.toUpperCase() || 'GENERAL'}
+                      </td>
+                      <td className="py-4 sm:py-5 whitespace-nowrap">
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${
+                          u.role === 'admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                          u.role === 'moderator' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
+                          'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                        }`}>
+                          {u.role || 'student'}
+                        </span>
+                      </td>
+                      <td className="py-4 sm:py-5 font-black text-amber-500 whitespace-nowrap">
+                        {u.points || 0} PTS
+                      </td>
+                      <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap font-black text-emerald-500">
+                        <div className="inline-flex items-center gap-1.5 justify-end">
+                          <Clock size={14} />
+                          {new Date(u.last_active_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
 
-            {loading ? (
-              <Skeleton type="table" count={4} />
-            ) : error ? (
-              <div className="py-16 text-center space-y-3 border-2 border-dashed border-red-500/20 rounded-[2rem] bg-red-500/5">
-                <p className="text-sm font-black uppercase tracking-widest text-red-500">Error Loading Data</p>
-                <p className="text-xs font-bold text-slate-500">{error}</p>
-              </div>
-            ) : activeUsers.length === 0 ? (
-              <div className="py-16 text-center space-y-3 border-2 border-dashed border-[var(--card-border)] rounded-[2rem]">
-                <div className="w-12 h-12 bg-slate-100 dark:bg-white/[0.05] text-slate-400 rounded-full flex items-center justify-center mx-auto border border-slate-200 dark:border-white/[0.05] shrink-0">
-                  <Users size={24} />
-                </div>
-                <p className="text-sm font-black uppercase tracking-widest text-[var(--foreground)]">No Activity Found</p>
-                <p className="text-xs font-bold text-slate-500">No users were recorded active on {selectedDate}.</p>
-              </div>
-            ) : (
-              <>
-                {/* Desktop Table View (Hidden on mobile below md) */}
-                <div className="hidden md:block overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/[0.1]">
-                  <table className="w-full text-left border-collapse min-w-[750px]">
-                    <thead>
-                      <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
-                        <th className="pb-4 pl-4 whitespace-nowrap">User & Email</th>
-                        <th className="pb-4 whitespace-nowrap">Department</th>
-                        <th className="pb-4 whitespace-nowrap">Role</th>
-                        <th className="pb-4 whitespace-nowrap">Points</th>
-                        <th className="pb-4 text-right pr-4 whitespace-nowrap">Last Active Time</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
-                      {activeUsers.map((u) => (
-                        <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
-                          <td className="py-4 sm:py-5 pl-4 max-w-[220px] sm:max-w-[250px]">
-                            <div className="flex items-center gap-3">
-                              {u.profile_pic ? (
-                                <img src={u.profile_pic} alt="" className="w-8 h-8 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
-                              ) : (
-                                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-xs font-black text-white shrink-0">
-                                  {u.name?.[0] || 'U'}
-                                </div>
-                              )}
-                              <div className="truncate">
-                                <p className="font-black text-sm text-[var(--foreground)] truncate flex items-center gap-2">
-                                  {u.name} {u.banned && <span className="text-[9px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded-md uppercase tracking-widest border border-red-500/20 shrink-0">Banned</span>}
-                                </p>
-                                <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email || 'No email available'}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-4 sm:py-5 whitespace-nowrap text-slate-300">
-                            {u.dept?.toUpperCase() || 'GENERAL'}
-                          </td>
-                          <td className="py-4 sm:py-5 whitespace-nowrap">
-                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${
-                              u.role === 'admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                              u.role === 'moderator' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
-                              'bg-blue-500/10 text-blue-500 border-blue-500/20'
-                            }`}>
-                              {u.role || 'student'}
-                            </span>
-                          </td>
-                          <td className="py-4 sm:py-5 font-black text-amber-500 whitespace-nowrap">
-                            {u.points || 0} PTS
-                          </td>
-                          <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap font-black text-emerald-500">
-                            <div className="inline-flex items-center gap-1.5 justify-end">
-                              <Clock size={14} />
-                              {new Date(u.last_active_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Mobile Card View (Hidden on desktop md and above) */}
-                <div className="block md:hidden space-y-4">
-                  {activeUsers.map((u) => (
-                    <UserCard
-                      key={u.id}
-                      user={u}
-                      showActiveTime={true}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-
-          </div>
+            {/* Mobile Card View (Hidden on desktop md and above) */}
+            <div className="block md:hidden space-y-4">
+              {activeUsers.map((u) => (
+                <UserCard
+                  key={u.id}
+                  user={u}
+                  showActiveTime={true}
+                />
+              ))}
+            </div>
+          </AdminPanel>
 
         </div>
       </div>
