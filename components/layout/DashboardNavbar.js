@@ -98,7 +98,7 @@ export default function DashboardNavbar() {
               title="Student Dashboard View"
             >
               <LayoutDashboard size={18} />
-              <span className="text-[11px] font-black uppercase tracking-wider hidden xl:inline">Student View</span>
+              <span className="text-[11px] font-black uppercase tracking-wider hidden xl:inline">S Portal</span>
             </Link>
           )}
 
