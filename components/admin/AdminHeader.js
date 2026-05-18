@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import PageHeader from '@/components/ui/PageHeader';
 
 export default function AdminHeader({
   backHref = '/admin/dashboard',
@@ -17,31 +18,23 @@ export default function AdminHeader({
   statsColorClass = 'text-blue-500 bg-blue-500/10 border-blue-500/20'
 }) {
   return (
-    <div className="flex flex-col md:flex-row items-center md:items-center justify-between gap-6 relative text-center md:text-left w-full">
-      {/* Decorative Glow */}
-      <div className={`absolute -top-10 -left-10 w-40 h-40 blur-[80px] rounded-full -z-10 animate-pulse ${glowColor}`} />
-      
-      <div className="space-y-3 sm:space-y-4 w-full md:w-auto">
+    <PageHeader
+      topAction={
         <Link 
           href={backHref} 
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[var(--foreground)] transition-colors shadow-sm cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[var(--foreground)] transition-colors shadow-sm cursor-pointer w-fit"
         >
           <ArrowLeft size={16} /> {backText}
         </Link>
-        <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight uppercase leading-none">
-          {title} {titleHighlight && (
-            <span className={`text-transparent bg-clip-text bg-gradient-to-r ${titleHighlightGradient}`}>
-              {titleHighlight}
-            </span>
-          )}
-        </h1>
-        {description && (
-          <p className="text-[10px] md:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest max-w-[600px] mx-auto md:mx-0">
-            {description}
-          </p>
-        )}
-      </div>
-
+      }
+      title={title}
+      titleHighlight={titleHighlight}
+      titleGradient={titleHighlightGradient}
+      description={description}
+      glowColor={glowColor}
+      badgeIcon={null}
+      badgeText=""
+    >
       {/* Quick Stats Summary Badge */}
       {StatsIcon && statsValue !== undefined && (
         <div className="flex items-center gap-3.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] p-4 shadow-sm backdrop-blur-xl w-full md:w-auto justify-center md:justify-end shrink-0">
@@ -60,6 +53,6 @@ export default function AdminHeader({
           </div>
         </div>
       )}
-    </div>
+    </PageHeader>
   );
 }

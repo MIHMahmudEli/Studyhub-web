@@ -25,6 +25,7 @@ export default function PageHeader({
   titleGradient = 'from-blue-500 to-purple-500',
   description,
   isCentered = false,
+  topAction,
   children,
 }) {
   if (isCentered) {
@@ -32,6 +33,12 @@ export default function PageHeader({
       <div className="text-center mb-12 relative">
         <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[150px] ${glowColor} blur-[100px] rounded-full -z-10`} />
         
+        {topAction && (
+          <div className="flex justify-center mb-4">
+            {topAction}
+          </div>
+        )}
+
         {BadgeIcon && badgeText && (
           <div className={`inline-flex items-center gap-2 px-4 py-2 border rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6 ${badgeColorClass}`}>
             <BadgeIcon size={14} /> {badgeText}
@@ -65,6 +72,11 @@ export default function PageHeader({
   return (
     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
       <div className="space-y-4 relative">
+        {topAction && (
+          <div className="mb-2 text-left">
+            {topAction}
+          </div>
+        )}
         {/* Ambient glow blob */}
         <div className={`absolute -top-10 -left-10 w-40 h-40 ${glowColor} blur-[80px] rounded-full -z-10`} />
 
