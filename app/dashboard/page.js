@@ -13,6 +13,7 @@ import StatsGrid from '@/components/dashboard/StatsGrid';
 import RoutineBanner from '@/components/dashboard/RoutineBanner';
 import QuickShortcuts from '@/components/dashboard/QuickShortcuts';
 import MyNotesTable from '@/components/dashboard/MyNotesTable';
+import ModernSkeleton, { Skeleton } from '@/components/ui/Skeleton';
 
 export default function StudentDashboard() {
   const { user, loading: authLoading, checkUser } = useAuth();
@@ -111,7 +112,31 @@ export default function StudentDashboard() {
     }
   };
 
-  if (authLoading) return null;
+  if (authLoading || (loadingNotes && !myNotes.length)) return (
+    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-32 transition-colors duration-500">
+      <DashboardNavbar />
+      <div className="pt-24 md:pt-32 px-4 md:px-8">
+        <div className="max-w-[1400px] mx-auto space-y-12">
+          {/* Header skeleton */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 animate-pulse">
+            <div className="space-y-3">
+              <Skeleton className="w-28 h-5 rounded-full" />
+              <Skeleton className="w-64 h-10 rounded-lg" />
+              <Skeleton className="w-80 h-3 rounded-full" />
+            </div>
+            <div className="flex gap-3">
+              <Skeleton className="w-12 h-12 rounded-[1.25rem]" />
+              <Skeleton className="w-40 h-12 rounded-[1.25rem]" />
+            </div>
+          </div>
+          {/* Stats cards skeleton */}
+          <ModernSkeleton type="card" count={4} />
+          {/* Notes table skeleton */}
+          <ModernSkeleton type="table" count={4} />
+        </div>
+      </div>
+    </main>
+  );
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-32 transition-colors duration-500">
