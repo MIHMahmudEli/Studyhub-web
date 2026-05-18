@@ -5,6 +5,7 @@ import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import FileUploader from '@/components/upload/FileUploader';
 import RewardCard from '@/components/upload/RewardCard';
 import PageHeader from '@/components/ui/PageHeader';
+import MetadataFormFields from '@/components/upload/MetadataFormFields';
 import { 
   Plus,
   BookOpen,
@@ -181,91 +182,23 @@ export default function UploadPage() {
             {/* Form Section */}
             <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-6">
               <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 md:p-10 shadow-xl backdrop-blur-xl relative overflow-hidden">
-                <div className="space-y-6">
-                  {/* Title Input */}
-                  <div className="space-y-2">
-                    <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
-                      <BookOpen size={14} /> Note Title <span className="text-red-500">*</span>
-                    </label>
-                    <input 
-                      type="text" 
-                      required
-                      placeholder="e.g. Data Structures - Week 5 Lecture Notes"
-                      className={`w-full bg-[var(--background)]/50 border rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all ${
-                        errors.title ? 'border-red-500/50' : 'border-[var(--card-border)]'
-                      }`}
-                      value={formData.title}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setFormData({...formData, title: val});
-                        setErrors({...errors, title: validateTitle(val)});
-                      }}
-                    />
-                    {errors.title && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.title}</p>}
-                  </div>
-
-                  {/* Course Search */}
-                  <div className="space-y-2 relative" ref={suggestionsRef}>
-                    <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
-                      <GraduationCap size={14} /> Course Name <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                      <input 
-                        type="text" 
-                        required
-                        placeholder="Type course name or code..."
-                        className={`w-full bg-[var(--background)]/50 border rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all ${
-                          errors.course ? 'border-red-500/50' : 'border-[var(--card-border)]'
-                        }`}
-                        value={courseSearch}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setCourseSearch(val);
-                          setErrors({ ...errors, course: validateCourse(val) });
-                          setShowSuggestions(true);
-                          if (formData.course) setFormData({ ...formData, course: '' });
-                        }}
-                        onFocus={() => setShowSuggestions(true)}
-                      />
-                    </div>
-
-                    {errors.course && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.course}</p>}
-
-                    {showSuggestions && filteredCourses.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-y-auto max-h-[300px] z-50 backdrop-blur-xl">
-                        {filteredCourses.map((course) => (
-                          <button
-                            key={`${course.courseTitle}-${course.code}`}
-                            type="button"
-                            onClick={() => selectCourse(course)}
-                            className="w-full px-6 py-4 text-left hover:bg-blue-500/5 flex items-center justify-between group transition-colors"
-                          >
-                            <div>
-                              <p className="text-sm font-bold text-[var(--foreground)] group-hover:text-blue-500 transition-colors">{course.courseTitle}</p>
-                              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{course.code ? `${course.code} • ` : ''}{course.dept}</p>
-                            </div>
-                            <Plus size={16} className="text-slate-600 group-hover:text-blue-500" />
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Description */}
-                  <div className="space-y-2">
-                    <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
-                      <MessageSquare size={14} /> Description
-                    </label>
-                    <textarea 
-                      rows={4}
-                      placeholder="Summary of these notes..."
-                      className="w-full bg-[var(--background)]/50 border border-[var(--card-border)] rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all resize-none"
-                      value={formData.description}
-                      onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    />
-                  </div>
-                </div>
+                <MetadataFormFields
+                  titleLabel="Note Title"
+                  titleIcon={BookOpen}
+                  titlePlaceholder="e.g. Data Structures - Week 5 Lecture Notes"
+                  formData={formData}
+                  setFormData={setFormData}
+                  errors={errors}
+                  setErrors={setErrors}
+                  courseSearch={courseSearch}
+                  setCourseSearch={setCourseSearch}
+                  showSuggestions={showSuggestions}
+                  setShowSuggestions={setShowSuggestions}
+                  filteredCourses={filteredCourses}
+                  selectCourse={selectCourse}
+                  suggestionsRef={suggestionsRef}
+                  validateTitle={validateTitle}
+                />
 
                 {status.message && (
                   <div className={`mt-8 p-4 rounded-2xl flex items-center gap-3 border ${
