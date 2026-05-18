@@ -4,37 +4,34 @@ import { useState, useMemo, useEffect } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { 
   Bookmark, 
-  Search, 
   BookOpen, 
   FileText, 
-  GraduationCap,
-  ArrowRight,
-  Clock,
-  ExternalLink,
-  ChevronRight,
-  Cpu,
+  Atom,
+  Calculator,
+  Brain,
   Globe,
   Database,
   Code2,
+  Cpu,
   Network,
   Trash2,
-  Star,
   Download,
-  Calculator,
-  Brain,
-  Atom,
-  AlertCircle,
-  CheckCircle2,
-  X
+  ExternalLink,
+  Search,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiRequest } from '@/lib/api';
-import { BookmarkListSkeleton, NoteCardSkeleton, ResourceListSkeleton } from '@/components/ui/Skeleton';
+import { BookmarkListSkeleton, ResourceListSkeleton } from '@/components/ui/Skeleton';
 import Toast from '@/components/ui/Toast';
+import PageHeader from '@/components/ui/PageHeader';
+import SearchInput from '@/components/ui/SearchInput';
+import NoteCard from '@/components/ui/NoteCard';
+import CourseCard from '@/components/ui/CourseCard';
 
-// Helper to select icon based on subject
+// ─── Icon helpers ────────────────────────────────────────────────────────────
+
 const getSubjectIcon = (subject, code) => {
   const s = ((subject || '') + ' ' + (code || '')).toLowerCase();
   if (s.includes('physics')) return Atom;
@@ -47,9 +44,22 @@ const getSubjectIcon = (subject, code) => {
   return FileText;
 };
 
+const getCourseIcon = (title) => {
+  if (!title) return BookOpen;
+  const t = title.toLowerCase();
+  if (t.includes('network')) return Network;
+  if (t.includes('compiler') || t.includes('software')) return Code2;
+  if (t.includes('intelligence') || t.includes('machine')) return Cpu;
+  if (t.includes('web')) return Globe;
+  if (t.includes('data')) return Database;
+  return BookOpen;
+};
+
+// ─── Page ────────────────────────────────────────────────────────────────────
+
 export default function BookmarkPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('all'); // 'all', 'notes', 'files', 'courses'
+  const [activeTab, setActiveTab] = useState('all');
   const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
@@ -60,7 +70,6 @@ export default function BookmarkPage() {
     setToast({ show: true, message, type, isClosing: false });
     setTimeout(() => closeToast(), 5000);
   };
-  
   const closeToast = () => {
     setToast(prev => ({ ...prev, isClosing: true }));
     setTimeout(() => setToast(prev => ({ ...prev, show: false, isClosing: false })), 500);
@@ -97,16 +106,13 @@ export default function BookmarkPage() {
     }
   };
 
-  // Unified Filtering & Grouping Logic
-  const { savedNotes, savedCourses, savedResources } = useMemo(() => {
-    return {
-      savedNotes: bookmarks.filter(b => b.note_id !== null),
-      savedResources: bookmarks.filter(b => b.resource_id !== null),
-      savedCourses: bookmarks.filter(b => b.subject_name !== null && !b.note_id && !b.resource_id)
-    };
-  }, [bookmarks]);
+  // ─── Filtering ──────────────────────────────────────────────────────────────
+  const { savedNotes, savedCourses, savedResources } = useMemo(() => ({
+    savedNotes:     bookmarks.filter(b => b.note_id !== null),
+    savedResources: bookmarks.filter(b => b.resource_id !== null),
+    savedCourses:   bookmarks.filter(b => b.subject_name !== null && !b.note_id && !b.resource_id),
+  }), [bookmarks]);
 
-  // Search filtering
   const filterBySearch = (items) => {
     if (!searchQuery) return items;
     const q = searchQuery.toLowerCase();
@@ -121,35 +127,24 @@ export default function BookmarkPage() {
     });
   };
 
-  const filteredCourses = useMemo(() => filterBySearch(savedCourses), [savedCourses, searchQuery]);
-  const filteredNotes = useMemo(() => filterBySearch(savedNotes), [savedNotes, searchQuery]);
+  const filteredCourses   = useMemo(() => filterBySearch(savedCourses),   [savedCourses, searchQuery]);
+  const filteredNotes     = useMemo(() => filterBySearch(savedNotes),     [savedNotes, searchQuery]);
   const filteredResources = useMemo(() => filterBySearch(savedResources), [savedResources, searchQuery]);
 
-  const displayCourses = activeTab === 'all' || activeTab === 'courses' ? filteredCourses : [];
-  const displayNotes = activeTab === 'all' || activeTab === 'notes' ? filteredNotes : [];
-  const displayResources = activeTab === 'all' || activeTab === 'files' ? filteredResources : [];
+  const displayCourses   = activeTab === 'all' || activeTab === 'courses' ? filteredCourses   : [];
+  const displayNotes     = activeTab === 'all' || activeTab === 'notes'   ? filteredNotes     : [];
+  const displayResources = activeTab === 'all' || activeTab === 'files'   ? filteredResources : [];
 
   const hasSearchResults = filteredCourses.length > 0 || filteredNotes.length > 0 || filteredResources.length > 0;
-  const isArchiveEmpty = savedNotes.length === 0 && savedCourses.length === 0 && savedResources.length === 0;
+  const isArchiveEmpty   = savedNotes.length === 0 && savedCourses.length === 0 && savedResources.length === 0;
 
-  const getCourseIcon = (title) => {
-    if (!title) return BookOpen;
-    const t = title.toLowerCase();
-    if (t.includes('network')) return Network;
-    if (t.includes('compiler') || t.includes('software')) return Code2;
-    if (t.includes('intelligence') || t.includes('machine')) return Cpu;
-    if (t.includes('web')) return Globe;
-    if (t.includes('data')) return Database;
-    return BookOpen;
-  };
-
+  // ─── Loading skeleton ───────────────────────────────────────────────────────
   if (authLoading || !user || loading) {
     if (loading && user) return (
       <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-32">
         <DashboardNavbar />
         <div className="pt-24 md:pt-32 px-4 md:px-8">
           <div className="max-w-[1400px] mx-auto">
-            {/* Header Skeleton */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16 animate-pulse">
               <div className="space-y-4 w-full max-w-md">
                 <div className="w-32 h-6 bg-slate-200 dark:bg-slate-800/50 rounded-full" />
@@ -157,7 +152,6 @@ export default function BookmarkPage() {
               </div>
               <div className="w-full md:w-[320px] h-12 bg-slate-200 dark:bg-slate-800/50 rounded-2xl" />
             </div>
-
             <div className="space-y-20">
               <section className="space-y-8">
                 <div className="flex items-center gap-4 animate-pulse">
@@ -167,7 +161,7 @@ export default function BookmarkPage() {
                 <BookmarkListSkeleton />
               </section>
               <section className="space-y-6">
-                 <div className="flex items-center gap-4 animate-pulse">
+                <div className="flex items-center gap-4 animate-pulse">
                   <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800/50" />
                   <div className="w-32 h-4 bg-slate-200 dark:bg-slate-800/50 rounded" />
                 </div>
@@ -181,47 +175,52 @@ export default function BookmarkPage() {
     return null;
   }
 
+  // ─── Section heading helper ─────────────────────────────────────────────────
+  const SectionHeading = ({ colorClass, bgClass, borderClass, icon: Icon, label }) => (
+    <div className="flex items-center gap-4">
+      <div className={`w-10 h-10 rounded-xl ${bgClass} flex items-center justify-center ${colorClass} border ${borderClass} shadow-lg`}>
+        <Icon size={20} />
+      </div>
+      <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">{label}</h2>
+    </div>
+  );
+
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-32">
       <DashboardNavbar />
 
       <div className="pt-24 md:pt-32 px-4 md:px-8">
         <div className="max-w-[1400px] mx-auto">
-          {/* Majestic Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-500 text-[9px] font-black uppercase tracking-[0.3em]">
-                <Bookmark size={12} strokeWidth={3} /> Archived Content
-              </div>
-              <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase leading-none">
-                My <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">Collection</span>
-              </h1>
-              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-widest max-w-[500px]">
-                Your personalized repository of essential academic resources and curated study materials.
-              </p>
-            </div>
 
-            {/* Premium Search */}
-            <div className="relative w-full md:w-[320px]">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-              <input 
-                type="text" 
-                placeholder="SEARCH ARCHIVES..."
-                className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl py-3.5 pl-12 pr-6 text-[10px] font-black tracking-widest uppercase focus:outline-none focus:border-blue-500/30 transition-all shadow-xl"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-          </div>
+          {/* ─── Majestic Header ────────────────────────────────────────────── */}
+          <PageHeader
+            badgeIcon={Bookmark}
+            badgeText="Archived Content"
+            badgeColorClass="text-blue-500 bg-blue-500/10 border-blue-500/20"
+            glowColor="bg-blue-500/10"
+            title="My"
+            titleHighlight="Collection"
+            titleGradient="from-blue-500 to-purple-500"
+            description="Your personalized repository of essential academic resources and curated study materials."
+          >
+            {/* ─── Premium Search ────────────────────────────────────────── */}
+            <SearchInput
+              placeholder="SEARCH ARCHIVES..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              focusBorderClass="focus:border-blue-500/30"
+              widthClass="w-full md:w-[320px]"
+            />
+          </PageHeader>
 
-          {/* Category Filter Tabs */}
+          {/* ─── Category Filter Tabs ───────────────────────────────────────── */}
           {!isArchiveEmpty && (
             <div className="flex items-center gap-2 mb-12 overflow-x-auto pb-2 scrollbar-none animate-in fade-in slide-in-from-bottom-4 duration-700">
               {[
-                { id: 'all', label: 'All Archives', count: savedNotes.length + savedCourses.length + savedResources.length },
-                { id: 'notes', label: 'Saved Notes', count: savedNotes.length },
-                { id: 'files', label: 'Saved Files', count: savedResources.length },
-                { id: 'courses', label: 'Saved Courses', count: savedCourses.length }
+                { id: 'all',     label: 'All Archives',   count: savedNotes.length + savedCourses.length + savedResources.length },
+                { id: 'notes',   label: 'Saved Notes',    count: savedNotes.length },
+                { id: 'files',   label: 'Saved Files',    count: savedResources.length },
+                { id: 'courses', label: 'Saved Courses',  count: savedCourses.length },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -242,174 +241,81 @@ export default function BookmarkPage() {
           )}
 
           <div className="space-y-20">
-            {/* 1. SAVED RESOURCES SECTION (Majestic Grid - Course Hub) */}
+
+            {/* ─── 1. Saved Courses — Majestic Course Grid ──────────────────── */}
             {displayCourses.length > 0 && (
               <section className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20 shadow-lg">
-                    <BookOpen size={20} />
-                  </div>
-                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Courses</h2>
-                </div>
-                
+                <SectionHeading
+                  colorClass="text-blue-500"
+                  bgClass="bg-blue-500/10"
+                  borderClass="border-blue-500/20"
+                  icon={BookOpen}
+                  label="Saved Courses"
+                />
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {displayCourses.map((course) => {
                     const Icon = getCourseIcon(course.subject_name);
                     const slug = course.subject_name.replace(/\s+/g, '-').toLowerCase();
-
                     return (
-                      <div key={course.id} className="relative group">
-                        <div 
-                          onClick={() => router.push(`/resources/${slug}`)}
-                          className="relative h-[280px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1 shadow-sm"
-                        >
-                          <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                          
-                          {/* Centered Majestic Icon */}
-                          <div className="relative z-10 w-12 h-12 rounded-[1.2rem] bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-blue-500 shadow-md group-hover:scale-105 transition-all duration-700">
-                            <Icon size={20} strokeWidth={1.5} />
-                          </div>
-
-                          {/* Metadata & Title */}
-                          <div className="relative z-10 text-center space-y-2 w-full">
-                            <div className="space-y-1">
-                              <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-widest leading-relaxed max-w-[180px] mx-auto group-hover:text-blue-500 transition-colors duration-500 line-clamp-2">
-                                {course.subject_name}
-                              </h3>
-                              <div className="space-y-1 pt-1">
-                                <p className="text-[7.5px] font-black tracking-[0.2em] text-slate-500 uppercase">
-                                  COURSE ARCHIVE
-                                </p>
-                                <p className="text-[6.5px] font-black tracking-[0.15em] text-blue-500/80 uppercase px-2 py-0.5 rounded-full bg-blue-500/5 border border-blue-500/10 inline-block">
-                                  RESOURCES
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Footer */}
-                          <div className="relative z-10 w-full flex items-center justify-between pt-3 border-t border-[var(--card-border)]">
-                            <div className="flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                              <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">
-                                View Resources
-                              </span>
-                            </div>
-                            <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
-                              <ChevronRight size={10} className="group-hover:translate-x-0.5 transition-all" />
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Remove Bookmark Button */}
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveBookmark(course.id);
-                          }}
-                          className="absolute top-4 right-4 z-20 p-2 rounded-lg bg-red-500/10 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-lg cursor-pointer"
-                        >
-                          <Trash2 size={12} />
-                        </button>
-                      </div>
+                      <CourseCard
+                        key={course.id}
+                        course={{ title: course.subject_name, code: '', slug }}
+                        icon={Icon}
+                        onClick={() => router.push(`/resources/${slug}`)}
+                        footerLeftText="View Resources"
+                        badgeLabel="RESOURCES"
+                        onRemove={() => handleRemoveBookmark(course.id)}
+                      />
                     );
                   })}
                 </div>
               </section>
             )}
 
-            {/* 2. SAVED NOTES SECTION */}
+            {/* ─── 2. Saved Notes — Majestic Notes Grid ─────────────────────── */}
             {displayNotes.length > 0 && (
               <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 border border-purple-500/20 shadow-lg">
-                    <FileText size={20} />
-                  </div>
-                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Notes</h2>
-                </div>
+                <SectionHeading
+                  colorClass="text-purple-500"
+                  bgClass="bg-purple-500/10"
+                  borderClass="border-purple-500/20"
+                  icon={FileText}
+                  label="Saved Notes"
+                />
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {displayNotes.map((bookmark) => {
                     const note = bookmark.note;
                     if (!note) return null;
                     const Icon = getSubjectIcon(note.courseTitle, note.code);
                     return (
-                      <div key={bookmark.id} className="relative group">
-                        <div 
-                          onClick={() => router.push(`/notes/${note.id}`)}
-                          className="relative h-[280px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1 shadow-sm"
-                        >
-                          <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                          
-                          {/* Centered Majestic Icon */}
-                          <div className="relative z-10 w-12 h-12 rounded-[1.2rem] bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-blue-500 shadow-md group-hover:scale-105 transition-all duration-500">
-                            <Icon size={20} strokeWidth={1.5} />
-                          </div>
-
-                          {/* Metadata & Title */}
-                          <div className="relative z-10 text-center space-y-2 w-full">
-                            <div className="space-y-1">
-                              <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-widest leading-relaxed max-w-[180px] mx-auto group-hover:text-blue-500 transition-colors duration-500 line-clamp-2">
-                                {note.title}
-                              </h3>
-                              <div className="space-y-1 pt-1">
-                                <p className="text-[7.5px] font-black tracking-[0.2em] text-slate-500 uppercase">
-                                  {note.code || 'GENERAL'}
-                                </p>
-                                <p className="text-[6.5px] font-black tracking-[0.15em] text-blue-500/80 uppercase px-2 py-0.5 rounded-full bg-blue-500/5 border border-blue-500/10 inline-block">
-                                  {note.courseTitle || 'GENERAL STUDY'}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* High-Contrast Footer */}
-                          <div className="relative z-10 w-full flex items-center justify-between pt-3 border-t border-[var(--card-border)]">
-                            <div className="flex items-center gap-2.5">
-                              <div className="flex items-center gap-1 text-[8px] font-black uppercase tracking-widest text-slate-400">
-                                <Star size={9} className={parseFloat(note.avg_rating) > 0 ? "text-amber-400 fill-amber-400" : ""} /> 
-                                {parseFloat(note.avg_rating) > 0 ? note.avg_rating : 'NEW'}
-                              </div>
-                              <div className="w-0.5 h-0.5 rounded-full bg-slate-300 dark:bg-slate-700" />
-                              <div className="flex items-center gap-1 text-[8px] font-black uppercase tracking-widest text-slate-400">
-                                <Download size={9} /> {note.downloads}
-                              </div>
-                            </div>
-                            <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
-                              <ChevronRight size={10} className="group-hover:translate-x-0.5 transition-all" />
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Remove Bookmark Button */}
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveBookmark(bookmark.id);
-                          }}
-                          className="absolute top-4 right-4 z-20 p-2 rounded-lg bg-red-500/10 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-lg cursor-pointer"
-                        >
-                          <Trash2 size={12} />
-                        </button>
-                      </div>
+                      <NoteCard
+                        key={bookmark.id}
+                        note={note}
+                        icon={Icon}
+                        accentColor="blue"
+                        onClick={() => router.push(`/notes/${note.id}`)}
+                        onRemove={() => handleRemoveBookmark(bookmark.id)}
+                      />
                     );
                   })}
                 </div>
               </section>
             )}
 
-            {/* 3. SAVED FILES SECTION */}
+            {/* ─── 3. Saved Files — Resource List ───────────────────────────── */}
             {displayResources.length > 0 && (
               <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 border border-green-500/20 shadow-lg">
-                    <ExternalLink size={20} />
-                  </div>
-                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">Saved Files</h2>
-                </div>
+                <SectionHeading
+                  colorClass="text-green-500"
+                  bgClass="bg-green-500/10"
+                  borderClass="border-green-500/20"
+                  icon={ExternalLink}
+                  label="Saved Files"
+                />
                 <div className="space-y-3">
                   {displayResources.map((resource) => (
-                    <div 
-                      key={resource.id} 
+                    <div
+                      key={resource.id}
                       className="group bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-4 md:p-5 flex items-center justify-between hover:border-blue-500/30 transition-all duration-500 shadow-sm"
                     >
                       <div className="flex items-center gap-4 min-w-0">
@@ -428,15 +334,15 @@ export default function BookmarkPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3 shrink-0">
-                        <button 
+                        <button
                           onClick={() => handleRemoveBookmark(resource.id)}
-                          className="p-2.5 rounded-xl bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                          className="p-2.5 rounded-xl bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm cursor-pointer"
                         >
                           <Trash2 size={14} />
                         </button>
-                        <button 
+                        <button
                           onClick={() => window.open(resource.resource?.file_path || '#', '_blank')}
-                          className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.05] text-slate-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm"
+                          className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.05] text-slate-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm cursor-pointer"
                         >
                           <Download size={14} />
                         </button>
@@ -447,7 +353,7 @@ export default function BookmarkPage() {
               </section>
             )}
 
-            {/* TAB EMPTY STATE */}
+            {/* ─── Tab Empty State ───────────────────────────────────────────── */}
             {activeTab !== 'all' && displayCourses.length === 0 && displayNotes.length === 0 && displayResources.length === 0 && !isArchiveEmpty && (
               <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-white/[0.03] flex items-center justify-center text-slate-300 mb-6">
@@ -455,12 +361,12 @@ export default function BookmarkPage() {
                 </div>
                 <h3 className="text-lg font-black uppercase tracking-widest mb-2">No Saved Items in this Category</h3>
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest max-w-[250px]">
-                  You don't have any items bookmarked under "{activeTab === 'notes' ? 'Saved Notes' : activeTab === 'files' ? 'Saved Files' : 'Saved Courses'}".
+                  You don&apos;t have any items bookmarked under &quot;{activeTab === 'notes' ? 'Saved Notes' : activeTab === 'files' ? 'Saved Files' : 'Saved Courses'}&quot;.
                 </p>
               </div>
             )}
 
-            {/* SEARCH EMPTY STATE */}
+            {/* ─── Search Empty State ────────────────────────────────────────── */}
             {searchQuery && !hasSearchResults && !isArchiveEmpty && (
               <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-white/[0.03] flex items-center justify-center text-slate-300 mb-6">
@@ -468,12 +374,12 @@ export default function BookmarkPage() {
                 </div>
                 <h3 className="text-lg font-black uppercase tracking-widest mb-2">No Matching Archives</h3>
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest max-w-[250px]">
-                  We couldn't find any bookmarks matching "{searchQuery}". Try different keywords.
+                  We couldn&apos;t find any bookmarks matching &quot;{searchQuery}&quot;. Try different keywords.
                 </p>
               </div>
             )}
 
-            {/* FULL EMPTY STATE */}
+            {/* ─── Full Empty State ──────────────────────────────────────────── */}
             {isArchiveEmpty && (
               <div className="flex flex-col items-center justify-center py-20 text-center space-y-6">
                 <div className="w-20 h-20 rounded-[2rem] bg-slate-100 dark:bg-white/[0.03] flex items-center justify-center text-slate-300">
@@ -482,11 +388,11 @@ export default function BookmarkPage() {
                 <div className="space-y-2">
                   <h3 className="text-lg font-black uppercase tracking-widest">Archive Empty</h3>
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest max-w-[300px]">
-                    You haven't pinned any content yet. Start exploring the library to build your archive.
+                    You haven&apos;t pinned any content yet. Start exploring the library to build your archive.
                   </p>
                 </div>
-                <Link 
-                  href="/resources" 
+                <Link
+                  href="/resources"
                   className="px-8 py-3 bg-blue-500 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-xl shadow-blue-500/20"
                 >
                   Explore Library
@@ -497,7 +403,7 @@ export default function BookmarkPage() {
         </div>
       </div>
 
-      {/* ─── TOAST NOTIFICATION CONTAINER ─────────────────────────────────────── */}
+      {/* ─── Toast ──────────────────────────────────────────────────────────── */}
       <Toast toast={toast} closeToast={closeToast} />
     </main>
   );

@@ -4,19 +4,12 @@ import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { 
   BookOpen,
-  ArrowRight,
   Cpu,
   Globe,
   Database,
   Code2,
   Network,
   Loader2,
-  Search,
-  ChevronRight,
-  Bookmark,
-  AlertCircle,
-  CheckCircle2,
-  X
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -24,12 +17,44 @@ import { apiRequest } from '@/lib/api';
 import coursesData from '@/lib/data/courses.json';
 import Toast from '@/components/ui/Toast';
 import Skeleton from '@/components/ui/Skeleton';
+import PageHeader from '@/components/ui/PageHeader';
+import SearchInput from '@/components/ui/SearchInput';
+import CourseCard from '@/components/ui/CourseCard';
+
+const getCourseIcon = (title) => {
+  if (!title) return BookOpen;
+  const t = title.toLowerCase();
+  if (t.includes('network')) return Network;
+  if (t.includes('compiler') || t.includes('software')) return Code2;
+  if (t.includes('intelligence') || t.includes('machine')) return Cpu;
+  if (t.includes('web')) return Globe;
+  if (t.includes('data')) return Database;
+  return BookOpen;
+};
+
+const getCourseDept = (code, title) => {
+  if (!code) return 'CSE';
+  const c = code.toUpperCase();
+  if (c.startsWith('CSC') || c.startsWith('COE') || c.startsWith('CSE')) {
+    const t = title.toLowerCase();
+    if (t.includes('network') || t.includes('architecture') || t.includes('organization') || t.includes('hardware')) {
+      return 'CS-SYSTEMS';
+    }
+    return 'CSE';
+  }
+  if (c.startsWith('EEE')) return 'EEE';
+  if (c.startsWith('MGT')) return 'BBA';
+  if (c.startsWith('MAT') || c.startsWith('MTH')) return 'MATH';
+  if (c.startsWith('PHY')) return 'PHYSICS';
+  if (c.startsWith('CHM') || c.startsWith('CHE')) return 'CHEMISTRY';
+  if (c.startsWith('ENG')) return 'ENGLISH';
+  return 'CSE';
+};
 
 export default function ResourcesPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   
-  // Pagination State
   const [visibleCount, setVisibleCount] = useState(12);
   const [searchQuery, setSearchQuery] = useState('');
   const [resources, setResources] = useState([]);
@@ -99,29 +124,8 @@ export default function ResourcesPage() {
     }
   };
 
-  const getCourseDept = (code, title) => {
-    if (!code) return 'CSE';
-    const c = code.toUpperCase();
-    if (c.startsWith('CSC') || c.startsWith('COE') || c.startsWith('CSE')) {
-      const t = title.toLowerCase();
-      if (t.includes('network') || t.includes('architecture') || t.includes('organization') || t.includes('hardware')) {
-        return 'CS-SYSTEMS';
-      }
-      return 'CSE';
-    }
-    if (c.startsWith('EEE')) return 'EEE';
-    if (c.startsWith('MGT')) return 'BBA';
-    if (c.startsWith('MAT') || c.startsWith('MTH')) return 'MATH';
-    if (c.startsWith('PHY')) return 'PHYSICS';
-    if (c.startsWith('CHM') || c.startsWith('CHE')) return 'CHEMISTRY';
-    if (c.startsWith('ENG')) return 'ENGLISH';
-    return 'CSE';
-  };
-
   const allCourses = useMemo(() => {
     const groups = {};
-
-    // 1. Initialize with courses from courses.json
     coursesData.forEach(item => {
       if (!groups[item.courseTitle]) {
         groups[item.courseTitle] = {
@@ -133,8 +137,6 @@ export default function ResourcesPage() {
         };
       }
     });
-
-    // 2. Count real resources from database
     resources.forEach(item => {
       const courseTitle = item.subject || item.course_code || 'General Course';
       if (!groups[courseTitle]) {
@@ -148,8 +150,6 @@ export default function ResourcesPage() {
       }
       groups[courseTitle].resourceCount += 1;
     });
-
-    // 3. Filter to only include courses with at least 1 resource, then sort
     return Object.values(groups)
       .filter(g => g.resourceCount > 0)
       .sort((a, b) => b.resourceCount - a.resourceCount);
@@ -165,9 +165,7 @@ export default function ResourcesPage() {
     );
   }, [allCourses, searchQuery]);
 
-  const visibleCourses = useMemo(() => {
-    return filteredCourses.slice(0, visibleCount);
-  }, [filteredCourses, visibleCount]);
+  const visibleCourses = useMemo(() => filteredCourses.slice(0, visibleCount), [filteredCourses, visibleCount]);
 
   const loadMore = useCallback(() => {
     setVisibleCount(prev => Math.min(prev + 12, filteredCourses.length));
@@ -175,36 +173,12 @@ export default function ResourcesPage() {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting) {
-          loadMore();
-        }
-      },
+      entries => { if (entries[0].isIntersecting) loadMore(); },
       { threshold: 1.0 }
     );
-
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    }
-
-    return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current);
-      }
-    };
+    if (observerTarget.current) observer.observe(observerTarget.current);
+    return () => { if (observerTarget.current) observer.unobserve(observerTarget.current); };
   }, [loadMore]);
-
-  const getCourseIcon = (title) => {
-    if (!title) return BookOpen;
-    const t = title.toLowerCase();
-    if (t.includes('network')) return Network;
-    if (t.includes('compiler') || t.includes('software')) return Code2;
-    if (t.includes('intelligence') || t.includes('machine')) return Cpu;
-    if (t.includes('web')) return Globe;
-    if (t.includes('data')) return Database;
-    return BookOpen;
-  };
-
 
   if (authLoading) return null;
 
@@ -214,38 +188,29 @@ export default function ResourcesPage() {
 
       <div className="pt-24 md:pt-32 px-4 md:px-8">
         <div className="max-w-[1400px] mx-auto">
-          {/* Majestic Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
-            <div className="space-y-4 relative">
-              <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-500/10 blur-[80px] rounded-full -z-10" />
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-500 text-[9px] font-black uppercase tracking-[0.3em]">
-                <BookOpen size={12} strokeWidth={3} /> Academic Repository
-              </div>
-              <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase leading-none">
-                Resource <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">Library</span>
-              </h1>
-              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-widest max-w-[500px]">
-                Explore your faculty's complete collection of lectures, notes, and previous term materials.
-              </p>
-            </div>
 
-            {/* Premium Search */}
-            <div className="relative w-full md:w-[320px]">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-              <input 
-                type="text" 
-                placeholder="SEARCH RESOURCES..."
-                className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl py-3.5 pl-12 pr-6 text-[10px] font-black tracking-widest uppercase focus:outline-none focus:border-blue-500/30 transition-all shadow-xl"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setVisibleCount(12); // Reset infinite scroll on search
-                }}
-              />
-            </div>
-          </div>
+          {/* ─── Majestic Header ──────────────────────────────────────────────── */}
+          <PageHeader
+            badgeIcon={BookOpen}
+            badgeText="Academic Repository"
+            badgeColorClass="text-blue-500 bg-blue-500/10 border-blue-500/20"
+            glowColor="bg-blue-500/10"
+            title="Resource"
+            titleHighlight="Library"
+            titleGradient="from-blue-500 to-purple-500"
+            description="Explore your faculty's complete collection of lectures, notes, and previous term materials."
+          >
+            {/* ─── Premium Search ──────────────────────────────────────────────── */}
+            <SearchInput
+              placeholder="SEARCH RESOURCES..."
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setVisibleCount(12); }}
+              focusBorderClass="focus:border-blue-500/30"
+              widthClass="w-full md:w-[320px]"
+            />
+          </PageHeader>
 
-          {/* Majestic Course Grid (Responsive Columns) */}
+          {/* ─── Majestic Course Grid ─────────────────────────────────────────── */}
           {loadingResources ? (
             <Skeleton type="card" count={8} />
           ) : (
@@ -254,68 +219,23 @@ export default function ResourcesPage() {
                 const Icon = getCourseIcon(course.title);
                 const isBookmarked = bookmarks.some(b => b.subject_name === course.title);
                 return (
-                  <div 
+                  <CourseCard
                     key={course.title}
+                    course={course}
+                    icon={Icon}
+                    animationDelay={(idx % 12) * 40}
                     onClick={() => router.push(`/resources/${course.slug}`)}
-                    className="group relative h-[280px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-700 hover:-translate-y-1 shadow-sm animate-in fade-in slide-in-from-bottom-6 fill-mode-both"
-                    style={{ animationDelay: `${(idx % 12) * 40}ms` }}
-                  >
-                    <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    
-                    {/* Bookmark Button */}
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleToggleBookmark(course.title);
-                      }}
-                      className={`absolute top-4 right-4 z-20 p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all flex items-center justify-center shadow-lg cursor-pointer ${
-                        isBookmarked 
-                          ? 'bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 opacity-100' 
-                          : 'bg-slate-100 dark:bg-white/[0.05] text-slate-400 hover:bg-blue-500 hover:text-white opacity-0 group-hover:opacity-100'
-                      }`}
-                    >
-                      <Bookmark size={14} className={isBookmarked ? "fill-current" : ""} />
-                    </button>
-
-                    {/* Centered Majestic Icon */}
-                    <div className="relative z-10 w-12 h-12 rounded-[1.2rem] bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-blue-500 shadow-md group-hover:scale-105 transition-all duration-700">
-                      <Icon size={20} strokeWidth={1.5} />
-                    </div>
-
-                    {/* Responsive Content */}
-                    <div className="relative z-10 text-center space-y-2 w-full">
-                      <div className="space-y-1">
-                        <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-widest leading-relaxed max-w-[180px] mx-auto group-hover:text-blue-500 transition-colors duration-500 line-clamp-2">
-                          {course.title}
-                        </h3>
-                        <div className="space-y-1 pt-1">
-                          <p className="text-[7.5px] font-black tracking-[0.2em] text-slate-500 uppercase">
-                            {course.code || 'CORE'}
-                          </p>
-                          <p className="text-[6.5px] font-black tracking-[0.15em] text-blue-500/80 uppercase px-2 py-0.5 rounded-full bg-blue-500/5 border border-blue-500/10 inline-block">
-                            {getCourseDept(course.code, course.title)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="relative z-10 w-full flex items-center justify-between pt-3 border-t border-[var(--card-border)]">
-                      <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                        <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">
-                          {course.resourceCount} Files
-                        </span>
-                      </div>
-                      <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
-                        <ChevronRight size={10} className="group-hover:translate-x-0.5 transition-all" />
-                      </div>
-                    </div>
-                  </div>
+                    footerLeftText={`${course.resourceCount} Files`}
+                    badgeLabel={getCourseDept(course.code, course.title)}
+                    isBookmarked={isBookmarked}
+                    onToggleBookmark={() => handleToggleBookmark(course.title)}
+                  />
                 );
               })}
             </div>
           )}
 
+          {/* Infinite scroll sentinel */}
           <div ref={observerTarget} className="w-full flex flex-col items-center justify-center pt-12 md:pt-16 gap-4">
             {visibleCount < allCourses.length && (
               <Loader2 size={18} className="animate-spin text-blue-500" />
@@ -324,7 +244,7 @@ export default function ResourcesPage() {
         </div>
       </div>
 
-      {/* ─── TOAST NOTIFICATION CONTAINER ─────────────────────────────────────── */}
+      {/* ─── Toast ──────────────────────────────────────────────────────────── */}
       <Toast toast={toast} closeToast={closeToast} />
     </main>
   );

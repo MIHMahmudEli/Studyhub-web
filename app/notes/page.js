@@ -16,18 +16,18 @@ import {
   Database,
   Code2,
   Cpu,
-  ArrowRight,
   Star,
   Download,
-  ChevronRight
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
-import notesDemoData from '@/lib/data/notesDemo.json';
 import { NoteCardSkeleton } from '@/components/ui/Skeleton';
+import PageHeader from '@/components/ui/PageHeader';
+import SearchInput from '@/components/ui/SearchInput';
+import NoteCard from '@/components/ui/NoteCard';
 
 // Helper to select icon based on subject
 const getSubjectIcon = (subject, code) => {
-  const s = (subject + ' ' + code).toLowerCase();
+  const s = ((subject || '') + ' ' + (code || '')).toLowerCase();
   if (s.includes('physics')) return Atom;
   if (s.includes('math') || s.includes('calculus')) return Calculator;
   if (s.includes('artificial') || s.includes('machine')) return Brain;
@@ -58,7 +58,6 @@ export default function NotesPage() {
       try {
         setLoading(true);
         const data = await apiRequest(`/notes?sort=${sortBy}`);
-        // Map backend fields to frontend expected fields
         const mappedNotes = data.map(note => ({
           ...note,
           subject: note.courseTitle,
@@ -123,7 +122,6 @@ export default function NotesPage() {
               <div className="w-32 h-12 bg-slate-200 dark:bg-slate-800/50 rounded-2xl" />
             </div>
           </div>
-          
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
               <NoteCardSkeleton key={i} />
@@ -142,115 +140,65 @@ export default function NotesPage() {
 
       <div className="pt-24 md:pt-32 px-4 md:px-8">
         <div className="max-w-[1400px] mx-auto">
-          {/* Majestic Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
-            <div className="space-y-4 relative">
-              <div className="absolute -top-10 -left-10 w-40 h-40 bg-purple-500/10 blur-[80px] rounded-full -z-10" />
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-500 text-[9px] font-black uppercase tracking-[0.3em]">
-                <FileText size={12} strokeWidth={3} /> Global Feed
-              </div>
-              <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase leading-none">
-                Study <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-500">Notes</span>
-              </h1>
-              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-widest max-w-[500px]">
-                Explore the highest-rated student notes, lecture materials, and study guides from across the campus.
-              </p>
-            </div>
 
-            {/* Premium Search & Filters */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-              <div className="relative w-full sm:w-[280px]">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                <input 
-                  type="text" 
-                  placeholder="SEARCH NOTES..."
-                  className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl py-3.5 pl-12 pr-6 text-[10px] font-black tracking-widest uppercase focus:outline-none focus:border-purple-500/30 transition-all shadow-xl"
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setPage(1); // Reset pagination on search
-                  }}
-                />
-              </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <button 
-                  onClick={() => setSortBy('most-downloaded')}
-                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 border rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer ${
-                    sortBy === 'most-downloaded' 
-                    ? 'bg-blue-500 text-white border-blue-400' 
-                    : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-500 hover:text-blue-500'
-                  }`}
-                >
-                  <Download size={14} /> Trending
-                </button>
-                <button 
-                  onClick={() => setSortBy(sortBy === 'top-rated' ? 'latest' : 'top-rated')}
-                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 border rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer ${
-                    sortBy === 'top-rated' 
-                    ? 'bg-amber-500 text-white border-amber-400' 
-                    : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-500 hover:text-amber-500'
-                  }`}
-                >
-                  <Star size={14} /> Top Rated
-                </button>
-              </div>
+          {/* ─── Majestic Header ──────────────────────────────────────────────── */}
+          <PageHeader
+            badgeIcon={FileText}
+            badgeText="Global Feed"
+            badgeColorClass="text-purple-500 bg-purple-500/10 border-purple-500/20"
+            glowColor="bg-purple-500/10"
+            title="Study"
+            titleHighlight="Notes"
+            titleGradient="from-purple-500 to-blue-500"
+            description="Explore the highest-rated student notes, lecture materials, and study guides from across the campus."
+          >
+            {/* ─── Premium Search & Sort filters ──────────────────────────────── */}
+            <SearchInput
+              placeholder="SEARCH NOTES..."
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+              focusBorderClass="focus:border-purple-500/30"
+              widthClass="w-full sm:w-[280px]"
+            />
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <button 
+                onClick={() => setSortBy('most-downloaded')}
+                className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 border rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer ${
+                  sortBy === 'most-downloaded' 
+                  ? 'bg-blue-500 text-white border-blue-400' 
+                  : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-500 hover:text-blue-500'
+                }`}
+              >
+                <Download size={14} /> Trending
+              </button>
+              <button 
+                onClick={() => setSortBy(sortBy === 'top-rated' ? 'latest' : 'top-rated')}
+                className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 border rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer ${
+                  sortBy === 'top-rated' 
+                  ? 'bg-amber-500 text-white border-amber-400' 
+                  : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-500 hover:text-amber-500'
+                }`}
+              >
+                <Star size={14} /> Top Rated
+              </button>
             </div>
-          </div>
+          </PageHeader>
 
-          {/* Majestic Notes Grid */}
+          {/* ─── Majestic Notes Grid ──────────────────────────────────────────── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {displayedNotes.map((note, idx) => {
               const Icon = getSubjectIcon(note.subject, note.course_code);
-              
+              const isLast = displayedNotes.length === idx + 1;
               return (
-                <div 
-                  ref={displayedNotes.length === idx + 1 ? lastNoteElementRef : null}
+                <NoteCard
+                  ref={isLast ? lastNoteElementRef : null}
                   key={note.id}
+                  note={note}
+                  icon={Icon}
+                  accentColor="purple"
+                  animationDelay={(idx % itemsPerPage) * 40}
                   onClick={() => router.push(`/notes/${note.id}`)}
-                  className="group relative h-[280px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex flex-col items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-white/[0.04] hover:border-purple-500/30 transition-all duration-500 hover:-translate-y-1 shadow-sm animate-in fade-in slide-in-from-bottom-6 fill-mode-both"
-                  style={{ animationDelay: `${(idx % itemsPerPage) * 40}ms` }}
-                >
-                  <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-purple-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
-                  {/* Centered Majestic Icon */}
-                  <div className="relative z-10 w-12 h-12 rounded-[1.2rem] bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-purple-500 shadow-md group-hover:scale-105 transition-all duration-700">
-                    <Icon size={20} strokeWidth={1.5} />
-                  </div>
-
-                  {/* Metadata & Title */}
-                  <div className="relative z-10 text-center space-y-2 w-full">
-                    <div className="space-y-1">
-                      <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-widest leading-relaxed max-w-[180px] mx-auto group-hover:text-purple-500 transition-colors duration-500 line-clamp-2">
-                        {note.title}
-                      </h3>
-                      <div className="space-y-1 pt-1">
-                        <p className="text-[7.5px] font-black tracking-[0.2em] text-slate-500 uppercase">
-                          {note.course_code || 'GENERAL'}
-                        </p>
-                        <p className="text-[6.5px] font-black tracking-[0.15em] text-purple-500/80 uppercase px-2 py-0.5 rounded-full bg-purple-500/5 border border-purple-500/10 inline-block">
-                          {note.subject}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* High-Contrast Footer */}
-                  <div className="relative z-10 w-full flex items-center justify-between pt-3 border-t border-[var(--card-border)]">
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex items-center gap-1 text-[8px] font-black uppercase tracking-widest text-slate-400">
-                        <Star size={9} className={parseFloat(note.avg_rating) > 0 ? "text-amber-400 fill-amber-400" : ""} /> 
-                        {parseFloat(note.avg_rating) > 0 ? note.avg_rating : 'NEW'}
-                      </div>
-                      <div className="w-0.5 h-0.5 rounded-full bg-slate-300 dark:bg-slate-700" />
-                      <div className="flex items-center gap-1 text-[8px] font-black uppercase tracking-widest text-slate-400">
-                        <Download size={9} /> {note.downloads}
-                      </div>
-                    </div>
-                    <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center group-hover:bg-purple-500 group-hover:text-white transition-all duration-500">
-                      <ChevronRight size={10} className="group-hover:translate-x-0.5 transition-all" />
-                    </div>
-                  </div>
-                </div>
+                />
               );
             })}
           </div>
