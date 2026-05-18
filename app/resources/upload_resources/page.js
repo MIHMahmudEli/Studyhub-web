@@ -257,7 +257,7 @@ export default function UploadResourcePage() {
                 <div className="grid grid-cols-2 gap-4 mt-10">
                   <button 
                     type="button"
-                    onClick={() => router.push('/resources')}
+                    onClick={() => router.push('/admin/dashboard')}
                     disabled={loading}
                     className="py-5 rounded-2xl font-black text-xs uppercase tracking-widest bg-[var(--background)]/50 border border-[var(--card-border)] text-slate-400 hover:text-white hover:bg-white/5 transition-all"
                   >

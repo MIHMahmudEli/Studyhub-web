@@ -86,6 +86,22 @@ export default function DashboardNavbar() {
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
+          {/* Student View Toggle (Admins & Moderators Only) */}
+          {isAdminOrMod && (
+            <Link
+              href="/dashboard"
+              className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-2 ${
+                pathname === '/dashboard'
+                  ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500 shadow-md'
+                  : 'bg-[var(--card-bg)] border-[var(--card-border)] hover:border-indigo-500/30 text-slate-400 hover:text-indigo-500'
+              }`}
+              title="Student Dashboard View"
+            >
+              <LayoutDashboard size={18} />
+              <span className="text-[11px] font-black uppercase tracking-wider hidden xl:inline">Student View</span>
+            </Link>
+          )}
+
           {/* User Stats */}
           <Link 
             href={dashboardHref} 
@@ -234,6 +250,21 @@ export default function DashboardNavbar() {
                 <span>{user?.points || 0} PTS</span>
               </div>
             </Link>
+
+            {/* Student View Toggle (Admins & Moderators Only) */}
+            {isAdminOrMod && (
+              <Link 
+                href="/dashboard"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center justify-center gap-2 py-3.5 border rounded-2xl transition-all cursor-pointer text-[10px] font-black uppercase tracking-widest ${
+                  pathname === '/dashboard'
+                    ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-500 shadow-md'
+                    : 'bg-[var(--card-bg)] border-[var(--card-border)] text-slate-400 active:border-indigo-500/30 active:text-indigo-500'
+                }`}
+              >
+                <LayoutDashboard size={14} /> Student Dashboard View
+              </Link>
+            )}
 
             <div className="grid grid-cols-2 gap-3">
               <button 
