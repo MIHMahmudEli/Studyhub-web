@@ -10,6 +10,7 @@ import { apiRequest } from '@/lib/api';
 import { Skeleton } from '@/components/ui/Skeleton';
 import StatsCard from '@/components/admin/StatsCard';
 import ConfigCard from '@/components/admin/ConfigCard';
+import ShortcutCard from '@/components/admin/ShortcutCard';
 import { 
   ShieldCheck, 
   Users, 
@@ -459,100 +460,50 @@ export default function AdminDashboardPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               
               {/* Feature Card: Upload Resource */}
-              <Link 
-                href="/resources/upload_resources" 
-                className="group relative overflow-hidden p-6 sm:p-8 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-[var(--card-bg)] border-2 border-amber-500/30 rounded-[2rem] sm:rounded-[2.5rem] hover:border-amber-500 shadow-lg hover:shadow-amber-500/10 transition-all hover:-translate-y-1 duration-500 flex flex-col justify-between h-[180px] sm:h-[200px]"
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -z-10 group-hover:bg-amber-500/20 transition-all" />
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-500/20 border border-amber-500/30 rounded-2xl flex items-center justify-center text-amber-500 shadow-md group-hover:scale-110 transition-transform duration-500 shrink-0">
-                    <Layers size={20} />
-                  </div>
-                  <span className="text-[9px] font-black px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-full uppercase tracking-widest">
-                    Portal Entry
-                  </span>
-                </div>
-                <div>
-                  <h4 className="text-base sm:text-lg font-black text-[var(--foreground)] uppercase tracking-tight group-hover:text-amber-500 transition-colors truncate">
-                    Upload Academic Resource
-                  </h4>
-                  <p className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1 truncate">
-                    Publish official materials <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform shrink-0" />
-                  </p>
-                </div>
-              </Link>
+              <ShortcutCard
+                href="/resources/upload_resources"
+                title="Upload Academic Resource"
+                description="Publish official materials"
+                badgeText="Portal Entry"
+                icon={Layers}
+                colorScheme="amber"
+                loading={loadingData}
+              />
 
               {/* Feature Card: Pending Resources Tab Shortcut (Admin Only) */}
-              {user.role === 'admin' && (
-                <Link 
+              {user?.role === 'admin' && (
+                <ShortcutCard
                   href="/admin/pending_resources"
-                  className="group relative overflow-hidden p-6 sm:p-8 bg-[var(--card-bg)] border-2 border-[var(--card-border)] hover:border-amber-500/50 rounded-[2rem] sm:rounded-[2.5rem] shadow-lg transition-all hover:-translate-y-1 duration-500 flex flex-col justify-between h-[180px] sm:h-[200px] text-left cursor-pointer block"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-500 shadow-md group-hover:scale-110 transition-transform duration-500 shrink-0">
-                      <Layers size={20} />
-                    </div>
-                    <span className="text-[9px] font-black px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-full uppercase tracking-widest">
-                      {pendingResources.length} Pending
-                    </span>
-                  </div>
-                  <div>
-                    <h4 className="text-base sm:text-lg font-black text-[var(--foreground)] uppercase tracking-tight group-hover:text-amber-500 transition-colors truncate">
-                      Resources Moderation
-                    </h4>
-                    <p className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1 truncate">
-                      Review library uploads <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform shrink-0" />
-                    </p>
-                  </div>
-                </Link>
+                  title="Resources Moderation"
+                  description="Review library uploads"
+                  badgeText={`${pendingResources.length} Pending`}
+                  icon={Layers}
+                  colorScheme="amber"
+                  loading={loadingData}
+                />
               )}
 
               {/* Feature Card: Pending Notes Tab Shortcut */}
-              <Link 
+              <ShortcutCard
                 href="/admin/pending_notes"
-                className="group relative overflow-hidden p-6 sm:p-8 bg-[var(--card-bg)] border-2 border-[var(--card-border)] hover:border-purple-500/50 rounded-[2rem] sm:rounded-[2.5rem] shadow-lg transition-all hover:-translate-y-1 duration-500 flex flex-col justify-between h-[180px] sm:h-[200px] text-left cursor-pointer block"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-500/10 border border-purple-500/20 rounded-2xl flex items-center justify-center text-purple-500 shadow-md group-hover:scale-110 transition-transform duration-500 shrink-0">
-                    <Clock size={20} />
-                  </div>
-                  <span className="text-[9px] font-black px-3 py-1 bg-purple-500/10 border border-purple-500/20 text-purple-500 rounded-full uppercase tracking-widest">
-                    {pendingNotes.length} Pending
-                  </span>
-                </div>
-                <div>
-                  <h4 className="text-base sm:text-lg font-black text-[var(--foreground)] uppercase tracking-tight group-hover:text-purple-500 transition-colors truncate">
-                    Notes Moderation Queue
-                  </h4>
-                  <p className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1 truncate">
-                    Review student notes <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform shrink-0" />
-                  </p>
-                </div>
-              </Link>
+                title="Notes Moderation Queue"
+                description="Review student notes"
+                badgeText={`${pendingNotes.length} Pending`}
+                icon={Clock}
+                colorScheme="purple"
+                loading={loadingData}
+              />
 
               {/* Feature Card: Student Dashboard */}
-              <Link 
+              <ShortcutCard
                 href="/dashboard"
-                className="group relative overflow-hidden p-6 sm:p-8 bg-gradient-to-br from-indigo-500/10 via-blue-500/5 to-[var(--card-bg)] border-2 border-indigo-500/30 rounded-[2rem] sm:rounded-[2.5rem] hover:border-indigo-500 shadow-lg hover:shadow-indigo-500/10 transition-all hover:-translate-y-1 duration-500 flex flex-col justify-between h-[180px] sm:h-[200px]"
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl -z-10 group-hover:bg-indigo-500/20 transition-all" />
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-500/20 border border-indigo-500/30 rounded-2xl flex items-center justify-center text-indigo-500 shadow-md group-hover:scale-110 transition-transform duration-500 shrink-0">
-                    <LayoutDashboard size={20} />
-                  </div>
-                  <span className="text-[9px] font-black px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 rounded-full uppercase tracking-widest">
-                    Student View
-                  </span>
-                </div>
-                <div>
-                  <h4 className="text-base sm:text-lg font-black text-[var(--foreground)] uppercase tracking-tight group-hover:text-indigo-500 transition-colors truncate">
-                    My Student Dashboard
-                  </h4>
-                  <p className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1 truncate">
-                    Access your student portal <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform shrink-0" />
-                  </p>
-                </div>
-              </Link>
+                title="My Student Dashboard"
+                description="Access your student portal"
+                badgeText="Student View"
+                icon={LayoutDashboard}
+                colorScheme="indigo"
+                loading={loadingData}
+              />
 
             </div>
           </div>
