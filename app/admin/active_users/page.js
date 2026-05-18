@@ -7,6 +7,7 @@ import Link from 'next/link';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import Skeleton from '@/components/ui/Skeleton';
 import { apiRequest } from '@/lib/api';
+import UserCard from '@/components/admin/UserCard';
 import { 
   ShieldCheck, 
   Users, 
@@ -273,44 +274,11 @@ export default function ActiveUsersPage() {
                 {/* Mobile Card View (Hidden on desktop md and above) */}
                 <div className="block md:hidden space-y-4">
                   {activeUsers.map((u) => (
-                    <div key={u.id} className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-5 space-y-4 shadow-sm hover:border-emerald-500/30 transition-all">
-                      <div className="flex items-center gap-3">
-                        {u.profile_pic ? (
-                          <img src={u.profile_pic} alt="" className="w-10 h-10 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
-                        ) : (
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-sm font-black text-white shrink-0">
-                            {u.name?.[0] || 'U'}
-                          </div>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <p className="font-black text-sm text-[var(--foreground)] truncate flex items-center gap-2">
-                            {u.name} {u.banned && <span className="text-[9px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded-md uppercase tracking-widest border border-red-500/20 shrink-0">Banned</span>}
-                          </p>
-                          <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email || 'No email available'}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-2 border-t border-[var(--card-border)]">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${
-                          u.role === 'admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                          u.role === 'moderator' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
-                          'bg-blue-500/10 text-blue-500 border-blue-500/20'
-                        }`}>
-                          {u.role || 'student'}
-                        </span>
-                        <span className="font-black text-xs text-amber-500 shrink-0">
-                          {u.points || 0} PTS
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-2 border-t border-[var(--card-border)] text-xs font-black text-emerald-500">
-                        <span className="text-[10px] text-slate-500 uppercase tracking-widest">Active Time</span>
-                        <div className="flex items-center gap-1.5">
-                          <Clock size={14} />
-                          {new Date(u.last_active_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                        </div>
-                      </div>
-                    </div>
+                    <UserCard
+                      key={u.id}
+                      user={u}
+                      showActiveTime={true}
+                    />
                   ))}
                 </div>
               </>
