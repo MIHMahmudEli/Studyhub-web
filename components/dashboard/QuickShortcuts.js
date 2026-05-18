@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { UploadCloud, BookOpen, Bookmark, Trophy, ArrowRight, Layers, Calendar } from 'lucide-react';
+import { UploadCloud, BookOpen, Bookmark, Trophy, ArrowRight, Layers, Calendar, FileText } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function QuickShortcuts() {
@@ -11,7 +11,7 @@ export default function QuickShortcuts() {
   return (
     <div className="space-y-6">
       <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Quick shortcuts</h3>
-      <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-${isAdminOrMod ? '6' : '5'} gap-4`}>
+      <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-${isAdminOrMod ? '7' : '6'} gap-4`}>
         <Link href="/upload" className="group flex items-center justify-between p-6 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500 shadow-sm">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-purple-500/10 border border-purple-500/20 rounded-2xl flex items-center justify-center text-purple-500"><UploadCloud size={16} /></div>
@@ -24,6 +24,14 @@ export default function QuickShortcuts() {
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center text-blue-500"><BookOpen size={16} /></div>
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Browse repository</span>
+          </div>
+          <ArrowRight size={14} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
+        </Link>
+
+        <Link href="/dashboard/uploaded-notes" className="group flex items-center justify-between p-6 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center justify-center text-orange-500"><FileText size={16} /></div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Uploaded Notes</span>
           </div>
           <ArrowRight size={14} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
         </Link>

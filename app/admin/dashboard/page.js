@@ -420,6 +420,7 @@ export default function AdminDashboardPage() {
 
             {/* Published Resources */}
             <StatsCard
+              href="/admin/resources"
               title="Library Resources"
               value={resources.length}
               subtitle="Official materials"
