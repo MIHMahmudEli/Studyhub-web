@@ -7,6 +7,7 @@ import Link from 'next/link';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import Toast from '@/components/ui/Toast';
 import { apiRequest } from '@/lib/api';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { 
   ShieldCheck, 
   Users, 
@@ -378,7 +379,7 @@ export default function AdminDashboardPage() {
                   <div className="space-y-2 sm:space-y-3">
                     <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Active Users</span>
                     <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-emerald-500">
-                      {loadingData ? '...' : activeUsersCount}
+                      {loadingData ? <Skeleton className="h-9 w-16 bg-emerald-500/20" /> : activeUsersCount}
                     </h3>
                     <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Online today</p>
                   </div>
@@ -399,7 +400,7 @@ export default function AdminDashboardPage() {
                 <div className="space-y-2 sm:space-y-3">
                   <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Pending Notes</span>
                   <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-purple-500">
-                    {loadingData ? '...' : pendingNotes.length}
+                    {loadingData ? <Skeleton className="h-9 w-16 bg-purple-500/20" /> : pendingNotes.length}
                   </h3>
                   <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Awaiting moderation</p>
                 </div>
@@ -420,7 +421,7 @@ export default function AdminDashboardPage() {
                   <div className="space-y-2 sm:space-y-3">
                     <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Pending Resources</span>
                     <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-amber-500">
-                      {loadingData ? '...' : pendingResources.length}
+                      {loadingData ? <Skeleton className="h-9 w-16 bg-amber-500/20" /> : pendingResources.length}
                     </h3>
                     <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Awaiting approval</p>
                   </div>
@@ -442,7 +443,7 @@ export default function AdminDashboardPage() {
                   <div className="space-y-2 sm:space-y-3">
                     <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Total Users</span>
                     <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-blue-500">
-                      {totalUsersCount}
+                      {loadingUsers ? <Skeleton className="h-9 w-16 bg-blue-500/20" /> : totalUsersCount}
                     </h3>
                     <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Registered students</p>
                   </div>
@@ -460,7 +461,7 @@ export default function AdminDashboardPage() {
                 <div className="space-y-2 sm:space-y-3">
                   <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Library Resources</span>
                   <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-emerald-500">
-                    {loadingData ? '...' : resources.length}
+                    {loadingData ? <Skeleton className="h-9 w-16 bg-emerald-500/20" /> : resources.length}
                   </h3>
                   <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Official materials</p>
                 </div>
@@ -480,7 +481,7 @@ export default function AdminDashboardPage() {
                 <div className="space-y-2 sm:space-y-3">
                   <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Trending Resources</span>
                   <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-orange-500">
-                    {loadingData ? '...' : resources.filter(r => r.downloads > 0 || r.avg_rating > 0).length || resources.length}
+                    {loadingData ? <Skeleton className="h-9 w-16 bg-orange-500/20" /> : resources.filter(r => r.downloads > 0 || r.avg_rating > 0).length || resources.length}
                   </h3>
                   <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Top downloaded</p>
                 </div>
@@ -500,7 +501,7 @@ export default function AdminDashboardPage() {
                 <div className="space-y-2 sm:space-y-3">
                   <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Trending Notes</span>
                   <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-rose-500">
-                    {loadingData ? '...' : notes.filter(n => n.downloads > 0).length || notes.length}
+                    {loadingData ? <Skeleton className="h-9 w-16 bg-rose-500/20" /> : notes.filter(n => n.downloads > 0).length || notes.length}
                   </h3>
                   <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Top downloaded</p>
                 </div>
