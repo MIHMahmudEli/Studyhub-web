@@ -5,6 +5,7 @@ import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import PodiumCard from '@/components/leaderboard/PodiumCard';
 import RankingsTable from '@/components/leaderboard/RankingsTable';
 import { LeaderboardSkeleton } from '@/components/ui/Skeleton';
+import PageHeader from '@/components/ui/PageHeader';
 import { 
   Trophy,
   Calendar,
@@ -62,17 +63,15 @@ export default function LeaderboardPage() {
 
       <div className="pt-32 px-6">
         <div className="max-w-[1200px] mx-auto">
-          {/* Header */}
-          <div className="text-center mb-12 relative">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[150px] bg-blue-500/10 blur-[100px] rounded-full -z-10" />
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-500 text-[10px] font-black uppercase tracking-[0.2em] mb-6">
-              <Trophy size={14} /> Academic Rankings
-            </div>
-            <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-4">Community Leaderboard</h1>
-            <p className="text-slate-500 font-medium max-w-[600px] mx-auto text-lg mb-10">
-              Celebrating the students who contribute the most to the StudyHub ecosystem.
-            </p>
-
+          <PageHeader
+            isCentered={true}
+            badgeIcon={Trophy}
+            badgeText="Academic Rankings"
+            badgeColorClass="text-blue-500 bg-blue-500/10 border-blue-500/20"
+            glowColor="bg-blue-500/10"
+            title="Community Leaderboard"
+            description="Celebrating the students who contribute the most to the StudyHub ecosystem."
+          >
             {/* Period Filter Tabs */}
             <div className="inline-flex items-center p-1.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl backdrop-blur-xl shadow-lg">
               <button
@@ -96,7 +95,7 @@ export default function LeaderboardPage() {
                 <Calendar size={14} /> {previousMonth}
               </button>
             </div>
-          </div>
+          </PageHeader>
 
           {loading ? (
             <LeaderboardSkeleton />
