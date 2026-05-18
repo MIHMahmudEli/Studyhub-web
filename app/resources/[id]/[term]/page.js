@@ -18,6 +18,7 @@ import { useRouter, useParams } from 'next/navigation';
 import coursesData from '@/lib/data/courses.json';
 import { apiRequest } from '@/lib/api';
 import Toast from '@/components/ui/Toast';
+import Skeleton from '@/components/ui/Skeleton';
 
 export default function TermResourcesPage() {
   const { id: slug, term } = useParams();
@@ -177,7 +178,7 @@ export default function TermResourcesPage() {
           {/* Responsive File Cards */}
           <div className="space-y-3">
             {loadingResources ? (
-              <div className="py-12 text-center text-xs font-bold text-slate-500 uppercase tracking-widest animate-pulse">Loading academic resources...</div>
+              <Skeleton type="list" count={3} />
             ) : filteredResources.length > 0 ? (
               filteredResources.map((res, idx) => {
                 const isBookmarked = bookmarks.some(b => b.resource_id === res.id);

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import Toast from '@/components/ui/Toast';
+import Skeleton from '@/components/ui/Skeleton';
 import { apiRequest } from '@/lib/api';
 import {
   ArrowLeft,
@@ -205,7 +206,7 @@ export default function AdminUsersPage() {
             </div>
 
             {loadingUsers && usersList.length === 0 ? (
-              <div className="py-12 text-center text-xs font-bold text-slate-500 uppercase tracking-widest animate-pulse">Loading user directory...</div>
+              <Skeleton type="table" count={5} />
             ) : usersList.length === 0 ? (
               <div className="py-16 text-center space-y-2 border-2 border-dashed border-[var(--card-border)] rounded-[2rem]">
                 <p className="text-sm font-black uppercase tracking-widest text-[var(--foreground)]">No Users Found</p>

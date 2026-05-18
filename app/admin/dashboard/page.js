@@ -87,44 +87,44 @@ export default function AdminDashboardPage() {
   const fetchAdminData = async () => {
     try {
       setLoadingData(true);
-      // Fetch pending notes (admin + moderator)
-      const pendingData = await apiRequest('/notes/pending');
-      setPendingNotes(pendingData || []);
+      
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const todayStr = `${year}-${month}-${day}`;
 
-      // Fetch pending resources (admin only)
-      if (user?.role === 'admin') {
-        try {
-          const pendingResData = await apiRequest('/resources/admin/pending');
-          setPendingResources(pendingResData || []);
-        } catch (resErr) {
-          console.warn('Could not fetch pending resources:', resErr);
-        }
-      }
+      // Fetch all dashboard data in parallel to avoid sequential API waterfalls
+      const [
+        pendingNotesData,
+        pendingResData,
+        resourcesData,
+        notesData,
+        visibilityData,
+        activeData
+      ] = await Promise.all([
+        apiRequest('/notes/pending').catch(err => { console.error(err); return []; }),
+        user?.role === 'admin' 
+          ? apiRequest('/resources/admin/pending').catch(err => { console.warn('Could not fetch pending resources:', err); return []; })
+          : Promise.resolve([]),
+        apiRequest('/resources').catch(err => { console.error(err); return []; }),
+        apiRequest('/notes').catch(err => { console.error(err); return []; }),
+        apiRequest('/admin/settings/resource_upload_visibility').catch(() => null),
+        user?.role === 'admin'
+          ? apiRequest(`/users/active?date=${todayStr}`).catch(err => { console.warn('Could not fetch active users:', err); return null; })
+          : Promise.resolve(null)
+      ]);
 
-      // Fetch resources
-      const resourcesData = await apiRequest('/resources');
+      setPendingNotes(pendingNotesData || []);
+      setPendingResources(pendingResData || []);
       setResources(resourcesData || []);
-
-      // Fetch notes
-      const notesData = await apiRequest('/notes');
       setNotes(notesData || []);
-
-      // Fetch upload visibility setting
-      const visibilityData = await apiRequest('/admin/settings/resource_upload_visibility');
+      
       if (visibilityData && visibilityData.value) {
         setUploadVisibility(visibilityData.value);
       }
-
-      // Fetch today's active users count (Admin only)
-      if (user?.role === 'admin') {
-        const d = new Date();
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        const todayStr = `${year}-${month}-${day}`;
-        const activeData = await apiRequest(`/users/active?date=${todayStr}`);
-        setActiveUsersCount(activeData?.total || 0);
-      }
+      
+      setActiveUsersCount(activeData?.total || 0);
 
     } catch (error) {
       console.error('Failed to load admin dashboard data:', error);

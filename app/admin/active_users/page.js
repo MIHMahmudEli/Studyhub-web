@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
+import Skeleton from '@/components/ui/Skeleton';
 import { apiRequest } from '@/lib/api';
 import { 
   ShieldCheck, 
@@ -194,9 +195,7 @@ export default function ActiveUsersPage() {
             </div>
 
             {loading ? (
-              <div className="py-16 text-center text-xs font-bold text-slate-500 uppercase tracking-widest animate-pulse">
-                Fetching active users for {selectedDate}...
-              </div>
+              <Skeleton type="table" count={4} />
             ) : error ? (
               <div className="py-16 text-center space-y-3 border-2 border-dashed border-red-500/20 rounded-[2rem] bg-red-500/5">
                 <p className="text-sm font-black uppercase tracking-widest text-red-500">Error Loading Data</p>

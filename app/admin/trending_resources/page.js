@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
+import Skeleton from '@/components/ui/Skeleton';
 import { apiRequest } from '@/lib/api';
 import { 
   ArrowLeft, 
@@ -114,10 +115,8 @@ export default function TrendingResourcesPage() {
             </div>
 
             {loading ? (
-              <div className="py-16 text-center text-xs font-bold text-slate-500 uppercase tracking-widest animate-pulse">
-                Fetching trending resources...
-              </div>
-            ) : error ? (
+              <Skeleton type="table" count={3} />
+) : error ? (
               <div className="py-16 text-center space-y-3 border-2 border-dashed border-red-500/20 rounded-[2rem] bg-red-500/5">
                 <p className="text-sm font-black uppercase tracking-widest text-red-500">Error Loading Data</p>
                 <p className="text-xs font-bold text-slate-500">{error}</p>
