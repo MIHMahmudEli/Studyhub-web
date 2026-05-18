@@ -366,152 +366,170 @@ export default function AdminDashboardPage() {
           )}
 
           {/* Admin Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            
-            {/* Active Users (Admin Only) */}
-            {user.role === 'admin' && (
+          {loadingData ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {Array.from({ length: user?.role === 'admin' ? 7 : 4 }).map((_, idx) => (
+                <div 
+                  key={idx}
+                  className="animate-pulse bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 h-[140px] sm:h-[150px] flex justify-between items-start"
+                >
+                  <div className="space-y-3 flex-1">
+                    <div className="h-2.5 w-2/3 bg-slate-200 dark:bg-white/[0.05] rounded-full" />
+                    <div className="h-8 w-1/2 bg-slate-200 dark:bg-white/[0.05] rounded-lg mt-2" />
+                    <div className="h-2 w-1/3 bg-slate-200 dark:bg-white/[0.05] rounded-full mt-2" />
+                  </div>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-slate-200 dark:bg-white/[0.05] shrink-0" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              
+              {/* Active Users (Admin Only) */}
+              {user.role === 'admin' && (
+                <Link 
+                  href="/admin/active_users"
+                  className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-emerald-500/30 block cursor-pointer"
+                >
+                  <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-emerald-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="flex justify-between items-start relative z-10">
+                    <div className="space-y-2 sm:space-y-3">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Active Users</span>
+                      <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-emerald-500">
+                        {loadingData ? <Skeleton className="h-9 w-16 bg-emerald-500/20" /> : activeUsersCount}
+                      </h3>
+                      <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Online today</p>
+                    </div>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
+                      <Activity size={20} className="animate-pulse" />
+                    </div>
+                  </div>
+                </Link>
+              )}
+
+              {/* Pending Notes (Admin & Moderator) */}
               <Link 
-                href="/admin/active_users"
-                className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-emerald-500/30 block cursor-pointer"
+                href="/admin/pending_notes"
+                className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-purple-500/30 block cursor-pointer"
               >
+                <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-purple-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="flex justify-between items-start relative z-10">
+                  <div className="space-y-2 sm:space-y-3">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Pending Notes</span>
+                    <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-purple-500">
+                      {loadingData ? <Skeleton className="h-9 w-16 bg-purple-500/20" /> : pendingNotes.length}
+                    </h3>
+                    <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Awaiting moderation</p>
+                  </div>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
+                    <Clock size={20} className="animate-pulse" />
+                  </div>
+                </div>
+              </Link>
+
+              {/* Pending Resources (Admin Only) */}
+              {user.role === 'admin' && (
+                <Link 
+                  href="/admin/pending_resources"
+                  className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-amber-500/30 block cursor-pointer"
+                >
+                  <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-amber-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="flex justify-between items-start relative z-10">
+                    <div className="space-y-2 sm:space-y-3">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Pending Resources</span>
+                      <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-amber-500">
+                        {loadingData ? <Skeleton className="h-9 w-16 bg-amber-500/20" /> : pendingResources.length}
+                      </h3>
+                      <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Awaiting approval</p>
+                    </div>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
+                      <Layers size={20} className="animate-pulse" />
+                    </div>
+                  </div>
+                </Link>
+              )}
+
+              {/* Total Users (Admin Only) */}
+              {user.role === 'admin' && (
+                <Link
+                  href="/admin/users"
+                  className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-blue-500/30 block cursor-pointer"
+                >
+                  <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="flex justify-between items-start relative z-10">
+                    <div className="space-y-2 sm:space-y-3">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Total Users</span>
+                      <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-blue-500">
+                        {loadingUsers ? <Skeleton className="h-9 w-16 bg-blue-500/20" /> : totalUsersCount}
+                      </h3>
+                      <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Registered students</p>
+                    </div>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
+                      <Users size={20} />
+                    </div>
+                  </div>
+                </Link>
+              )}
+
+              {/* Published Resources */}
+              <div className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm hover:border-emerald-500/30 transition-all duration-500 hover:-translate-y-1">
                 <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-emerald-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="flex justify-between items-start relative z-10">
                   <div className="space-y-2 sm:space-y-3">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Active Users</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Library Resources</span>
                     <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-emerald-500">
-                      {loadingData ? <Skeleton className="h-9 w-16 bg-emerald-500/20" /> : activeUsersCount}
+                      {loadingData ? <Skeleton className="h-9 w-16 bg-emerald-500/20" /> : resources.length}
                     </h3>
-                    <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Online today</p>
+                    <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Official materials</p>
                   </div>
                   <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
-                    <Activity size={20} className="animate-pulse" />
+                    <ShieldCheck size={20} />
                   </div>
                 </div>
-              </Link>
-            )}
-
-            {/* Pending Notes (Admin & Moderator) */}
-            <Link 
-              href="/admin/pending_notes"
-              className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-purple-500/30 block cursor-pointer"
-            >
-              <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-purple-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="flex justify-between items-start relative z-10">
-                <div className="space-y-2 sm:space-y-3">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Pending Notes</span>
-                  <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-purple-500">
-                    {loadingData ? <Skeleton className="h-9 w-16 bg-purple-500/20" /> : pendingNotes.length}
-                  </h3>
-                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Awaiting moderation</p>
-                </div>
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
-                  <Clock size={20} className="animate-pulse" />
-                </div>
               </div>
-            </Link>
 
-            {/* Pending Resources (Admin Only) */}
-            {user.role === 'admin' && (
+              {/* Trending Resources Card (Admin & Moderator) */}
               <Link 
-                href="/admin/pending_resources"
-                className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-amber-500/30 block cursor-pointer"
+                href="/admin/trending_resources"
+                className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-orange-500/30 block cursor-pointer"
               >
-                <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-amber-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-orange-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="flex justify-between items-start relative z-10">
                   <div className="space-y-2 sm:space-y-3">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Pending Resources</span>
-                    <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-amber-500">
-                      {loadingData ? <Skeleton className="h-9 w-16 bg-amber-500/20" /> : pendingResources.length}
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Trending Resources</span>
+                    <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-orange-500">
+                      {loadingData ? <Skeleton className="h-9 w-16 bg-orange-500/20" /> : resources.filter(r => r.downloads > 0 || r.avg_rating > 0).length || resources.length}
                     </h3>
-                    <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Awaiting approval</p>
+                    <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Top downloaded</p>
                   </div>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
-                    <Layers size={20} className="animate-pulse" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
+                    <TrendingUp size={20} className="animate-bounce" />
                   </div>
                 </div>
               </Link>
-            )}
 
-            {/* Total Users (Admin Only) */}
-            {user.role === 'admin' && (
-              <Link
-                href="/admin/users"
-                className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-blue-500/30 block cursor-pointer"
+              {/* Trending Notes Card (Admin & Moderator) */}
+              <Link 
+                href="/admin/trending_notes"
+                className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-rose-500/30 block cursor-pointer"
               >
-                <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-rose-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="flex justify-between items-start relative z-10">
                   <div className="space-y-2 sm:space-y-3">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Total Users</span>
-                    <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-blue-500">
-                      {loadingUsers ? <Skeleton className="h-9 w-16 bg-blue-500/20" /> : totalUsersCount}
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Trending Notes</span>
+                    <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-rose-500">
+                      {loadingData ? <Skeleton className="h-9 w-16 bg-rose-500/20" /> : notes.filter(n => n.downloads > 0).length || notes.length}
                     </h3>
-                    <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Registered students</p>
+                    <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Top downloaded</p>
                   </div>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
-                    <Users size={20} />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
+                    <Flame size={20} className="animate-pulse" />
                   </div>
                 </div>
               </Link>
-            )}
 
-            {/* Published Resources */}
-            <div className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm hover:border-emerald-500/30 transition-all duration-500 hover:-translate-y-1">
-              <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-emerald-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="flex justify-between items-start relative z-10">
-                <div className="space-y-2 sm:space-y-3">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Library Resources</span>
-                  <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-emerald-500">
-                    {loadingData ? <Skeleton className="h-9 w-16 bg-emerald-500/20" /> : resources.length}
-                  </h3>
-                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Official materials</p>
-                </div>
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
-                  <ShieldCheck size={20} />
-                </div>
-              </div>
             </div>
-
-            {/* Trending Resources Card (Admin & Moderator) */}
-            <Link 
-              href="/admin/trending_resources"
-              className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-orange-500/30 block cursor-pointer"
-            >
-              <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-orange-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="flex justify-between items-start relative z-10">
-                <div className="space-y-2 sm:space-y-3">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Trending Resources</span>
-                  <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-orange-500">
-                    {loadingData ? <Skeleton className="h-9 w-16 bg-orange-500/20" /> : resources.filter(r => r.downloads > 0 || r.avg_rating > 0).length || resources.length}
-                  </h3>
-                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Top downloaded</p>
-                </div>
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
-                  <TrendingUp size={20} className="animate-bounce" />
-                </div>
-              </div>
-            </Link>
-
-            {/* Trending Notes Card (Admin & Moderator) */}
-            <Link 
-              href="/admin/trending_notes"
-              className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-rose-500/30 block cursor-pointer"
-            >
-              <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-rose-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="flex justify-between items-start relative z-10">
-                <div className="space-y-2 sm:space-y-3">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400">Trending Notes</span>
-                  <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-rose-500">
-                    {loadingData ? <Skeleton className="h-9 w-16 bg-rose-500/20" /> : notes.filter(n => n.downloads > 0).length || notes.length}
-                  </h3>
-                  <p className="text-[9px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mt-1">Top downloaded</p>
-                </div>
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 shadow-xl group-hover:scale-110 transition-transform duration-500 shrink-0">
-                  <Flame size={20} className="animate-pulse" />
-                </div>
-              </div>
-            </Link>
-
-          </div>
+          )}
 
           {/* Quick Shortcuts & Feature Cards */}
           <div className="space-y-4 sm:space-y-6">
