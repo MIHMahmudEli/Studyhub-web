@@ -2,24 +2,20 @@
 
 import Link from 'next/link';
 import { Sparkles, Settings, Calendar } from 'lucide-react';
+import PageHeader from '@/components/ui/PageHeader';
 
 export default function DashboardHeader({ user }) {
   return (
-    <div className="flex flex-col items-center md:items-start md:flex-row md:items-center justify-between gap-6 relative text-center md:text-left">
-      <div className="absolute -top-10 -left-10 w-40 h-40 bg-purple-500/10 blur-[80px] rounded-full -z-10 animate-pulse" />
-      
-      <div className="space-y-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-500 text-[9px] font-black uppercase tracking-[0.3em]">
-          <Sparkles size={12} className="animate-pulse" /> Student Portal
-        </div>
-        <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase leading-none">
-          Student <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-amber-500">Dashboard</span>
-        </h1>
-        <p className="text-[10px] md:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest max-w-[500px]">
-          Manage your notes, view points, track download statistics, and lead the leaderboard.
-        </p>
-      </div>
-
+    <PageHeader
+      badgeIcon={Sparkles}
+      badgeText="Student Portal"
+      badgeColorClass="text-purple-500 bg-purple-500/10 border-purple-500/20"
+      glowColor="bg-purple-500/10"
+      title="Student"
+      titleHighlight="Dashboard"
+      titleGradient="from-purple-500 via-pink-500 to-amber-500"
+      description="Manage your notes, view points, track download statistics, and lead the leaderboard."
+    >
       <div className="flex items-center gap-4 w-full md:w-auto">
         <Link 
           href="/settings"
@@ -42,6 +38,6 @@ export default function DashboardHeader({ user }) {
           </div>
         </div>
       </div>
-    </div>
+    </PageHeader>
   );
 }
