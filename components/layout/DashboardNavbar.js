@@ -17,7 +17,8 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
-  X
+  X,
+  Calendar
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -28,6 +29,7 @@ const navLinks = [
   { name: 'Resources', href: '/resources', icon: Layers },
   { name: 'Bookmarks', href: '/bookmarks', icon: Bookmark },
   { name: 'Leaderboard', href: '/leaderboard', icon: Trophy },
+  { name: 'Routine', href: '/dashboard/routine', icon: Calendar },
   { name: 'Upload', href: '/upload', icon: UploadCloud },
 ];
 

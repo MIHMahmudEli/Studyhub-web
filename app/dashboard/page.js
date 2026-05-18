@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase';
 // Modular Sub-Components
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import StatsGrid from '@/components/dashboard/StatsGrid';
+import RoutineBanner from '@/components/dashboard/RoutineBanner';
 import QuickShortcuts from '@/components/dashboard/QuickShortcuts';
 import MyNotesTable from '@/components/dashboard/MyNotesTable';
 
@@ -123,6 +124,9 @@ export default function StudentDashboard() {
 
           {/* Premium Overview Cards */}
           <StatsGrid stats={stats} loading={loadingNotes} />
+
+          {/* Premium Routine Generator Banner */}
+          <RoutineBanner />
 
           {/* Quick Shortcuts Hub */}
           <QuickShortcuts />
