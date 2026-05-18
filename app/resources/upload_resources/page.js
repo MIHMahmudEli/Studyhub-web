@@ -173,12 +173,11 @@ export default function UploadResourcePage() {
 
       <div className="pt-32 px-6">
         <div className="max-w-[1000px] mx-auto">
-          {/* Header */}
-          <div className="mb-12 text-center relative">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[100px] bg-blue-500/10 blur-[80px] rounded-full -z-10" />
-            <h1 className="text-4xl font-black tracking-tight mb-4 uppercase">Publish Academic Resource</h1>
-            <p className="text-slate-500 font-medium tracking-wide uppercase text-xs">Admin & Moderator Resource Publishing Portal</p>
-          </div>
+          <PageHeader
+            isCentered={true}
+            title="Publish Academic Resource"
+            description="Admin & Moderator Resource Publishing Portal"
+          />
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
             {/* Form Section */}

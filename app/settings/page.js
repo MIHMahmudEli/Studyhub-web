@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
+import PageHeader from '@/components/ui/PageHeader';
 import { apiRequest } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 import { 
@@ -328,19 +329,16 @@ export default function SettingsPage() {
       <div className="pt-24 md:pt-32 px-4 md:px-8">
         <div className="max-w-[1200px] mx-auto space-y-10">
           
-          {/* Header */}
-          <div className="space-y-4 relative">
-            <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-500/10 blur-[80px] rounded-full -z-10 animate-pulse" />
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-500 text-[9px] font-black uppercase tracking-[0.3em]">
-              <Settings size={12} className="animate-spin-slow" /> Preferences
-            </div>
-            <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase leading-none">
-              Account <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">Settings</span>
-            </h1>
-            <p className="text-[10px] md:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest max-w-[500px]">
-              Manage your personal student details, update passwords, and configure workspace views.
-            </p>
-          </div>
+          <PageHeader
+            badgeIcon={Settings}
+            badgeText="Preferences"
+            badgeColorClass="text-blue-500 bg-blue-500/10 border-blue-500/20"
+            glowColor="bg-blue-500/10"
+            title="Account"
+            titleHighlight="Settings"
+            titleGradient="from-blue-500 via-indigo-500 to-purple-500"
+            description="Manage your personal student details, update passwords, and configure workspace views."
+          />
 
           {/* Feedback Alerts */}
           {successMsg && (

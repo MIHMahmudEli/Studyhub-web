@@ -12,6 +12,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useParams } from 'next/navigation';
 import coursesData from '@/lib/data/courses.json';
+import PageHeader from '@/components/ui/PageHeader';
 
 export default function CourseDetailPage() {
   const { id: slug } = useParams();
@@ -71,17 +72,12 @@ export default function CourseDetailPage() {
           </button>
 
           {/* Responsive Header Section */}
-          <div className="mb-8 md:mb-10 space-y-2 md:space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full bg-blue-500" />
-              <p className="text-[8px] md:text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] md:tracking-[0.4em]">
-                {courseInfo.course_code || 'MODULE'}
-              </p>
-            </div>
-            <h1 className="text-2xl md:text-4xl font-black tracking-tight uppercase leading-tight max-w-[800px]">
-              {courseInfo.courseTitle}
-            </h1>
-          </div>
+          <PageHeader
+            badgeIcon={null}
+            badgeText={courseInfo.course_code || 'MODULE'}
+            badgeColorClass="text-slate-500 bg-slate-500/10 border-slate-500/20"
+            title={courseInfo.courseTitle}
+          />
 
           {/* Responsive Term Selection Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">

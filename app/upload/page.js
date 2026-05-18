@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import FileUploader from '@/components/upload/FileUploader';
 import RewardCard from '@/components/upload/RewardCard';
+import PageHeader from '@/components/ui/PageHeader';
 import { 
   Plus,
   BookOpen,
@@ -19,134 +20,6 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import coursesData from '@/lib/data/courses.json';
 
-//this is replace by database in feature
-const courseList = [{
-    id: 1,
-    courseTitle: 'Computer Graphics - Course Outline',
-    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-    faculty: 'fst',
-    type: 'PDF',
-    size: '1.2 MB',
-    resources: [
-      {
-        id: 1,
-        courseTitle: 'Computer Graphics - Course Outline',
-        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-        faculty: 'fst',
-        type: 'PDF',
-        size: '1.2 MB',
-        term: "mid",
-        downloads: 124
-      },
-      {
-        id: 2,
-        courseTitle: 'Introduction to C Programming - Lecture Notes',
-        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-        faculty: 'fst',
-        type: 'PDF',
-        term: "final",
-        size: '1.8 MB',
-        downloads: 250
-      }
-    ],
-    downloads: 124},
-    
-    {id: 2,
-    courseTitle: 'Introduction to C Programming - Lecture Notes',
-    dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-    faculty: 'fst',
-    type: 'PDF',
-    size: '1.8 MB',
-        resources: [
-      {
-        id: 1,
-        courseTitle: 'Computer Graphics - Course Outline',
-        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-        faculty: 'fst',
-        type: 'PDF',
-        size: '1.2 MB',
-        term: "mid",
-        downloads: 124
-      },
-      {
-        id: 2,
-        courseTitle: 'Introduction to C Programming - Lecture Notes',
-        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-        faculty: 'fst',
-        type: 'PDF',
-        size: '1.8 MB',
-        term: "final",
-        downloads: 250
-      }
-    ],
-    downloads: 250
-},
-{
-  id: 3,
-  courseTitle: 'Differential Calculus and Coordinate Geometry - Course Outline',
-  dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-  faculty: 'fst',
-  type: 'PDF',
-  size: '1.5 MB',
-      resources: [
-      {
-        id: 1,
-        courseTitle: 'Computer Graphics - Course Outline',
-        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-        faculty: 'fst',
-        type: 'PDF',
-        size: '1.2 MB',
-        term: "mid",
-        downloads: 124
-      },
-      {
-        id: 2,
-        courseTitle: 'Introduction to C Programming - Lecture Notes',
-        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-        faculty: 'fst',
-        type: 'PDF',
-        size: '1.8 MB',
-        term: "final",
-        downloads: 250
-      }
-    ],
-  downloads: 180
-},
-
-  {
-id: 4,
-courseTitle: 'Introduction to Artificial Intelligence - Course Outline',
-dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-faculty: 'fst',
-type: 'PDF',
-size: '2.0 MB',
-    resources: [
-      {
-        id: 1,
-        courseTitle: 'Computer Graphics - Course Outline',
-        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-        faculty: 'fst',
-        type: 'PDF',
-        size: '1.2 MB',
-        term: "mid",
-        downloads: 124
-      },
-      {
-        id: 2,
-        courseTitle: 'Introduction to C Programming - Lecture Notes',
-        dept: 'FACULTY OF SCIENCE & TECHNOLOGY',
-        faculty: 'fst',
-        type: 'PDF',
-        size: '1.8 MB',
-        term: "final",
-        downloads: 250
-      }
-    ],
-downloads: 150
-}
-
-
-]
 
 export default function UploadPage() {
   const [file, setFile] = useState(null);
@@ -298,12 +171,11 @@ export default function UploadPage() {
 
       <div className="pt-32 pb-20 px-6">
         <div className="max-w-[1000px] mx-auto">
-          {/* Header */}
-          <div className="mb-12 text-center relative">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[100px] bg-blue-500/10 blur-[80px] rounded-full -z-10" />
-            <h1 className="text-4xl font-black tracking-tight mb-4">Upload Study Notes</h1>
-            <p className="text-slate-500 font-medium">Share your knowledge with the community and earn academic points.</p>
-          </div>
+          <PageHeader
+            isCentered={true}
+            title="Upload Study Notes"
+            description="Share your knowledge with the community and earn academic points."
+          />
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
             {/* Form Section */}

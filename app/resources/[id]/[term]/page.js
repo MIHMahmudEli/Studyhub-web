@@ -16,6 +16,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useParams } from 'next/navigation';
 import coursesData from '@/lib/data/courses.json';
+import PageHeader from '@/components/ui/PageHeader';
 import { apiRequest } from '@/lib/api';
 import Toast from '@/components/ui/Toast';
 import Skeleton from '@/components/ui/Skeleton';
@@ -158,22 +159,17 @@ export default function TermResourcesPage() {
           </nav>
 
           {/* Responsive Header Section */}
-          <div className="mb-8 md:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
-            <div className="space-y-2 md:space-y-4">
-              <h1 className="text-2xl md:text-4xl font-black tracking-tighter uppercase leading-tight max-w-[700px]">
-                {courseInfo.courseTitle}
-              </h1>
-              <div className="flex items-center gap-3">
-                <div className={`px-3 py-1 rounded-full border ${term === 'mid' ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' : 'bg-purple-500/10 border-purple-500/20 text-purple-500'} text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em]`}>
-                  {term === 'mid' ? 'Midterm' : 'Final'}
-                </div>
-                <div className="flex items-center gap-2 text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">
-                  <HardDrive size={10} />
-                  {filteredResources.length} Files
-                </div>
-              </div>
+          <PageHeader
+            badgeIcon={null}
+            badgeText={term === 'mid' ? 'Midterm' : 'Final'}
+            badgeColorClass={term === 'mid' ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' : 'bg-purple-500/10 border-purple-500/20 text-purple-500'}
+            title={courseInfo.courseTitle}
+          >
+            <div className="flex items-center gap-2 text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">
+              <HardDrive size={10} />
+              {filteredResources.length} Files
             </div>
-          </div>
+          </PageHeader>
 
           {/* Responsive File Cards */}
           <div className="space-y-3">
