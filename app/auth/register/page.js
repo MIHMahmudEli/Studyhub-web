@@ -249,11 +249,21 @@ export default function RegisterPage() {
             </form>
           )}
 
-          <div className="mt-8 text-center border-t border-white/5 pt-6">
+          <div className="mt-8 text-center border-t border-white/5 pt-6 space-y-4">
             <p className="text-gray-500 text-[11px] font-bold uppercase tracking-widest">
               Already have an account?{' '}
               <Link href="/auth" className="text-white hover:text-blue-400 transition-colors ml-1 font-black underline underline-offset-8 decoration-white/10 hover:decoration-blue-400/50">
                 Sign In
+              </Link>
+            </p>
+            <p className="text-gray-600 text-[9px] font-bold uppercase tracking-[0.15em] leading-relaxed max-w-[280px] mx-auto">
+              By signing up, you agree to our{' '}
+              <Link href="/terms" className="text-slate-400 hover:text-white transition-all underline decoration-white/10 underline-offset-4">
+                Terms of Service
+              </Link>{' '}
+              &{' '}
+              <Link href="/privacy" className="text-slate-400 hover:text-white transition-all underline decoration-white/10 underline-offset-4">
+                Privacy Policy
               </Link>
             </p>
           </div>

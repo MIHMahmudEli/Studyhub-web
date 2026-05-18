@@ -60,9 +60,14 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="border-t border-white/[0.03] pt-6 flex justify-between items-center flex-wrap gap-2">
-          <p className="text-[13px] text-slate-900">© {new Date().getFullYear()} StudyHub. All rights reserved.</p>
-          <p className="text-[13px] text-slate-900">Crafted for academic excellence</p>
+        <div className="border-t border-white/[0.03] pt-6 flex justify-between items-center flex-wrap gap-4">
+          <p className="text-[13px] text-slate-700">© {new Date().getFullYear()} StudyHub. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <a href="/privacy" className="text-[13px] text-slate-700 hover:text-slate-400 no-underline transition-all duration-300">Privacy Policy</a>
+            <span className="text-slate-800/20 dark:text-white/10 text-[13px]">•</span>
+            <a href="/terms" className="text-[13px] text-slate-700 hover:text-slate-400 no-underline transition-all duration-300">Terms of Service</a>
+          </div>
+          <p className="text-[13px] text-slate-700">Crafted for academic excellence</p>
         </div>
       </div>
     </footer>
