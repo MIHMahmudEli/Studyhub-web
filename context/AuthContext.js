@@ -1,63 +1,125 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { apiRequest, setAccessToken } from '@/lib/api';
+import { apiRequest, setAccessToken, setRefreshToken, getRefreshToken, refreshTokens } from '@/lib/api';
 
 const AuthContext = createContext();
 
+// ─── localStorage user cache helpers ─────────────────────────────────────────
+const USER_CACHE_KEY = 'studyhub_user';
+
+const getCachedUser = () => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(USER_CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+const setCachedUser = (user) => {
+  if (typeof window === 'undefined') return;
+  if (user) {
+    localStorage.setItem(USER_CACHE_KEY, JSON.stringify(user));
+  } else {
+    localStorage.removeItem(USER_CACHE_KEY);
+  }
+};
+
+// ─── Provider ─────────────────────────────────────────────────────────────────
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [tokenReady, setTokenReady] = useState(false);
   const router = useRouter();
+  const validating = useRef(false);
 
   useEffect(() => {
-    checkUser();
+    initAuth();
   }, []);
 
-  const checkUser = async () => {
-    try {
-      // The interceptor in lib/api.js will automatically try to /refresh 
-      // if /me fails with 401, so this should recover the session on refresh.
-      const data = await apiRequest('/auth/me');
-      setUser(data);
-    } catch (err) {
+  const initAuth = async () => {
+    if (validating.current) return;
+    validating.current = true;
+
+    const cachedUser   = getCachedUser();
+    const refreshToken = getRefreshToken();
+
+    // ── Fast path: no refresh token stored → definitely logged out ──────────
+    if (!refreshToken) {
+      setCachedUser(null);
       setUser(null);
-      setAccessToken(null);
-    } finally {
       setLoading(false);
+      validating.current = false;
+      return;
     }
+
+    // ── Show UI immediately from cache (zero network wait) ──────────────────
+    if (cachedUser) {
+      setUser(cachedUser);
+      setLoading(false);          // ← UI renders NOW, no blank screen
+      // NOTE: tokenReady stays false — API-calling pages must wait
+    }
+
+    // ── Background validation: proactively refresh → then confirm /auth/me ──
+    try {
+      // Step 1: get a fresh access token WITHOUT letting /auth/me 401 first
+      await refreshTokens();
+
+      // Step 2: fetch up-to-date user profile with the new access token
+      const freshUser = await apiRequest('/auth/me');
+      setUser(freshUser);
+      setCachedUser(freshUser);   // update cache with latest data
+      setTokenReady(true);        // ← access token is now valid
+    } catch {
+      // Refresh token expired or invalid → log out cleanly
+      setUser(null);
+      setCachedUser(null);
+      setAccessToken(null);
+      setRefreshToken(null);
+    } finally {
+      // If there was no cached user we haven't unblocked loading yet
+      if (!cachedUser) setLoading(false);
+      validating.current = false;
+    }
+
+    // If refresh failed (catch branch ran), tokenReady stays false → pages
+    // that depend on it will not fire authenticated requests.
   };
+
+  // Kept for external callers (e.g. after email verify)
+  const checkUser = initAuth;
 
   const login = async (email, password) => {
     const data = await apiRequest('/auth/login', {
       method: 'POST',
       body: { email, password },
     });
-    
-    if (data.access_token) {
-      setAccessToken(data.access_token);
-    }
+
+    if (data.access_token) setAccessToken(data.access_token);
+    if (data.refresh_token) setRefreshToken(data.refresh_token);
+    setTokenReady(true);  // token is valid right after login
 
     const loggedUser = data.user || data;
-    setUser(loggedUser); 
+    setUser(loggedUser);
+    setCachedUser(loggedUser);  // ← persist so next refresh is instant
 
-    // Role-based redirection
     if (loggedUser.role === 'admin' || loggedUser.role === 'moderator') {
       router.push('/admin/dashboard');
     } else {
       router.push('/notes');
     }
-    
+
     return data;
   };
 
   const register = async (name, email, password) => {
-    const data = await apiRequest('/auth/register', {
+    return await apiRequest('/auth/register', {
       method: 'POST',
       body: { name, email, password },
     });
-    return data; // Usually returns a message about OTP
   };
 
   const forgotPassword = async (email) => {
@@ -81,7 +143,7 @@ export function AuthProvider({ children }) {
       method: 'POST',
       body: { email, otp },
     });
-    router.push('/auth'); // Go to login after verification
+    router.push('/auth');
     return data;
   };
 
@@ -90,13 +152,15 @@ export function AuthProvider({ children }) {
       await apiRequest('/auth/logout', { method: 'POST' });
     } finally {
       setUser(null);
+      setCachedUser(null);      // ← clear cache on sign-out
       setAccessToken(null);
+      setRefreshToken(null);
       router.push('/auth');
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, verifyEmail, logout, checkUser, forgotPassword, resetPassword }}>
+    <AuthContext.Provider value={{ user, loading, tokenReady, login, register, verifyEmail, logout, checkUser, forgotPassword, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );

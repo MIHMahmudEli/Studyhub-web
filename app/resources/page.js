@@ -52,7 +52,7 @@ const getCourseDept = (code, title) => {
 };
 
 export default function ResourcesPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
   
   const [visibleCount, setVisibleCount] = useState(12);
@@ -78,11 +78,11 @@ export default function ResourcesPage() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user) {
+    if (tokenReady && user) {
       fetchResources();
       fetchBookmarks();
     }
-  }, [user]);
+  }, [tokenReady, user]);
 
   const fetchResources = async () => {
     try {

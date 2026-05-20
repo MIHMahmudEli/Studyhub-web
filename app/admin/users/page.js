@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 
 export default function AdminUsersPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
 
   const [usersList, setUsersList] = useState([]);
@@ -81,12 +81,12 @@ export default function AdminUsersPage() {
 
   // Debounced search
   useEffect(() => {
-    if (!user || user.role !== 'admin') return;
+    if (!tokenReady || !user || user.role !== 'admin') return;
     const timer = setTimeout(() => {
       fetchUsersBatch(userSearch, 0, true);
     }, 400);
     return () => clearTimeout(timer);
-  }, [user, userSearch]);
+  }, [tokenReady, user, userSearch]);
 
   // Infinite scroll
   useEffect(() => {

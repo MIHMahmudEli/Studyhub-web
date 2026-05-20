@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 
 export default function ActiveUsersPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
 
   const [selectedDate, setSelectedDate] = useState(() => {
@@ -53,10 +53,10 @@ export default function ActiveUsersPage() {
 
   // Fetch active users whenever selectedDate changes
   useEffect(() => {
-    if (user && user.role === 'admin') {
+    if (tokenReady && user && user.role === 'admin') {
       fetchActiveUsers(selectedDate);
     }
-  }, [user, selectedDate]);
+  }, [tokenReady, user, selectedDate]);
 
   const fetchActiveUsers = async (dateStr) => {
     try {

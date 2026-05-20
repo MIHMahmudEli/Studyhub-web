@@ -38,7 +38,7 @@ import {
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
   
   const [pendingNotes, setPendingNotes] = useState([]);
@@ -83,10 +83,10 @@ export default function AdminDashboardPage() {
 
   // 2. Fetch Initial Admin Data (Notes, Resources, Settings, Active Users)
   useEffect(() => {
-    if (user && (user.role === 'admin' || user.role === 'moderator')) {
+    if (tokenReady && user && (user.role === 'admin' || user.role === 'moderator')) {
       fetchAdminData();
     }
-  }, [user]);
+  }, [tokenReady, user]);
 
   const fetchAdminData = async () => {
     try {
@@ -108,7 +108,7 @@ export default function AdminDashboardPage() {
         activeData
       ] = await Promise.all([
         apiRequest('/notes/pending').catch(err => { console.error(err); return []; }),
-        user?.role === 'admin' 
+        (user?.role === 'admin' || user?.role === 'moderator')
           ? apiRequest('/resources/admin/pending').catch(err => { console.warn('Could not fetch pending resources:', err); return []; })
           : Promise.resolve([]),
         apiRequest('/resources').catch(err => { console.error(err); return []; }),
@@ -163,13 +163,13 @@ export default function AdminDashboardPage() {
 
   // Debounced search effect
   useEffect(() => {
-    if (user && (user.role === 'admin' || user.role === 'moderator')) {
+    if (tokenReady && user && (user.role === 'admin' || user.role === 'moderator')) {
       const timer = setTimeout(() => {
         fetchUsersBatch(userSearch, 0, true);
       }, 400);
       return () => clearTimeout(timer);
     }
-  }, [user, userSearch]);
+  }, [tokenReady, user, userSearch]);
 
   const loadMoreUsers = () => {
     if (!loadingUsers && hasMoreUsers) {
@@ -391,8 +391,8 @@ export default function AdminDashboardPage() {
               loading={loadingData}
             />
 
-            {/* Pending Resources (Admin Only) */}
-            {user?.role === 'admin' && (
+            {/* Pending Resources (Admin & Moderator) */}
+            {(user?.role === 'admin' || user?.role === 'moderator') && (
               <StatsCard
                 href="/admin/pending_resources"
                 title="Pending Resources"
@@ -471,8 +471,8 @@ export default function AdminDashboardPage() {
                 loading={loadingData}
               />
 
-              {/* Feature Card: Pending Resources Tab Shortcut (Admin Only) */}
-              {user?.role === 'admin' && (
+              {/* Feature Card: Pending Resources Tab Shortcut (Admin & Moderator) */}
+              {(user?.role === 'admin' || user?.role === 'moderator') && (
                 <ShortcutCard
                   href="/admin/pending_resources"
                   title="Resources Moderation"

@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 
 export default function PendingResourcesPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
 
   const [pendingResources, setPendingResources] = useState([]);
@@ -44,12 +44,12 @@ export default function PendingResourcesPage() {
     setTimeout(() => setToast(prev => ({ ...prev, show: false, isClosing: false })), 500);
   };
 
-  // Role verification (Admin Only)
+  // Role verification (Admin & Moderator)
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
         router.push('/auth');
-      } else if (user.role !== 'admin') {
+      } else if (user.role !== 'admin' && user.role !== 'moderator') {
         router.push('/dashboard');
       }
     }
@@ -57,10 +57,10 @@ export default function PendingResourcesPage() {
 
   // Fetch pending resources
   useEffect(() => {
-    if (user && user.role === 'admin') {
+    if (tokenReady && user && (user.role === 'admin' || user.role === 'moderator')) {
       fetchPendingResources();
     }
-  }, [user]);
+  }, [tokenReady, user]);
 
   const fetchPendingResources = async () => {
     try {
@@ -91,7 +91,7 @@ export default function PendingResourcesPage() {
     }
   };
 
-  if (authLoading || !user || user.role !== 'admin') return null;
+  if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-32 transition-colors duration-500">

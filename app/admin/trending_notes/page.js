@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 
 export default function TrendingNotesPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
 
   const [trendingNotes, setTrendingNotes] = useState([]);
@@ -42,10 +42,10 @@ export default function TrendingNotesPage() {
 
   // Fetch trending notes
   useEffect(() => {
-    if (user && (user.role === 'admin' || user.role === 'moderator')) {
+    if (tokenReady && user && (user.role === 'admin' || user.role === 'moderator')) {
       fetchTrendingNotes();
     }
-  }, [user]);
+  }, [tokenReady, user]);
 
   const fetchTrendingNotes = async () => {
     try {

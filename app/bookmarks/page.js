@@ -63,7 +63,7 @@ export default function BookmarkPage() {
   const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
 
   const showToast = (message, type = 'success') => {
@@ -81,7 +81,7 @@ export default function BookmarkPage() {
 
   useEffect(() => {
     const fetchBookmarks = async () => {
-      if (!user) return;
+      if (!tokenReady || !user) return;
       try {
         setLoading(true);
         const data = await apiRequest('/bookmarks');
@@ -93,7 +93,7 @@ export default function BookmarkPage() {
       }
     };
     fetchBookmarks();
-  }, [user]);
+  }, [tokenReady, user]);
 
   const handleRemoveBookmark = async (id) => {
     try {

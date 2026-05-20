@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Sparkles, Mail, Lock, User, ShieldCheck, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Sparkles, Mail, Lock, User, ShieldCheck, ArrowLeft, RefreshCw, UserCheck } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 import AuthInput from '@/components/auth/AuthInput';
@@ -33,17 +33,28 @@ export default function RegisterPage() {
     special: /[!@#$%^&*(),.?":{}|<>]/.test(formData.password),
   }), [formData.password]);
 
+  // Live name validation rules
+  const nameRules = useMemo(() => {
+    const raw = formData.fullName.trim();
+    const words = raw.split(/\s+/).filter(Boolean);
+    return {
+      twoWords:   words.length >= 2,
+      twoChars:   words.length >= 1 && words.every(w => w.length >= 2),
+      lettersOnly: raw.length > 0 && /^[a-zA-Z\s]+$/.test(raw),
+    };
+  }, [formData.fullName]);
+
+  const isNameValid = Object.values(nameRules).every(Boolean);
+
   useEffect(() => {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const words = formData.fullName.trim().split(/\s+/);
-    const isNameValid = words.length >= 2 && words.every(word => word.length >= 3);
-    
-    if (formData.fullName && !isNameValid) newErrors.fullName = 'Invalid Name';
+
+    if (formData.fullName && !isNameValid) newErrors.fullName = 'Please follow the name format below';
     if (formData.email && !emailRegex.test(formData.email)) newErrors.email = 'Invalid email';
     if (formData.confirmPassword && formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Mismatch';
     setErrors(newErrors);
-  }, [formData]);
+  }, [formData, isNameValid]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -113,8 +124,8 @@ export default function RegisterPage() {
     }
   };
 
-  const allRulesMet = Object.values(passwordRules).every(Boolean);
-  const isSubmitDisabled = !(allRulesMet && !errors.fullName && !errors.email && formData.password === formData.confirmPassword && formData.fullName && formData.email);
+  const allPasswordRulesMet = Object.values(passwordRules).every(Boolean);
+  const isSubmitDisabled = !(allPasswordRulesMet && isNameValid && !errors.email && formData.password === formData.confirmPassword && formData.fullName && formData.email);
 
   return (
     <div className="min-h-screen bg-[#06080f] flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
@@ -158,8 +169,35 @@ export default function RegisterPage() {
 
           {step === 'register' ? (
             <form className="space-y-6" onSubmit={handleSubmit}>
-              <AuthInput icon={User} name="fullName" value={formData.fullName} onChange={handleChange} onBlur={handleBlur} placeholder="Full Name" error={errors.fullName} touched={touched.fullName} />
-              
+              <div className="space-y-3">
+                <AuthInput icon={User} name="fullName" value={formData.fullName} onChange={handleChange} onBlur={handleBlur} placeholder="Full Name (e.g. John Doe)" error={touched.fullName && !isNameValid ? errors.fullName : ''} touched={touched.fullName} />
+                {/* Live name hint panel — shown while typing */}
+                {formData.fullName && (
+                  <div className="p-3.5 bg-white/[0.02] border border-white/5 rounded-2xl space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                      <UserCheck size={11} className="text-blue-400" />
+                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Name Format</span>
+                    </div>
+                    <div className="grid grid-cols-1 gap-1.5">
+                      {[
+                        { key: 'twoWords',    label: 'At least 2 words (e.g. John Doe)' },
+                        { key: 'twoChars',    label: 'Each word min. 2 characters' },
+                        { key: 'lettersOnly', label: 'Letters only — no numbers, dots or symbols' },
+                      ].map(({ key, label }) => (
+                        <div key={key} className="flex items-center gap-2">
+                          <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all duration-300 ${
+                            nameRules[key] ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]' : 'bg-gray-700'
+                          }`} />
+                          <span className={`text-[9px] font-bold uppercase tracking-tight transition-colors duration-300 ${
+                            nameRules[key] ? 'text-emerald-400' : 'text-gray-500'
+                          }`}>{label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <AuthInput icon={Mail} type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} placeholder="Email Address" error={errors.email} touched={touched.email} />
 
               <div className="space-y-4">

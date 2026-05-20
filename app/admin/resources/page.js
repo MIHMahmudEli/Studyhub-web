@@ -55,7 +55,7 @@ const getCourseDept = (code, title) => {
 };
 
 export default function AdminResourcesCatalogPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
   
   const [visibleCount, setVisibleCount] = useState(12);
@@ -87,10 +87,10 @@ export default function AdminResourcesCatalogPage() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user && (user.role === 'admin' || user.role === 'moderator')) {
+    if (tokenReady && user && (user.role === 'admin' || user.role === 'moderator')) {
       fetchResources();
     }
-  }, [user]);
+  }, [tokenReady, user]);
 
   const fetchResources = async () => {
     try {

@@ -14,7 +14,7 @@ import QuickShortcuts from '@/components/dashboard/QuickShortcuts';
 import ModernSkeleton, { Skeleton } from '@/components/ui/Skeleton';
 
 export default function StudentDashboard() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
   
   const [loadingNotes, setLoadingNotes] = useState(true);
@@ -32,10 +32,10 @@ export default function StudentDashboard() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user) {
+    if (tokenReady && user) {
       fetchDashboardData();
     }
-  }, [user]);
+  }, [tokenReady, user]);
 
   const fetchDashboardData = async () => {
     try {

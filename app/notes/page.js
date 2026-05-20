@@ -48,7 +48,7 @@ export default function NotesPage() {
   
   const [sortBy, setSortBy] = useState('latest');
   
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
   const observer = useRef();
 
@@ -71,10 +71,10 @@ export default function NotesPage() {
       }
     };
 
-    if (user) {
+    if (tokenReady && user) {
       fetchNotes();
     }
-  }, [user, sortBy]);
+  }, [tokenReady, user, sortBy]);
 
   // Filter notes based on search query
   const filteredNotes = useMemo(() => {

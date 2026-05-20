@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 
 export default function TrendingResourcesPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
 
   const [trendingResources, setTrendingResources] = useState([]);
@@ -42,10 +42,10 @@ export default function TrendingResourcesPage() {
 
   // Fetch trending resources
   useEffect(() => {
-    if (user && (user.role === 'admin' || user.role === 'moderator')) {
+    if (tokenReady && user && (user.role === 'admin' || user.role === 'moderator')) {
       fetchTrendingResources();
     }
-  }, [user]);
+  }, [tokenReady, user]);
 
   const fetchTrendingResources = async () => {
     try {

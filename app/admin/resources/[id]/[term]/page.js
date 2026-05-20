@@ -27,7 +27,7 @@ import EditResourceModal from '@/components/admin/EditResourceModal';
 
 export default function AdminTermResourcesPage() {
   const { id: slug, term } = useParams();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
 
   const [resourcesList, setResourcesList] = useState([]);
@@ -59,10 +59,10 @@ export default function AdminTermResourcesPage() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user && (user.role === 'admin' || user.role === 'moderator')) {
+    if (tokenReady && user && (user.role === 'admin' || user.role === 'moderator')) {
       fetchResources();
     }
-  }, [user]);
+  }, [tokenReady, user]);
 
   const fetchResources = async () => {
     try {

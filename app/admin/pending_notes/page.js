@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 
 export default function PendingNotesPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
 
   const [pendingNotes, setPendingNotes] = useState([]);
@@ -57,10 +57,10 @@ export default function PendingNotesPage() {
 
   // Fetch pending notes
   useEffect(() => {
-    if (user && (user.role === 'admin' || user.role === 'moderator')) {
+    if (tokenReady && user && (user.role === 'admin' || user.role === 'moderator')) {
       fetchPendingNotes();
     }
-  }, [user]);
+  }, [tokenReady, user]);
 
   const fetchPendingNotes = async () => {
     try {

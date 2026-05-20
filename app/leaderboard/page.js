@@ -19,7 +19,7 @@ export default function LeaderboardPage() {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('current'); // 'current' or 'previous'
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
 
   const currentMonth = new Date().toLocaleString('default', { month: 'long' });
@@ -43,14 +43,14 @@ export default function LeaderboardPage() {
       }
     };
 
-    if (user) {
+    if (tokenReady && user) {
       fetchLeaderboard(true);
       
       // Auto-refresh every 30 seconds to keep points live
       const interval = setInterval(() => fetchLeaderboard(false), 30000);
       return () => clearInterval(interval);
     }
-  }, [user, activeTab]);
+  }, [tokenReady, user, activeTab]);
 
   const topThree = useMemo(() => leaders.slice(0, 3), [leaders]);
   const remaining = useMemo(() => leaders.slice(3), [leaders]);
