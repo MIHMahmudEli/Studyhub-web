@@ -75,7 +75,10 @@ export default function NotePreviewPage() {
         };
         setNote(mappedNote);
       } catch (error) {
-        console.error('Failed to fetch note:', error);
+        // Silently ignore 401 (not logged in yet) — the interceptor will retry after refresh
+        if (error?.status !== 401 && error?.response?.status !== 401) {
+          console.error('Failed to fetch note:', error);
+        }
       } finally {
         setLoading(false);
       }
@@ -87,15 +90,18 @@ export default function NotePreviewPage() {
         const bookmarked = bookmarks.some(b => b.note_id === parseInt(id));
         setIsBookmarked(bookmarked);
       } catch (error) {
-        console.error('Failed to check bookmark status:', error);
+        // Silently ignore 401 — expected when user is not logged in
+        if (error?.status !== 401 && error?.response?.status !== 401) {
+          console.error('Failed to check bookmark status:', error);
+        }
       }
     };
 
     if (id) {
       fetchNote();
-      checkBookmarkStatus();
+      if (user) checkBookmarkStatus();
     }
-  }, [id]);
+  }, [id, user]);
 
   const handleBookmarkToggle = async () => {
     try {
@@ -105,7 +111,9 @@ export default function NotePreviewPage() {
       });
       setIsBookmarked(res.bookmarked);
     } catch (err) {
-      console.error('Failed to toggle bookmark:', err);
+      if (err?.status !== 401 && err?.response?.status !== 401) {
+        console.error('Failed to toggle bookmark:', err);
+      }
     }
   };
 

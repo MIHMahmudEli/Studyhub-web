@@ -29,11 +29,6 @@ function CommentItem({ review, uploaderId, currentUser, onDelete, onStartEdit, o
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-200 truncate max-w-[130px] xs:max-w-[180px] sm:max-w-none" title={review.user?.name || `Student #${review.user_id}`}>
                 {review.user?.name || `Student #${review.user_id}`}
               </span>
-              {replyingTo && (
-                <span className="text-[7px] font-bold text-slate-400 dark:text-slate-500 truncate max-w-[100px]">
-                  → @{replyingTo}
-                </span>
-              )}
               {isOwner && (
                 <span className="text-[7px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-blue-500/10 text-blue-500 border border-blue-500/20 shrink-0">
                   Owner
@@ -59,7 +54,14 @@ function CommentItem({ review, uploaderId, currentUser, onDelete, onStartEdit, o
               </div>
             </div>
           ) : (
-            <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-400 leading-relaxed break-words pl-0.5">"{review.comment}"</p>
+            <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-400 leading-relaxed break-words pl-0.5">
+              {replyingTo && (
+                <span className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 font-bold mr-1.5 cursor-pointer">
+                  @{replyingTo}
+                </span>
+              )}
+              {review.comment}
+            </p>
           )}
 
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-3">
