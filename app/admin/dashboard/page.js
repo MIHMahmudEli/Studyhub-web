@@ -142,20 +142,20 @@ export default function AdminDashboardPage() {
         permissionsData,
         platformTotalData
       ] = await Promise.all([
-        apiRequest('/notes/pending').catch(err => { console.error(err); return []; }),
+        apiRequest('/notes/pending').catch(err => { if (err.status !== 403) console.error(err.message); return []; }),
         (user?.role === 'admin' || user?.role === 'moderator')
-          ? apiRequest('/resources/admin/pending').catch(err => { console.warn('Could not fetch pending resources:', err); return []; })
+          ? apiRequest('/resources/admin/pending').catch(err => { if (err.status !== 403) console.warn('Could not fetch pending resources:', err.message); return []; })
           : Promise.resolve([]),
-        apiRequest('/resources').catch(err => { console.error(err); return []; }),
-        apiRequest('/notes').catch(err => { console.error(err); return []; }),
+        apiRequest('/resources').catch(err => { if (err.status !== 403) console.error(err.message); return []; }),
+        apiRequest('/notes').catch(err => { if (err.status !== 403) console.error(err.message); return []; }),
         apiRequest('/admin/settings/resource_upload_visibility').catch(() => null),
         user?.role === 'admin'
-          ? apiRequest(`/users/active?date=${todayStr}`).catch(err => { console.warn('Could not fetch active users:', err); return null; })
+          ? apiRequest(`/users/active?date=${todayStr}`).catch(err => { if (err.status !== 403) console.warn('Could not fetch active users:', err.message); return null; })
           : Promise.resolve(null),
         (user?.role === 'admin' || user?.role === 'moderator')
-          ? apiRequest('/admin/permissions').catch(err => { console.warn('Could not fetch permissions:', err); return []; })
+          ? apiRequest('/admin/permissions').catch(err => { if (err.status !== 403) console.warn('Could not fetch permissions:', err.message); return []; })
           : Promise.resolve([]),
-        apiRequest('/users?limit=1').catch(err => { console.warn('Could not fetch total users:', err); return { total: 0 }; }),
+        apiRequest('/users?limit=1').catch(err => { if (err.status !== 403) console.warn('Could not fetch total users:', err.message); return { total: 0 }; }),
       ]);
 
       setPendingNotes(Array.isArray(pendingNotesData) ? pendingNotesData : (pendingNotesData?.data || []));
