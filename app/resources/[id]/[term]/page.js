@@ -79,23 +79,27 @@ export default function TermResourcesPage() {
     }
   };
 
-  const handleToggleBookmark = async (res) => {
-    try {
-      const response = await apiRequest('/bookmarks/toggle', {
-        method: 'POST',
-        body: JSON.stringify({ resource_id: res.id })
-      });
-      if (response.bookmarked) {
-        setBookmarks(prev => [...prev, { resource_id: res.id }]);
-        showToast(`"${res.title}" added to your bookmarks archive!`, 'success');
-      } else {
-        setBookmarks(prev => prev.filter(b => b.resource_id !== res.id));
-        showToast(`"${res.title}" removed from your bookmarks archive.`, 'success');
-      }
-    } catch (err) {
-      console.error('Failed to toggle bookmark:', err);
-      showToast(err.message || 'Failed to update bookmark.', 'error');
+  const handleToggleBookmark = (res) => {
+    const wasBookmarked = bookmarks.some(b => b.resource_id === res.id);
+    if (wasBookmarked) {
+      setBookmarks(prev => prev.filter(b => b.resource_id !== res.id));
+    } else {
+      setBookmarks(prev => [...prev, { resource_id: res.id }]);
     }
+    apiRequest('/bookmarks/toggle', {
+      method: 'POST',
+      body: JSON.stringify({ resource_id: res.id })
+    }).then(response => {
+      showToast(response.bookmarked
+        ? `"${res.title}" added to your bookmarks archive!`
+        : `"${res.title}" removed from your bookmarks archive.`, 'success');
+    }).catch(err => {
+      setBookmarks(prev => wasBookmarked
+        ? [...prev, { resource_id: res.id }]
+        : prev.filter(b => b.resource_id !== res.id)
+      );
+      showToast(err.message || 'Failed to update bookmark.', 'error');
+    });
   };
 
   const { courseInfo, filteredResources } = useMemo(() => {

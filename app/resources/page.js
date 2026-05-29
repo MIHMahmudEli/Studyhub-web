@@ -120,23 +120,27 @@ export default function ResourcesPage() {
     }
   };
 
-  const handleToggleBookmark = async (subjectName) => {
-    try {
-      const res = await apiRequest('/bookmarks/toggle', {
-        method: 'POST',
-        body: JSON.stringify({ subject_name: subjectName })
-      });
-      if (res.bookmarked) {
-        setBookmarks(prev => [...prev, { subject_name: subjectName }]);
-        showToast(`"${subjectName}" added to your bookmarks archive!`, 'success');
-      } else {
-        setBookmarks(prev => prev.filter(b => b.subject_name !== subjectName));
-        showToast(`"${subjectName}" removed from your bookmarks archive.`, 'success');
-      }
-    } catch (err) {
-      console.error('Failed to toggle bookmark:', err);
-      showToast(err.message || 'Failed to update bookmark.', 'error');
+  const handleToggleBookmark = (subjectName) => {
+    const wasBookmarked = bookmarks.some(b => b.subject_name === subjectName);
+    if (wasBookmarked) {
+      setBookmarks(prev => prev.filter(b => b.subject_name !== subjectName));
+    } else {
+      setBookmarks(prev => [...prev, { subject_name: subjectName }]);
     }
+    apiRequest('/bookmarks/toggle', {
+      method: 'POST',
+      body: JSON.stringify({ subject_name: subjectName })
+    }).then(res => {
+      showToast(res.bookmarked
+        ? `"${subjectName}" added to your bookmarks archive!`
+        : `"${subjectName}" removed from your bookmarks archive.`, 'success');
+    }).catch(err => {
+      setBookmarks(prev => wasBookmarked
+        ? [...prev, { subject_name: subjectName }]
+        : prev.filter(b => b.subject_name !== subjectName)
+      );
+      showToast(err.message || 'Failed to update bookmark.', 'error');
+    });
   };
 
   const allCourses = useMemo(() => {
