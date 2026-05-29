@@ -456,7 +456,7 @@ export default function ActiveUsersPage() {
                 </div>
 
                 <div className="block md:hidden space-y-4">
-                  {liveUsers.map(u => <UserCard key={u.id} user={u} showActiveTime />)}
+                  {liveUsers.map(u => <UserCard key={u.id} user={u} showActiveTime isLive />)}
                 </div>
               </AdminPanel>
             </>

@@ -3,26 +3,56 @@
 import { useRouter } from 'next/navigation';
 import { Clock, Award, UserX, UserCheck } from 'lucide-react';
 
+const ACTIVE_NOW_THRESHOLD_SEC = 90;
+
+function getPresenceStatus(dateStr) {
+  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (diff < ACTIVE_NOW_THRESHOLD_SEC) return { isNow: true, label: 'Active Now' };
+  if (diff < 60) return { isNow: false, label: `${diff}s ago` };
+  if (diff < 3600) return { isNow: false, label: `${Math.floor(diff / 60)}m ago` };
+  return { isNow: false, label: `${Math.floor(diff / 3600)}h ago` };
+}
+
+function PresenceDot({ isNow }) {
+  return (
+    <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3">
+      <span className={`${isNow ? 'animate-ping' : ''} absolute inline-flex h-full w-full rounded-full opacity-75 ${isNow ? 'bg-emerald-400' : 'bg-slate-400'}`} />
+      <span className={`relative inline-flex rounded-full h-3 w-3 border-2 border-[var(--card-bg)] ${isNow ? 'bg-emerald-500' : 'bg-slate-500'}`} />
+    </span>
+  );
+}
+
 export default function UserCard({
   user: u,
   showActiveTime = false,
   showActions = false,
+  isLive = false,
   onPromote,
   onDemote,
   onBan
 }) {
   const router = useRouter();
+  const presence = isLive ? getPresenceStatus(u.last_active_at) : null;
 
   return (
     <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-5 space-y-4 shadow-sm hover:border-blue-500/30 transition-all w-full text-left">
       <button onClick={() => router.push(`/profile/${u.id}`)} className="flex items-center gap-3 w-full text-left cursor-pointer hover:opacity-80 transition-opacity">
-        {u.profile_pic ? (
-          <img src={u.profile_pic} alt="" className="w-10 h-10 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
-        ) : (
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-black text-white shrink-0">
-            {u.name?.[0] || 'U'}
-          </div>
-        )}
+        <div className="relative shrink-0">
+          {u.profile_pic ? (
+            <img src={u.profile_pic} alt="" className="w-10 h-10 rounded-xl object-cover border border-[var(--card-border)]" />
+          ) : (
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white ${
+              isLive && presence?.isNow
+                ? 'bg-gradient-to-br from-emerald-500 to-teal-600'
+                : isLive
+                ? 'bg-gradient-to-br from-slate-500 to-slate-600'
+                : 'bg-gradient-to-br from-blue-500 to-purple-600'
+            }`}>
+              {u.name?.[0] || 'U'}
+            </div>
+          )}
+          {isLive && <PresenceDot isNow={presence?.isNow} />}
+        </div>
         <div className="min-w-0 flex-1">
           <p className="font-black text-sm text-[var(--foreground)] truncate flex items-center gap-2">
             {u.name} {u.banned && <span className="text-[9px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded-md uppercase tracking-widest border border-red-500/20 shrink-0">Banned</span>}
@@ -43,12 +73,31 @@ export default function UserCard({
       </div>
 
       {showActiveTime && u.last_active_at && (
-        <div className="flex items-center justify-between pt-2 border-t border-[var(--card-border)] text-xs font-black text-emerald-500">
-          <span className="text-[10px] text-slate-500 uppercase tracking-widest">Active Time</span>
-          <div className="flex items-center gap-1.5">
-            <Clock size={14} />
-            {new Date(u.last_active_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-          </div>
+        <div className="flex items-center justify-between pt-2 border-t border-[var(--card-border)] text-xs font-black">
+          <span className="text-[10px] text-slate-500 uppercase tracking-widest">
+            {isLive ? 'Last Seen' : 'Active Time'}
+          </span>
+          {isLive ? (
+            presence?.isNow ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+                </span>
+                Active Now
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-slate-400 text-[11px] font-black uppercase tracking-widest">
+                <Clock size={13} className="shrink-0" />
+                {presence?.label}
+              </span>
+            )
+          ) : (
+            <span className="inline-flex items-center gap-1.5 text-emerald-500">
+              <Clock size={14} />
+              {new Date(u.last_active_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            </span>
+          )}
         </div>
       )}
 
