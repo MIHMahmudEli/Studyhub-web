@@ -82,7 +82,7 @@ export default function RoutinePage() {
       <div className="relative w-full overflow-hidden mt-6 border-t border-[var(--card-border)]">
         {/* Glowing Loading Skeleton Overlay */}
         {iframeLoading && (
-          <div className="w-full h-[85vh] lg:h-[90vh] min-h-[750px] lg:min-h-[950px] flex flex-col items-center justify-center relative bg-slate-950/15 rounded-none overflow-hidden">
+          <div className="w-full h-[85vh] lg:h-[90vh] min-h-[750px] lg:min-h-[950px] flex flex-col items-center justify-center relative bg-slate-100 dark:bg-slate-950/15 rounded-none overflow-hidden">
             {/* Orbital pulse loaders */}
             <div className="absolute w-72 h-72 rounded-full border border-indigo-500/10 animate-ping duration-[3000ms]" />
             <div className="absolute w-48 h-48 rounded-full border border-purple-500/10 animate-pulse duration-[2000ms]" />
@@ -92,10 +92,10 @@ export default function RoutinePage() {
                 <Clock size={28} />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-black uppercase tracking-[0.2em] text-slate-100 flex items-center justify-center gap-2">
+                <h3 className="text-lg font-black uppercase tracking-[0.2em] text-[var(--foreground)] dark:text-slate-100 flex items-center justify-center gap-2">
                   Booting Routine Pro <Sparkles size={16} className="text-amber-500 animate-pulse" />
                 </h3>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 max-w-[320px]">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 max-w-[320px]">
                   Loading your ultimate academic scheduler. This will only take a moment...
                 </p>
               </div>
