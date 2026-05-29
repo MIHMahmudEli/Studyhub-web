@@ -60,15 +60,23 @@ export default function UserCard({
         </div>
       </button>
 
-      <div className="flex items-center justify-between pt-2 border-t border-[var(--card-border)]">
-        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${
-          u.role === 'admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-          u.role === 'moderator' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
-          'bg-blue-500/10 text-blue-500 border-blue-500/20'
-        }`}>
-          {u.role || 'student'}
-        </span>
-        <span className="font-black text-xs text-amber-500 shrink-0">{u.points || 0} PTS</span>
+      <div className="space-y-3 pt-2 border-t border-[var(--card-border)]">
+        <div className="flex items-center justify-between gap-2">
+          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${
+            u.role === 'admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+            u.role === 'moderator' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
+            'bg-blue-500/10 text-blue-500 border-blue-500/20'
+          }`}>
+            {u.role || 'student'}
+          </span>
+          <span className="font-black text-xs text-amber-500 shrink-0">{u.points || 0} PTS</span>
+        </div>
+        {u.dept && (
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Department</span>
+            <span className="text-xs font-black text-slate-400">{u.dept.toUpperCase()}</span>
+          </div>
+        )}
       </div>
 
       {showActiveTime && u.last_active_at && (
