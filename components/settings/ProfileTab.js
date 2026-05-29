@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Camera, UploadCloud, Trash2, Save, UserCheck, Sparkles } from 'lucide-react';
 import { getNameValidation, getSuggestedName } from '@/lib/nameUtils';
 
@@ -13,6 +13,7 @@ export default function ProfileTab({
   departments,
   saving
 }) {
+  const [nameFocused, setNameFocused] = useState(false);
   const nameRules = useMemo(() => getNameValidation(profileForm.name), [profileForm.name]);
   const isNameValid = Object.values(nameRules).every(Boolean);
   const suggestedName = useMemo(() => getSuggestedName(profileForm.name), [profileForm.name]);
@@ -92,12 +93,14 @@ export default function ProfileTab({
             name="name" 
             value={profileForm.name} 
             onChange={handleProfileChange}
+            onFocus={() => setNameFocused(true)}
+            onBlur={() => setNameFocused(false)}
             required
             className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors"
             placeholder="Your full name (e.g. John Doe)"
           />
-          {/* Name validation panel */}
-          {profileForm.name && (
+          {/* Name validation panel — visible only while focused */}
+          {nameFocused && profileForm.name && (
             <div className="p-3.5 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
               <div className="flex items-center gap-2 border-b border-[var(--card-border)] pb-2">
                 <UserCheck size={11} className="text-blue-500" />
@@ -122,7 +125,7 @@ export default function ProfileTab({
             </div>
           )}
           {/* Suggested name banner */}
-          {suggestedName && !isNameValid && (
+          {nameFocused && suggestedName && !isNameValid && (
             <button
               type="button"
               onClick={() => handleProfileChange({ target: { name: 'name', value: suggestedName } })}
