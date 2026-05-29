@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -23,6 +23,7 @@ import {
   AlertTriangle,
   X,
   ShieldCheck,
+  Loader2,
 } from 'lucide-react';
 
 export default function AdminUsersPage() {
@@ -34,7 +35,10 @@ export default function AdminUsersPage() {
   const [userSearch, setUserSearch] = useState('');
   const [usersOffset, setUsersOffset] = useState(0);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [hasMoreUsers, setHasMoreUsers] = useState(true);
+  const limit = 20;
+  const observerRef = useRef(null);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
 
   // ─── Toast ────────────────────────────────────────────────────────────────
@@ -58,8 +62,12 @@ export default function AdminUsersPage() {
   // ─── Fetch users ──────────────────────────────────────────────────────────
   const fetchUsersBatch = useCallback(async (searchQuery = '', offsetVal = 0, reset = false) => {
     try {
-      setLoadingUsers(true);
-      const res = await apiRequest(`/users?search=${encodeURIComponent(searchQuery)}&limit=20&offset=${offsetVal}`);
+      if (reset) {
+        setLoadingUsers(true);
+      } else {
+        setLoadingMore(true);
+      }
+      const res = await apiRequest(`/users?search=${encodeURIComponent(searchQuery)}&limit=${limit}&offset=${offsetVal}`);
       if (res && res.users) {
         if (reset) {
           setUsersList(res.users);
@@ -67,38 +75,43 @@ export default function AdminUsersPage() {
           setUsersList(prev => [...prev, ...res.users]);
         }
         setTotalUsersCount(res.total || 0);
-        const newLen = (reset ? 0 : usersList.length) + res.users.length;
+        const newLen = (reset ? 0 : offsetVal) + res.users.length;
         setHasMoreUsers(newLen < (res.total || 0));
-        setUsersOffset(offsetVal + 20);
+        setUsersOffset(offsetVal + limit);
       }
     } catch (err) {
       console.error('Failed to fetch users:', err);
       showToast(err.message || 'Failed to fetch users.', 'error');
     } finally {
       setLoadingUsers(false);
+      setLoadingMore(false);
     }
-  }, [usersList.length]);
+  }, []);
 
   // Debounced search
   useEffect(() => {
     if (!tokenReady || !user || user.role !== 'admin') return;
+    setUsersOffset(0);
     const timer = setTimeout(() => {
       fetchUsersBatch(userSearch, 0, true);
     }, 400);
     return () => clearTimeout(timer);
   }, [tokenReady, user, userSearch]);
 
-  // Infinite scroll
+  // Infinite scroll with IntersectionObserver
   useEffect(() => {
-    if (loadingUsers || !hasMoreUsers) return;
-    const handleScroll = () => {
-      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 200) {
-        fetchUsersBatch(userSearch, usersOffset, false);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [loadingUsers, hasMoreUsers, userSearch, usersOffset]);
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMoreUsers && !loadingMore && !loadingUsers) {
+          fetchUsersBatch(userSearch, usersOffset, false);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    const el = observerRef.current;
+    if (el) observer.observe(el);
+    return () => { if (el) observer.unobserve(el); };
+  }, [hasMoreUsers, loadingMore, loadingUsers, userSearch, usersOffset]);
 
   // ─── Handlers ─────────────────────────────────────────────────────────────
   const handleBanUser = async (id, isBanned) => {
@@ -285,13 +298,20 @@ export default function AdminUsersPage() {
                 />
               ))}
             </div>
-          </AdminPanel>
 
-          {loadingUsers && usersList.length > 0 && (
-            <div className="py-8 text-center text-xs font-bold text-slate-500 uppercase tracking-widest animate-pulse">
-              Loading more users...
-            </div>
-          )}
+            {/* Loading More Indicator */}
+            {loadingMore && (
+              <div className="flex items-center justify-center pt-8">
+                <div className="flex items-center gap-3 px-6 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl">
+                  <Loader2 size={16} className="animate-spin text-blue-500" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">Loading more users...</span>
+                </div>
+              </div>
+            )}
+
+            {/* Infinite Scroll Sentinel */}
+            <div ref={observerRef} className="w-full h-4" />
+          </AdminPanel>
 
         </div>
       </div>
