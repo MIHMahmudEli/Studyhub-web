@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { Clock, Award, UserX, UserCheck } from 'lucide-react';
 
 export default function UserCard({
@@ -10,9 +11,11 @@ export default function UserCard({
   onDemote,
   onBan
 }) {
+  const router = useRouter();
+
   return (
     <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-5 space-y-4 shadow-sm hover:border-blue-500/30 transition-all w-full text-left">
-      <div className="flex items-center gap-3">
+      <button onClick={() => router.push(`/profile/${u.id}`)} className="flex items-center gap-3 w-full text-left cursor-pointer hover:opacity-80 transition-opacity">
         {u.profile_pic ? (
           <img src={u.profile_pic} alt="" className="w-10 h-10 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
         ) : (
@@ -26,7 +29,7 @@ export default function UserCard({
           </p>
           <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email || 'No email available'}</p>
         </div>
-      </div>
+      </button>
 
       <div className="flex items-center justify-between pt-2 border-t border-[var(--card-border)]">
         <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${
