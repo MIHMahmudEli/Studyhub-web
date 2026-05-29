@@ -1,18 +1,17 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
-import ResourceFileUploader from '@/components/upload/ResourceFileUploader';
-import { 
+import {
   Plus,
-  BookOpen,
-  GraduationCap,
   Calendar,
-  Search,
   CheckCircle2,
   AlertCircle,
   X,
-  FileText
+  FileText,
+  UploadCloud,
+  File,
+  Loader2
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
@@ -22,13 +21,22 @@ import coursesData from '@/lib/data/courses.json';
 import MetadataFormFields from '@/components/upload/MetadataFormFields';
 import PageHeader from '@/components/ui/PageHeader';
 
+const VALID_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+];
+
 export default function UploadResourcePage() {
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: '', message: '' });
   const [courseSearch, setCourseSearch] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
-  
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+
   const [formData, setFormData] = useState({
     title: '',
     courseTitle: '',
@@ -46,8 +54,8 @@ export default function UploadResourcePage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const suggestionsRef = useRef(null);
+  const fileInputRef = useRef(null);
 
-  // 1. Role & Auth Verification (Only Admin & Moderator)
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
@@ -58,16 +66,6 @@ export default function UploadResourcePage() {
     }
   }, [user, authLoading, router]);
 
-  // 2. Auto-fill Title when File is selected
-  useEffect(() => {
-    if (file && !formData.title.trim()) {
-      const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
-      setFormData(prev => ({ ...prev, title: nameWithoutExt }));
-      setErrors(prev => ({ ...prev, title: '' }));
-    }
-  }, [file]);
-
-  // Click outside suggestions handler
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
@@ -85,15 +83,15 @@ export default function UploadResourcePage() {
 
   const filteredCourses = useMemo(() => {
     if (courseSearch.length < 2) return [];
-    return coursesData.filter(course => 
+    return coursesData.filter(course =>
       course.courseTitle.toLowerCase().includes(courseSearch.toLowerCase()) ||
       course.code?.toLowerCase().includes(courseSearch.toLowerCase())
     ).slice(0, 5);
   }, [courseSearch]);
 
   const selectCourse = (course) => {
-    setFormData(prev => ({ 
-      ...prev, 
+    setFormData(prev => ({
+      ...prev,
       courseTitle: course.courseTitle,
       code: course.code || 'N/A',
       dept: course.dept || 'GENERAL'
@@ -103,67 +101,103 @@ export default function UploadResourcePage() {
     setShowSuggestions(false);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!file || !formData.title.trim() || !formData.courseTitle) {
-      setStatus({ type: 'error', message: 'Please complete all required fields.' });
+  const addFile = (selectedFile) => {
+    if (!VALID_TYPES.includes(selectedFile.type)) {
+      setStatus({ type: 'error', message: 'Please upload a valid PDF, DOC/DOCX, or PPT/PPTX file.' });
       return;
     }
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      setStatus({ type: 'error', message: 'File size must be less than 50MB.' });
+      return;
+    }
+    setFiles(prev => [...prev, { file: selectedFile, id: `${Date.now()}-${Math.random().toString(36).substring(2, 8)}` }]);
+    setStatus({ type: '', message: '' });
+  };
 
-    setLoading(true);
-    setStatus({ type: '', message: 'Uploading resource file...' });
+  const removeFile = (id) => {
+    setFiles(prev => prev.filter(f => f.id !== id));
+  };
 
-    try {
-      // Programmatically ensure 'resources' bucket exists
-      try {
-        await supabase.storage.createBucket('resources', { public: true });
-      } catch (_) {}
+  const handleFilePicker = () => {
+    fileInputRef.current?.click();
+  };
 
-      // 1. Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop() || 'pdf';
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${fileName}`;
+  const handleInputChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      addFile(e.target.files[0]);
+      e.target.value = '';
+    }
+  };
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('resources')
-        .upload(filePath, file, { cacheControl: '3600', upsert: true });
+  const uploadSingleFile = async (fileEntry) => {
+    const { file } = fileEntry;
+    const fileExt = file.name.split('.').pop() || 'pdf';
 
-      if (uploadError) throw uploadError;
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${fileName}`;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('resources')
-        .getPublicUrl(filePath);
+    const { error: uploadError } = await supabase.storage
+      .from('resources')
+      .upload(filePath, file, { cacheControl: '3600', upsert: true });
 
-      // 2. Prepare payload for backend API
-      const payload = {
-        title: formData.title,
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('resources')
+      .getPublicUrl(filePath);
+
+    const title = file.name.replace(/\.[^/.]+$/, "");
+
+    await apiRequest('/resources', {
+      method: 'POST',
+      body: {
+        title,
         description: formData.description || `${formData.term.toUpperCase()} academic resource for ${formData.courseTitle}`,
-        subject: formData.courseTitle, // Storing course name as subject
+        subject: formData.courseTitle,
         course_code: formData.code,
         term: formData.term,
         file_path: publicUrl,
         file_type: fileExt.toLowerCase(),
-      };
+      },
+    });
+  };
 
-      // 3. Send POST request to backend API
-      const resData = await apiRequest('/resources', {
-        method: 'POST',
-        body: payload,
-      });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
+    if (files.length === 0 || !formData.courseTitle) {
+      setStatus({ type: 'error', message: 'Please select at least one file and a course.' });
+      return;
+    }
 
-      setStatus({ type: 'success', message: 'Resource published successfully!' });
-      setFile(null);
+    setLoading(true);
+    setUploadProgress({ current: 0, total: files.length });
+    setStatus({ type: '', message: '' });
+
+    try {
+      try {
+        await supabase.storage.createBucket('resources', { public: true });
+      } catch (_) {}
+
+      let uploaded = 0;
+      for (const entry of files) {
+        setStatus({ type: '', message: `Uploading file ${uploaded + 1} of ${files.length}...` });
+        await uploadSingleFile(entry);
+        uploaded++;
+        setUploadProgress({ current: uploaded, total: files.length });
+      }
+
+      setStatus({ type: 'success', message: `All ${files.length} resource(s) published successfully!` });
+      setFiles([]);
       setFormData({ title: '', courseTitle: '', code: '', dept: '', term: 'mid', description: '' });
       setCourseSearch('');
-      
-      // Redirect removed as requested
 
     } catch (err) {
       console.error('Resource upload error:', err);
-      setStatus({ type: 'error', message: err.message || 'Failed to publish resource.' });
+      setStatus({ type: 'error', message: err.message || `Failed at file ${uploadProgress.current + 1}.` });
     } finally {
       setLoading(false);
+      setUploadProgress({ current: 0, total: 0 });
     }
   };
 
@@ -186,6 +220,7 @@ export default function UploadResourcePage() {
             <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-6">
               <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 md:p-10 shadow-xl backdrop-blur-xl relative overflow-hidden">
                 <MetadataFormFields
+                  hideTitle={true}
                   titleLabel="Resource Title"
                   titleIcon={FileText}
                   titlePlaceholder="e.g. Midterm Practice Exam & Solutions"
@@ -205,7 +240,7 @@ export default function UploadResourcePage() {
                   validateTitle={validateTitle}
                   descriptionLabel="Resource Description (Optional)"
                   descriptionIcon={FileText}
-                  descriptionPlaceholder="Brief notes about this resource file..."
+                  descriptionPlaceholder="Brief notes about these resource files..."
                   descriptionRows={3}
                 >
                   {/* Academic Term Selection */}
@@ -223,8 +258,8 @@ export default function UploadResourcePage() {
                           type="button"
                           onClick={() => setFormData(prev => ({ ...prev, term: t.id }))}
                           className={`p-5 rounded-2xl border text-left flex flex-col gap-1 transition-all duration-300 ${
-                            formData.term === t.id 
-                              ? 'bg-blue-500/10 border-blue-500 shadow-lg shadow-blue-500/10 scale-[1.02]' 
+                            formData.term === t.id
+                              ? 'bg-blue-500/10 border-blue-500 shadow-lg shadow-blue-500/10 scale-[1.02]'
                               : 'bg-[var(--background)]/50 border-[var(--card-border)] hover:border-blue-500/30'
                           }`}
                         >
@@ -246,16 +281,16 @@ export default function UploadResourcePage() {
                 {/* Status Notifications */}
                 {status.message && (
                   <div className={`mt-8 p-4 rounded-2xl flex items-center gap-3 border ${
-                    status.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'
+                    status.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : status.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
                   }`}>
-                    {status.type === 'success' ? <CheckCircle2 size={20} className="shrink-0" /> : <AlertCircle size={20} className="shrink-0" />}
+                    {status.type === 'success' ? <CheckCircle2 size={20} className="shrink-0" /> : status.type === 'error' ? <AlertCircle size={20} className="shrink-0" /> : <Loader2 size={20} className="shrink-0 animate-spin" />}
                     <p className="text-[11px] font-bold uppercase tracking-widest">{status.message}</p>
                   </div>
                 )}
 
                 {/* Action Buttons (Publish & Cancel) */}
                 <div className="grid grid-cols-2 gap-4 mt-10">
-                  <button 
+                  <button
                     type="button"
                     onClick={() => router.push('/admin/dashboard')}
                     disabled={loading}
@@ -264,33 +299,98 @@ export default function UploadResourcePage() {
                     <span className="flex items-center justify-center gap-2"><X size={16} /> Cancel</span>
                   </button>
 
-                  <button 
+                  <button
                     type="submit"
-                    disabled={loading || !file || !formData.courseTitle}
+                    disabled={loading || files.length === 0 || !formData.courseTitle}
                     className={`py-5 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-500 ${
-                      loading || !file || !formData.courseTitle
-                        ? 'bg-[var(--card-bg)] text-slate-600 cursor-not-allowed border border-[var(--card-border)]' 
+                      loading || files.length === 0 || !formData.courseTitle
+                        ? 'bg-[var(--card-bg)] text-slate-600 cursor-not-allowed border border-[var(--card-border)]'
                         : 'bg-blue-500 text-white hover:bg-blue-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-500/20'
                     }`}
                   >
-                    {loading ? <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <>Publish Resource <Plus size={16} /></>}
+                    {loading ? (
+                      <><Loader2 size={16} className="animate-spin" /> Publishing {uploadProgress.current}/{uploadProgress.total}</>
+                    ) : (
+                      <>Publish {files.length > 1 ? `All (${files.length})` : 'Resource'} <Plus size={16} /></>
+                    )}
                   </button>
                 </div>
 
               </div>
             </form>
 
-            {/* Sidebar Section */}
+            {/* Sidebar — Multi-file Uploader */}
             <div className="lg:col-span-2 space-y-6">
-              <ResourceFileUploader file={file} setFile={setFile} setStatus={setStatus} />
-              
+              {/* Drop zone / file list */}
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-6 shadow-xl space-y-4">
+                <h3 className="text-xs font-black uppercase tracking-widest text-[var(--foreground)] flex items-center gap-2">
+                  <UploadCloud size={16} className="text-blue-500" /> Files to Publish
+                </h3>
+
+                {files.length > 0 && (
+                  <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
+                    {files.map((entry, idx) => (
+                      <div key={entry.id} className="flex items-center gap-3 p-3 bg-[var(--background)]/50 border border-[var(--card-border)] rounded-2xl group">
+                        <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 shrink-0">
+                          <File size={14} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] font-black text-[var(--foreground)] truncate">{entry.file.name}</p>
+                          <p className="text-[8px] font-bold text-slate-500 uppercase tracking-wider">{(entry.file.size / (1024 * 1024)).toFixed(2)} MB</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeFile(entry.id)}
+                          disabled={loading}
+                          className="p-1.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-all opacity-0 group-hover:opacity-100 shrink-0"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {files.length === 0 ? (
+                  <div
+                    onClick={handleFilePicker}
+                    className="border-2 border-dashed border-[var(--card-border)] rounded-2xl p-8 flex flex-col items-center gap-3 cursor-pointer hover:border-blue-500/30 hover:bg-blue-500/5 transition-all text-center"
+                  >
+                    <div className="w-14 h-14 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
+                      <UploadCloud size={24} />
+                    </div>
+                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Drop files or click to browse</p>
+                    <p className="text-[9px] font-bold text-slate-500">PDF, DOC, PPT (Max 50MB each)</p>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleFilePicker}
+                    disabled={loading}
+                    className="w-full py-3 rounded-2xl border-2 border-dashed border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-blue-500 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Plus size={14} /> Add More
+                  </button>
+                )}
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  onChange={handleInputChange}
+                  accept=".pdf,.doc,.docx,.ppt,.pptx"
+                />
+              </div>
+
+              {/* Guidelines */}
               <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-xl space-y-4">
                 <h3 className="text-sm font-black uppercase tracking-widest text-[var(--foreground)] flex items-center gap-2">
                   <CheckCircle2 size={16} className="text-emerald-500" /> Publishing Guidelines
                 </h3>
                 <ul className="text-xs font-medium text-slate-400 space-y-2.5 leading-relaxed list-disc list-inside">
-                  <li>Ensure the file is high quality and relevant to the selected course syllabus.</li>
-                  <li>Verify the Academic Term (Midterm vs Final) matches the resource content.</li>
+                  <li>Add multiple files for the same course — each gets its own title from the filename.</li>
+                  <li>Click <strong>Add More</strong> to include additional lecture slides or resources.</li>
+                  <li>All files share the same course, term, and description metadata.</li>
                   <li>Published resources become instantly available to all students in the library.</li>
                 </ul>
               </div>

@@ -11,12 +11,13 @@ export default function MetadataFormFields({
   titleLabel = "Note Title",
   titleIcon: TitleIcon = BookOpen,
   titlePlaceholder = "Enter title here...",
-  
+  hideTitle = false,
+
   formData,
   setFormData,
   errors,
   setErrors,
-  
+
   courseSearch,
   setCourseSearch,
   showSuggestions,
@@ -24,10 +25,10 @@ export default function MetadataFormFields({
   filteredCourses,
   selectCourse,
   suggestionsRef,
-  
+
   showPickedCourse = false,
   showTermSelector = false,
-  
+
   validateTitle = (val) => '', // optional validation
   descriptionLabel = "Description",
   descriptionIcon: DescriptionIcon = MessageSquare,
@@ -39,26 +40,28 @@ export default function MetadataFormFields({
   return (
     <div className="space-y-6">
       {/* Title Input */}
-      <div className="space-y-2">
-        <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
-          <TitleIcon size={14} className={TitleIcon === FileText ? "text-blue-500" : ""} /> {titleLabel} <span className="text-red-500">*</span>
-        </label>
-        <input 
-          type="text" 
-          required
-          placeholder={titlePlaceholder}
-          className={`w-full bg-[var(--background)]/50 border rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all ${
-            errors.title ? 'border-red-500/50' : 'border-[var(--card-border)]'
-          }`}
-          value={formData.title}
-          onChange={(e) => {
-            const val = e.target.value;
-            setFormData({...formData, title: val});
-            if (setErrors) setErrors({...errors, title: validateTitle(val)});
-          }}
-        />
-        {errors.title && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.title}</p>}
-      </div>
+      {!hideTitle && (
+        <div className="space-y-2">
+          <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
+            <TitleIcon size={14} className={TitleIcon === FileText ? "text-blue-500" : ""} /> {titleLabel} <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            required
+            placeholder={titlePlaceholder}
+            className={`w-full bg-[var(--background)]/50 border rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all ${
+              errors.title ? 'border-red-500/50' : 'border-[var(--card-border)]'
+            }`}
+            value={formData.title}
+            onChange={(e) => {
+              const val = e.target.value;
+              setFormData({...formData, title: val});
+              if (setErrors) setErrors({...errors, title: validateTitle(val)});
+            }}
+          />
+          {errors.title && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.title}</p>}
+        </div>
+      )}
 
       {/* Course Search & Auto Suggestion */}
       <div className="space-y-2 relative" ref={suggestionsRef}>
