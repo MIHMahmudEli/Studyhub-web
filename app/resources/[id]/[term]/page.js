@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
+import JSZip from 'jszip';
 import { 
   Download,
   FileText,
@@ -11,7 +12,9 @@ import {
   Bookmark,
   AlertCircle,
   CheckCircle2,
-  X
+  X,
+  DownloadCloud,
+  Loader2
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useParams } from 'next/navigation';
@@ -29,6 +32,8 @@ export default function TermResourcesPage() {
   const [resourcesList, setResourcesList] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
   const [loadingResources, setLoadingResources] = useState(true);
+  const [downloadingId, setDownloadingId] = useState(null);
+  const [downloadingAll, setDownloadingAll] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
 
   const showToast = (message, type = 'success') => {
@@ -116,17 +121,54 @@ export default function TermResourcesPage() {
 
   const handleDownload = async (res) => {
     try {
-      // Increment download count in DB if it's a real DB resource
+      setDownloadingId(res.id);
       if (res.id && !res.uploader_id?.toString().startsWith('legacy')) {
         await apiRequest(`/resources/${res.id}/download`, { method: 'POST' });
-        // Update local state to reflect new download count
         setResourcesList(prev => prev.map(r => r.id === res.id ? { ...r, downloads: (r.downloads || 0) + 1 } : r));
       }
-      // Open file in new tab
-      window.open(res.file_path, '_blank');
+      const response = await fetch(res.file_path);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const ext = (res.file_type || 'pdf').toLowerCase();
+      a.download = `${res.title}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Download error:', err);
       window.open(res.file_path, '_blank');
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
+  const handleDownloadAll = async () => {
+    try {
+      setDownloadingAll(true);
+      const zip = new JSZip();
+      for (const res of filteredResources) {
+        const response = await fetch(res.file_path);
+        const blob = await response.blob();
+        const ext = (res.file_type || 'pdf').toLowerCase();
+        zip.file(`${res.title}.${ext}`, blob);
+      }
+      const content = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(courseInfo.course_code || courseInfo.courseTitle || 'resources').replace(/\s+/g, '_')}_${term}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Download all error:', err);
+      showToast('Failed to download all files. Try downloading individually.', 'error');
+    } finally {
+      setDownloadingAll(false);
     }
   };
 
@@ -166,9 +208,25 @@ export default function TermResourcesPage() {
             badgeColorClass={term === 'mid' ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' : 'bg-purple-500/10 border-purple-500/20 text-purple-500'}
             title={courseInfo.courseTitle}
           >
-            <div className="flex items-center gap-2 text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">
-              <HardDrive size={10} />
-              {filteredResources.length} Files
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">
+                <HardDrive size={10} />
+                {filteredResources.length} Files
+              </div>
+              {filteredResources.length > 1 && (
+                <button
+                  onClick={handleDownloadAll}
+                  disabled={downloadingAll}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 hover:bg-blue-500/20 transition-all text-[8px] font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {downloadingAll ? (
+                    <Loader2 size={12} className="animate-spin" />
+                  ) : (
+                    <DownloadCloud size={12} />
+                  )}
+                  {downloadingAll ? 'Zipping...' : 'Download All'}
+                </button>
+              )}
             </div>
           </PageHeader>
 
@@ -209,10 +267,17 @@ export default function TermResourcesPage() {
                     <div className="flex items-center gap-2 sm:shrink-0">
                       <button 
                         onClick={() => handleDownload(res)}
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg md:rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition-all shadow-lg active:scale-95 group/btn"
+                        disabled={downloadingId === res.id}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg md:rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition-all shadow-lg active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                       >
-                        <Download size={14} />
-                        <span className="text-[8px] font-black uppercase tracking-widest">Download</span>
+                        {downloadingId === res.id ? (
+                          <Loader2 size={14} className="animate-spin" />
+                        ) : (
+                          <Download size={14} />
+                        )}
+                        <span className="text-[8px] font-black uppercase tracking-widest">
+                          {downloadingId === res.id ? 'Saving...' : 'Download'}
+                        </span>
                       </button>
                       <button 
                         onClick={() => handleToggleBookmark(res)}
