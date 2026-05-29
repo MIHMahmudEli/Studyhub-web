@@ -2,18 +2,21 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
-import FileUploader from '@/components/upload/FileUploader';
 import RewardCard from '@/components/upload/RewardCard';
 import PageHeader from '@/components/ui/PageHeader';
 import MetadataFormFields from '@/components/upload/MetadataFormFields';
-import { 
+import {
   Plus,
   BookOpen,
   GraduationCap,
   MessageSquare,
   Search,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  UploadCloud,
+  File,
+  X,
+  Loader2
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
@@ -21,14 +24,16 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import coursesData from '@/lib/data/courses.json';
 
+const VALID_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 
 export default function UploadPage() {
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: '', message: '' });
   const [courseSearch, setCourseSearch] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
-  
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+
   const [formData, setFormData] = useState({
     title: '',
     course: '',
@@ -42,6 +47,7 @@ export default function UploadPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const suggestionsRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/auth');
@@ -77,7 +83,7 @@ export default function UploadPage() {
 
   const filteredCourses = useMemo(() => {
     if (courseSearch.length < 2) return [];
-    return coursesData.filter(course => 
+    return coursesData.filter(course =>
       course.courseTitle.toLowerCase().includes(courseSearch.toLowerCase()) ||
       course.code?.toLowerCase().includes(courseSearch.toLowerCase())
     ).slice(0, 5);
@@ -90,10 +96,74 @@ export default function UploadPage() {
     setShowSuggestions(false);
   };
 
+  const addFile = (selectedFile) => {
+    if (!VALID_TYPES.includes(selectedFile.type)) {
+      setStatus({ type: 'error', message: 'Please upload a PDF, Word document, or Image.' });
+      return;
+    }
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      setStatus({ type: 'error', message: 'File size must be less than 50MB.' });
+      return;
+    }
+    setFiles(prev => [...prev, { file: selectedFile, id: `${Date.now()}-${Math.random().toString(36).substring(2, 8)}` }]);
+    setStatus({ type: '', message: '' });
+  };
+
+  const removeFile = (id) => {
+    setFiles(prev => prev.filter(f => f.id !== id));
+  };
+
+  const handleFilePicker = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleInputChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      addFile(e.target.files[0]);
+      e.target.value = '';
+    }
+  };
+
+  const uploadSingleNote = async (fileEntry) => {
+    const { file } = fileEntry;
+    const fileExt = file.name.split('.').pop();
+
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('notes')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('notes')
+      .getPublicUrl(filePath);
+
+    const courseObj = coursesData.find(c => c.courseTitle === formData.course);
+
+    const title = file.name.replace(/\.[^/.]+$/, "");
+
+    await apiRequest('/notes', {
+      method: 'POST',
+      body: {
+        title,
+        description: formData.description,
+        courseTitle: courseObj.courseTitle,
+        code: courseObj.code || 'N/A',
+        dept: courseObj.dept,
+        file_path: publicUrl,
+        file_type: fileExt || 'pdf',
+      },
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file || !formData.title.trim() || !formData.course) {
-      setStatus({ type: 'error', message: 'Please complete all required fields.' });
+
+    if (files.length === 0 || !formData.course) {
+      setStatus({ type: 'error', message: 'Please select at least one file and a course.' });
       return;
     }
 
@@ -103,64 +173,29 @@ export default function UploadPage() {
       return;
     }
 
-    const titleWords = formData.title.trim().split(/\s+/);
-    const isValidTitle = titleWords.length >= 2 && titleWords.every(word => word.length >= 2);
-    if (!isValidTitle) {
-      setStatus({ type: 'error', message: 'Please provide a valid title' });
-      return;
-    }
-
     setLoading(true);
-    setStatus({ type: '', message: 'Uploading...' });
+    setUploadProgress({ current: 0, total: files.length });
+    setStatus({ type: '', message: '' });
 
     try {
-      // 1. Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${fileName}`;
+      let uploaded = 0;
+      for (const entry of files) {
+        setStatus({ type: '', message: `Uploading file ${uploaded + 1} of ${files.length}...` });
+        await uploadSingleNote(entry);
+        uploaded++;
+        setUploadProgress({ current: uploaded, total: files.length });
+      }
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('notes')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('notes')
-        .getPublicUrl(filePath);
-
-      // setStatus({ type: '', message: 'Saving to database...' });
-
-      // 2. Find course details
-      const courseObj = coursesData.find(c => c.courseTitle === formData.course);
-
-      // 3. Prepare payload for our API
-      const payload = {
-        title: formData.title,
-        description: formData.description,
-        courseTitle: courseObj.courseTitle,
-        code: courseObj.code || 'N/A',
-        dept: courseObj.dept,
-        file_path: publicUrl,
-        file_type: fileExt || 'pdf',
-      };
-
-      // 4. Send to our API
-      await apiRequest('/notes', {
-        method: 'POST',
-        body: payload,
-      });
-
-      setStatus({ type: 'success', message: 'Note uploaded successfully! Wait for the admin approval.' });
-      setFile(null);
+      setStatus({ type: 'success', message: `All ${files.length} note(s) uploaded successfully! Wait for admin approval.` });
+      setFiles([]);
       setFormData({ title: '', course: '', description: '' });
       setCourseSearch('');
-      // Redirect removed as requested
     } catch (err) {
       console.error('Upload error:', err);
-      setStatus({ type: 'error', message: err.message || 'Failed to upload note.' });
+      setStatus({ type: 'error', message: err.message || `Failed at file ${uploadProgress.current + 1}.` });
     } finally {
       setLoading(false);
+      setUploadProgress({ current: 0, total: 0 });
     }
   };
 
@@ -183,6 +218,7 @@ export default function UploadPage() {
             <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-6">
               <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 md:p-10 shadow-xl backdrop-blur-xl relative overflow-hidden">
                 <MetadataFormFields
+                  hideTitle={true}
                   titleLabel="Note Title"
                   titleIcon={BookOpen}
                   titlePlaceholder="e.g. Data Structures - Week 5 Lecture Notes"
@@ -202,29 +238,92 @@ export default function UploadPage() {
 
                 {status.message && (
                   <div className={`mt-8 p-4 rounded-2xl flex items-center gap-3 border ${
-                    status.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'
+                    status.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : status.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
                   }`}>
-                    {status.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
+                    {status.type === 'success' ? <CheckCircle2 size={20} className="shrink-0" /> : status.type === 'error' ? <AlertCircle size={20} className="shrink-0" /> : <Loader2 size={20} className="shrink-0 animate-spin" />}
                     <p className="text-[11px] font-bold uppercase tracking-widest">{status.message}</p>
                   </div>
                 )}
 
-                <button 
-                  disabled={loading || !file || !formData.course}
+                <button
+                  disabled={loading || files.length === 0 || !formData.course}
                   className={`w-full mt-10 py-5 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 ${
-                    loading || !file || !formData.course
-                      ? 'bg-[var(--card-bg)] text-slate-600 cursor-not-allowed border border-[var(--card-border)]' 
+                    loading || files.length === 0 || !formData.course
+                      ? 'bg-[var(--card-bg)] text-slate-600 cursor-not-allowed border border-[var(--card-border)]'
                       : 'bg-blue-500 text-white hover:bg-blue-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-500/20'
                   }`}
                 >
-                  {loading ? <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <>Submit Resource <Plus size={18} /></>}
+                  {loading ? (
+                    <><Loader2 size={16} className="animate-spin" /> Uploading {uploadProgress.current}/{uploadProgress.total}</>
+                  ) : (
+                    <>Submit {files.length > 1 ? `All (${files.length})` : 'Note'} <Plus size={18} /></>
+                  )}
                 </button>
               </div>
             </form>
 
             {/* Sidebar Section */}
             <div className="lg:col-span-2 space-y-6">
-              <FileUploader file={file} setFile={setFile} setStatus={setStatus} />
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-6 shadow-xl space-y-4">
+                <h3 className="text-xs font-black uppercase tracking-widest text-[var(--foreground)] flex items-center gap-2">
+                  <UploadCloud size={16} className="text-blue-500" /> Files to Upload
+                </h3>
+
+                {files.length > 0 && (
+                  <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
+                    {files.map((entry, idx) => (
+                      <div key={entry.id} className="flex items-center gap-3 p-3 bg-[var(--background)]/50 border border-[var(--card-border)] rounded-2xl group">
+                        <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 shrink-0">
+                          <File size={14} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] font-black text-[var(--foreground)] truncate">{entry.file.name}</p>
+                          <p className="text-[8px] font-bold text-slate-500 uppercase tracking-wider">{(entry.file.size / (1024 * 1024)).toFixed(2)} MB</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeFile(entry.id)}
+                          disabled={loading}
+                          className="p-1.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-all opacity-0 group-hover:opacity-100 shrink-0"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {files.length === 0 ? (
+                  <div
+                    onClick={handleFilePicker}
+                    className="border-2 border-dashed border-[var(--card-border)] rounded-2xl p-8 flex flex-col items-center gap-3 cursor-pointer hover:border-blue-500/30 hover:bg-blue-500/5 transition-all text-center"
+                  >
+                    <div className="w-14 h-14 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
+                      <UploadCloud size={24} />
+                    </div>
+                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Drop files or click to browse</p>
+                    <p className="text-[9px] font-bold text-slate-500">PDF, PNG, JPG, DOCX (Max 50MB each)</p>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleFilePicker}
+                    disabled={loading}
+                    className="w-full py-3 rounded-2xl border-2 border-dashed border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-blue-500 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Plus size={14} /> Add More
+                  </button>
+                )}
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  onChange={handleInputChange}
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                />
+              </div>
+
               <RewardCard />
             </div>
           </div>
