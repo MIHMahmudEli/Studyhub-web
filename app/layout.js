@@ -1,6 +1,7 @@
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import RouteTracker from "@/components/RouteTracker";
+import ScreenGate from "@/components/ScreenGate";
 import "./globals.css";
 
 export const metadata = {
@@ -25,7 +26,7 @@ export default function RootLayout({ children }) {
               <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] rounded-full bg-[var(--nebula-3)] blur-[90px] animate-nebula" style={{ animationDelay: '-10s' }} />
             </div>
             
-            {children}
+            <ScreenGate>{children}</ScreenGate>
           </AuthProvider>
         </ThemeProvider>
       </body>
