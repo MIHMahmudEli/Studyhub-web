@@ -190,7 +190,7 @@ export default function NotePreviewPage() {
     );
   }
 
-  const isUploaderOrAdmin = user && (user.id === note.uploader_id || user.role === 'admin' || user.role === 'moderator');
+  const isUploaderOrAdmin = user && (user.id === note.uploader_id || user.role === 'admin');
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-20">
