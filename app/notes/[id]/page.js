@@ -27,6 +27,7 @@ import { NoteDetailSkeleton } from '@/components/ui/Skeleton';
 import EditNoteModal from '@/components/notes/EditNoteModal';
 import DeleteConfirmModal from '@/components/notes/DeleteConfirmModal';
 import RatingWidget from '@/components/notes/RatingWidget';
+import ReactionBar from '@/components/notes/ReactionBar';
 
 const getDepartmentName = (code, subject, dept) => {
   if (!code) return dept || 'CSE';
@@ -447,6 +448,13 @@ export default function NotePreviewPage() {
             </div>
           )}
         </div>
+
+        {/* Reactions */}
+        {!isReadingMode && (
+          <div className="mt-8 animate-in fade-in slide-in-from-bottom duration-500">
+            <ReactionBar noteId={note.id} />
+          </div>
+        )}
 
         {/* Interactive Rating & Feedback Thread (Full Width Screen Layout) */}
         {!isReadingMode && (
