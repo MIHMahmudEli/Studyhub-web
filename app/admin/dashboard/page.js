@@ -59,6 +59,7 @@ export default function AdminDashboardPage() {
   const [loadingData, setLoadingData] = useState(true);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
   const [activeTab, setActiveTab] = useState('users'); // 'users'
+  const [platformTotalUsers, setPlatformTotalUsers] = useState(0);
 
   // --- User Directory Pagination & Search State ---
   const [usersList, setUsersList] = useState([]);
@@ -138,7 +139,8 @@ export default function AdminDashboardPage() {
         notesData,
         visibilityData,
         activeData,
-        permissionsData
+        permissionsData,
+        platformTotalData
       ] = await Promise.all([
         apiRequest('/notes/pending').catch(err => { console.error(err); return []; }),
         (user?.role === 'admin' || user?.role === 'moderator')
@@ -153,6 +155,7 @@ export default function AdminDashboardPage() {
         (user?.role === 'admin' || user?.role === 'moderator')
           ? apiRequest('/admin/permissions').catch(err => { console.warn('Could not fetch permissions:', err); return []; })
           : Promise.resolve([]),
+        apiRequest('/users?limit=1').catch(err => { console.warn('Could not fetch total users:', err); return { total: 0 }; }),
       ]);
 
       setPendingNotes(Array.isArray(pendingNotesData) ? pendingNotesData : (pendingNotesData?.data || []));
@@ -166,6 +169,7 @@ export default function AdminDashboardPage() {
       
       setActiveUsersCount(activeData?.total || 0);
       if (Array.isArray(permissionsData)) setPermissions(permissionsData);
+      setPlatformTotalUsers(platformTotalData?.total || 0);
 
     } catch (error) {
       console.error('Failed to load admin dashboard data:', error);
@@ -492,7 +496,7 @@ export default function AdminDashboardPage() {
               <StatsCard
                 href="/admin/users"
                 title="Total Users"
-                value={totalUsersCount}
+                value={platformTotalUsers}
                 subtitle="Registered students"
                 icon={Users}
                 colorScheme="blue"
