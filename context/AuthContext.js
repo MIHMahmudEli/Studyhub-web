@@ -1,18 +1,22 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiRequest, setAccessToken, setRefreshToken, getRefreshToken, refreshTokens } from '@/lib/api';
 
 const AuthContext = createContext();
 
-// ─── localStorage user cache helpers ─────────────────────────────────────────
+// ─── Inactivity timeout constants ────────────────────────────────────────────
+const INACTIVITY_MS = 30 * 60 * 1000; // 30 minutes
+const CHECK_INTERVAL_MS = 15 * 1000;  // check every 15 seconds
+
+// ─── sessionStorage user cache (cleared on browser close) ──────────────────
 const USER_CACHE_KEY = 'studyhub_user';
 
 const getCachedUser = () => {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = localStorage.getItem(USER_CACHE_KEY);
+    const raw = sessionStorage.getItem(USER_CACHE_KEY);
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -22,9 +26,9 @@ const getCachedUser = () => {
 const setCachedUser = (user) => {
   if (typeof window === 'undefined') return;
   if (user) {
-    localStorage.setItem(USER_CACHE_KEY, JSON.stringify(user));
+    sessionStorage.setItem(USER_CACHE_KEY, JSON.stringify(user));
   } else {
-    localStorage.removeItem(USER_CACHE_KEY);
+    sessionStorage.removeItem(USER_CACHE_KEY);
   }
 };
 
@@ -35,6 +39,33 @@ export function AuthProvider({ children }) {
   const [tokenReady, setTokenReady] = useState(false);
   const router = useRouter();
   const validating = useRef(false);
+  const lastActivity = useRef(Date.now());
+
+  // ─── Activity tracking for 30-min inactivity logout ──────────────────────
+  useEffect(() => {
+    const update = () => { lastActivity.current = Date.now(); };
+    window.addEventListener('mousedown', update);
+    window.addEventListener('keydown', update);
+    window.addEventListener('touchstart', update);
+    window.addEventListener('scroll', update, { passive: true });
+    return () => {
+      window.removeEventListener('mousedown', update);
+      window.removeEventListener('keydown', update);
+      window.removeEventListener('touchstart', update);
+      window.removeEventListener('scroll', update);
+    };
+  }, []);
+
+  // ─── Periodic inactivity check ───────────────────────────────────────────
+  useEffect(() => {
+    if (!user || loading) return;
+    const id = setInterval(() => {
+      if (Date.now() - lastActivity.current >= INACTIVITY_MS) {
+        performLogout(false);
+      }
+    }, CHECK_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [user, loading]);
 
   useEffect(() => {
     initAuth();
@@ -79,6 +110,7 @@ export function AuthProvider({ children }) {
       setCachedUser(null);
       setAccessToken(null);
       setRefreshToken(null);
+      setTokenReady(false);
     } finally {
       // If there was no cached user we haven't unblocked loading yet
       if (!cachedUser) setLoading(false);
@@ -147,17 +179,19 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  const logout = async () => {
-    try {
-      await apiRequest('/auth/logout', { method: 'POST' });
-    } finally {
-      setUser(null);
-      setCachedUser(null);      // ← clear cache on sign-out
-      setAccessToken(null);
-      setRefreshToken(null);
-      router.push('/auth');
+  const performLogout = useCallback(async (silent = false) => {
+    if (!silent) {
+      try { await apiRequest('/auth/logout', { method: 'POST' }); } catch { /* ignore */ }
     }
-  };
+    setUser(null);
+    setCachedUser(null);
+    setAccessToken(null);
+    setRefreshToken(null);
+    setTokenReady(false);
+    if (!silent) router.push('/auth');
+  }, [router]);
+
+  const logout = useCallback(() => performLogout(false), [performLogout]);
 
   return (
     <AuthContext.Provider value={{ user, loading, tokenReady, login, register, verifyEmail, logout, checkUser, forgotPassword, resetPassword }}>
