@@ -55,8 +55,9 @@ export default function TermResourcesPage() {
   const fetchResources = async () => {
     try {
       setLoadingResources(true);
-      const data = await apiRequest('/resources');
-      setResourcesList(data || []);
+      const res = await apiRequest('/resources');
+      const data = Array.isArray(res) ? res : (res?.data || []);
+      setResourcesList(data);
     } catch (err) {
       console.error('Failed to fetch resources:', err);
     } finally {

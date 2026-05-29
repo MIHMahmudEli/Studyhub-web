@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -21,7 +21,8 @@ import {
   Award, 
   UserCheck, 
   UserX,
-  Sparkles
+  Sparkles,
+  Loader2
 } from 'lucide-react';
 
 export default function ActiveUsersPage() {
@@ -36,9 +37,13 @@ export default function ActiveUsersPage() {
     return `${year}-${month}-${day}`;
   });
   const [activeUsers, setActiveUsers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
+  const limit = 12;
+  const observerRef = useRef(null);
 
   // Role verification (Only Admin can access)
   useEffect(() => {
@@ -54,31 +59,54 @@ export default function ActiveUsersPage() {
   // Fetch active users whenever selectedDate changes
   useEffect(() => {
     if (tokenReady && user && user.role === 'admin') {
-      fetchActiveUsers(selectedDate);
+      setActiveUsers([]);
+      setCurrentPage(1);
+      fetchActiveUsers(selectedDate, 1);
     }
   }, [tokenReady, user, selectedDate]);
 
-  const fetchActiveUsers = async (dateStr) => {
+  const fetchActiveUsers = async (dateStr, pageNum, append = false) => {
     try {
-      setLoading(true);
-      setError(null);
-      const res = await apiRequest(`/users/active?date=${dateStr}`);
-      if (res && res.users) {
-        setActiveUsers(res.users);
-        setTotalCount(res.total || 0);
+      if (append) {
+        setLoadingMore(true);
       } else {
-        setActiveUsers([]);
-        setTotalCount(0);
+        setLoading(true);
+        setError(null);
       }
+      const res = await apiRequest(`/users/active?date=${dateStr}&page=${pageNum}&limit=${limit}`);
+      const newData = res?.data || [];
+      if (append) {
+        setActiveUsers(prev => [...prev, ...newData]);
+      } else {
+        setActiveUsers(newData);
+      }
+      setTotalCount(res?.total || 0);
+      setCurrentPage(pageNum);
     } catch (err) {
       console.error('Failed to fetch active users:', err);
       setError(err.message || 'Failed to load active users.');
-      setActiveUsers([]);
-      setTotalCount(0);
+      if (!append) setActiveUsers([]);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
+
+  const hasMore = activeUsers.length < totalCount;
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          fetchActiveUsers(selectedDate, currentPage + 1, true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    const el = observerRef.current;
+    if (el) observer.observe(el);
+    return () => { if (el) observer.unobserve(el); };
+  }, [hasMore, loadingMore, currentPage, selectedDate]);
 
   // Helper to set date to Yesterday
   const handleYesterday = () => {
@@ -267,6 +295,19 @@ export default function ActiveUsersPage() {
                 />
               ))}
             </div>
+
+            {/* Loading More Indicator */}
+            {loadingMore && (
+              <div className="flex items-center justify-center pt-8">
+                <div className="flex items-center gap-3 px-6 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl">
+                  <Loader2 size={16} className="animate-spin text-emerald-500" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">Loading more...</span>
+                </div>
+              </div>
+            )}
+
+            {/* Infinite Scroll Sentinel */}
+            <div ref={observerRef} className="w-full h-4" />
           </AdminPanel>
 
         </div>

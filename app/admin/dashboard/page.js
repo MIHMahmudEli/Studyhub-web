@@ -119,9 +119,9 @@ export default function AdminDashboardPage() {
           : Promise.resolve(null)
       ]);
 
-      setPendingNotes(pendingNotesData || []);
-      setPendingResources(pendingResData || []);
-      setResources(resourcesData || []);
+      setPendingNotes(Array.isArray(pendingNotesData) ? pendingNotesData : (pendingNotesData?.data || []));
+      setPendingResources(Array.isArray(pendingResData) ? pendingResData : (pendingResData?.data || []));
+      setResources(Array.isArray(resourcesData) ? resourcesData : (resourcesData?.data || []));
       setNotes(Array.isArray(notesData) ? notesData : (notesData?.data || []));
       
       if (visibilityData && visibilityData.value) {

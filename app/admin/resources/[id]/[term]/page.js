@@ -67,8 +67,9 @@ export default function AdminTermResourcesPage() {
   const fetchResources = async () => {
     try {
       setLoadingResources(true);
-      const data = await apiRequest('/resources');
-      setResourcesList(data || []);
+      const res = await apiRequest('/resources');
+      const data = Array.isArray(res) ? res : (res?.data || []);
+      setResourcesList(data);
     } catch (err) {
       console.error('Failed to fetch resources:', err);
       showToast(err.message || 'Failed to fetch library resources.', 'error');

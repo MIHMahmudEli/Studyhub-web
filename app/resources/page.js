@@ -55,13 +55,16 @@ export default function ResourcesPage() {
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
   
-  const [visibleCount, setVisibleCount] = useState(12);
   const [searchQuery, setSearchQuery] = useState('');
   const [resources, setResources] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
   const [loadingResources, setLoadingResources] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalResources, setTotalResources] = useState(0);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
-  const observerTarget = useRef(null);
+  const observerRef = useRef(null);
+  const limit = 12;
 
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type, isClosing: false });
@@ -79,20 +82,32 @@ export default function ResourcesPage() {
 
   useEffect(() => {
     if (tokenReady && user) {
-      fetchResources();
+      fetchResources(1);
       fetchBookmarks();
     }
   }, [tokenReady, user]);
 
-  const fetchResources = async () => {
+  const fetchResources = async (pageNum, append = false) => {
     try {
-      setLoadingResources(true);
-      const data = await apiRequest('/resources');
-      setResources(data || []);
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoadingResources(true);
+      }
+      const res = await apiRequest(`/resources?page=${pageNum}&limit=${limit}`);
+      const newResources = Array.isArray(res) ? res : (res?.data || []);
+      if (append) {
+        setResources(prev => [...prev, ...newResources]);
+      } else {
+        setResources(newResources);
+      }
+      setTotalResources(res?.total || 0);
+      setCurrentPage(pageNum);
     } catch (err) {
       console.error('Failed to fetch resources:', err);
     } finally {
       setLoadingResources(false);
+      setLoadingMore(false);
     }
   };
 
@@ -165,20 +180,21 @@ export default function ResourcesPage() {
     );
   }, [allCourses, searchQuery]);
 
-  const visibleCourses = useMemo(() => filteredCourses.slice(0, visibleCount), [filteredCourses, visibleCount]);
-
-  const loadMore = useCallback(() => {
-    setVisibleCount(prev => Math.min(prev + 12, filteredCourses.length));
-  }, [filteredCourses.length]);
+  const hasMore = resources.length < totalResources;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      entries => { if (entries[0].isIntersecting) loadMore(); },
-      { threshold: 1.0 }
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          fetchResources(currentPage + 1, true);
+        }
+      },
+      { threshold: 0.1 }
     );
-    if (observerTarget.current) observer.observe(observerTarget.current);
-    return () => { if (observerTarget.current) observer.unobserve(observerTarget.current); };
-  }, [loadMore]);
+    const el = observerRef.current;
+    if (el) observer.observe(el);
+    return () => { if (el) observer.unobserve(el); };
+  }, [hasMore, loadingMore, currentPage]);
 
   if (authLoading) return null;
 
@@ -204,7 +220,7 @@ export default function ResourcesPage() {
             <SearchInput
               placeholder="SEARCH RESOURCES..."
               value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); setVisibleCount(12); }}
+              onChange={(e) => { setSearchQuery(e.target.value); }}
               focusBorderClass="focus:border-blue-500/30"
               widthClass="w-full md:w-[320px]"
             />
@@ -215,7 +231,7 @@ export default function ResourcesPage() {
             <Skeleton type="card" count={8} />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {visibleCourses.map((course, idx) => {
+              {filteredCourses.map((course, idx) => {
                 const Icon = getCourseIcon(course.title);
                 const isBookmarked = bookmarks.some(b => b.subject_name === course.title);
                 return (
@@ -235,12 +251,18 @@ export default function ResourcesPage() {
             </div>
           )}
 
+          {/* Loading More Indicator */}
+          {loadingMore && (
+            <div className="flex items-center justify-center pt-12">
+              <div className="flex items-center gap-3 px-6 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl">
+                <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">Loading more resources...</span>
+              </div>
+            </div>
+          )}
+
           {/* Infinite scroll sentinel */}
-          <div ref={observerTarget} className="w-full flex flex-col items-center justify-center pt-12 md:pt-16 gap-4">
-            {visibleCount < allCourses.length && (
-              <Loader2 size={18} className="animate-spin text-blue-500" />
-            )}
-          </div>
+          <div ref={observerRef} className="w-full h-4" />
         </div>
       </div>
 

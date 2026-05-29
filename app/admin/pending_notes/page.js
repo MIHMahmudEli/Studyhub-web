@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -22,7 +22,8 @@ import {
   ExternalLink,
   Sparkles,
   AlertCircle,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 
 export default function PendingNotesPage() {
@@ -31,8 +32,13 @@ export default function PendingNotesPage() {
 
   const [pendingNotes, setPendingNotes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPending, setTotalPending] = useState(0);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
+  const limit = 12;
+  const observerRef = useRef(null);
 
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type, isClosing: false });
@@ -58,22 +64,34 @@ export default function PendingNotesPage() {
   // Fetch pending notes
   useEffect(() => {
     if (tokenReady && user && (user.role === 'admin' || user.role === 'moderator')) {
-      fetchPendingNotes();
+      fetchPendingNotes(1);
     }
   }, [tokenReady, user]);
 
-  const fetchPendingNotes = async () => {
+  const fetchPendingNotes = async (pageNum, append = false) => {
     try {
-      setLoading(true);
-      setError(null);
-      const res = await apiRequest('/notes/pending');
-      setPendingNotes(res || []);
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+        setError(null);
+      }
+      const res = await apiRequest(`/notes/pending?page=${pageNum}&limit=${limit}`);
+      const newData = Array.isArray(res) ? res : (res?.data || []);
+      if (append) {
+        setPendingNotes(prev => [...prev, ...newData]);
+      } else {
+        setPendingNotes(newData);
+      }
+      setTotalPending(res?.total || 0);
+      setCurrentPage(pageNum);
     } catch (err) {
       console.error('Failed to fetch pending notes:', err);
       setError(err.message || 'Failed to load pending notes.');
-      setPendingNotes([]);
+      if (!append) setPendingNotes([]);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -90,6 +108,22 @@ export default function PendingNotesPage() {
       showToast(err.message || `Failed to update note status.`, 'error');
     }
   };
+
+  const hasMore = pendingNotes.length < totalPending;
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          fetchPendingNotes(currentPage + 1, true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    const el = observerRef.current;
+    if (el) observer.observe(el);
+    return () => { if (el) observer.unobserve(el); };
+  }, [hasMore, loadingMore, currentPage]);
 
   if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
 
@@ -202,6 +236,19 @@ export default function PendingNotesPage() {
                 />
               ))}
             </div>
+
+            {/* Loading More Indicator */}
+            {loadingMore && (
+              <div className="flex items-center justify-center pt-8">
+                <div className="flex items-center gap-3 px-6 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl">
+                  <Loader2 size={16} className="animate-spin text-purple-500" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">Loading more...</span>
+                </div>
+              </div>
+            )}
+
+            {/* Infinite Scroll Sentinel */}
+            <div ref={observerRef} className="w-full h-4" />
           </AdminPanel>
 
         </div>

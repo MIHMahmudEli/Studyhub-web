@@ -58,12 +58,15 @@ export default function AdminResourcesCatalogPage() {
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
   
-  const [visibleCount, setVisibleCount] = useState(12);
   const [searchQuery, setSearchQuery] = useState('');
   const [resources, setResources] = useState([]);
   const [loadingResources, setLoadingResources] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalResources, setTotalResources] = useState(0);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
-  const observerTarget = useRef(null);
+  const observerRef = useRef(null);
+  const limit = 12;
 
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type, isClosing: false });
@@ -88,20 +91,32 @@ export default function AdminResourcesCatalogPage() {
 
   useEffect(() => {
     if (tokenReady && user && (user.role === 'admin' || user.role === 'moderator')) {
-      fetchResources();
+      fetchResources(1);
     }
   }, [tokenReady, user]);
 
-  const fetchResources = async () => {
+  const fetchResources = async (pageNum, append = false) => {
     try {
-      setLoadingResources(true);
-      const data = await apiRequest('/resources');
-      setResources(data || []);
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoadingResources(true);
+      }
+      const res = await apiRequest(`/resources?page=${pageNum}&limit=${limit}`);
+      const newResources = Array.isArray(res) ? res : (res?.data || []);
+      if (append) {
+        setResources(prev => [...prev, ...newResources]);
+      } else {
+        setResources(newResources);
+      }
+      setTotalResources(res?.total || 0);
+      setCurrentPage(pageNum);
     } catch (err) {
       console.error('Failed to fetch resources:', err);
       showToast(err.message || 'Failed to load library resources.', 'error');
     } finally {
       setLoadingResources(false);
+      setLoadingMore(false);
     }
   };
 
@@ -146,20 +161,21 @@ export default function AdminResourcesCatalogPage() {
     );
   }, [allCourses, searchQuery]);
 
-  const visibleCourses = useMemo(() => filteredCourses.slice(0, visibleCount), [filteredCourses, visibleCount]);
-
-  const loadMore = useCallback(() => {
-    setVisibleCount(prev => Math.min(prev + 12, filteredCourses.length));
-  }, [filteredCourses.length]);
+  const hasMore = resources.length < totalResources;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      entries => { if (entries[0].isIntersecting) loadMore(); },
-      { threshold: 1.0 }
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          fetchResources(currentPage + 1, true);
+        }
+      },
+      { threshold: 0.1 }
     );
-    if (observerTarget.current) observer.observe(observerTarget.current);
-    return () => { if (observerTarget.current) observer.unobserve(observerTarget.current); };
-  }, [loadMore]);
+    const el = observerRef.current;
+    if (el) observer.observe(el);
+    return () => { if (el) observer.unobserve(el); };
+  }, [hasMore, loadingMore, currentPage]);
 
   if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
 
@@ -202,7 +218,7 @@ export default function AdminResourcesCatalogPage() {
               <SearchInput
                 placeholder="SEARCH COURSE DIRECTORY..."
                 value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); setVisibleCount(12); }}
+                onChange={(e) => { setSearchQuery(e.target.value); }}
                 focusBorderClass="focus:border-emerald-500/30"
                 widthClass="w-full md:w-[280px]"
               />
@@ -210,7 +226,7 @@ export default function AdminResourcesCatalogPage() {
           >
             {/* Grid of Dynamic Course Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mt-2">
-              {visibleCourses.map((course, idx) => {
+              {filteredCourses.map((course, idx) => {
                 const Icon = getCourseIcon(course.title);
                 return (
                   <CourseCard
@@ -226,12 +242,18 @@ export default function AdminResourcesCatalogPage() {
               })}
             </div>
 
-            {/* Infinite Scroll Indicator */}
-            <div ref={observerTarget} className="w-full flex items-center justify-center pt-8">
-              {visibleCount < filteredCourses.length && (
-                <Loader2 size={20} className="animate-spin text-emerald-500" />
-              )}
-            </div>
+            {/* Loading More Indicator */}
+            {loadingMore && (
+              <div className="flex items-center justify-center pt-8">
+                <div className="flex items-center gap-3 px-6 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl">
+                  <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">Loading more resources...</span>
+                </div>
+              </div>
+            )}
+
+            {/* Infinite Scroll Sentinel */}
+            <div ref={observerRef} className="w-full h-4" />
           </AdminPanel>
 
         </div>
