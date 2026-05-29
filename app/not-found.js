@@ -2,29 +2,20 @@
 import { Home, ArrowLeft } from 'lucide-react';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function NotFound() {
   const { user } = useAuth();
+  const router = useRouter();
   const homeRoute = user ? '/notes' : '/auth';
 
   const handleGoBack = () => {
-    if (typeof window !== 'undefined') {
-      const referrer = document.referrer;
-      if (referrer && referrer.includes(window.location.host)) {
-        window.location.href = referrer;
-      } else if (window.history.length > 1) {
-        window.history.back();
-      } else {
-        window.location.href = homeRoute;
-      }
-    }
+    router.back();
   };
 
   const handleGoHome = (e) => {
     e.preventDefault();
-    if (typeof window !== 'undefined') {
-      window.location.href = homeRoute;
-    }
+    router.push(homeRoute);
   };
 
   return (
