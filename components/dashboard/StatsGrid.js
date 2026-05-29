@@ -25,7 +25,7 @@ export default function StatsGrid({ stats, loading }) {
       </div>
 
       {/* Uploaded Notes */}
-      <div className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm hover:border-purple-500/30 transition-all duration-500 hover:-translate-y-1">
+      <Link href="/dashboard/uploaded-notes" className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm hover:border-purple-500/30 transition-all duration-500 hover:-translate-y-1 block">
         <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-purple-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         <div className="flex justify-between items-start relative z-10">
           <div className="space-y-3">
@@ -39,7 +39,7 @@ export default function StatsGrid({ stats, loading }) {
             <UploadCloud size={22} />
           </div>
         </div>
-      </div>
+      </Link>
 
       {/* Total Downloads Received */}
       <div className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1">

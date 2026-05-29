@@ -42,7 +42,8 @@ export default function StudentDashboard() {
     try {
       setLoadingNotes(true);
       // 1. Fetch user's uploaded notes to compile stats
-      const notesData = await apiRequest('/notes/my-notes');
+      const notesRes = await apiRequest('/notes/my-notes?limit=1000');
+      const notes = notesRes?.data || notesRes || [];
 
       // 2. Fetch leaderboard to determine current rank
       const leaderboardData = await apiRequest('/users/leaderboard');
@@ -50,11 +51,11 @@ export default function StudentDashboard() {
       const userRank = rankIndex !== -1 ? `#${rankIndex + 1}` : 'Rank #--';
 
       // 3. Compute stats
-      const totalDownloads = notesData.reduce((acc, note) => acc + (note.downloads || 0), 0);
-      
+      const totalDownloads = notes.reduce((acc, note) => acc + (note.downloads || 0), 0);
+
       setStats({
         points: user.points || 0,
-        uploads: notesData.length,
+        uploads: notes.length,
         downloads: totalDownloads,
         rank: userRank
       });

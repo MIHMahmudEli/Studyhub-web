@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -10,16 +10,17 @@ import { apiRequest } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminPanel from '@/components/admin/AdminPanel';
-import { 
-  Clock, 
-  CheckCircle2, 
-  XCircle, 
+import {
+  Clock,
+  CheckCircle2,
+  XCircle,
   ExternalLink,
   Sparkles,
   Eye,
   Trash2,
   UploadCloud,
-  FileText
+  FileText,
+  Loader2
 } from 'lucide-react';
 
 export default function UploadedNotesPage() {
@@ -28,58 +29,91 @@ export default function UploadedNotesPage() {
 
   const [myNotes, setMyNotes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
+  const sentinelRef = useRef(null);
+  const LIMIT = 12;
 
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type, isClosing: false });
     setTimeout(() => closeToast(), 5000);
   };
-  
+
   const closeToast = () => {
     setToast(prev => ({ ...prev, isClosing: true }));
     setTimeout(() => setToast(prev => ({ ...prev, show: false, isClosing: false })), 500);
   };
 
-  // Auth verification
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/auth');
     }
   }, [user, authLoading, router]);
 
-  // Fetch student's uploaded notes
-  useEffect(() => {
-    if (user) {
-      fetchMyNotes();
-    }
-  }, [user]);
-
-  const fetchMyNotes = async () => {
+  const fetchNotes = useCallback(async (pageNum, reset = false) => {
     try {
-      setLoading(true);
+      if (reset) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
       setError(null);
-      const res = await apiRequest('/notes/my-notes');
-      setMyNotes(res || []);
+
+      const res = await apiRequest(`/notes/my-notes?page=${pageNum}&limit=${LIMIT}`);
+
+      if (res && res.data) {
+        if (reset) {
+          setMyNotes(res.data);
+        } else {
+          setMyNotes(prev => [...prev, ...res.data]);
+        }
+        setTotal(res.total || 0);
+        setPage(pageNum);
+        setHasMore(pageNum * LIMIT < (res.total || 0));
+      }
     } catch (err) {
       console.error('Failed to fetch my notes:', err);
       setError(err.message || 'Failed to load your uploaded notes.');
-      setMyNotes([]);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchNotes(1, true);
+    }
+  }, [user, fetchNotes]);
+
+  // Infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          fetchNotes(page + 1, false);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    const el = sentinelRef.current;
+    if (el) observer.observe(el);
+    return () => { if (el) observer.unobserve(el); };
+  }, [hasMore, loadingMore, loading, page, fetchNotes]);
 
   const handleDeleteNote = async (id) => {
     if (!confirm('Are you absolutely sure you want to delete this note? This action cannot be undone.')) {
       return;
     }
-    
+
     try {
       setDeletingId(id);
 
-      // 1. Delete file from Supabase storage first to save space
       const noteToDelete = myNotes.find(n => n.id === id);
       if (noteToDelete && noteToDelete.file_path) {
         try {
@@ -94,14 +128,12 @@ export default function UploadedNotesPage() {
         }
       }
 
-      // 2. Call the backend DELETE API
       await apiRequest(`/notes/${id}`, { method: 'DELETE' });
-      
-      // Update local state
+
       setMyNotes(prev => prev.filter(n => n.id !== id));
+      setTotal(prev => prev - 1);
       showToast('Note deleted successfully.', 'success');
-      
-      // Re-trigger auth context update to refresh points
+
       await checkUser();
     } catch (err) {
       console.error('Failed to delete note:', err);
@@ -119,8 +151,7 @@ export default function UploadedNotesPage() {
 
       <div className="pt-24 md:pt-32 px-4 md:px-8">
         <div className="max-w-[1400px] mx-auto space-y-8 sm:space-y-12">
-          
-          {/* Reusable Admin Header configured for Student Dashboard */}
+
           <AdminHeader
             backHref="/dashboard"
             backText="Back to Dashboard"
@@ -131,27 +162,26 @@ export default function UploadedNotesPage() {
             glowColor="bg-purple-500/10"
             statsIcon={UploadCloud}
             statsTitle="Contributed Notes"
-            statsValue={`${myNotes.length} Submissions`}
+            statsValue={`${total} Submissions`}
             statsColorClass="text-purple-500 bg-purple-500/10 border-purple-500/20"
           />
 
-          {/* Reusable Admin Panel Container configured for Uploaded Notes */}
           <AdminPanel
             panelIcon={Sparkles}
             panelIconClass="text-purple-500 animate-pulse"
             panelTitle="Submissions & Status"
             panelSubtitle="Check verification states or manage uploaded content."
-            badgeText={`Total: ${myNotes.length}`}
+            badgeText={`Total: ${total}`}
             badgeColorClass="bg-purple-500/10 text-purple-500 border-purple-500/20"
             loading={loading}
             error={error}
-            isEmpty={myNotes.length === 0}
+            isEmpty={!loading && myNotes.length === 0}
             emptyIcon={FileText}
             emptyTitle="No Uploads Yet"
             emptyDescription="You haven't contributed any notes yet. Upload notes to earn academic points!"
             panelActions={
-              <Link 
-                href="/upload" 
+              <Link
+                href="/upload"
                 className="flex items-center justify-center gap-2 px-5 py-3.5 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-xl shadow-purple-500/20 cursor-pointer text-center"
               >
                 <UploadCloud size={14} /> Upload New Note
@@ -201,10 +231,10 @@ export default function UploadedNotesPage() {
                       </td>
                       <td className="py-4 sm:py-5 text-center whitespace-nowrap">
                         {note.file_path ? (
-                          <a 
-                            href={note.file_path} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
+                          <a
+                            href={note.file_path}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-500/10 text-purple-500 rounded-lg border border-purple-500/20 hover:bg-purple-500/20 transition-colors uppercase text-[10px] tracking-widest font-black shrink-0"
                           >
                             {note.file_type || 'PDF'} <ExternalLink size={12} />
@@ -216,14 +246,14 @@ export default function UploadedNotesPage() {
                       <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap">
                         <div className="inline-flex items-center gap-1.5 sm:gap-2">
                           {note.status === 'approved' && (
-                            <Link 
+                            <Link
                               href={`/notes/${note.id}`}
                               className="px-3.5 py-2 sm:px-4 sm:py-2 bg-purple-500/10 text-purple-500 hover:bg-purple-500 hover:text-white rounded-xl border border-purple-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
                             >
                               <Eye size={14} /> View
                             </Link>
                           )}
-                          <button 
+                          <button
                             onClick={() => handleDeleteNote(note.id)}
                             disabled={deletingId === note.id}
                             className="px-3.5 py-2 sm:px-4 sm:py-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
@@ -292,14 +322,14 @@ export default function UploadedNotesPage() {
 
                   <div className="flex gap-2">
                     {note.status === 'approved' && (
-                      <Link 
+                      <Link
                         href={`/notes/${note.id}`}
                         className="flex-1 flex items-center justify-center gap-2 py-3 bg-purple-500/10 hover:bg-purple-500/20 text-purple-500 rounded-2xl text-[9px] font-black uppercase tracking-widest border border-purple-500/20 transition-all font-bold text-center"
                       >
                         <Eye size={12} /> View Note
                       </Link>
                     )}
-                    <button 
+                    <button
                       onClick={() => handleDeleteNote(note.id)}
                       disabled={deletingId === note.id}
                       className="flex-1 flex items-center justify-center gap-2 py-3 bg-red-500/10 hover:bg-red-500 hover:text-white border border-red-500/20 text-red-500 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all font-bold"
@@ -314,6 +344,19 @@ export default function UploadedNotesPage() {
                 </div>
               ))}
             </div>
+
+            {/* Loading More Indicator */}
+            {loadingMore && (
+              <div className="flex items-center justify-center pt-8">
+                <div className="flex items-center gap-3 px-6 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl">
+                  <Loader2 size={16} className="animate-spin text-purple-500" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">Loading more notes...</span>
+                </div>
+              </div>
+            )}
+
+            {/* Infinite Scroll Sentinel */}
+            <div ref={sentinelRef} className="w-full h-4" />
           </AdminPanel>
 
         </div>

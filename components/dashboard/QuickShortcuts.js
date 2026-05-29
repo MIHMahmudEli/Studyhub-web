@@ -1,75 +1,136 @@
 'use client';
 
 import Link from 'next/link';
-import { UploadCloud, BookOpen, Bookmark, Trophy, ArrowRight, Layers, Calendar, FileText } from 'lucide-react';
+import { UploadCloud, BookOpen, Bookmark, Trophy, Calendar, Layers, FileText } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+
+const SECTIONS = [
+  {
+    title: 'Content Management',
+    items: [
+      {
+        href: '/upload',
+        icon: UploadCloud,
+        label: 'Upload New Note',
+        desc: 'Contribute study materials',
+        color: 'text-purple-500',
+        bg: 'bg-purple-500/10',
+        border: 'border-purple-500/20',
+        adminOnly: false,
+      },
+      {
+        href: '/dashboard/uploaded-notes',
+        icon: FileText,
+        label: 'Uploaded Notes',
+        desc: 'Manage your contributions',
+        color: 'text-orange-500',
+        bg: 'bg-orange-500/10',
+        border: 'border-orange-500/20',
+        adminOnly: false,
+      },
+      {
+        href: '/resources/upload_resources',
+        icon: Layers,
+        label: 'Publish Resource',
+        desc: 'Share academic resources',
+        color: 'text-amber-500',
+        bg: 'bg-amber-500/10',
+        border: 'border-amber-500/20',
+        adminOnly: true,
+      },
+    ],
+  },
+  {
+    title: 'Discovery & Rankings',
+    items: [
+      {
+        href: '/notes',
+        icon: BookOpen,
+        label: 'Browse Repository',
+        desc: 'Explore all study notes',
+        color: 'text-blue-500',
+        bg: 'bg-blue-500/10',
+        border: 'border-blue-500/20',
+        adminOnly: false,
+      },
+      {
+        href: '/bookmarks',
+        icon: Bookmark,
+        label: 'Saved Bookmarks',
+        desc: 'Quick access to favorites',
+        color: 'text-pink-500',
+        bg: 'bg-pink-500/10',
+        border: 'border-pink-500/20',
+        adminOnly: false,
+      },
+      {
+        href: '/leaderboard',
+        icon: Trophy,
+        label: 'Leaderboard',
+        desc: 'See top contributors',
+        color: 'text-emerald-500',
+        bg: 'bg-emerald-500/10',
+        border: 'border-emerald-500/20',
+        adminOnly: false,
+      },
+    ],
+  },
+  {
+    title: 'Tools & Utilities',
+    items: [
+      {
+        href: '/dashboard/routine',
+        icon: Calendar,
+        label: 'Class Routine',
+        desc: 'View your class schedule',
+        color: 'text-indigo-500',
+        bg: 'bg-indigo-500/10',
+        border: 'border-indigo-500/20',
+        adminOnly: false,
+      },
+    ],
+  },
+];
 
 export default function QuickShortcuts() {
   const { user } = useAuth();
   const isAdminOrMod = user?.role === 'admin' || user?.role === 'moderator';
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Quick shortcuts</h3>
-      <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-${isAdminOrMod ? '7' : '6'} gap-4`}>
-        <Link href="/upload" className="group flex items-center justify-between p-6 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-purple-500/10 border border-purple-500/20 rounded-2xl flex items-center justify-center text-purple-500"><UploadCloud size={16} /></div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Upload new note</span>
-          </div>
-          <ArrowRight size={14} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
-        </Link>
-        
-        <Link href="/notes" className="group flex items-center justify-between p-6 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center text-blue-500"><BookOpen size={16} /></div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Browse repository</span>
-          </div>
-          <ArrowRight size={14} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
-        </Link>
+    <div className="space-y-10">
+      {SECTIONS.map((section) => {
+        const visibleItems = section.items.filter(item => !item.adminOnly || isAdminOrMod);
+        if (visibleItems.length === 0) return null;
 
-        <Link href="/dashboard/uploaded-notes" className="group flex items-center justify-between p-6 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center justify-center text-orange-500"><FileText size={16} /></div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Uploaded Notes</span>
-          </div>
-          <ArrowRight size={14} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
-        </Link>
-        
-        <Link href="/bookmarks" className="group flex items-center justify-between p-6 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-pink-500/10 border border-pink-500/20 rounded-2xl flex items-center justify-center text-pink-500"><Bookmark size={16} /></div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Saved bookmarks</span>
-          </div>
-          <ArrowRight size={14} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
-        </Link>
-
-        <Link href="/leaderboard" className="group flex items-center justify-between p-6 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl hover:bg-white dark:hover:bg-white/[0.03] transition-all hover:translate-x-1 duration-500 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-500"><Trophy size={16} /></div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Leaderboard standings</span>
-          </div>
-          <ArrowRight size={14} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
-        </Link>
-
-        <Link href="/dashboard/routine" className="group flex items-center justify-between p-6 bg-[var(--card-bg)] border border-indigo-500/30 rounded-3xl hover:bg-indigo-500/5 hover:border-indigo-500/50 transition-all hover:translate-x-1 duration-500 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-500"><Calendar size={16} /></div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Class Routine</span>
-          </div>
-          <ArrowRight size={14} className="text-indigo-500 group-hover:translate-x-1 transition-transform" />
-        </Link>
-
-        {isAdminOrMod && (
-          <Link href="/resources/upload_resources" className="group flex items-center justify-between p-6 bg-[var(--card-bg)] border border-amber-500/30 rounded-3xl hover:bg-amber-500/5 transition-all hover:translate-x-1 duration-500 shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-500"><Layers size={16} /></div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">Publish Resource</span>
+        return (
+          <div key={section.title} className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-[var(--card-border)]" />
+              <h3 className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400 shrink-0">
+                {section.title}
+              </h3>
+              <div className="h-px flex-1 bg-[var(--card-border)]" />
             </div>
-            <ArrowRight size={14} className="text-amber-500 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        )}
-      </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {visibleItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="group flex items-center gap-4 p-5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl hover:bg-white dark:hover:bg-white/[0.03] hover:translate-x-0.5 transition-all duration-300 shadow-sm"
+                >
+                  <div className={`w-10 h-10 ${item.bg} ${item.border} rounded-2xl flex items-center justify-center ${item.color} shrink-0`}>
+                    <item.icon size={16} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className={`text-[10px] font-black uppercase tracking-widest ${item.color}`}>{item.label}</p>
+                    <p className="text-[8px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-0.5 truncate">{item.desc}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
