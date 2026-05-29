@@ -257,7 +257,11 @@ export default function SettingsPage() {
     const hasChanges = 
       profileForm.name !== (user.name || '') ||
       profileForm.dept !== (user.dept || '') ||
-      profileForm.code !== (user.code || '');
+      profileForm.code !== (user.code || '') ||
+      profileForm.github !== (user.github || '') ||
+      profileForm.linkedin !== (user.linkedin || '') ||
+      profileForm.instagram !== (user.instagram || '') ||
+      profileForm.facebook !== (user.facebook || '');
 
     if (!hasChanges) {
       showToast('No changes detected. You have not modified any profile details.', 'warning');
@@ -265,20 +269,27 @@ export default function SettingsPage() {
       return;
     }
 
-    const cleanedName = sanitizeName(profileForm.name);
-    if (!cleanedName) {
+    const nameChanged = profileForm.name !== (user.name || '');
+    const cleanedName = nameChanged ? sanitizeName(profileForm.name) : user.name;
+    if (nameChanged && !cleanedName) {
       showToast('Please enter a valid name.', 'error');
       setSaving(false);
       return;
     }
-    setProfileForm(prev => ({ ...prev, name: cleanedName }));
+    if (nameChanged) {
+      setProfileForm(prev => ({ ...prev, name: cleanedName }));
+    }
     try {
       await apiRequest('/users/profile', {
         method: 'PATCH',
         body: {
           name: cleanedName,
           dept: profileForm.dept || null,
-          code: profileForm.code || null
+          code: profileForm.code || null,
+          github: profileForm.github || null,
+          linkedin: profileForm.linkedin || null,
+          instagram: profileForm.instagram || null,
+          facebook: profileForm.facebook || null
         }
       });
       
