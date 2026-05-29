@@ -95,15 +95,13 @@ export default function BookmarkPage() {
     fetchBookmarks();
   }, [tokenReady, user]);
 
-  const handleRemoveBookmark = async (id) => {
-    try {
-      await apiRequest(`/bookmarks/${id}`, { method: 'DELETE' });
-      setBookmarks(prev => prev.filter(b => b.id !== id));
-      showToast('Item removed from your bookmarks archive.', 'success');
-    } catch (err) {
-      console.error('Failed to remove bookmark:', err);
+  const handleRemoveBookmark = (id) => {
+    const removed = bookmarks.find(b => b.id === id);
+    setBookmarks(prev => prev.filter(b => b.id !== id));
+    apiRequest(`/bookmarks/${id}`, { method: 'DELETE' }).catch(err => {
+      if (removed) setBookmarks(prev => [...prev, removed]);
       showToast('Failed to remove bookmark.', 'error');
-    }
+    });
   };
 
   // ─── Filtering ──────────────────────────────────────────────────────────────
