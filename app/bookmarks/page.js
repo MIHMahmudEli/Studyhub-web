@@ -161,7 +161,39 @@ export default function BookmarkPage() {
               <section className="space-y-6">
                 <div className="flex items-center gap-4 animate-pulse">
                   <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800/50" />
-                  <div className="w-32 h-4 bg-slate-200 dark:bg-slate-800/50 rounded" />
+                  <div className="w-28 h-4 bg-slate-200 dark:bg-slate-800/50 rounded" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="relative h-[280px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex flex-col items-center justify-between shadow-sm animate-pulse">
+                      <div className="relative z-10 w-12 h-12 rounded-[1.2rem] bg-slate-200 dark:bg-white/[0.05] border border-[var(--card-border)] flex items-center justify-center">
+                        <div className="w-5 h-5 rounded bg-slate-300 dark:bg-white/[0.08]" />
+                      </div>
+                      <div className="relative z-10 text-center space-y-2 w-full">
+                        <div className="space-y-1">
+                          <div className="h-[14px] md:h-[15px] w-3/4 mx-auto rounded-full bg-slate-200 dark:bg-white/[0.05]" />
+                          <div className="space-y-1 pt-1">
+                            <div className="h-[11px] w-1/3 mx-auto rounded-full bg-slate-200 dark:bg-white/[0.05]" />
+                            <div className="h-[10px] w-1/2 mx-auto rounded-full bg-slate-200 dark:bg-white/[0.05] mt-1.5" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="relative z-10 w-full flex items-center justify-between pt-3 border-t border-[var(--card-border)]">
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-3 w-10 rounded-full bg-slate-200 dark:bg-white/[0.05]" />
+                          <div className="w-0.5 h-0.5 rounded-full bg-slate-300 dark:bg-slate-700" />
+                          <div className="h-3 w-10 rounded-full bg-slate-200 dark:bg-white/[0.05]" />
+                        </div>
+                        <div className="w-5 h-5 rounded-full bg-slate-200 dark:bg-white/[0.05]" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+              <section className="space-y-6">
+                <div className="flex items-center gap-4 animate-pulse">
+                  <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800/50" />
+                  <div className="w-28 h-4 bg-slate-200 dark:bg-slate-800/50 rounded" />
                 </div>
                 <ResourceListSkeleton />
               </section>

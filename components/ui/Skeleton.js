@@ -100,29 +100,28 @@ export function Skeleton({ className, ...props }) {
 
 export function NoteCardSkeleton() {
   return (
-    <div className="group relative h-[300px] md:h-[360px] bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col items-center justify-between shadow-sm animate-pulse">
-      <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] md:rounded-[2rem] bg-white dark:bg-[var(--background)] border border-slate-200 dark:border-white/[0.05] flex items-center justify-center shadow-xl">
-        <Skeleton className="w-8 h-8 rounded-full" />
+    <div className="relative h-[280px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex flex-col items-center justify-between shadow-sm animate-pulse">
+      <div className="relative z-10 w-12 h-12 rounded-[1.2rem] bg-slate-200 dark:bg-white/[0.05] border border-[var(--card-border)] flex items-center justify-center shadow-md">
+        <div className="w-5 h-5 rounded bg-slate-300 dark:bg-white/[0.08]" />
       </div>
 
-      <div className="text-center space-y-3 w-full flex flex-col items-center">
-        <div className="space-y-2 w-full flex flex-col items-center">
-          <Skeleton className="w-20 h-4 rounded-full" />
-          <div className="space-y-2 w-full flex flex-col items-center mt-2">
-            <Skeleton className="w-16 h-3 rounded-full" />
-            <Skeleton className="w-3/4 h-4 rounded-full mt-2" />
-            <Skeleton className="w-1/2 h-4 rounded-full" />
+      <div className="relative z-10 text-center space-y-2 w-full">
+        <div className="space-y-1">
+          <div className="h-[14px] md:h-[15px] w-3/4 mx-auto rounded-full bg-slate-200 dark:bg-white/[0.05]" />
+          <div className="space-y-1 pt-1">
+            <div className="h-[11px] w-1/3 mx-auto rounded-full bg-slate-200 dark:bg-white/[0.05]" />
+            <div className="h-[10px] w-1/2 mx-auto rounded-full bg-slate-200 dark:bg-white/[0.05] mt-1.5" />
           </div>
         </div>
       </div>
 
-      <div className="w-full flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/[0.05]">
-        <div className="flex items-center gap-3">
-          <Skeleton className="w-8 h-3 rounded-full" />
+      <div className="relative z-10 w-full flex items-center justify-between pt-3 border-t border-[var(--card-border)]">
+        <div className="flex items-center gap-2.5">
+          <div className="h-3 w-10 rounded-full bg-slate-200 dark:bg-white/[0.05]" />
           <div className="w-0.5 h-0.5 rounded-full bg-slate-300 dark:bg-slate-700" />
-          <Skeleton className="w-8 h-3 rounded-full" />
+          <div className="h-3 w-10 rounded-full bg-slate-200 dark:bg-white/[0.05]" />
         </div>
-        <Skeleton className="w-6 h-6 md:w-7 md:h-7 rounded-full" />
+        <div className="w-5 h-5 rounded-full bg-slate-200 dark:bg-white/[0.05]" />
       </div>
     </div>
   );
@@ -161,18 +160,27 @@ export function BookmarkListSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="bg-slate-50/50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.05] rounded-[1.5rem] p-6 flex flex-col justify-between h-[180px] shadow-sm animate-pulse animate-in fade-in duration-500">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Skeleton className="w-12 h-4 rounded" />
-              <Skeleton className="w-16 h-3 rounded" />
-            </div>
-            <Skeleton className="w-full h-4 rounded mt-2" />
-            <Skeleton className="w-2/3 h-4 rounded" />
+        <div key={i} className="relative h-[280px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex flex-col items-center justify-between shadow-sm animate-pulse">
+          <div className="relative z-10 w-12 h-12 rounded-[1.2rem] bg-slate-200 dark:bg-white/[0.05] border border-[var(--card-border)] flex items-center justify-center shadow-md">
+            <div className="w-5 h-5 rounded bg-slate-300 dark:bg-white/[0.08]" />
           </div>
-          <div className="mt-4 flex items-center justify-between border-t border-slate-200/50 dark:border-white/[0.05] pt-4">
-            <Skeleton className="w-16 h-3 rounded" />
-            <Skeleton className="w-4 h-4 rounded-full" />
+
+          <div className="relative z-10 text-center space-y-2 w-full">
+            <div className="space-y-1">
+              <div className="h-[14px] md:h-[15px] w-3/4 mx-auto rounded-full bg-slate-200 dark:bg-white/[0.05]" />
+              <div className="space-y-1 pt-1">
+                <div className="h-[11px] w-1/3 mx-auto rounded-full bg-slate-200 dark:bg-white/[0.05]" />
+                <div className="h-[10px] w-1/2 mx-auto rounded-full bg-slate-200 dark:bg-white/[0.05] mt-1.5" />
+              </div>
+            </div>
+          </div>
+
+          <div className="relative z-10 w-full flex items-center justify-between pt-3 border-t border-[var(--card-border)]">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />
+              <div className="h-3 w-16 rounded-full bg-slate-200 dark:bg-white/[0.05]" />
+            </div>
+            <div className="w-5 h-5 rounded-full bg-slate-200 dark:bg-white/[0.05]" />
           </div>
         </div>
       ))}
@@ -184,17 +192,17 @@ export function ResourceListSkeleton() {
   return (
     <div className="space-y-3">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-2xl p-4 md:p-5 flex items-center justify-between shadow-sm animate-pulse animate-in fade-in duration-500">
+        <div key={i} className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-4 md:p-5 flex items-center justify-between shadow-sm animate-pulse">
           <div className="flex items-center gap-4 min-w-0">
-            <Skeleton className="w-10 h-10 rounded-xl" />
+            <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-white/[0.05] shrink-0" />
             <div className="space-y-2">
-              <Skeleton className="w-32 h-4 rounded" />
-              <Skeleton className="w-24 h-3 rounded" />
+              <div className="h-4 w-32 rounded bg-slate-200 dark:bg-white/[0.05]" />
+              <div className="h-3 w-20 rounded bg-slate-200 dark:bg-white/[0.05]" />
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Skeleton className="w-9 h-9 rounded-xl" />
-            <Skeleton className="w-9 h-9 rounded-xl" />
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="w-[38px] h-[38px] rounded-xl bg-slate-200 dark:bg-white/[0.05]" />
+            <div className="w-[38px] h-[38px] rounded-xl bg-slate-200 dark:bg-white/[0.05]" />
           </div>
         </div>
       ))}
