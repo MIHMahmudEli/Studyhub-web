@@ -1,101 +1,126 @@
 'use client';
 
-import { TrendingUp, Star, Coins } from 'lucide-react';
+import { TrendingUp, Coins, FileText, Zap } from 'lucide-react';
+import { getLevelInfo } from './leaderboardUtils';
+
+function LevelBadge({ levelInfo }) {
+  return (
+    <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider ${levelInfo.currentLevel.bgColor} ${levelInfo.currentLevel.textColor} border ${levelInfo.currentLevel.borderColor}`}>
+      <Zap size={10} />
+      {levelInfo.currentLevel.name}
+    </div>
+  );
+}
+
+function Avatar({ user }) {
+  return (
+    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-[var(--card-border)] overflow-hidden flex items-center justify-center text-blue-500 font-black text-xs shrink-0">
+      {user.profile_pic ? (
+        <img src={user.profile_pic} alt={user.name} className="w-full h-full object-cover rounded-[inherit]" />
+      ) : (
+        user.name.charAt(0)
+      )}
+    </div>
+  );
+}
 
 export default function RankingsTable({ leaders }) {
   return (
-    <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] overflow-hidden backdrop-blur-xl shadow-2xl">
-      <div className="p-8 border-b border-[var(--card-border)] flex items-center justify-between bg-white/[0.02]">
-        <h2 className="text-xl font-black tracking-tight flex items-center gap-3">
-          <TrendingUp className="text-blue-500" /> Top Scholars
+    <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] overflow-hidden backdrop-blur-xl shadow-2xl">
+      <div className="p-6 border-b border-[var(--card-border)] flex items-center justify-between bg-white/[0.02]">
+        <h2 className="text-lg font-black tracking-tight flex items-center gap-2.5">
+          <TrendingUp className="text-blue-500" size={20} /> Top Scholars
         </h2>
-        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-          Updated in real-time
+        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+          Updated live
         </span>
       </div>
 
-      {/* Mobile Scholar List Layout - Hidden on Desktop */}
+      {/* Mobile rows */}
       <div className="md:hidden divide-y divide-[var(--card-border)]">
-        {leaders.map((player, index) => (
-          <div key={player.id} className="flex items-center justify-between p-5 hover:bg-blue-500/[0.01] transition-colors gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <span className="text-xs font-black text-slate-500 shrink-0 w-8 text-center bg-slate-500/5 py-1 rounded-lg border border-[var(--card-border)]">
+        {leaders.map((player, index) => {
+          const li = getLevelInfo(player.points);
+          return (
+            <div key={player.id} className="flex items-center gap-3 px-5 py-4 hover:bg-blue-500/[0.01] transition-colors">
+              <span className="text-xs font-black text-slate-500 shrink-0 w-7 text-center">
                 #{index + 4}
               </span>
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-[var(--card-border)] overflow-hidden flex items-center justify-center text-blue-500 font-black text-xs shrink-0">
-                {player.profile_pic ? (
-                  <img 
-                    src={player.profile_pic} 
-                    alt={player.name} 
-                    className="w-full h-full object-cover rounded-[inherit]"
-                  />
-                ) : (
-                  player.name.charAt(0)
+              <Avatar user={player} />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <p className="text-sm font-bold truncate">{player.name}</p>
+                  <LevelBadge levelInfo={li} />
+                </div>
+                {player.dept && (
+                  <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">{player.dept}</p>
                 )}
               </div>
-              <div className="min-w-0">
-                <p className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">{player.name}</p>
-                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Verified Student</p>
+              <div className="text-right shrink-0 flex flex-col items-end gap-1">
+                <div className="inline-flex items-center gap-1 text-amber-500 font-black text-xs">
+                  <Coins size={12} />
+                  <span>{player.points.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center gap-1 text-slate-400 text-[9px] font-semibold">
+                  <FileText size={10} />
+                  <span>{player.noteCount ?? 0}</span>
+                </div>
               </div>
             </div>
-            
-            <div className="text-right shrink-0 flex flex-col items-end gap-1">
-              <div className="inline-flex items-center gap-1 text-amber-500 font-black text-xs">
-                <Coins size={12} />
-                <span>{player.points.toLocaleString()}</span>
-              </div>
-              <div className="flex items-center gap-1 text-slate-400 text-[9px] font-semibold">
-                <Star size={10} />
-                <span>{player.uploads} Shared</span>
-              </div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Desktop Table Layout - Hidden on Mobile */}
+      {/* Desktop table */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/[0.01]">
-              <th className="px-8 py-5">Rank</th>
-              <th className="px-8 py-5">Student</th>
-              <th className="px-8 py-5 text-right">Academic Points</th>
+              <th className="px-6 py-4 w-16">Rank</th>
+              <th className="px-6 py-4">Scholar</th>
+              <th className="px-6 py-4">Level</th>
+              <th className="px-6 py-4 text-right">Notes</th>
+              <th className="px-6 py-4 text-right">Points</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--card-border)]">
-            {leaders.map((player, index) => (
-              <tr key={player.id} className="group hover:bg-blue-500/[0.02] transition-colors">
-                <td className="px-8 py-6">
-                  <span className="text-sm font-black text-slate-500 group-hover:text-blue-500 transition-colors">#{index + 4}</span>
-                </td>
-                <td className="px-8 py-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-[var(--card-border)] overflow-hidden flex items-center justify-center text-blue-500 font-black text-xs">
-                      {player.profile_pic ? (
-                        <img 
-                          src={player.profile_pic} 
-                          alt={player.name} 
-                          className="w-full h-full object-cover rounded-[inherit]"
-                        />
-                      ) : (
-                        player.name.charAt(0)
-                      )}
+            {leaders.map((player, index) => {
+              const li = getLevelInfo(player.points);
+              return (
+                <tr key={player.id} className="group hover:bg-blue-500/[0.02] transition-colors">
+                  <td className="px-6 py-5">
+                    <span className="text-sm font-black text-slate-500 group-hover:text-blue-500 transition-colors">
+                      #{index + 4}
+                    </span>
+                  </td>
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-3">
+                      <Avatar user={player} />
+                      <div>
+                        <p className="text-sm font-bold group-hover:text-blue-500 transition-colors">{player.name}</p>
+                        {player.dept && (
+                          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">{player.dept}</p>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-bold group-hover:text-blue-500 transition-colors">{player.name}</p>
-                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Verified Student</p>
+                  </td>
+                  <td className="px-6 py-5">
+                    <LevelBadge levelInfo={li} />
+                  </td>
+                  <td className="px-6 py-5 text-right">
+                    <div className="inline-flex items-center gap-1.5 text-slate-400">
+                      <FileText size={14} />
+                      <span className="text-xs font-bold">{player.noteCount ?? 0}</span>
                     </div>
-                  </div>
-                </td>
-                <td className="px-8 py-6 text-right">
-                  <div className="inline-flex items-center gap-2 text-amber-500 font-black text-sm">
-                    <Coins size={16} />
-                    {player.points.toLocaleString()}
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="px-6 py-5 text-right">
+                    <div className="inline-flex items-center gap-1.5 text-amber-500 font-black text-sm">
+                      <Coins size={16} />
+                      {player.points.toLocaleString()}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

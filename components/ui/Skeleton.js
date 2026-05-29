@@ -206,41 +206,55 @@ export function LeaderboardSkeleton() {
   return (
     <div className="animate-pulse">
       {/* Podium Skeleton */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20 items-end">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 items-end">
         <div className="order-2 md:order-1 flex flex-col items-center">
-          <Skeleton className="w-16 h-16 rounded-full mb-4" />
+          <Skeleton className="w-16 h-16 rounded-2xl mb-4" />
           <Skeleton className="w-24 h-4 rounded mb-2" />
-          <Skeleton className="w-16 h-3 rounded mb-4" />
-          <Skeleton className="w-full h-32 rounded-t-[2rem]" />
+          <Skeleton className="w-16 h-3 rounded mb-3" />
+          <Skeleton className="w-16 h-4 rounded-full mb-4" />
+          <Skeleton className="w-24 h-6 rounded mb-3" />
+          <Skeleton className="w-full h-2 rounded-full mb-4" />
+          <Skeleton className="w-20 h-3 rounded mb-2" />
+          <Skeleton className="w-full h-44 rounded-[2rem]" />
         </div>
         <div className="order-1 md:order-2 flex flex-col items-center">
-          <Skeleton className="w-20 h-20 rounded-full mb-4" />
+          <Skeleton className="w-20 h-20 rounded-2xl mb-4" />
           <Skeleton className="w-32 h-5 rounded mb-2" />
-          <Skeleton className="w-20 h-3 rounded mb-4" />
-          <Skeleton className="w-full h-40 rounded-t-[2rem]" />
+          <Skeleton className="w-20 h-3 rounded mb-3" />
+          <Skeleton className="w-20 h-4 rounded-full mb-4" />
+          <Skeleton className="w-28 h-7 rounded mb-3" />
+          <Skeleton className="w-full h-2 rounded-full mb-4" />
+          <Skeleton className="w-24 h-3 rounded mb-2" />
+          <Skeleton className="w-full h-52 rounded-[2rem]" />
         </div>
         <div className="order-3 md:order-3 flex flex-col items-center">
-          <Skeleton className="w-16 h-16 rounded-full mb-4" />
+          <Skeleton className="w-16 h-16 rounded-2xl mb-4" />
           <Skeleton className="w-24 h-4 rounded mb-2" />
-          <Skeleton className="w-16 h-3 rounded mb-4" />
-          <Skeleton className="w-full h-28 rounded-t-[2rem]" />
+          <Skeleton className="w-16 h-3 rounded mb-3" />
+          <Skeleton className="w-16 h-4 rounded-full mb-4" />
+          <Skeleton className="w-24 h-6 rounded mb-3" />
+          <Skeleton className="w-full h-2 rounded-full mb-4" />
+          <Skeleton className="w-20 h-3 rounded mb-2" />
+          <Skeleton className="w-full h-40 rounded-[2rem]" />
         </div>
       </div>
-      
+
       {/* Table Skeleton */}
-      <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-[2rem] p-4 md:p-8 shadow-sm">
-        <div className="space-y-4">
+      <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] overflow-hidden">
+        <div className="p-6 border-b border-[var(--card-border)]">
+          <Skeleton className="w-36 h-5 rounded" />
+        </div>
+        <div className="divide-y divide-[var(--card-border)]">
           {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.02]">
-              <div className="flex items-center gap-4">
-                <Skeleton className="w-6 h-6 rounded-full" />
-                <Skeleton className="w-10 h-10 rounded-full" />
-                <div className="space-y-2">
-                  <Skeleton className="w-32 h-4 rounded" />
-                  <Skeleton className="w-24 h-3 rounded" />
-                </div>
+            <div key={i} className="flex items-center gap-4 px-6 py-5">
+              <Skeleton className="w-7 h-4 rounded" />
+              <Skeleton className="w-10 h-10 rounded-xl" />
+              <div className="flex-1 space-y-1.5">
+                <Skeleton className="w-32 h-4 rounded" />
+                <Skeleton className="w-20 h-3 rounded" />
               </div>
-              <Skeleton className="w-16 h-6 rounded-full" />
+              <Skeleton className="w-14 h-5 rounded" />
+              <Skeleton className="w-16 h-5 rounded" />
             </div>
           ))}
         </div>
