@@ -1,6 +1,7 @@
 'use client';
 
 import { TrendingUp, Coins, FileText, Zap } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { getLevelInfo } from './leaderboardUtils';
 
 function LevelBadge({ levelInfo }) {
@@ -12,19 +13,20 @@ function LevelBadge({ levelInfo }) {
   );
 }
 
-function Avatar({ user }) {
+function Avatar({ user, onClick }) {
   return (
-    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-[var(--card-border)] overflow-hidden flex items-center justify-center text-blue-500 font-black text-xs shrink-0">
+    <button onClick={onClick} className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-[var(--card-border)] overflow-hidden flex items-center justify-center text-blue-500 font-black text-xs shrink-0 cursor-pointer hover:border-blue-500/30 transition-colors">
       {user.profile_pic ? (
         <img src={user.profile_pic} alt={user.name} className="w-full h-full object-cover rounded-[inherit]" />
       ) : (
         user.name.charAt(0)
       )}
-    </div>
+    </button>
   );
 }
 
 export default function RankingsTable({ leaders }) {
+  const router = useRouter();
   return (
     <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] overflow-hidden backdrop-blur-xl shadow-2xl">
       <div className="p-6 border-b border-[var(--card-border)] flex items-center justify-between bg-white/[0.02]">
@@ -45,10 +47,10 @@ export default function RankingsTable({ leaders }) {
               <span className="text-xs font-black text-slate-500 shrink-0 w-7 text-center">
                 #{index + 4}
               </span>
-              <Avatar user={player} />
+              <Avatar user={player} onClick={() => router.push(`/profile/${player.id}`)} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
-                  <p className="text-sm font-bold truncate">{player.name}</p>
+                  <button onClick={() => router.push(`/profile/${player.id}`)} className="text-sm font-bold truncate hover:text-blue-500 transition-colors cursor-pointer">{player.name}</button>
                   <LevelBadge levelInfo={li} />
                 </div>
                 {player.dept && (
@@ -94,9 +96,9 @@ export default function RankingsTable({ leaders }) {
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <Avatar user={player} />
+                      <Avatar user={player} onClick={() => router.push(`/profile/${player.id}`)} />
                       <div>
-                        <p className="text-sm font-bold group-hover:text-blue-500 transition-colors">{player.name}</p>
+                        <button onClick={() => router.push(`/profile/${player.id}`)} className="text-sm font-bold hover:text-blue-500 transition-colors cursor-pointer">{player.name}</button>
                         {player.dept && (
                           <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">{player.dept}</p>
                         )}

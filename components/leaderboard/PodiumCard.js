@@ -1,10 +1,14 @@
 'use client';
 
 import { Crown, Coins, FileText, Zap } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { getLevelInfo } from './leaderboardUtils';
 
 export default function PodiumCard({ user, rank, color, isLarge = false }) {
+  const router = useRouter();
   if (!user) return null;
+
+  const goToProfile = () => router.push(`/profile/${user.id}`);
 
   const levelInfo = getLevelInfo(user.points);
 
@@ -28,7 +32,7 @@ export default function PodiumCard({ user, rank, color, isLarge = false }) {
         <div className={`absolute -top-24 -left-24 w-48 h-48 bg-gradient-to-br ${mc.bg} opacity-[0.04] blur-[60px] rounded-full pointer-events-none`} />
 
         {/* Avatar with medal ring */}
-        <div className={`relative mx-auto mb-4 w-20 h-20 rounded-2xl bg-gradient-to-br ${mc.bg} p-[2.5px] shadow-lg group-hover:scale-105 transition-transform duration-500 ${isLarge ? 'w-24 h-24' : ''}`}>
+        <button onClick={goToProfile} className={`relative mx-auto mb-4 w-20 h-20 rounded-2xl bg-gradient-to-br ${mc.bg} p-[2.5px] shadow-lg group-hover:scale-105 transition-transform duration-500 cursor-pointer ${isLarge ? 'w-24 h-24' : ''}`}>
           <div className="w-full h-full rounded-[inherit] bg-[var(--background)] overflow-hidden flex items-center justify-center text-2xl font-black">
             {user.profile_pic ? (
               <img src={user.profile_pic} alt={user.name} className="w-full h-full object-cover rounded-[inherit]" />
@@ -36,10 +40,10 @@ export default function PodiumCard({ user, rank, color, isLarge = false }) {
               user.name.charAt(0)
             )}
           </div>
-        </div>
+        </button>
 
         {/* Name + dept */}
-        <h3 className={`font-black mb-0.5 ${isLarge ? 'text-xl' : 'text-lg'} line-clamp-1`}>{user.name}</h3>
+        <button onClick={goToProfile} className={`font-black mb-0.5 hover:text-blue-500 transition-colors ${isLarge ? 'text-xl' : 'text-lg'} line-clamp-1 cursor-pointer`}>{user.name}</button>
         {user.dept && (
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">{user.dept}</p>
         )}
