@@ -122,7 +122,7 @@ export default function AdminDashboardPage() {
       setPendingNotes(pendingNotesData || []);
       setPendingResources(pendingResData || []);
       setResources(resourcesData || []);
-      setNotes(notesData || []);
+      setNotes(Array.isArray(notesData) ? notesData : (notesData?.data || []));
       
       if (visibilityData && visibilityData.value) {
         setUploadVisibility(visibilityData.value);
