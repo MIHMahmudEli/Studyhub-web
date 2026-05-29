@@ -1,17 +1,17 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { SmilePlus } from 'lucide-react';
+import { ThumbsUp, Heart, Lightbulb, Palette, LifeBuoy } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import Toast from '@/components/ui/Toast';
 
 const REACTIONS = [
-  { emoji: '👍', label: 'Like' },
-  { emoji: '❤️', label: 'Love' },
-  { emoji: '😄', label: 'Haha' },
-  { emoji: '😮', label: 'Wow' },
-  { emoji: '😢', label: 'Sad' },
+  { type: 'helpful', icon: ThumbsUp, label: 'Helpful', activeColor: 'text-blue-500', activeBg: 'bg-blue-500/10', borderColor: 'border-blue-500/30' },
+  { type: 'brilliant', icon: Heart, label: 'Brilliant', activeColor: 'text-rose-500', activeBg: 'bg-rose-500/10', borderColor: 'border-rose-500/30' },
+  { type: 'insightful', icon: Lightbulb, label: 'Insightful', activeColor: 'text-amber-500', activeBg: 'bg-amber-500/10', borderColor: 'border-amber-500/30' },
+  { type: 'creative', icon: Palette, label: 'Creative', activeColor: 'text-teal-500', activeBg: 'bg-teal-500/10', borderColor: 'border-teal-500/30', noFill: true },
+  { type: 'lifesaver', icon: LifeBuoy, label: 'Lifesaver', activeColor: 'text-indigo-500', activeBg: 'bg-indigo-500/10', borderColor: 'border-indigo-500/30', noFill: true },
 ];
 
 export default function ReactionBar({ noteId }) {
@@ -51,7 +51,7 @@ export default function ReactionBar({ noteId }) {
     }
   };
 
-  const handleReact = (emoji) => {
+  const handleReact = (type) => {
     if (!user) { showToast('Please log in to react.', 'error'); return; }
     const key = `react-${noteId}`;
     if (pendingFns.current[key]) return;
@@ -62,22 +62,22 @@ export default function ReactionBar({ noteId }) {
     let newReactions = { ...reactions };
     let newUserReaction;
 
-    if (userReaction === emoji) {
-      newReactions[emoji] = Math.max(0, (newReactions[emoji] || 0) - 1);
+    if (userReaction === type) {
+      newReactions[type] = Math.max(0, (newReactions[type] || 0) - 1);
       newUserReaction = null;
     } else {
       if (userReaction) {
         newReactions[userReaction] = Math.max(0, (newReactions[userReaction] || 0) - 1);
       }
-      newReactions[emoji] = (newReactions[emoji] || 0) + 1;
-      newUserReaction = emoji;
+      newReactions[type] = (newReactions[type] || 0) + 1;
+      newUserReaction = type;
     }
 
     setReactions(newReactions);
     setUserReaction(newUserReaction);
     pendingFns.current[key] = true;
 
-    apiRequest(`/notes/${noteId}/reactions`, { method: 'POST', body: { reaction: emoji } })
+    apiRequest(`/notes/${noteId}/reactions`, { method: 'POST', body: { reaction: type } })
       .then(data => {
         setReactions(data.reactions || {});
         setUserReaction(data.userReaction || null);
@@ -96,42 +96,39 @@ export default function ReactionBar({ noteId }) {
 
   return (
     <>
-      <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-5 shadow-sm">
-        <div className="flex items-center gap-5 flex-wrap">
-          {REACTIONS.map(({ emoji, label }) => {
-            const count = reactions[emoji] || 0;
-            const isActive = userReaction === emoji;
-            return (
-              <button
-                key={emoji}
-                onClick={() => handleReact(emoji)}
-                disabled={!user}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all cursor-pointer select-none ${
-                  isActive
-                    ? 'bg-purple-500/10 text-purple-500 border border-purple-500/30 shadow-sm scale-105'
-                    : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.04] border border-transparent'
-                } ${!user ? 'opacity-40 cursor-not-allowed' : ''}`}
-                title={label}
-              >
-                <span className="text-base leading-none">{emoji}</span>
-                {count > 0 && <span className="text-[9px]">{count}</span>}
-              </button>
-            );
-          })}
-        </div>
-
-        {totalReactions > 0 && (
-          <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-3 pl-1">
-            {totalReactions} {totalReactions === 1 ? 'reaction' : 'reactions'}
-          </p>
-        )}
-
-        {!user && (
-          <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-3 pl-1">
-            Log in to react to this document
-          </p>
-        )}
+      <div className="flex items-center justify-center sm:justify-center gap-2 sm:gap-4 w-full overflow-x-auto py-2 px-1 -mx-1 no-scrollbar scroll-smooth">
+        {REACTIONS.map(({ type, icon: Icon, label, activeColor, activeBg, borderColor, noFill }) => {
+          const count = reactions[type] || 0;
+          const isActive = userReaction === type;
+          return (
+            <button
+              key={type}
+              onClick={() => handleReact(type)}
+              disabled={!user}
+              className={`group shrink-0 flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all cursor-pointer select-none border ${
+                isActive
+                  ? `${activeColor} ${activeBg} ${borderColor} shadow-sm scale-105`
+                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.04] border-transparent'
+              } ${!user ? 'opacity-40 cursor-not-allowed' : ''}`}
+              title={label}
+            >
+              <Icon 
+                size={18} 
+                className={`${isActive && !noFill ? "fill-current" : "group-hover:scale-110 transition-transform"} shrink-0`} 
+                strokeWidth={isActive && noFill ? 2.5 : 2}
+              />
+              {count > 0 && <span>{count}</span>}
+              <span className="hidden sm:inline-block whitespace-nowrap">{label}</span>
+            </button>
+          );
+        })}
       </div>
+      
+      {!user && (
+        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-3 px-2">
+          Log in to react
+        </p>
+      )}
 
       <Toast toast={toast} closeToast={closeToast} />
     </>

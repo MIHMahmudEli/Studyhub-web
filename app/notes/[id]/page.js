@@ -308,6 +308,12 @@ export default function NotePreviewPage() {
               )}
             </div>
 
+            {/* Reactions Action Bar */}
+            {!isReadingMode && (
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <ReactionBar noteId={note.id} />
+              </div>
+            )}
           </div>
 
           {/* Metadata Sidebar */}
@@ -449,12 +455,6 @@ export default function NotePreviewPage() {
           )}
         </div>
 
-        {/* Reactions */}
-        {!isReadingMode && (
-          <div className="mt-8 animate-in fade-in slide-in-from-bottom duration-500">
-            <ReactionBar noteId={note.id} />
-          </div>
-        )}
 
         {/* Interactive Rating & Feedback Thread (Full Width Screen Layout) */}
         {!isReadingMode && (
