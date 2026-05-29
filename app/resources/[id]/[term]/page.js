@@ -89,10 +89,6 @@ export default function TermResourcesPage() {
     apiRequest('/bookmarks/toggle', {
       method: 'POST',
       body: JSON.stringify({ resource_id: res.id })
-    }).then(response => {
-      showToast(response.bookmarked
-        ? `"${res.title}" added to your bookmarks archive!`
-        : `"${res.title}" removed from your bookmarks archive.`, 'success');
     }).catch(err => {
       setBookmarks(prev => wasBookmarked
         ? [...prev, { resource_id: res.id }]

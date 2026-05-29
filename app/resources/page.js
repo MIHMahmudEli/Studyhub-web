@@ -130,10 +130,6 @@ export default function ResourcesPage() {
     apiRequest('/bookmarks/toggle', {
       method: 'POST',
       body: JSON.stringify({ subject_name: subjectName })
-    }).then(res => {
-      showToast(res.bookmarked
-        ? `"${subjectName}" added to your bookmarks archive!`
-        : `"${subjectName}" removed from your bookmarks archive.`, 'success');
     }).catch(err => {
       setBookmarks(prev => wasBookmarked
         ? [...prev, { subject_name: subjectName }]
