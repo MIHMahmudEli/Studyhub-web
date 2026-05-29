@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft, Coins, FileText, Calendar, Zap, Sparkles, User,
-  Trophy, GitFork, Linkedin, Image, Globe, ExternalLink, Shield
+  Trophy, GitFork, Link2, Image, Globe, ExternalLink, Shield
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { apiRequest } from '@/lib/api';
@@ -19,7 +19,7 @@ const ROLE_BADGES = {
 
 const SOCIAL_ICONS = [
   { key: 'github', icon: GitFork, href: (v) => v, color: 'hover:text-gray-800 dark:hover:text-gray-200' },
-  { key: 'linkedin', icon: Linkedin, href: (v) => v, color: 'hover:text-blue-600' },
+  { key: 'linkedin', icon: Link2, href: (v) => v, color: 'hover:text-blue-600' },
   { key: 'instagram', icon: Image, href: (v) => v, color: 'hover:text-pink-500' },
   { key: 'facebook', icon: Globe, href: (v) => v, color: 'hover:text-blue-700' },
 ];

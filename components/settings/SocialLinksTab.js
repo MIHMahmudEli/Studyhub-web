@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { GitFork, Linkedin, Image, Globe, Save, Link2, Trash2 } from 'lucide-react';
+import { GitFork, Link2, Image, Globe, Save, Trash2 } from 'lucide-react';
 
 const SOCIAL_FIELDS = [
   { key: 'github', icon: GitFork, label: 'GitHub', placeholder: 'https://github.com/username', color: 'text-gray-800 dark:text-gray-200' },
-  { key: 'linkedin', icon: Linkedin, label: 'LinkedIn', placeholder: 'https://linkedin.com/in/username', color: 'text-blue-600' },
+  { key: 'linkedin', icon: Link2, label: 'LinkedIn', placeholder: 'https://linkedin.com/in/username', color: 'text-blue-600' },
   { key: 'instagram', icon: Image, label: 'Instagram', placeholder: 'https://instagram.com/username', color: 'text-pink-500' },
   { key: 'facebook', icon: Globe, label: 'Facebook', placeholder: 'https://facebook.com/username', color: 'text-blue-700' },
 ];
