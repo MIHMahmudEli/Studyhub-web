@@ -1,5 +1,6 @@
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import RouteTracker from "@/components/RouteTracker";
 import "./globals.css";
 
 export const metadata = {
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
       <body className="font-sans antialiased">
         <ThemeProvider>
           <AuthProvider>
+            <RouteTracker />
             {/* Global Nebula Effect */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none -z-50">
               <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[var(--nebula-1)] blur-[100px] animate-nebula" />

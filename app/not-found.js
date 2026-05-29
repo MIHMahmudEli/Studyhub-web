@@ -7,9 +7,9 @@ export default function NotFound() {
   const homeRoute = user ? '/notes' : '/auth';
 
   const handleGoBack = () => {
-    const referrer = document.referrer;
-    if (referrer && referrer.includes(window.location.host)) {
-      window.location.href = referrer;
+    const prevRoute = sessionStorage.getItem('_prev_route');
+    if (prevRoute && prevRoute !== window.location.pathname) {
+      window.location.href = prevRoute;
     } else {
       window.location.href = homeRoute;
     }
