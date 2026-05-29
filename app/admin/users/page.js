@@ -177,7 +177,7 @@ export default function AdminUsersPage() {
             panelSubtitle="Manage student access, ban violators, and assign moderator privileges."
             badgeText={`Total: ${totalUsersCount}`}
             badgeColorClass="bg-blue-500/10 text-blue-500 border-blue-500/20"
-            loading={loadingUsers && usersList.length === 0}
+            loading={loadingUsers || (usersList.length === 0 && !error)}
             skeletonCount={6}
             isEmpty={usersList.length === 0}
             emptyIcon={Users}
