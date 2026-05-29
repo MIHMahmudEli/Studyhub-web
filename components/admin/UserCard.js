@@ -26,6 +26,7 @@ export default function UserCard({
   showActiveTime = false,
   showActions = false,
   isLive = false,
+  showDept = true,
   onPromote,
   onDemote,
   onBan
@@ -71,7 +72,7 @@ export default function UserCard({
           </span>
           <span className="font-black text-xs text-amber-500 shrink-0">{u.points || 0} PTS</span>
         </div>
-        {u.dept && (
+        {showDept && u.dept && (
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Department</span>
             <span className="text-xs font-black text-slate-400">{u.dept.toUpperCase()}</span>
