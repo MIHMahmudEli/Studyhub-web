@@ -37,6 +37,7 @@ export default function AdminUsersPage() {
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMoreUsers, setHasMoreUsers] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
   const limit = 20;
   const observerRef = useRef(null);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
@@ -85,6 +86,7 @@ export default function AdminUsersPage() {
     } finally {
       setLoadingUsers(false);
       setLoadingMore(false);
+      setInitialLoad(false);
     }
   }, []);
 
@@ -177,7 +179,7 @@ export default function AdminUsersPage() {
             panelSubtitle="Manage student access, ban violators, and assign moderator privileges."
             badgeText={`Total: ${totalUsersCount}`}
             badgeColorClass="bg-blue-500/10 text-blue-500 border-blue-500/20"
-            loading={loadingUsers || (usersList.length === 0 && !error)}
+            loading={loadingUsers || initialLoad}
             skeletonCount={6}
             isEmpty={usersList.length === 0}
             emptyIcon={Users}
