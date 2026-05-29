@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Lock, Unlock } from 'lucide-react';
 
 export default function StatsCard({
   href,
@@ -9,10 +10,12 @@ export default function StatsCard({
   subtitle,
   icon: Icon,
   loading = false,
-  colorScheme = 'blue', // 'emerald', 'purple', 'amber', 'blue', 'orange', 'rose'
-  iconAnimation = ''    // 'animate-pulse', 'animate-bounce', etc.
+  colorScheme = 'blue',
+  iconAnimation = '',
+  permissionKey,
+  permissionValue,
+  onPermissionToggle,
 }) {
-  // If in loading state, render the full-card shimmery skeleton layout instantly
   if (loading) {
     return (
       <div className="animate-pulse bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 h-[140px] sm:h-[150px] flex justify-between items-start w-full">
@@ -26,7 +29,6 @@ export default function StatsCard({
     );
   }
 
-  // Map color schemes to specific Tailwind CSS classes
   const colors = {
     emerald: {
       borderHover: 'hover:border-emerald-500/30',
@@ -67,10 +69,33 @@ export default function StatsCard({
   };
 
   const scheme = colors[colorScheme] || colors.blue;
+  const isEnabled = permissionValue === 'admin+moderator';
+
+  const permissionToggle = permissionKey && onPermissionToggle && (
+    <button
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onPermissionToggle(permissionKey, isEnabled ? 'admin' : 'admin+moderator');
+      }}
+      className={`absolute top-3 right-3 z-20 w-7 h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer group/permit ${
+        isEnabled
+          ? 'bg-purple-500/10 text-purple-500 hover:bg-purple-500/20'
+          : 'bg-slate-100 dark:bg-white/[0.05] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-0 group-hover:opacity-100'
+      }`}
+      title={isEnabled ? 'Moderators can access' : 'Only admins can access'}
+    >
+      {isEnabled ? <Unlock size={12} /> : <Lock size={12} />}
+      <span className="absolute -top-8 right-0 bg-slate-800 text-white text-[7px] font-black uppercase tracking-widest px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover/permit:opacity-100 transition-opacity pointer-events-none shadow-lg">
+        {isEnabled ? 'Mod Access' : 'Admin Only'}
+      </span>
+    </button>
+  );
 
   const cardContent = (
     <>
       <div className={`absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br ${scheme.gradient} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+      {permissionToggle}
       <div className="flex justify-between items-start relative z-10 w-full">
         <div className="space-y-2 sm:space-y-3 flex-1 min-w-0">
           <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-400 block truncate">{title}</span>

@@ -45,24 +45,12 @@ export default function ActiveUsersPage() {
   const limit = 12;
   const observerRef = useRef(null);
 
-  // Role verification (Only Admin can access)
-  useEffect(() => {
-    if (!authLoading) {
-      if (!user) {
-        router.push('/auth');
-      } else if (user.role !== 'admin') {
-        router.push('/admin/dashboard');
-      }
-    }
-  }, [user, authLoading, router]);
-
   // Fetch active users whenever selectedDate changes
   useEffect(() => {
-    if (tokenReady && user && user.role === 'admin') {
-      setActiveUsers([]);
-      setCurrentPage(1);
-      fetchActiveUsers(selectedDate, 1);
-    }
+    if (!tokenReady || !user || (user.role !== 'admin' && user.role !== 'moderator')) return;
+    setActiveUsers([]);
+    setCurrentPage(1);
+    fetchActiveUsers(selectedDate, 1);
   }, [tokenReady, user, selectedDate]);
 
   const fetchActiveUsers = async (dateStr, pageNum, append = false) => {
@@ -84,6 +72,7 @@ export default function ActiveUsersPage() {
       setCurrentPage(pageNum);
     } catch (err) {
       console.error('Failed to fetch active users:', err);
+      if (err.status === 403) { router.push('/admin/dashboard'); return; }
       setError(err.message || 'Failed to load active users.');
       if (!append) setActiveUsers([]);
     } finally {
@@ -127,7 +116,7 @@ export default function ActiveUsersPage() {
     setSelectedDate(`${year}-${month}-${day}`);
   };
 
-  if (authLoading || !user || user.role !== 'admin') return null;
+  if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
 
   const getTodayStr = () => {
     const d = new Date();

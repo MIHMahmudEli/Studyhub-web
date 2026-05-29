@@ -52,14 +52,6 @@ export default function AdminUsersPage() {
     setTimeout(() => setToast(prev => ({ ...prev, show: false, isClosing: false })), 500);
   };
 
-  // ─── Role guard (Admin only) ───────────────────────────────────────────────
-  useEffect(() => {
-    if (!authLoading) {
-      if (!user) router.push('/auth');
-      else if (user.role !== 'admin') router.push('/dashboard');
-    }
-  }, [user, authLoading, router]);
-
   // ─── Fetch users ──────────────────────────────────────────────────────────
   const fetchUsersBatch = useCallback(async (searchQuery = '', offsetVal = 0, reset = false) => {
     try {
@@ -81,18 +73,19 @@ export default function AdminUsersPage() {
         setUsersOffset(offsetVal + limit);
       }
     } catch (err) {
-      console.error('Failed to fetch users:', err);
+      if (err.status === 403 || err.message?.includes('Access denied')) { router.push('/admin/dashboard'); return; }
+
       showToast(err.message || 'Failed to fetch users.', 'error');
     } finally {
       setLoadingUsers(false);
       setLoadingMore(false);
       setInitialLoad(false);
     }
-  }, []);
+  }, [router]);
 
   // Debounced search
   useEffect(() => {
-    if (!tokenReady || !user || user.role !== 'admin') return;
+    if (!tokenReady || !user || (user.role !== 'admin' && user.role !== 'moderator')) return;
     setUsersOffset(0);
     const timer = setTimeout(() => {
       fetchUsersBatch(userSearch, 0, true);
@@ -102,6 +95,7 @@ export default function AdminUsersPage() {
 
   // Infinite scroll with IntersectionObserver
   useEffect(() => {
+    if (!user || (user.role !== 'admin' && user.role !== 'moderator')) return;
     const observer = new IntersectionObserver(
       entries => {
         if (entries[0].isIntersecting && hasMoreUsers && !loadingMore && !loadingUsers) {
@@ -113,7 +107,7 @@ export default function AdminUsersPage() {
     const el = observerRef.current;
     if (el) observer.observe(el);
     return () => { if (el) observer.unobserve(el); };
-  }, [hasMoreUsers, loadingMore, loadingUsers, userSearch, usersOffset]);
+  }, [hasMoreUsers, loadingMore, loadingUsers, userSearch, usersOffset, user]);
 
   // ─── Handlers ─────────────────────────────────────────────────────────────
   const handleBanUser = async (id, isBanned) => {
@@ -123,6 +117,7 @@ export default function AdminUsersPage() {
       showToast(`User #${id} has been ${isBanned ? 'unbanned' : 'banned'} successfully.`, 'success');
       setUsersList(prev => prev.map(u => u.id === id ? { ...u, banned: !isBanned } : u));
     } catch (err) {
+      if (err.status === 403) { router.push('/admin/dashboard'); return; }
       showToast(err.message || 'Failed to update ban status.', 'error');
     }
   };
@@ -134,6 +129,7 @@ export default function AdminUsersPage() {
       showToast(`User #${id} promoted to Moderator.`, 'success');
       setUsersList(prev => prev.map(u => u.id === id ? { ...u, role: 'moderator' } : u));
     } catch (err) {
+      if (err.status === 403) { router.push('/admin/dashboard'); return; }
       showToast(err.message || 'Failed to promote user.', 'error');
     }
   };
@@ -145,11 +141,12 @@ export default function AdminUsersPage() {
       showToast(`User #${id} demoted to Student.`, 'success');
       setUsersList(prev => prev.map(u => u.id === id ? { ...u, role: 'student' } : u));
     } catch (err) {
+      if (err.status === 403) { router.push('/admin/dashboard'); return; }
       showToast(err.message || 'Failed to demote user.', 'error');
     }
   };
 
-  if (authLoading || !user || user.role !== 'admin') return null;
+  if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-32 transition-colors duration-500">

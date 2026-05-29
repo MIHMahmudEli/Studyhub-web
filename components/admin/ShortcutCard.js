@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Lock, Unlock } from 'lucide-react';
 
 export default function ShortcutCard({
   href,
@@ -9,10 +9,12 @@ export default function ShortcutCard({
   description,
   badgeText,
   icon: Icon,
-  colorScheme = 'standard', // 'amber', 'purple', 'indigo', 'standard'
-  loading = false
+  colorScheme = 'standard',
+  loading = false,
+  permissionKey,
+  permissionValue,
+  onPermissionToggle,
 }) {
-  // Full-card shimmery skeleton block
   if (loading) {
     return (
       <div className="animate-pulse p-6 sm:p-8 bg-[var(--card-bg)] border-2 border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] flex flex-col justify-between h-[180px] sm:h-[200px] w-full">
@@ -28,7 +30,6 @@ export default function ShortcutCard({
     );
   }
 
-  // Classes map for color schemes
   const classes = {
     amber: {
       card: 'bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-[var(--card-bg)] border-amber-500/30 hover:border-amber-500 hover:shadow-amber-500/10',
@@ -61,6 +62,28 @@ export default function ShortcutCard({
   };
 
   const scheme = classes[colorScheme] || classes.standard;
+  const isEnabled = permissionValue === 'admin+moderator';
+
+  const permissionToggle = permissionKey && onPermissionToggle && (
+    <button
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onPermissionToggle(permissionKey, isEnabled ? 'admin' : 'admin+moderator');
+      }}
+      className={`absolute top-3 right-3 z-20 w-7 h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer group/permit ${
+        isEnabled
+          ? 'bg-purple-500/10 text-purple-500 hover:bg-purple-500/20'
+          : 'bg-slate-100 dark:bg-white/[0.05] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-0 group-hover:opacity-100'
+      }`}
+      title={isEnabled ? 'Moderators can access' : 'Only admins can access'}
+    >
+      {isEnabled ? <Unlock size={12} /> : <Lock size={12} />}
+      <span className="absolute -top-8 right-0 bg-slate-800 text-white text-[7px] font-black uppercase tracking-widest px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover/permit:opacity-100 transition-opacity pointer-events-none shadow-lg">
+        {isEnabled ? 'Mod Access' : 'Admin Only'}
+      </span>
+    </button>
+  );
 
   return (
     <Link 
@@ -69,6 +92,8 @@ export default function ShortcutCard({
     >
       <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl -z-10 transition-all ${scheme.radialGlow}`} />
       
+      {permissionToggle}
+
       <div className="flex items-center justify-between relative z-10">
         {Icon && (
           <div className={`w-10 h-10 sm:w-12 sm:h-12 border rounded-2xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-500 shrink-0 ${scheme.iconBg}`}>
