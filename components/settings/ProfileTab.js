@@ -123,12 +123,16 @@ export default function ProfileTab({
           )}
           {/* Suggested name banner */}
           {suggestedName && !isNameValid && (
-            <div className="flex items-center gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl animate-in fade-in duration-300">
+            <button
+              type="button"
+              onClick={() => handleProfileChange({ target: { name: 'name', value: suggestedName } })}
+              className="w-full flex items-center gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl animate-in fade-in duration-300 cursor-pointer hover:bg-amber-500/20 transition-colors text-left"
+            >
               <Sparkles size={12} className="text-amber-500 shrink-0" />
               <p className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
                 Did you mean: <span className="underline underline-offset-2 decoration-amber-500/40">{suggestedName}</span>
               </p>
-            </div>
+            </button>
           )}
         </div>
 
