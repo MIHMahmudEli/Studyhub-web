@@ -60,7 +60,6 @@ export default function RankingsTable({ leaders }) {
             <tr className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/[0.01]">
               <th className="px-8 py-5">Rank</th>
               <th className="px-8 py-5">Student</th>
-              <th className="px-8 py-5">Resources</th>
               <th className="px-8 py-5 text-right">Academic Points</th>
             </tr>
           </thead>
@@ -87,12 +86,6 @@ export default function RankingsTable({ leaders }) {
                       <p className="text-sm font-bold group-hover:text-blue-500 transition-colors">{player.name}</p>
                       <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Verified Student</p>
                     </div>
-                  </div>
-                </td>
-                <td className="px-8 py-6">
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <Star size={14} />
-                    <span className="text-xs font-bold">{player.uploads} Shared</span>
                   </div>
                 </td>
                 <td className="px-8 py-6 text-right">
