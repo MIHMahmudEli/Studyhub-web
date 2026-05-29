@@ -121,12 +121,6 @@ export default function RoutinePage() {
         />
       </div>
 
-      {/* Footer note inside platform */}
-      <div className="text-center mt-6">
-        <p className="text-slate-500 text-[8px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-1.5">
-          Securely connected via <span className="text-indigo-500 font-black">Routine Pro Sandbox</span> • Data is auto-saved locally
-        </p>
-      </div>
     </main>
   );
 }
