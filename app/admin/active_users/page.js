@@ -31,14 +31,28 @@ function getYesterdayStr() {
   return [y.getUTCFullYear(), String(y.getUTCMonth() + 1).padStart(2, '0'), String(y.getUTCDate()).padStart(2, '0')].join('-');
 }
 
-function timeAgo(dateStr) {
+// ─── Active Status Helpers ───────────────────────────────────────────────────
+const ACTIVE_NOW_THRESHOLD_SEC = 90; // within 90s = "Active Now"
+
+function getPresenceStatus(dateStr) {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-  if (diff < 60) return `${diff}s ago`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < ACTIVE_NOW_THRESHOLD_SEC) return { isNow: true, label: 'Active Now' };
+  if (diff < 60) return { isNow: false, label: `${diff}s ago` };
+  if (diff < 3600) return { isNow: false, label: `${Math.floor(diff / 60)}m ago` };
+  return { isNow: false, label: `${Math.floor(diff / 3600)}h ago` };
 }
 
-// ─── Live Dot ─────────────────────────────────────────────────────────────────
+// ─── Presence Dot ─────────────────────────────────────────────────────────────
+function PresenceDot({ isNow }) {
+  return (
+    <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3">
+      <span className={`${isNow ? 'animate-ping' : ''} absolute inline-flex h-full w-full rounded-full opacity-75 ${isNow ? 'bg-emerald-400' : 'bg-slate-400'}`} />
+      <span className={`relative inline-flex rounded-full h-3 w-3 border-2 border-[var(--card-bg)] ${isNow ? 'bg-emerald-500' : 'bg-slate-500'}`} />
+    </span>
+  );
+}
+
+// ─── Live Dot (for mode toggle) ───────────────────────────────────────────────
 function LiveDot() {
   return (
     <span className="relative flex h-2.5 w-2.5">
@@ -48,50 +62,87 @@ function LiveDot() {
   );
 }
 
-// ─── Table Row (shared) ───────────────────────────────────────────────────────
+// ─── Table Row ────────────────────────────────────────────────────────────────
 function UserRow({ u, isLive, router }) {
+  const presence = isLive ? getPresenceStatus(u.last_active_at) : null;
+
   return (
-    <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
-      <td className="py-4 sm:py-5 pl-4 max-w-[220px] sm:max-w-[250px]">
-        <button onClick={() => router.push(`/profile/${u.id}`)} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity text-left">
-          {u.profile_pic ? (
-            <img src={u.profile_pic} alt="" className="w-8 h-8 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
-          ) : (
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white shrink-0 ${isLive ? 'bg-gradient-to-br from-red-500 to-rose-600' : 'bg-gradient-to-br from-emerald-500 to-teal-600'}`}>
-              {u.name?.[0] || 'U'}
-            </div>
-          )}
+    <tr className="hover:bg-white/[0.02] group transition-colors">
+      <td className="py-4 sm:py-5 pl-4 max-w-[220px] sm:max-w-[260px]">
+        <button onClick={() => router.push(`/profile/${u.id}`)} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity text-left w-full">
+          {/* Avatar with presence dot */}
+          <div className="relative shrink-0">
+            {u.profile_pic ? (
+              <img src={u.profile_pic} alt="" className="w-9 h-9 rounded-xl object-cover border border-[var(--card-border)]" />
+            ) : (
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black text-white ${
+                isLive && presence?.isNow
+                  ? 'bg-gradient-to-br from-emerald-500 to-teal-600'
+                  : isLive
+                  ? 'bg-gradient-to-br from-slate-500 to-slate-600'
+                  : 'bg-gradient-to-br from-emerald-500 to-teal-600'
+              }`}>
+                {u.name?.[0]?.toUpperCase() || 'U'}
+              </div>
+            )}
+            {isLive && <PresenceDot isNow={presence?.isNow} />}
+          </div>
+
           <div className="truncate">
             <p className="font-black text-sm text-[var(--foreground)] truncate flex items-center gap-2">
-              {u.name} {u.banned && <span className="text-[9px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded-md uppercase tracking-widest border border-red-500/20 shrink-0">Banned</span>}
+              {u.name}
+              {u.banned && (
+                <span className="text-[9px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded-md uppercase tracking-widest border border-red-500/20 shrink-0">Banned</span>
+              )}
             </p>
-            <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email || 'No email available'}</p>
+            <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email || '—'}</p>
           </div>
         </button>
       </td>
-      <td className="py-4 sm:py-5 whitespace-nowrap text-slate-300">
+
+      <td className="py-4 sm:py-5 whitespace-nowrap text-xs font-bold text-slate-400">
         {u.dept?.toUpperCase() || 'GENERAL'}
       </td>
+
       <td className="py-4 sm:py-5 whitespace-nowrap">
-        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${
-          u.role === 'admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-          u.role === 'moderator' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
-          'bg-blue-500/10 text-blue-500 border-blue-500/20'
+        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+          u.role === 'admin'
+            ? 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+            : u.role === 'moderator'
+            ? 'bg-purple-500/10 text-purple-500 border-purple-500/20'
+            : 'bg-blue-500/10 text-blue-500 border-blue-500/20'
         }`}>
           {u.role || 'student'}
         </span>
       </td>
-      <td className="py-4 sm:py-5 font-black text-amber-500 whitespace-nowrap">
-        {u.points || 0} PTS
+
+      <td className="py-4 sm:py-5 font-black text-amber-500 whitespace-nowrap text-sm">
+        {u.points || 0} <span className="text-[9px] text-amber-400/60">PTS</span>
       </td>
-      <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap font-black">
-        <div className={`inline-flex items-center gap-1.5 justify-end ${isLive ? 'text-red-400' : 'text-emerald-500'}`}>
-          <Clock size={14} />
-          {isLive
-            ? timeAgo(u.last_active_at)
-            : new Date(u.last_active_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-          }
-        </div>
+
+      {/* Last Seen / Active Now column */}
+      <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap">
+        {isLive ? (
+          presence?.isNow ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+              </span>
+              Active Now
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 text-slate-400 text-[11px] font-black uppercase tracking-widest">
+              <Clock size={13} className="shrink-0" />
+              {presence?.label}
+            </span>
+          )
+        ) : (
+          <span className="inline-flex items-center gap-1.5 text-emerald-500 text-[11px] font-black">
+            <Clock size={13} />
+            {new Date(u.last_active_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+          </span>
+        )}
       </td>
     </tr>
   );
