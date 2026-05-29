@@ -125,9 +125,9 @@ export default function AdminDashboardPage() {
       setLoadingData(true);
       
       const d = new Date();
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
+      const year = d.getUTCFullYear();
+      const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(d.getUTCDate()).padStart(2, '0');
       const todayStr = `${year}-${month}-${day}`;
 
       // Fetch all dashboard data in parallel to avoid sequential API waterfalls
@@ -180,7 +180,7 @@ export default function AdminDashboardPage() {
     const perm = permissions.find(p => p.key === 'perm_view_active_users');
     if (perm?.value !== 'admin+moderator') return;
     const d = new Date();
-    const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const todayStr = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
     apiRequest(`/users/active?date=${todayStr}`)
       .then(res => setActiveUsersCount(res?.total || 0))
       .catch(() => {});

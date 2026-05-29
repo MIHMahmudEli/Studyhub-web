@@ -1,303 +1,415 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
-import Skeleton from '@/components/ui/Skeleton';
 import { apiRequest } from '@/lib/api';
 import UserCard from '@/components/admin/UserCard';
-import AdminHeader from '@/components/admin/AdminHeader';
 import AdminPanel from '@/components/admin/AdminPanel';
-import { 
-  ShieldCheck, 
-  Users, 
-  Calendar, 
-  ArrowLeft, 
-  Activity, 
-  Search, 
-  Clock, 
-  Award, 
-  UserCheck, 
-  UserX,
-  Sparkles,
-  Loader2
+import {
+  Users,
+  Calendar,
+  ArrowLeft,
+  Activity,
+  Clock,
+  Loader2,
+  Radio,
+  RefreshCw,
 } from 'lucide-react';
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function getTodayStr() {
+  const d = new Date();
+  return [d.getUTCFullYear(), String(d.getUTCMonth() + 1).padStart(2, '0'), String(d.getUTCDate()).padStart(2, '0')].join('-');
+}
+
+function getYesterdayStr() {
+  const y = new Date();
+  y.setDate(y.getDate() - 1);
+  return [y.getUTCFullYear(), String(y.getUTCMonth() + 1).padStart(2, '0'), String(y.getUTCDate()).padStart(2, '0')].join('-');
+}
+
+function timeAgo(dateStr) {
+  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  return `${Math.floor(diff / 3600)}h ago`;
+}
+
+// ─── Live Dot ─────────────────────────────────────────────────────────────────
+function LiveDot() {
+  return (
+    <span className="relative flex h-2.5 w-2.5">
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
+    </span>
+  );
+}
+
+// ─── Table Row (shared) ───────────────────────────────────────────────────────
+function UserRow({ u, isLive, router }) {
+  return (
+    <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
+      <td className="py-4 sm:py-5 pl-4 max-w-[220px] sm:max-w-[250px]">
+        <button onClick={() => router.push(`/profile/${u.id}`)} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity text-left">
+          {u.profile_pic ? (
+            <img src={u.profile_pic} alt="" className="w-8 h-8 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
+          ) : (
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white shrink-0 ${isLive ? 'bg-gradient-to-br from-red-500 to-rose-600' : 'bg-gradient-to-br from-emerald-500 to-teal-600'}`}>
+              {u.name?.[0] || 'U'}
+            </div>
+          )}
+          <div className="truncate">
+            <p className="font-black text-sm text-[var(--foreground)] truncate flex items-center gap-2">
+              {u.name} {u.banned && <span className="text-[9px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded-md uppercase tracking-widest border border-red-500/20 shrink-0">Banned</span>}
+            </p>
+            <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email || 'No email available'}</p>
+          </div>
+        </button>
+      </td>
+      <td className="py-4 sm:py-5 whitespace-nowrap text-slate-300">
+        {u.dept?.toUpperCase() || 'GENERAL'}
+      </td>
+      <td className="py-4 sm:py-5 whitespace-nowrap">
+        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${
+          u.role === 'admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+          u.role === 'moderator' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
+          'bg-blue-500/10 text-blue-500 border-blue-500/20'
+        }`}>
+          {u.role || 'student'}
+        </span>
+      </td>
+      <td className="py-4 sm:py-5 font-black text-amber-500 whitespace-nowrap">
+        {u.points || 0} PTS
+      </td>
+      <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap font-black">
+        <div className={`inline-flex items-center gap-1.5 justify-end ${isLive ? 'text-red-400' : 'text-emerald-500'}`}>
+          <Clock size={14} />
+          {isLive
+            ? timeAgo(u.last_active_at)
+            : new Date(u.last_active_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+          }
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ActiveUsersPage() {
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
 
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const d = new Date();
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  });
-  const [activeUsers, setActiveUsers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState(null);
-  const limit = 12;
+  const [mode, setMode] = useState('daily'); // 'daily' | 'live'
+
+  // ── Daily state ──
+  const [selectedDate, setSelectedDate] = useState(getTodayStr);
+  const [dailyUsers, setDailyUsers] = useState([]);
+  const [dailyTotal, setDailyTotal] = useState(0);
+  const [dailyPage, setDailyPage] = useState(1);
+  const [dailyLoading, setDailyLoading] = useState(true);
+  const [dailyLoadingMore, setDailyLoadingMore] = useState(false);
+  const [dailyError, setDailyError] = useState(null);
   const observerRef = useRef(null);
+  const limit = 12;
 
-  // Fetch active users whenever selectedDate changes
-  useEffect(() => {
-    if (!tokenReady || !user || (user.role !== 'admin' && user.role !== 'moderator')) return;
-    setActiveUsers([]);
-    setCurrentPage(1);
-    fetchActiveUsers(selectedDate, 1);
-  }, [tokenReady, user, selectedDate]);
+  // ── Live state ──
+  const [liveUsers, setLiveUsers] = useState([]);
+  const [liveTotal, setLiveTotal] = useState(0);
+  const [liveLoading, setLiveLoading] = useState(false);
+  const [liveError, setLiveError] = useState(null);
+  const [lastRefreshed, setLastRefreshed] = useState(null);
+  const [countdown, setCountdown] = useState(15);
+  const liveIntervalRef = useRef(null);
+  const countdownRef = useRef(null);
+  const LIVE_MINUTES = 5;
+  const POLL_SECONDS = 15;
 
-  const fetchActiveUsers = async (dateStr, pageNum, append = false) => {
+  // ── Fetch Daily ──────────────────────────────────────────────────────────────
+  const fetchDailyUsers = useCallback(async (dateStr, pageNum, append = false) => {
     try {
-      if (append) {
-        setLoadingMore(true);
-      } else {
-        setLoading(true);
-        setError(null);
-      }
+      if (append) setDailyLoadingMore(true);
+      else { setDailyLoading(true); setDailyError(null); }
       const res = await apiRequest(`/users/active?date=${dateStr}&page=${pageNum}&limit=${limit}`);
       const newData = res?.data || [];
-      if (append) {
-        setActiveUsers(prev => [...prev, ...newData]);
-      } else {
-        setActiveUsers(newData);
-      }
-      setTotalCount(res?.total || 0);
-      setCurrentPage(pageNum);
+      if (append) setDailyUsers(prev => [...prev, ...newData]);
+      else setDailyUsers(newData);
+      setDailyTotal(res?.total || 0);
+      setDailyPage(pageNum);
     } catch (err) {
-      console.error('Failed to fetch active users:', err);
       if (err.status === 403) { router.push('/admin/dashboard'); return; }
-      setError(err.message || 'Failed to load active users.');
-      if (!append) setActiveUsers([]);
+      setDailyError(err.message || 'Failed to load.');
+      if (!append) setDailyUsers([]);
     } finally {
-      setLoading(false);
-      setLoadingMore(false);
+      setDailyLoading(false);
+      setDailyLoadingMore(false);
     }
-  };
-
-  const hasMore = activeUsers.length < totalCount;
+  }, [router]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) {
-          fetchActiveUsers(selectedDate, currentPage + 1, true);
-        }
-      },
-      { threshold: 0.1 }
-    );
+    if (!tokenReady || !user || (user.role !== 'admin' && user.role !== 'moderator')) return;
+    if (mode !== 'daily') return;
+    setDailyUsers([]);
+    setDailyPage(1);
+    fetchDailyUsers(selectedDate, 1);
+  }, [tokenReady, user, selectedDate, mode, fetchDailyUsers]);
+
+  // Infinite scroll sentinel
+  const dailyHasMore = dailyUsers.length < dailyTotal;
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && dailyHasMore && !dailyLoadingMore) {
+        fetchDailyUsers(selectedDate, dailyPage + 1, true);
+      }
+    }, { threshold: 0.1 });
     const el = observerRef.current;
     if (el) observer.observe(el);
     return () => { if (el) observer.unobserve(el); };
-  }, [hasMore, loadingMore, currentPage, selectedDate]);
+  }, [dailyHasMore, dailyLoadingMore, dailyPage, selectedDate, fetchDailyUsers]);
 
-  // Helper to set date to Yesterday
-  const handleYesterday = () => {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const year = yesterday.getFullYear();
-    const month = String(yesterday.getMonth() + 1).padStart(2, '0');
-    const day = String(yesterday.getDate()).padStart(2, '0');
-    setSelectedDate(`${year}-${month}-${day}`);
-  };
+  // ── Fetch Live ───────────────────────────────────────────────────────────────
+  const fetchLiveUsers = useCallback(async () => {
+    try {
+      setLiveError(null);
+      const res = await apiRequest(`/users/active/now?minutes=${LIVE_MINUTES}&page=1&limit=50`);
+      setLiveUsers(res?.data || []);
+      setLiveTotal(res?.total || 0);
+      setLastRefreshed(new Date());
+    } catch (err) {
+      if (err.status === 403) { router.push('/admin/dashboard'); return; }
+      setLiveError(err.message || 'Failed to load live users.');
+    } finally {
+      setLiveLoading(false);
+    }
+  }, [router]);
 
-  // Helper to set date to Today
-  const handleToday = () => {
-    const d = new Date();
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    setSelectedDate(`${year}-${month}-${day}`);
-  };
+  useEffect(() => {
+    if (!tokenReady || !user || mode !== 'live') return;
+
+    setLiveLoading(true);
+    setCountdown(POLL_SECONDS);
+    fetchLiveUsers();
+
+    liveIntervalRef.current = setInterval(() => {
+      fetchLiveUsers();
+      setCountdown(POLL_SECONDS);
+    }, POLL_SECONDS * 1000);
+
+    countdownRef.current = setInterval(() => {
+      setCountdown(prev => (prev <= 1 ? POLL_SECONDS : prev - 1));
+    }, 1000);
+
+    return () => {
+      clearInterval(liveIntervalRef.current);
+      clearInterval(countdownRef.current);
+    };
+  }, [tokenReady, user, mode, fetchLiveUsers]);
 
   if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
 
-  const getTodayStr = () => {
-    const d = new Date();
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
   const isToday = selectedDate === getTodayStr();
+  const isYesterday = selectedDate === getYesterdayStr();
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-32 transition-colors duration-500">
       <DashboardNavbar />
 
       <div className="pt-24 md:pt-32 px-4 md:px-8">
-        <div className="max-w-[1400px] mx-auto space-y-8 sm:space-y-12">
-          
-          {/* Navigation & Header */}
-          <div className="flex flex-col md:flex-row items-center md:items-center justify-between gap-6 relative text-center md:text-left">
+        <div className="max-w-[1400px] mx-auto space-y-8 sm:space-y-10">
+
+          {/* Page Header */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative">
             <div className="absolute -top-10 -left-10 w-40 h-40 bg-emerald-500/10 blur-[80px] rounded-full -z-10 animate-pulse" />
-            
-            <div className="space-y-3 sm:space-y-4 w-full md:w-auto">
-              <Link 
-                href="/admin/dashboard" 
+
+            <div className="space-y-3 w-full md:w-auto">
+              <Link
+                href="/admin/dashboard"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[var(--foreground)] transition-colors shadow-sm cursor-pointer"
               >
                 <ArrowLeft size={16} /> Back to Dashboard
               </Link>
               <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight uppercase leading-none">
-                Daily Active <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500">Users</span>
+                Active <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500">Users</span>
               </h1>
-              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest max-w-[600px] mx-auto md:mx-0">
-                Monitor platform engagement and inspect student activity by specific calendar days.
+              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest max-w-[600px]">
+                Monitor platform engagement and inspect student activity.
               </p>
             </div>
 
-            {/* Calendar Controls & Quick Filters */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] p-4 shadow-sm backdrop-blur-xl w-full md:w-auto justify-center md:justify-end">
-              <div className="flex items-center gap-2 bg-slate-100 dark:bg-white/[0.05] p-1.5 rounded-2xl border border-slate-200 dark:border-white/[0.05] w-full sm:w-auto justify-center">
-                <button
-                  onClick={handleToday}
-                  className={`px-4 py-2 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer ${
-                    isToday
-                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-[1.02]'
-                      : 'text-slate-500 hover:text-[var(--foreground)]'
-                  }`}
-                >
-                  Today
-                </button>
-                <button
-                  onClick={handleYesterday}
-                  className={`px-4 py-2 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer ${
-                    !isToday && selectedDate === (() => {
-                      const y = new Date();
-                      y.setDate(y.getDate() - 1);
-                      const yr = y.getFullYear();
-                      const mo = String(y.getMonth() + 1).padStart(2, '0');
-                      const da = String(y.getDate()).padStart(2, '0');
-                      return `${yr}-${mo}-${da}`;
-                    })()
-                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-[1.02]'
-                      : 'text-slate-500 hover:text-[var(--foreground)]'
-                  }`}
-                >
-                  Yesterday
-                </button>
-              </div>
-
-              <div className="relative flex items-center w-full sm:w-auto">
-                <div className="absolute left-3.5 text-emerald-500 pointer-events-none">
-                  <Calendar size={16} />
-                </div>
-                <input 
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.05] rounded-2xl pl-10 pr-4 py-2.5 text-xs font-bold text-[var(--foreground)] focus:outline-none focus:border-emerald-500/40 transition-colors w-full sm:w-auto cursor-pointer"
-                />
-              </div>
+            {/* Mode Toggle */}
+            <div className="flex items-center gap-1.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-1.5 shadow-sm">
+              <button
+                onClick={() => setMode('daily')}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all cursor-pointer ${
+                  mode === 'daily'
+                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                    : 'text-slate-500 hover:text-[var(--foreground)]'
+                }`}
+              >
+                <Calendar size={14} /> Daily
+              </button>
+              <button
+                onClick={() => setMode('live')}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all cursor-pointer ${
+                  mode === 'live'
+                    ? 'bg-red-500 text-white shadow-md shadow-red-500/20'
+                    : 'text-slate-500 hover:text-[var(--foreground)]'
+                }`}
+              >
+                <LiveDot /> Live
+              </button>
             </div>
           </div>
 
-          {/* Reusable Admin Panel Container */}
-          <AdminPanel
-            panelIcon={Activity}
-            panelIconClass="text-emerald-500 animate-pulse"
-            panelTitle={`Users Online on ${selectedDate}`}
-            panelSubtitle="Displaying students who logged in or performed actions on this date."
-            badgeText={`Active Count: ${totalCount}`}
-            badgeColorClass="bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-            loading={loading}
-            error={error}
-            isEmpty={activeUsers.length === 0}
-            emptyIcon={Users}
-            emptyTitle="No Activity Found"
-            emptyDescription={`No users were recorded active on ${selectedDate}.`}
-          >
-            {/* Desktop Table View (Hidden on mobile below md) */}
-            <div className="hidden md:block overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/[0.1]">
-              <table className="w-full text-left border-collapse min-w-[750px]">
-                <thead>
-                  <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
-                    <th className="pb-4 pl-4 whitespace-nowrap">User & Email</th>
-                    <th className="pb-4 whitespace-nowrap">Department</th>
-                    <th className="pb-4 whitespace-nowrap">Role</th>
-                    <th className="pb-4 whitespace-nowrap">Points</th>
-                    <th className="pb-4 text-right pr-4 whitespace-nowrap">Last Active Time</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
-                  {activeUsers.map((u) => (
-                    <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="py-4 sm:py-5 pl-4 max-w-[220px] sm:max-w-[250px]">
-                        <button onClick={() => router.push(`/profile/${u.id}`)} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity text-left">
-                          {u.profile_pic ? (
-                            <img src={u.profile_pic} alt="" className="w-8 h-8 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
-                          ) : (
-                            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-xs font-black text-white shrink-0">
-                              {u.name?.[0] || 'U'}
-                            </div>
-                          )}
-                          <div className="truncate">
-                            <p className="font-black text-sm text-[var(--foreground)] truncate flex items-center gap-2">
-                              {u.name} {u.banned && <span className="text-[9px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded-md uppercase tracking-widest border border-red-500/20 shrink-0">Banned</span>}
-                            </p>
-                            <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email || 'No email available'}</p>
-                          </div>
-                        </button>
-                      </td>
-                      <td className="py-4 sm:py-5 whitespace-nowrap text-slate-300">
-                        {u.dept?.toUpperCase() || 'GENERAL'}
-                      </td>
-                      <td className="py-4 sm:py-5 whitespace-nowrap">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${
-                          u.role === 'admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                          u.role === 'moderator' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
-                          'bg-blue-500/10 text-blue-500 border-blue-500/20'
-                        }`}>
-                          {u.role || 'student'}
-                        </span>
-                      </td>
-                      <td className="py-4 sm:py-5 font-black text-amber-500 whitespace-nowrap">
-                        {u.points || 0} PTS
-                      </td>
-                      <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap font-black text-emerald-500">
-                        <div className="inline-flex items-center gap-1.5 justify-end">
-                          <Clock size={14} />
-                          {new Date(u.last_active_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile Card View (Hidden on desktop md and above) */}
-            <div className="block md:hidden space-y-4">
-              {activeUsers.map((u) => (
-                <UserCard
-                  key={u.id}
-                  user={u}
-                  showActiveTime={true}
-                />
-              ))}
-            </div>
-
-            {/* Loading More Indicator */}
-            {loadingMore && (
-              <div className="flex items-center justify-center pt-8">
-                <div className="flex items-center gap-3 px-6 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl">
-                  <Loader2 size={16} className="animate-spin text-emerald-500" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">Loading more...</span>
+          {/* ── DAILY MODE ── */}
+          {mode === 'daily' && (
+            <>
+              {/* Date controls */}
+              <div className="flex flex-col sm:flex-row items-center gap-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] p-4 shadow-sm backdrop-blur-xl w-full md:w-fit">
+                <div className="flex items-center gap-2 bg-slate-100 dark:bg-white/[0.05] p-1.5 rounded-2xl border border-slate-200 dark:border-white/[0.05]">
+                  <button
+                    onClick={() => setSelectedDate(getTodayStr())}
+                    className={`px-4 py-2 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer ${
+                      isToday ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-[1.02]' : 'text-slate-500 hover:text-[var(--foreground)]'
+                    }`}
+                  >Today</button>
+                  <button
+                    onClick={() => setSelectedDate(getYesterdayStr())}
+                    className={`px-4 py-2 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer ${
+                      isYesterday ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-[1.02]' : 'text-slate-500 hover:text-[var(--foreground)]'
+                    }`}
+                  >Yesterday</button>
+                </div>
+                <div className="relative flex items-center w-full sm:w-auto">
+                  <div className="absolute left-3.5 text-emerald-500 pointer-events-none"><Calendar size={16} /></div>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={e => setSelectedDate(e.target.value)}
+                    className="bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.05] rounded-2xl pl-10 pr-4 py-2.5 text-xs font-bold text-[var(--foreground)] focus:outline-none focus:border-emerald-500/40 transition-colors w-full sm:w-auto cursor-pointer"
+                  />
                 </div>
               </div>
-            )}
 
-            {/* Infinite Scroll Sentinel */}
-            <div ref={observerRef} className="w-full h-4" />
-          </AdminPanel>
+              <AdminPanel
+                panelIcon={Activity}
+                panelIconClass="text-emerald-500 animate-pulse"
+                panelTitle={`Users Active on ${selectedDate}`}
+                panelSubtitle="Displaying students who logged in or performed actions on this date."
+                badgeText={`Active Count: ${dailyTotal}`}
+                badgeColorClass="bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                loading={dailyLoading}
+                error={dailyError}
+                isEmpty={dailyUsers.length === 0}
+                emptyIcon={Users}
+                emptyTitle="No Activity Found"
+                emptyDescription={`No users were recorded active on ${selectedDate}.`}
+              >
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left border-collapse min-w-[750px]">
+                    <thead>
+                      <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
+                        <th className="pb-4 pl-4 whitespace-nowrap">User & Email</th>
+                        <th className="pb-4 whitespace-nowrap">Department</th>
+                        <th className="pb-4 whitespace-nowrap">Role</th>
+                        <th className="pb-4 whitespace-nowrap">Points</th>
+                        <th className="pb-4 text-right pr-4 whitespace-nowrap">Last Active Time</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
+                      {dailyUsers.map(u => <UserRow key={u.id} u={u} isLive={false} router={router} />)}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="block md:hidden space-y-4">
+                  {dailyUsers.map(u => <UserCard key={u.id} user={u} showActiveTime />)}
+                </div>
+
+                {dailyLoadingMore && (
+                  <div className="flex items-center justify-center pt-8">
+                    <div className="flex items-center gap-3 px-6 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl">
+                      <Loader2 size={16} className="animate-spin text-emerald-500" />
+                      <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">Loading more...</span>
+                    </div>
+                  </div>
+                )}
+                <div ref={observerRef} className="w-full h-4" />
+              </AdminPanel>
+            </>
+          )}
+
+          {/* ── LIVE MODE ── */}
+          {mode === 'live' && (
+            <>
+              {/* Live status bar */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[var(--card-bg)] border border-red-500/20 rounded-[1.5rem] p-4 shadow-sm backdrop-blur-xl">
+                <div className="flex items-center gap-3">
+                  <LiveDot />
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-widest text-red-400">Live Mode — Last {LIVE_MINUTES} Minutes</p>
+                    {lastRefreshed && (
+                      <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+                        Last refreshed: {lastRefreshed.toLocaleTimeString()}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl">
+                    <RefreshCw size={12} className={`text-red-400 ${countdown <= 3 ? 'animate-spin' : ''}`} />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-red-400">
+                      Refreshing in {countdown}s
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => { setLiveLoading(true); fetchLiveUsers(); setCountdown(POLL_SECONDS); }}
+                    className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-all cursor-pointer"
+                  >
+                    <RefreshCw size={12} /> Refresh
+                  </button>
+                </div>
+              </div>
+
+              <AdminPanel
+                panelIcon={Radio}
+                panelIconClass="text-red-500 animate-pulse"
+                panelTitle={`Currently Online — Last ${LIVE_MINUTES} min`}
+                panelSubtitle="Users who made a request in the last 5 minutes. Auto-refreshes every 15 seconds."
+                badgeText={`Online Now: ${liveTotal}`}
+                badgeColorClass="bg-red-500/10 text-red-500 border-red-500/20"
+                loading={liveLoading}
+                error={liveError}
+                isEmpty={liveUsers.length === 0}
+                emptyIcon={Users}
+                emptyTitle="No One Online"
+                emptyDescription="No users have been active in the last 5 minutes."
+              >
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left border-collapse min-w-[750px]">
+                    <thead>
+                      <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
+                        <th className="pb-4 pl-4 whitespace-nowrap">User & Email</th>
+                        <th className="pb-4 whitespace-nowrap">Department</th>
+                        <th className="pb-4 whitespace-nowrap">Role</th>
+                        <th className="pb-4 whitespace-nowrap">Points</th>
+                        <th className="pb-4 text-right pr-4 whitespace-nowrap">Last Seen</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
+                      {liveUsers.map(u => <UserRow key={u.id} u={u} isLive={true} router={router} />)}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="block md:hidden space-y-4">
+                  {liveUsers.map(u => <UserCard key={u.id} user={u} showActiveTime />)}
+                </div>
+              </AdminPanel>
+            </>
+          )}
 
         </div>
       </div>
