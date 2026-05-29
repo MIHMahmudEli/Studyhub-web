@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 import AuthInput from '@/components/auth/AuthInput';
 import ValidationRules from '@/components/auth/ValidationRules';
+import { getNameValidation, sanitizeName } from '@/lib/nameUtils';
 
 export default function RegisterPage() {
   const [mounted, setMounted] = useState(false);
@@ -34,15 +35,7 @@ export default function RegisterPage() {
   }), [formData.password]);
 
   // Live name validation rules
-  const nameRules = useMemo(() => {
-    const raw = formData.fullName.trim();
-    const words = raw.split(/\s+/).filter(Boolean);
-    return {
-      twoWords:   words.length >= 2,
-      twoChars:   words.length >= 1 && words.every(w => w.length >= 2),
-      lettersOnly: raw.length > 0 && /^[a-zA-Z\s]+$/.test(raw),
-    };
-  }, [formData.fullName]);
+  const nameRules = useMemo(() => getNameValidation(formData.fullName), [formData.fullName]);
 
   const isNameValid = Object.values(nameRules).every(Boolean);
 
@@ -57,8 +50,9 @@ export default function RegisterPage() {
   }, [formData, isNameValid]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (!touched[e.target.name]) setTouched(prev => ({ ...prev, [e.target.name]: true }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (!touched[name]) setTouched(prev => ({ ...prev, [name]: true }));
   };
 
   const handleBlur = (e) => setTouched({ ...touched, [e.target.name]: true });
@@ -98,8 +92,15 @@ export default function RegisterPage() {
     setIsLoading(true);
     setStatus({ type: '', message: '' });
 
+    const cleanedName = sanitizeName(formData.fullName);
+    if (!cleanedName) {
+      setStatus({ type: 'error', message: 'Please enter a valid full name.' });
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      await register(formData.fullName, formData.email, formData.password);
+      await register(cleanedName, formData.email, formData.password);
       setStep('verify');
       setIsLoading(false);
       setResendCooldown(30); // Start 30s cooldown

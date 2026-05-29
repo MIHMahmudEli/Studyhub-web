@@ -1,4 +1,6 @@
-import { Camera, UploadCloud, Trash2, Save } from 'lucide-react';
+import { useMemo } from 'react';
+import { Camera, UploadCloud, Trash2, Save, UserCheck, Sparkles } from 'lucide-react';
+import { getNameValidation, getSuggestedName } from '@/lib/nameUtils';
 
 export default function ProfileTab({
   user,
@@ -11,6 +13,10 @@ export default function ProfileTab({
   departments,
   saving
 }) {
+  const nameRules = useMemo(() => getNameValidation(profileForm.name), [profileForm.name]);
+  const isNameValid = Object.values(nameRules).every(Boolean);
+  const suggestedName = useMemo(() => getSuggestedName(profileForm.name), [profileForm.name]);
+
   return (
     <form onSubmit={handleSaveProfile} className="space-y-6">
       <div>
@@ -33,7 +39,6 @@ export default function ProfileTab({
             </div>
           )}
           
-          {/* Interactive upload trigger overlay */}
           <label 
             htmlFor="profile-pic-input"
             className="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
@@ -89,8 +94,42 @@ export default function ProfileTab({
             onChange={handleProfileChange}
             required
             className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors"
-            placeholder="Your full name"
+            placeholder="Your full name (e.g. John Doe)"
           />
+          {/* Name validation panel */}
+          {profileForm.name && (
+            <div className="p-3.5 bg-slate-500/5 border border-[var(--card-border)] rounded-2xl space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex items-center gap-2 border-b border-[var(--card-border)] pb-2">
+                <UserCheck size={11} className="text-blue-500" />
+                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Name Format</span>
+              </div>
+              <div className="grid grid-cols-1 gap-1.5">
+                {[
+                  { key: 'twoWords', label: 'At least 2 words (e.g. John Doe)' },
+                  { key: 'twoChars', label: 'Each word min. 2 characters' },
+                  { key: 'lettersOnly', label: 'Letters only — no numbers, dots or symbols' },
+                ].map(({ key, label }) => (
+                  <div key={key} className="flex items-center gap-2">
+                    <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all duration-300 ${
+                      nameRules[key] ? 'bg-emerald-500 shadow-[0_0_6px_rgba(52,211,153,0.5)]' : 'bg-slate-300 dark:bg-slate-700'
+                    }`} />
+                    <span className={`text-[9px] font-bold uppercase tracking-tight transition-colors duration-300 ${
+                      nameRules[key] ? 'text-emerald-500' : 'text-slate-400'
+                    }`}>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Suggested name banner */}
+          {suggestedName && !isNameValid && (
+            <div className="flex items-center gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl animate-in fade-in duration-300">
+              <Sparkles size={12} className="text-amber-500 shrink-0" />
+              <p className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                Did you mean: <span className="underline underline-offset-2 decoration-amber-500/40">{suggestedName}</span>
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -138,7 +177,7 @@ export default function ProfileTab({
       <div className="pt-4 border-t border-[var(--card-border)] flex justify-end">
         <button 
           type="submit"
-          disabled={saving}
+          disabled={saving || (!isNameValid && profileForm.name.length > 0)}
           className="flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all shadow-md shadow-blue-500/10 cursor-pointer disabled:opacity-50"
         >
           {saving ? (

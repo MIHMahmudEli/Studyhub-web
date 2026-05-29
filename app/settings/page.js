@@ -7,6 +7,7 @@ import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import PageHeader from '@/components/ui/PageHeader';
 import { apiRequest } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
+import { sanitizeName } from '@/lib/nameUtils';
 import { 
   User, 
   Lock, 
@@ -222,7 +223,8 @@ export default function SettingsPage() {
 
   // Handle Input Changes
   const handleProfileChange = (e) => {
-    setProfileForm({ ...profileForm, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setProfileForm(prev => ({ ...prev, [name]: value }));
     clearAlerts();
   };
 
@@ -253,13 +255,20 @@ export default function SettingsPage() {
       return;
     }
 
+    const cleanedName = sanitizeName(profileForm.name);
+    if (!cleanedName) {
+      showToast('Please enter a valid name.', 'error');
+      setSaving(false);
+      return;
+    }
+    setProfileForm(prev => ({ ...prev, name: cleanedName }));
     try {
       await apiRequest('/users/profile', {
         method: 'PATCH',
         body: {
-          name: profileForm.name,
-          dept: profileForm.dept || null, // Allow leaving it blank/nullable
-          code: profileForm.code || null  // Allow leaving it blank/nullable
+          name: cleanedName,
+          dept: profileForm.dept || null,
+          code: profileForm.code || null
         }
       });
       
