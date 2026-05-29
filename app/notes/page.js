@@ -40,69 +40,80 @@ const getSubjectIcon = (subject, code) => {
 
 export default function NotesPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [allNotes, setAllNotes] = useState([]);
-  const [displayedNotes, setDisplayedNotes] = useState([]);
-  const [page, setPage] = useState(1);
+  const [notes, setNotes] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalNotes, setTotalNotes] = useState(0);
   const [loading, setLoading] = useState(true);
-  const itemsPerPage = 12;
+  const [loadingMore, setLoadingMore] = useState(false);
+  const limit = 12;
   
   const [sortBy, setSortBy] = useState('latest');
+  const [searchKey, setSearchKey] = useState(0);
   
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
   const observer = useRef();
 
-  // Fetch notes from database
-  useEffect(() => {
-    const fetchNotes = async () => {
-      try {
+  // Fetch notes from database (server-side paginated)
+  const fetchNotes = useCallback(async (pageNum, append = false) => {
+    try {
+      if (append) {
+        setLoadingMore(true);
+      } else {
         setLoading(true);
-        const data = await apiRequest(`/notes?sort=${sortBy}`);
-        const mappedNotes = data.map(note => ({
-          ...note,
-          subject: note.courseTitle,
-          course_code: note.code
-        }));
-        setAllNotes(mappedNotes);
-      } catch (error) {
-        console.error('Failed to fetch notes:', error);
-      } finally {
-        setLoading(false);
       }
-    };
-
-    if (tokenReady && user) {
-      fetchNotes();
+      const res = await apiRequest(`/notes?sort=${sortBy}&page=${pageNum}&limit=${limit}`);
+      const mapped = res.data.map(note => ({
+        ...note,
+        subject: note.courseTitle,
+        course_code: note.code
+      }));
+      if (append) {
+        setNotes(prev => [...prev, ...mapped]);
+      } else {
+        setNotes(mapped);
+      }
+      setTotalNotes(res.total);
+      setCurrentPage(pageNum);
+    } catch (error) {
+      console.error('Failed to fetch notes:', error);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
     }
-  }, [tokenReady, user, sortBy]);
+  }, [sortBy]);
 
-  // Filter notes based on search query
+  // Initial fetch + refetch on sort or search change
+  useEffect(() => {
+    setNotes([]);
+    setCurrentPage(1);
+    if (tokenReady && user) {
+      fetchNotes(1);
+    }
+  }, [tokenReady, user, sortBy, searchKey]);
+
+  // Filter notes based on search query (client-side over loaded notes)
   const filteredNotes = useMemo(() => {
-    if (!searchQuery) return allNotes;
+    if (!searchQuery) return notes;
     const q = searchQuery.toLowerCase();
-    return allNotes.filter(note => 
-      note.title.toLowerCase().includes(q) || 
+    return notes.filter(note =>
+      note.title.toLowerCase().includes(q) ||
       (note.subject && note.subject.toLowerCase().includes(q)) ||
       (note.course_code && note.course_code.toLowerCase().includes(q))
     );
-  }, [searchQuery, allNotes]);
+  }, [searchQuery, notes]);
 
-  // Handle infinite scroll pagination locally
-  useEffect(() => {
-    setDisplayedNotes(filteredNotes.slice(0, page * itemsPerPage));
-  }, [filteredNotes, page]);
-
-  const hasMore = displayedNotes.length < filteredNotes.length;
+  const hasMore = notes.length < totalNotes;
 
   const lastNoteElementRef = useCallback(node => {
     if (observer.current) observer.current.disconnect();
     observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPage(prevPage => prevPage + 1);
+      if (entries[0].isIntersecting && hasMore && !loadingMore) {
+        fetchNotes(currentPage + 1, true);
       }
     });
     if (node) observer.current.observe(node);
-  }, [hasMore]);
+  }, [hasMore, loadingMore, currentPage, fetchNotes]);
 
   if (authLoading || loading) return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-32">
@@ -156,7 +167,7 @@ export default function NotesPage() {
             <SearchInput
               placeholder="SEARCH NOTES..."
               value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+              onChange={(e) => { setSearchQuery(e.target.value); setSearchKey(k => k + 1); }}
               focusBorderClass="focus:border-purple-500/30"
               widthClass="w-full sm:w-[280px]"
             />
@@ -186,9 +197,9 @@ export default function NotesPage() {
 
           {/* ─── Majestic Notes Grid ──────────────────────────────────────────── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {displayedNotes.map((note, idx) => {
+            {filteredNotes.map((note, idx) => {
               const Icon = getSubjectIcon(note.subject, note.course_code);
-              const isLast = displayedNotes.length === idx + 1;
+              const isLast = filteredNotes.length === idx + 1;
               return (
                 <NoteCard
                   ref={isLast ? lastNoteElementRef : null}
@@ -196,15 +207,25 @@ export default function NotesPage() {
                   note={note}
                   icon={Icon}
                   accentColor="purple"
-                  animationDelay={(idx % itemsPerPage) * 40}
+                  animationDelay={(idx % limit) * 40}
                   onClick={() => router.push(`/notes/${note.id}`)}
                 />
               );
             })}
           </div>
 
+          {/* Loading More Indicator */}
+          {loadingMore && (
+            <div className="flex items-center justify-center mt-12">
+              <div className="flex items-center gap-3 px-6 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl">
+                <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">Loading more notes...</span>
+              </div>
+            </div>
+          )}
+
           {/* Empty State */}
-          {displayedNotes.length === 0 && (
+          {!loading && !loadingMore && filteredNotes.length === 0 && (
             <div className="flex flex-col items-center justify-center py-32 text-center">
               <div className="w-24 h-24 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-3xl flex items-center justify-center text-slate-400 mb-8 shadow-xl">
                 <FileText size={48} strokeWidth={1} />
@@ -217,7 +238,7 @@ export default function NotesPage() {
           )}
 
           {/* Infinite Scroll End Indicator */}
-          {!hasMore && displayedNotes.length > 0 && (
+          {!hasMore && filteredNotes.length > 0 && (
             <div className="text-center mt-20 pt-10 border-t border-slate-200 dark:border-white/5">
               <p className="text-slate-500 text-[9px] font-black uppercase tracking-[0.3em]">
                 End of Notes Archive
