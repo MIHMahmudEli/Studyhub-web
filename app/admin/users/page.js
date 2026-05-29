@@ -178,6 +178,7 @@ export default function AdminUsersPage() {
             badgeText={`Total: ${totalUsersCount}`}
             badgeColorClass="bg-blue-500/10 text-blue-500 border-blue-500/20"
             loading={loadingUsers && usersList.length === 0}
+            skeletonCount={6}
             isEmpty={usersList.length === 0}
             emptyIcon={Users}
             emptyTitle="No Users Found"
