@@ -181,7 +181,7 @@ export default function PendingNotesPage() {
                         <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 truncate">{note.course_code} • {note.dept}</p>
                       </td>
                       <td className="py-4 sm:py-5 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
+                        <button onClick={() => router.push(`/profile/${note.uploader_id}`)} className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity text-left">
                           {note.uploader?.profile_pic ? (
                             <img src={note.uploader.profile_pic} alt="" className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
                           ) : (
@@ -190,7 +190,7 @@ export default function PendingNotesPage() {
                             </div>
                           )}
                           <span className="text-slate-300 truncate max-w-[120px]">{note.uploader?.name || `User #${note.uploader_id}`}</span>
-                        </div>
+                        </button>
                       </td>
                       <td className="py-4 sm:py-5 whitespace-nowrap">
                         <a 

@@ -218,7 +218,7 @@ export default function AdminUsersPage() {
                   {usersList.map((u) => (
                     <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
                       <td className="py-4 sm:py-5 pl-4 max-w-[220px] sm:max-w-[250px]">
-                        <div className="flex items-center gap-3">
+                        <button onClick={() => router.push(`/profile/${u.id}`)} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity text-left">
                           {u.profile_pic ? (
                             <img src={u.profile_pic} alt="" className="w-8 h-8 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
                           ) : (
@@ -232,7 +232,7 @@ export default function AdminUsersPage() {
                             </p>
                             <p className="text-[10px] text-slate-500 truncate mt-0.5">{u.email || 'No email available'}</p>
                           </div>
-                        </div>
+                        </button>
                       </td>
                       <td className="py-4 sm:py-5 whitespace-nowrap">
                         <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${

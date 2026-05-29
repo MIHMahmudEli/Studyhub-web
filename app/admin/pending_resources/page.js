@@ -181,7 +181,7 @@ export default function PendingResourcesPage() {
                         <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 truncate">{res.subject || res.course_code || 'RESOURCE'} • {res.term?.toUpperCase() || 'MID'}</p>
                       </td>
                       <td className="py-4 sm:py-5 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
+                        <button onClick={() => router.push(`/profile/${res.uploader_id}`)} className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity text-left">
                           {res.uploader?.profile_pic ? (
                             <img src={res.uploader.profile_pic} alt="" className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
                           ) : (
@@ -190,7 +190,7 @@ export default function PendingResourcesPage() {
                             </div>
                           )}
                           <span className="text-slate-300 truncate max-w-[120px]">{res.uploader?.name || `User #${res.uploader_id}`}</span>
-                        </div>
+                        </button>
                       </td>
                       <td className="py-4 sm:py-5 whitespace-nowrap">
                         <a 

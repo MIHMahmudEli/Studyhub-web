@@ -13,6 +13,7 @@ import {
   Lock, 
   Settings, 
   Palette,
+  Link2,
   ChevronRight
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
@@ -21,6 +22,7 @@ import Toast from '@/components/ui/Toast';
 import ProfileTab from '@/components/settings/ProfileTab';
 import SecurityTab from '@/components/settings/SecurityTab';
 import PreferencesTab from '@/components/settings/PreferencesTab';
+import SocialLinksTab from '@/components/settings/SocialLinksTab';
 
 export default function SettingsPage() {
   const { user, loading: authLoading, checkUser } = useAuth();
@@ -33,14 +35,18 @@ export default function SettingsPage() {
   }, []);
 
   // Navigation tab state
-  const [activeTab, setActiveTab] = useState('profile'); // profile, security, preferences
+  const [activeTab, setActiveTab] = useState('profile'); // profile, security, preferences, social
 
   // Form states
   const [profileForm, setProfileForm] = useState({
     name: '',
     email: '',
     dept: '',
-    code: '' // student ID/code
+    code: '',
+    github: '',
+    linkedin: '',
+    instagram: '',
+    facebook: '',
   });
 
   const [securityForm, setSecurityForm] = useState({
@@ -216,7 +222,11 @@ export default function SettingsPage() {
         name: user.name || '',
         email: user.email || '',
         dept: user.dept || '',
-        code: user.code || ''
+        code: user.code || '',
+        github: user.github || '',
+        linkedin: user.linkedin || '',
+        instagram: user.instagram || '',
+        facebook: user.facebook || '',
       });
     }
   }, [user]);
@@ -407,6 +417,20 @@ export default function SettingsPage() {
                 </button>
 
                 <button 
+                  onClick={() => { setActiveTab('social'); clearAlerts(); }}
+                  className={`w-full flex items-center justify-between p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer ${
+                    activeTab === 'social' 
+                      ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20 shadow-sm shadow-blue-500/5' 
+                      : 'text-slate-500 dark:text-slate-400 hover:text-[var(--foreground)] hover:bg-slate-500/5 border border-transparent'
+                  }`}
+                >
+                  <span className="flex items-center gap-3">
+                    <Link2 size={16} /> Social Links
+                  </span>
+                  <ChevronRight size={14} className={`transition-transform duration-300 ${activeTab === 'social' ? 'translate-x-0.5' : 'opacity-0'}`} />
+                </button>
+
+                <button 
                   onClick={() => { setActiveTab('preferences'); clearAlerts(); }}
                   className={`w-full flex items-center justify-between p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer ${
                     activeTab === 'preferences' 
@@ -455,7 +479,17 @@ export default function SettingsPage() {
                   />
                 )}
 
-                {/* 3. Appearance & Preferences Tab */}
+                {/* 3. Social Links Tab */}
+                {activeTab === 'social' && (
+                  <SocialLinksTab
+                    profileForm={profileForm}
+                    handleProfileChange={handleProfileChange}
+                    handleSaveProfile={handleSaveProfile}
+                    saving={saving}
+                  />
+                )}
+
+                {/* 4. Appearance & Preferences Tab */}
                 {activeTab === 'preferences' && (
                   <PreferencesTab
                     theme={theme}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { User, ArrowRight, ExternalLink } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
@@ -102,6 +103,28 @@ export default function StudentDashboard() {
 
           {/* Premium Routine Generator Banner */}
           <RoutineBanner />
+
+          {/* My Public Profile Card */}
+          <button onClick={() => router.push(`/profile/${user?.id}`)} className="w-full group relative overflow-hidden rounded-[2.5rem] border border-[var(--card-border)] bg-[var(--card-bg)] p-6 md:p-8 text-left shadow-lg hover:border-blue-500/30 transition-all duration-500 cursor-pointer">
+            <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-gradient-to-br from-blue-500/5 to-purple-500/5 blur-[60px] rounded-full pointer-events-none" />
+            <div className="flex items-center justify-between relative z-10">
+              <div className="flex items-center gap-4">
+                {user?.profile_pic ? (
+                  <img src={user.profile_pic} alt={user.name} className="w-14 h-14 rounded-2xl object-cover border border-[var(--card-border)] shadow-sm" />
+                ) : (
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-black text-xl uppercase shadow-sm">
+                    {user?.name ? user.name[0] : 'U'}
+                  </div>
+                )}
+                <div>
+                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">My Public Profile</p>
+                  <p className="text-sm font-black group-hover:text-blue-500 transition-colors">{user?.name}</p>
+                  <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">View your public profile</p>
+                </div>
+              </div>
+              <ArrowRight size={20} className="text-slate-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-all shrink-0" />
+            </div>
+          </button>
 
           {/* Quick Shortcuts Hub */}
           <QuickShortcuts />

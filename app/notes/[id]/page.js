@@ -425,7 +425,7 @@ export default function NotePreviewPage() {
               </div>
 
               {/* Author Card */}
-              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex items-center gap-4 shadow-sm group cursor-pointer hover:border-purple-500/30 transition-all duration-300">
+              <button onClick={() => router.push(`/profile/${note.uploader_id}`)} className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex items-center gap-4 shadow-sm group cursor-pointer hover:border-purple-500/30 transition-all duration-300 text-left">
                 {note.uploader?.profile_pic ? (
                   <img 
                     src={note.uploader.profile_pic} 
@@ -443,7 +443,7 @@ export default function NotePreviewPage() {
                     {note.uploader?.name || `Student #${note.uploader_id}`}
                   </p>
                 </div>
-              </div>
+              </button>
             </div>
           )}
         </div>
