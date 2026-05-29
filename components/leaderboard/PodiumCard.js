@@ -43,7 +43,7 @@ export default function PodiumCard({ user, rank, color, isLarge = false }) {
         </button>
 
         {/* Name + dept */}
-        <button onClick={goToProfile} className={`font-black mb-0.5 hover:text-blue-500 transition-colors ${isLarge ? 'text-xl' : 'text-lg'} line-clamp-1 cursor-pointer`}>{user.name}</button>
+        <button onClick={goToProfile} className={`font-black mb-0.5 hover:text-blue-500 transition-colors ${isLarge ? 'text-xl' : 'text-lg'} line-clamp-1 cursor-pointer text-center w-full`}>{user.name}</button>
         {user.dept && (
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">{user.dept}</p>
         )}
