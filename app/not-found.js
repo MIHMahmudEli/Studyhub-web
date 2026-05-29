@@ -1,17 +1,21 @@
 'use client';
-import Link from 'next/link';
 import { Home, ArrowLeft } from 'lucide-react';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
+import { useAuth } from '@/context/AuthContext';
 
 export default function NotFound() {
+  const { user } = useAuth();
+  const homeRoute = user ? '/notes' : '/auth';
+
   const handleGoBack = () => {
     if (typeof window !== 'undefined') {
       const referrer = document.referrer;
-      // If referrer is on the same host, perform a full-page load to it to clear any stuck state
       if (referrer && referrer.includes(window.location.host)) {
         window.location.href = referrer;
+      } else if (window.history.length > 1) {
+        window.history.back();
       } else {
-        window.location.href = '/notes';
+        window.location.href = homeRoute;
       }
     }
   };
@@ -19,7 +23,7 @@ export default function NotFound() {
   const handleGoHome = (e) => {
     e.preventDefault();
     if (typeof window !== 'undefined') {
-      window.location.href = '/notes';
+      window.location.href = homeRoute;
     }
   };
 
