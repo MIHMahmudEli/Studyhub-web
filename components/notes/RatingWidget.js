@@ -13,12 +13,12 @@ function CommentItem({ review, uploaderId, currentUser, onDelete, onStartEdit, o
   const isTemp = typeof review.id === 'string' && review.id.startsWith('temp-');
 
   return (
-    <div className={`bg-slate-50 dark:bg-white/[0.02] rounded-2xl p-5 border border-[var(--card-border)] group transition-all hover:bg-slate-100/50 dark:hover:bg-white/[0.04] ${isTemp ? 'opacity-60 pointer-events-none' : ''}`}>
-      <div className="flex items-start gap-4">
+    <div className={`bg-slate-50 dark:bg-white/[0.02] rounded-2xl p-4 sm:p-5 border border-[var(--card-border)] group transition-all hover:bg-slate-100/50 dark:hover:bg-white/[0.04] ${isTemp ? 'opacity-60 pointer-events-none' : ''}`}>
+      <div className="flex items-start gap-3 sm:gap-4">
         {review.user?.profile_pic ? (
-          <img src={review.user.profile_pic} alt={review.user?.name} className="w-9 h-9 rounded-xl object-cover border border-[var(--card-border)] shadow-md shrink-0 select-none" />
+          <img src={review.user.profile_pic} alt={review.user?.name} className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover border border-[var(--card-border)] shadow-md shrink-0 select-none" />
         ) : (
-          <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-xs font-black uppercase shrink-0 select-none shadow-inner">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-xs font-black uppercase shrink-0 select-none shadow-inner">
             {review.user?.name ? review.user.name.charAt(0) : '#'}
           </div>
         )}
@@ -62,7 +62,7 @@ function CommentItem({ review, uploaderId, currentUser, onDelete, onStartEdit, o
             <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-400 leading-relaxed break-words pl-0.5">"{review.comment}"</p>
           )}
 
-          <div className="flex items-center gap-3 mt-3">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-3">
             <button onClick={() => onToggleLike(review.id)} className={`flex items-center gap-1 text-[9px] font-black uppercase tracking-wider transition-colors cursor-pointer ${review.userVote === 'like' ? 'text-blue-500' : 'text-slate-400 hover:text-blue-500'}`}>
               <ThumbsUp size={12} className={review.userVote === 'like' ? 'fill-blue-500' : ''} /> {review.likes_count || 0}
             </button>
@@ -535,8 +535,8 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
   const hasComments = allReviews.some(r => r.comment && r.comment.trim() !== '');
 
   return (
-    <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 shadow-sm">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+    <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 shadow-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10">
 
         {/* ─── COLUMN 1: RATINGS ─────────────────────────────────────────────── */}
         <div className="lg:col-span-1 space-y-6 lg:border-r lg:border-[var(--card-border)] lg:pr-8">
@@ -651,13 +651,13 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
 
                     {children.length > 0 && (
                       <>
-                        <button onClick={() => toggleReplies(review.id)} className="ml-12 flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-purple-500 transition-colors cursor-pointer group">
+                        <button onClick={() => toggleReplies(review.id)} className="ml-6 sm:ml-12 flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-purple-500 transition-colors cursor-pointer group">
                           <MessageSquare size={12} />
                           {children.length} {children.length === 1 ? 'Reply' : 'Replies'}
                           {expandedReplies.has(review.id) ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
                         </button>
                         {expandedReplies.has(review.id) && (
-                          <div className="ml-12 space-y-2">
+                          <div className="ml-6 sm:ml-12 space-y-2">
                             {children.map(child => (
                               <CommentItem
                                 key={child.id}
