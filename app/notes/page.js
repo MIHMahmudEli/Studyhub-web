@@ -54,6 +54,10 @@ export default function NotesPage() {
   const router = useRouter();
   const observer = useRef();
 
+  useEffect(() => {
+    if (!authLoading && !user) router.replace('/auth');
+  }, [user, authLoading, router]);
+
   // Fetch notes from database (server-side paginated)
   const fetchNotes = useCallback(async (pageNum, append = false) => {
     try {
@@ -142,8 +146,6 @@ export default function NotesPage() {
       </div>
     </main>
   );
-
-  if (!user && !authLoading) return null;
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-32">
