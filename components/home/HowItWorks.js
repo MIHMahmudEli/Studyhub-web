@@ -31,13 +31,13 @@ function StepCard({ step }) {
 
   return (
     <div
-      className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] rounded-[24px] p-6 md:p-9 group hover:-translate-y-2 hover:bg-white/[0.05] hover:border-purple-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default relative overflow-hidden hover:shadow-[0_24px_48px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(139,92,246,0.05)]"
+      className="bg-[var(--surface)] backdrop-blur-sm border border-[var(--border)] rounded-[24px] p-6 md:p-9 group hover:-translate-y-2 hover:bg-[var(--surface)] hover:border-purple-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default relative overflow-hidden hover:shadow-[0_24px_48px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(139,92,246,0.05)]"
     >
       {/* Hover glow effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       {/* Ghost number watermark */}
       <div 
-        className="absolute top-5 right-6 text-[72px] font-black leading-none text-white/[0.03] select-none tracking-tighter group-hover:scale-110 group-hover:text-white/[0.06] group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        className="absolute top-5 right-6 text-[72px] font-black leading-none text-[var(--text-1)]/5 select-none tracking-tighter group-hover:scale-110 group-hover:text-[var(--text-1)]/10 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
       >
         {step.number}
       </div>
@@ -61,8 +61,8 @@ function StepCard({ step }) {
         </div>
       </div>
 
-      <h3 className="text-[19px] font-bold text-[#f0f4ff] mb-2.5 leading-tight">{step.title}</h3>
-      <p className="text-sm text-slate-500 leading-relaxed">{step.description}</p>
+      <h3 className="text-[19px] font-bold text-[var(--text-1)] mb-2.5 leading-tight">{step.title}</h3>
+      <p className="text-sm text-[var(--text-2)] leading-relaxed">{step.description}</p>
     </div>
   );
 }
@@ -70,23 +70,17 @@ function StepCard({ step }) {
 export default function HowItWorks() {
   return (
     <section id="how" className="px-6 pb-20 md:pb-[120px] relative overflow-hidden">
-      {/* Background starfield grid */}
-      <div className="absolute inset-0 -z-10 [background-image:radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:24px_24px] md:[background-size:32px_32px]" />
-      
-      {/* Background Glow */}
-      <div className="absolute top-[30%] left-[-15%] md:left-[-10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-purple-600/5 blur-[80px] md:blur-[120px] rounded-full -z-10 animate-nebula [animation-delay:1s]" />
-
       <div className="max-w-[1120px] mx-auto">
-        <div className="border-t border-white/5 mb-12 md:mb-20" />
+        <div className="border-t border-[var(--border)] mb-12 md:mb-20" />
         <div className="mb-10 md:mb-14">
           <span className="block text-[10px] md:text-[11px] font-bold tracking-[0.12em] uppercase text-purple-500 mb-3">
             Process
           </span>
-          <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[#f0f4ff] mb-4">
+          <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[var(--text-1)] mb-4">
             Up and running<br />
-            <span className="text-slate-700">in three steps.</span>
+            <span className="text-[var(--text-3)]">in three steps.</span>
           </h2>
-          <p className="text-sm md:text-base text-slate-500 leading-relaxed max-w-[480px]">No long onboarding. No complexity. Start learning and contributing in minutes.</p>
+          <p className="text-sm md:text-base text-[var(--text-2)] leading-relaxed max-w-[480px]">No long onboarding. No complexity. Start learning and contributing in minutes.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-5">
           {steps.map((step, i) => <StepCard key={i} step={step} />)}

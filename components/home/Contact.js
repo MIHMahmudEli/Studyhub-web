@@ -20,7 +20,7 @@ function SocialCard({ link }) {
       className="group block no-underline"
     >
     <div
-      className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] rounded-[24px] p-[28px_24px] flex items-start gap-4 group-hover:-translate-y-2 group-hover:bg-white/[0.05] group-hover:border-emerald-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(16,185,129,0.05)] overflow-hidden relative"
+      className="bg-[var(--surface)] backdrop-blur-sm border border-[var(--border)] rounded-[24px] p-[28px_24px] flex items-start gap-4 group-hover:-translate-y-2 group-hover:bg-[var(--surface)] group-hover:border-emerald-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(16,185,129,0.05)] overflow-hidden relative"
     >
       {/* Hover glow effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -34,8 +34,8 @@ function SocialCard({ link }) {
           <Icon size={20} color={link.accent} strokeWidth={1.5} />
         </div>
         <div>
-          <h3 className="text-[15px] font-bold text-[#f0f4ff] mb-1">{link.name}</h3>
-          <p className="text-[13px] text-slate-500 group-hover:text-gray-400 transition-colors">
+          <h3 className="text-[15px] font-bold text-[var(--text-1)] mb-1">{link.name}</h3>
+          <p className="text-[13px] text-[var(--text-2)] group-hover:text-[var(--text-1)]/70 transition-colors">
             {link.description}
           </p>
         </div>
@@ -47,23 +47,17 @@ function SocialCard({ link }) {
 export default function Contact() {
   return (
     <section id="contact" className="px-6 pb-24 md:pb-[140px] relative overflow-hidden">
-      {/* Background starfield grid */}
-      <div className="absolute inset-0 -z-10 [background-image:radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:24px_24px] md:[background-size:32px_32px]" />
-      
-      {/* Background Glow */}
-      <div className="absolute bottom-[10%] left-[-15%] md:left-[-5%] w-[300px] md:w-[350px] h-[300px] md:h-[350px] bg-emerald-600/5 blur-[70px] md:blur-[80px] rounded-full -z-10 animate-nebula [animation-delay:4s]" />
-
       <div className="max-w-[1120px] mx-auto">
-        <div className="border-t border-white/5 mb-12 md:mb-20" />
+        <div className="border-t border-[var(--border)] mb-12 md:mb-20" />
         <div className="mb-10 md:mb-14">
           <span className="block text-[10px] md:text-[11px] font-bold tracking-[0.12em] uppercase text-emerald-500 mb-3">
             Community
           </span>
-          <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[#f0f4ff] mb-4">
+          <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[var(--text-1)] mb-4">
             Connect with us<br />
-            <span className="text-slate-700">wherever you are.</span>
+            <span className="text-[var(--text-3)]">wherever you are.</span>
           </h2>
-          <p className="text-sm md:text-base text-slate-500 leading-relaxed max-w-[480px]">
+          <p className="text-sm md:text-base text-[var(--text-2)] leading-relaxed max-w-[480px]">
             Join our growing community across platforms — get resources, updates, and direct support.
           </p>
         </div>

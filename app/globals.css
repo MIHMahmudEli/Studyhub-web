@@ -55,6 +55,29 @@
   --r-lg: 24px;
 }
 
+/* Allow scoping dark theme to child elements (e.g. landing page wrapper) */
+[data-theme="dark"] {
+  --background: #060913;
+  --foreground: #f8fafc;
+  --card-bg: rgba(15, 22, 42, 0.7);
+  --card-border: rgba(99, 102, 241, 0.2);
+  --muted: #94a3b8;
+  --accent-glow: rgba(99, 102, 241, 0.15);
+  --nebula-1: rgba(99, 102, 241, 0.25);
+  --nebula-2: rgba(139, 92, 246, 0.2);
+  --nebula-3: rgba(56, 189, 248, 0.15);
+  --nebula-4: rgba(232, 121, 249, 0.12);
+  --bg:       #020408;
+  --surface:  rgba(255, 255, 255, 0.02);
+  --border:   rgba(255, 255, 255, 0.05);
+  --border-h: rgba(255, 255, 255, 0.12);
+  --blue:     #3b82f6;
+  --violet:   #8b5cf6;
+  --text-1:   #f8fafc;
+  --text-2:   #94a3b8;
+  --text-3:   #475569;
+}
+
 [data-theme='light'] {
   --background: #f1f5f9;
   --foreground: #0f172a;
