@@ -18,6 +18,7 @@ export default function ThemeSync() {
     if (synced.current) return;
     if (user.preferred_theme) {
       syncTheme(user.preferred_theme);
+      localStorage.setItem('preferred_theme', user.preferred_theme);
     }
     synced.current = true;
   }, [user, loading, syncTheme]);

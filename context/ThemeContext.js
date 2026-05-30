@@ -27,7 +27,7 @@ export function ThemeProvider({ children }) {
   }, [theme, darkThemeVariant, lightThemeVariant, preview]);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const savedTheme = localStorage.getItem('preferred_theme') || localStorage.getItem('theme') || 'dark';
     if (VALID_MODES.includes(savedTheme)) {
       setTheme(savedTheme);
       lastSavedTheme.current = savedTheme;
@@ -54,6 +54,7 @@ export function ThemeProvider({ children }) {
     setPreview(null);
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
+    localStorage.setItem('preferred_theme', newTheme);
     lastSavedTheme.current = newTheme;
   }, []);
 
@@ -63,9 +64,9 @@ export function ThemeProvider({ children }) {
     document.documentElement.classList.add('theme-transitioning');
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
+    localStorage.setItem('preferred_theme', newTheme);
     lastSavedTheme.current = newTheme;
 
-    // Persist to backend (silently fail if not logged in)
     apiRequest('/users/profile', {
       method: 'PATCH',
       body: { preferred_theme: newTheme },
