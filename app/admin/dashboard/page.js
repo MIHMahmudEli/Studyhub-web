@@ -34,7 +34,8 @@ import {
   Settings,
   TrendingUp,
   Flame,
-  LayoutDashboard
+  LayoutDashboard,
+  Palette
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -409,6 +410,7 @@ export default function AdminDashboardPage() {
 
           {/* Platform Configuration Card (Admin Only) */}
           {user?.role === 'admin' && (
+            <>
             <ConfigCard
               title="Resource Upload Visibility"
               subtitle="Configure the default approval status for newly uploaded academic resources. If set to PENDING, an admin must approve them before they appear in the public library."
@@ -437,6 +439,8 @@ export default function AdminDashboardPage() {
                 Pending by Default
               </button>
             </ConfigCard>
+
+            </>
           )}
 
           {/* Admin Stats Grid */}
@@ -552,6 +556,20 @@ export default function AdminDashboardPage() {
               permissionValue={permissions.find(p => p.key === 'perm_manage_trending')?.value}
               onPermissionToggle={handlePermissionToggle}
             />
+
+            {/* Theme Management Card (Admin Only) */}
+            {user?.role === 'admin' && (
+              <StatsCard
+                href="/admin/theme"
+                title="Theme Management"
+                value="Global"
+                subtitle="Dark / Light variants"
+                icon={Palette}
+                colorScheme="purple"
+                iconAnimation="animate-pulse"
+                loading={loadingData}
+              />
+            )}
 
           </div>
 

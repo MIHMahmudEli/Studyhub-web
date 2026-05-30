@@ -8,16 +8,37 @@
 }
 
 :root {
-  /* App core tokens */
+  /* App core tokens — Current Dark Theme (default) */
   --background: #060913;
   --foreground: #f8fafc;
   --card-bg: rgba(15, 22, 42, 0.7);
   --card-border: rgba(99, 102, 241, 0.2);
   --muted: #94a3b8;
   --accent-glow: rgba(99, 102, 241, 0.15);
-  --nebula-1: rgba(99, 102, 241, 0.12);
-  --nebula-2: rgba(139, 92, 246, 0.1);
-  --nebula-3: rgba(217, 70, 239, 0.08);
+  --nebula-1: rgba(99, 102, 241, 0.25);
+  --nebula-2: rgba(139, 92, 246, 0.2);
+  --nebula-3: rgba(56, 189, 248, 0.15);
+  --nebula-4: rgba(232, 121, 249, 0.12);
+  --bg-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 55%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 40% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 70%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 30%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 85% 85%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 90%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 45%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 35% 35%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 15%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5% 50%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 75% 60%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 95% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 20% 5%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(circle at 20% 20%, var(--nebula-1) 0%, transparent 40%),
+    radial-gradient(circle at 80% 30%, var(--nebula-2) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, var(--nebula-3) 0%, transparent 40%),
+    radial-gradient(circle at 10% 70%, var(--nebula-4) 0%, transparent 35%);
 
   /* Landing page tokens */
   --bg:       #020408;
@@ -44,6 +65,12 @@
   --nebula-1: rgba(59, 130, 246, 0.04);
   --nebula-2: rgba(139, 92, 246, 0.03);
   --nebula-3: rgba(6, 182, 212, 0.03);
+  --nebula-4: rgba(59, 130, 246, 0.03);
+  --bg-image:
+    radial-gradient(circle at 20% 20%, var(--nebula-1) 0%, transparent 40%),
+    radial-gradient(circle at 80% 30%, var(--nebula-2) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, var(--nebula-3) 0%, transparent 40%),
+    radial-gradient(circle at 10% 70%, var(--nebula-4) 0%, transparent 35%);
 
   --bg:       #f8fafc;
   --surface:  rgba(0, 0, 0, 0.02);
@@ -87,10 +114,7 @@
   body {
     @apply antialiased transition-colors duration-500;
     background-color: var(--background);
-    background-image: 
-      radial-gradient(circle at 20% 20%, var(--nebula-1) 0%, transparent 40%),
-      radial-gradient(circle at 80% 50%, var(--nebula-2) 0%, transparent 40%),
-      radial-gradient(circle at 40% 80%, var(--nebula-3) 0%, transparent 40%);
+    background-image: var(--bg-image);
     background-attachment: fixed;
     min-height: 100vh;
     font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
@@ -106,6 +130,34 @@
     width: 0 !important;
     height: 0 !important;
   }
+}
+
+/* Let body background (starfield + nebula) show through all pages */
+main {
+  background: transparent !important;
+}
+
+/* Smooth theme transitions for every element using CSS custom properties */
+[data-theme] * {
+  transition: background-color 0.4s ease,
+              color 0.4s ease,
+              border-color 0.35s ease,
+              box-shadow 0.35s ease;
+}
+
+/* ─── Theme Variants ────────────────────────────────────────────── */
+/* Admin picks which variant users see via /admin/theme panel        */
+
+/* Previous Dark Theme — exact original: 3 nebula gradients, no starfield */
+[data-theme-variant="previous"] {
+  --nebula-1: rgba(99, 102, 241, 0.12);
+  --nebula-2: rgba(139, 92, 246, 0.1);
+  --nebula-3: rgba(217, 70, 239, 0.08);
+  --nebula-4: transparent;
+  --bg-image:
+    radial-gradient(circle at 20% 20%, var(--nebula-1) 0%, transparent 40%),
+    radial-gradient(circle at 80% 50%, var(--nebula-2) 0%, transparent 40%),
+    radial-gradient(circle at 40% 80%, var(--nebula-3) 0%, transparent 40%);
 }
 
 @keyframes nebula-float {
