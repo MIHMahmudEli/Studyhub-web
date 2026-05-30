@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
 import Hero from '@/components/home/Hero';
 import Features from '@/components/home/Features';
@@ -11,6 +12,7 @@ import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 
 export default function Home() {
   const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setShowScrollBtn(window.scrollY > 300);
@@ -19,7 +21,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div data-theme="dark" className="min-h-screen overflow-x-hidden relative transition-colors duration-500">
+    <div {...(user ? {} : { 'data-theme': 'dark' })} className="min-h-screen overflow-x-hidden relative transition-colors duration-500">
       <Navbar />
       <main>
         <Hero />
