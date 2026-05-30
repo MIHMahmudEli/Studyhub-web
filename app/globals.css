@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
@@ -73,8 +73,19 @@
 }
 
 @layer base {
-  html, body {
-    @apply antialiased selection:bg-blue-500/30 transition-colors duration-500;
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    @apply antialiased transition-colors duration-500;
     background-color: var(--background);
     background-image: 
       radial-gradient(circle at 20% 20%, var(--nebula-1) 0%, transparent 40%),
@@ -82,7 +93,9 @@
       radial-gradient(circle at 40% 80%, var(--nebula-3) 0%, transparent 40%);
     background-attachment: fixed;
     min-height: 100vh;
+    font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
     color: var(--foreground);
+    line-height: 1.6;
     
     -ms-overflow-style: none;
     scrollbar-width: none;
