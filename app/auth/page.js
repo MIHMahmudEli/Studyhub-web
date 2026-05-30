@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { ArrowRight, Mail, Lock, MousePointer2 } from 'lucide-react';
+import { ArrowRight, Mail, Lock, MousePointer2, Sun, Moon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 import AuthInput from '@/components/auth/AuthInput';
 
@@ -14,9 +15,10 @@ export default function AuthPage() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [touched, setTouched] = useState({});
   const [error, setError] = useState('');
-  
+
   const { login } = useAuth();
-  const router = useRouter(); // Wait, I need to import useRouter or check if it's already there.
+  const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
 
   useEffect(() => setMounted(true), []);
 
@@ -32,7 +34,7 @@ export default function AuthPage() {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-    
+
     try {
       await login(formData.email, formData.password);
     } catch (err) {
@@ -44,15 +46,23 @@ export default function AuthPage() {
   const isSubmitDisabled = !(formData.email && formData.password);
 
   return (
-    <div className="min-h-screen bg-[#06080f] flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-blue-500/30">
-      <div className={`absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[120px] transition-opacity duration-1000 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
-      <div className={`absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[120px] transition-opacity duration-1000 delay-300 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
+    <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-blue-500/30 transition-colors duration-500">
+      <div className={`absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--nebula-1)] rounded-full blur-[120px] transition-opacity duration-1000 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
+      <div className={`absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[var(--nebula-2)] rounded-full blur-[120px] transition-opacity duration-1000 delay-300 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
 
       <Link href="/" className={`hidden sm:flex absolute top-8 left-8 transition-all duration-700 delay-100 hover:scale-105 active:scale-95 group z-50 ${mounted ? 'opacity-100' : 'opacity-0 -translate-x-4'}`}>
         <StudyHubLogo size={32} textSize={18} />
       </Link>
 
-      <div className={`w-full max-w-[420px] bg-[#0d111c]/70 border border-white/10 backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+      <button
+        onClick={toggleTheme}
+        className={`absolute top-8 right-8 z-50 p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--muted)] hover:text-[var(--foreground)] transition-all duration-300 cursor-pointer ${mounted ? 'opacity-100' : 'opacity-0 translate-x-4'}`}
+        title="Toggle Theme"
+      >
+        {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+      </button>
+
+      <div className={`w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <div className="h-1.5 w-full bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-cyan-600/50 opacity-30" />
 
         <div className="p-6 sm:p-10">
@@ -63,10 +73,10 @@ export default function AuthPage() {
             </Link>
           </div>
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-black text-white mb-2 tracking-tight bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-black text-[var(--foreground)] mb-2 tracking-tight bg-gradient-to-b from-[var(--foreground)] to-[var(--muted)] bg-clip-text text-transparent">
               Welcome Back
             </h1>
-            <p className="text-gray-500 text-[11px] font-bold uppercase tracking-[0.2em]">
+            <p className="text-[var(--muted)] text-[11px] font-bold uppercase tracking-[0.2em]">
               Continue your learning journey
             </p>
           </div>
@@ -91,11 +101,11 @@ export default function AuthPage() {
               </div>
             </div>
 
-            <button 
-              disabled={isSubmitDisabled || isLoading} 
+            <button
+              disabled={isSubmitDisabled || isLoading}
               className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 group/btn ${
-                isSubmitDisabled || isLoading 
-                  ? 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5' 
+                isSubmitDisabled || isLoading
+                  ? 'bg-[var(--card-bg)] text-[var(--muted)] cursor-not-allowed border border-[var(--card-border)]'
                   : 'bg-white text-black hover:bg-gray-200 active:scale-[0.98]'
               }`}
             >
@@ -110,20 +120,20 @@ export default function AuthPage() {
             </button>
           </form>
 
-          <div className="mt-8 text-center border-t border-white/5 pt-6 space-y-4">
-            <p className="text-gray-500 text-[11px] font-bold uppercase tracking-widest">
+          <div className="mt-8 text-center border-t border-[var(--card-border)] pt-6 space-y-4">
+            <p className="text-[var(--muted)] text-[11px] font-bold uppercase tracking-widest">
               New to StudyHub?{' '}
-              <Link href="/auth/register" className="text-white hover:text-blue-400 transition-colors ml-1 font-black underline underline-offset-8 decoration-white/10 hover:decoration-blue-400/50">
+              <Link href="/auth/register" className="text-[var(--foreground)] hover:text-blue-400 transition-colors ml-1 font-black underline underline-offset-8 decoration-[var(--card-border)] hover:decoration-blue-400/50">
                 Create Account
               </Link>
             </p>
-            <p className="text-gray-600 text-[9px] font-bold uppercase tracking-[0.15em] leading-relaxed max-w-[280px] mx-auto">
+            <p className="text-[var(--muted)]/70 text-[9px] font-bold uppercase tracking-[0.15em] leading-relaxed max-w-[280px] mx-auto">
               By signing in, you agree to our{' '}
-              <Link href="/terms" className="text-slate-400 hover:text-white transition-all underline decoration-white/10 underline-offset-4">
+              <Link href="/terms" className="text-[var(--muted)] hover:text-[var(--foreground)] transition-all underline decoration-[var(--card-border)] underline-offset-4">
                 Terms of Service
               </Link>{' '}
               &{' '}
-              <Link href="/privacy" className="text-slate-400 hover:text-white transition-all underline decoration-white/10 underline-offset-4">
+              <Link href="/privacy" className="text-[var(--muted)] hover:text-[var(--foreground)] transition-all underline decoration-[var(--card-border)] underline-offset-4">
                 Privacy Policy
               </Link>
             </p>

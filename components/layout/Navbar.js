@@ -2,11 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Sun, Moon } from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -69,6 +72,13 @@ export default function Navbar() {
           >
             Get Started
           </Link>
+          <button
+            onClick={toggleTheme}
+            className="ml-2 p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-[#f1f5f9] transition-all duration-300 cursor-pointer"
+            title="Toggle Theme"
+          >
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
         </div>
 
         {/* Hamburger */}
@@ -99,8 +109,15 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
-          <Link 
-            href="/auth" 
+          <button
+            onClick={() => { toggleTheme(); setMobileMenuOpen(false); }}
+            className="py-3 text-slate-600 dark:text-slate-400 font-medium text-base no-underline transition-colors hover:text-slate-900 dark:hover:text-white flex items-center gap-2"
+          >
+            {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+            {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+          </button>
+          <Link
+            href="/auth"
             className="mt-4 px-5 py-3 bg-blue-600 text-white font-bold text-center rounded-xl no-underline"
             onClick={() => setMobileMenuOpen(false)}
           >

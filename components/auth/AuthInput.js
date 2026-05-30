@@ -23,10 +23,10 @@ export default function AuthInput({
       <div className={`group relative flex items-center transition-all duration-300 rounded-2xl border 
         ${error && touched 
           ? 'border-red-500/50 bg-red-500/5 shadow-[0_0_15px_rgba(239,68,68,0.1)]' 
-          : 'border-white/10 bg-white/[0.03] focus-within:border-blue-500/50 focus-within:bg-white/[0.05] focus-within:shadow-[0_0_20px_rgba(59,130,246,0.1)]'
-        }`}>
+          : 'border-[var(--card-border)] bg-[var(--card-bg)] focus-within:border-blue-500/50 focus-within:bg-[var(--card-bg)] focus-within:shadow-[0_0_20px_rgba(59,130,246,0.1)]'
+        } transition-colors duration-300`}>
         
-        {Icon && <Icon className={`absolute left-4 transition-colors duration-300 ${error && touched ? 'text-red-400' : 'text-gray-500 group-focus-within:text-blue-400'}`} size={16} />}
+        {Icon && <Icon className={`absolute left-4 transition-colors duration-300 ${error && touched ? 'text-red-400' : 'text-[var(--muted)] group-focus-within:text-blue-400'}`} size={16} />}
         
         <input 
           type={inputType}
@@ -35,7 +35,7 @@ export default function AuthInput({
           onChange={onChange}
           onBlur={onBlur}
           placeholder={placeholder}
-          className={`w-full bg-transparent py-3.5 ${Icon ? 'pl-11' : 'px-5'} ${isPassword ? 'pr-12' : 'pr-5'} text-sm text-white placeholder-gray-500 outline-none`}
+          className={`w-full bg-transparent py-3.5 ${Icon ? 'pl-11' : 'px-5'} ${isPassword ? 'pr-12' : 'pr-5'} text-sm text-[var(--foreground)] placeholder-[var(--muted)] outline-none`}
         />
 
         {isPassword && (
