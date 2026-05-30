@@ -20,7 +20,7 @@ function SocialCard({ link }) {
       className="group block no-underline"
     >
     <div
-      className="bg-[var(--surface)] backdrop-blur-sm border border-[var(--border)] rounded-[24px] p-[28px_24px] flex items-start gap-4 group-hover:-translate-y-2 group-hover:bg-[var(--surface)] group-hover:border-emerald-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(16,185,129,0.05)] overflow-hidden relative"
+      className="bg-[var(--surface)] backdrop-blur-sm border border-[var(--border)] rounded-[24px] p-[28px_24px] flex items-start gap-4 shadow-sm group-hover:-translate-y-2 group-hover:bg-[var(--surface)] group-hover:border-emerald-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-xl overflow-hidden relative"
     >
       {/* Hover glow effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
