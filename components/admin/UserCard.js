@@ -6,7 +6,10 @@ import { Clock, Award, UserX, UserCheck } from 'lucide-react';
 const ACTIVE_NOW_THRESHOLD_SEC = 90;
 
 function getPresenceStatus(dateStr) {
-  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (!dateStr) return { isNow: false, label: 'Unknown' };
+  const ts = new Date(dateStr).getTime();
+  if (isNaN(ts)) return { isNow: false, label: 'Unknown' };
+  const diff = Math.floor((Date.now() - ts) / 1000);
   if (diff < ACTIVE_NOW_THRESHOLD_SEC) return { isNow: true, label: 'Active Now' };
   if (diff < 60) return { isNow: false, label: `${diff}s ago` };
   if (diff < 3600) return { isNow: false, label: `${Math.floor(diff / 60)}m ago` };

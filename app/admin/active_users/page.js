@@ -35,7 +35,10 @@ function getYesterdayStr() {
 const ACTIVE_NOW_THRESHOLD_SEC = 90; // within 90s = "Active Now"
 
 function getPresenceStatus(dateStr) {
-  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (!dateStr) return { isNow: false, label: 'Unknown' };
+  const ts = new Date(dateStr).getTime();
+  if (isNaN(ts)) return { isNow: false, label: 'Unknown' };
+  const diff = Math.floor((Date.now() - ts) / 1000);
   if (diff < ACTIVE_NOW_THRESHOLD_SEC) return { isNow: true, label: 'Active Now' };
   if (diff < 60) return { isNow: false, label: `${diff}s ago` };
   if (diff < 3600) return { isNow: false, label: `${Math.floor(diff / 60)}m ago` };
@@ -222,9 +225,16 @@ export default function ActiveUsersPage() {
   const fetchLiveUsers = useCallback(async () => {
     try {
       setLiveError(null);
-      const res = await apiRequest(`/users/active/now?minutes=${LIVE_MINUTES}&page=1&limit=50`);
-      setLiveUsers(res?.data || []);
-      setLiveTotal(res?.total || 0);
+      const res = await apiRequest(`/users/active/now?minutes=${LIVE_MINUTES}&page=1&limit=50&_t=${Date.now()}`);
+      const raw = res?.data || [];
+      const now = Date.now();
+      const cutoff = LIVE_MINUTES * 60 * 1000;
+      const filtered = raw.filter(u => {
+        const t = new Date(u.last_active_at).getTime();
+        return !isNaN(t) && now - t < cutoff;
+      });
+      setLiveUsers(filtered);
+      setLiveTotal(filtered.length);
       setLastRefreshed(new Date());
     } catch (err) {
       if (err.status === 403) { router.push('/admin/dashboard'); return; }
