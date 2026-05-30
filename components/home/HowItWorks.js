@@ -31,7 +31,7 @@ function StepCard({ step }) {
 
   return (
     <div
-      className="bg-[var(--surface)] backdrop-blur-sm border border-[var(--border)] rounded-[24px] p-6 md:p-9 group hover:-translate-y-2 hover:bg-[var(--surface)] hover:border-purple-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default relative overflow-hidden hover:shadow-[0_24px_48px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(139,92,246,0.05)]"
+      className="bg-[var(--surface)] backdrop-blur-sm border border-[var(--border)] rounded-[24px] p-6 md:p-9 group shadow-sm hover:-translate-y-2 hover:bg-[var(--surface)] hover:border-purple-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default relative overflow-hidden hover:shadow-xl"
     >
       {/* Hover glow effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
