@@ -26,8 +26,8 @@ function getTodayStr() {
 }
 
 function getYesterdayStr() {
-  const y = new Date();
-  y.setDate(y.getDate() - 1);
+  const d = new Date();
+  const y = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - 1));
   return [y.getUTCFullYear(), String(y.getUTCMonth() + 1).padStart(2, '0'), String(y.getUTCDate()).padStart(2, '0')].join('-');
 }
 
