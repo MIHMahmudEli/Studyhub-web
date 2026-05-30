@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 
+const THEMES = ['dark', 'light', 'nebula'];
+
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
@@ -14,7 +16,8 @@ export function ThemeProvider({ children }) {
   }, []);
 
   const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    const idx = THEMES.indexOf(theme);
+    const newTheme = THEMES[(idx + 1) % THEMES.length];
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
