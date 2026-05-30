@@ -154,7 +154,7 @@ export default function ForgotPasswordPage() {
               </p>
                 <Link
                   href="/auth"
-                  className="w-full py-4 rounded-2xl bg-white text-black font-black text-sm hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-2xl bg-[var(--blue)] text-white font-black text-sm hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
                 >
                   Sign In Now
                 </Link>
@@ -216,7 +216,7 @@ export default function ForgotPasswordPage() {
                     className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 group/btn ${
                       isSubmitDisabled || isLoading
                         ? 'bg-[var(--card-bg)] text-[var(--muted)] cursor-not-allowed border border-[var(--card-border)]'
-                        : 'bg-white text-black hover:bg-gray-200 active:scale-[0.98]'
+                        : 'bg-[var(--blue)] text-white shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-[0.98]'
                     }`}
                   >
                     {isLoading ? (
