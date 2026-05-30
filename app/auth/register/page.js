@@ -129,15 +129,15 @@ export default function RegisterPage() {
   const isSubmitDisabled = !(allPasswordRulesMet && isNameValid && !errors.email && formData.password === formData.confirmPassword && formData.fullName && formData.email);
 
   return (
-    <div className="min-h-screen bg-[#06080f] flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
-      <div className={`absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[120px] transition-opacity duration-1000 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
-      <div className={`absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[120px] transition-opacity duration-1000 delay-300 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
+    <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans transition-colors duration-500">
+      <div className={`absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--nebula-1)] rounded-full blur-[120px] transition-opacity duration-1000 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
+      <div className={`absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[var(--nebula-2)] rounded-full blur-[120px] transition-opacity duration-1000 delay-300 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
 
       <Link href="/" className={`hidden sm:flex absolute top-8 left-8 transition-all duration-700 delay-100 hover:scale-105 active:scale-95 group z-50 ${mounted ? 'opacity-100' : 'opacity-0 -translate-x-4'}`}>
         <StudyHubLogo size={32} textSize={18} />
       </Link>
 
-      <div className={`w-full max-w-[420px] bg-[#0d111c]/70 border border-white/10 backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+      <div className={`w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <div className="h-1.5 w-full bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-cyan-600/50 opacity-30" />
 
         <div className="p-6 sm:p-10">
@@ -148,18 +148,18 @@ export default function RegisterPage() {
             </Link>
           </div>
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-black text-white mb-2 tracking-tight bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-black text-[var(--foreground)] mb-2 tracking-tight bg-gradient-to-b from-[var(--foreground)] to-[var(--muted)] bg-clip-text text-transparent">
               {step === 'register' ? 'Create Account' : 'Verify Email'}
             </h1>
-            <p className="text-gray-500 text-[11px] font-bold uppercase tracking-[0.2em]">
+            <p className="text-[var(--muted)] text-[11px] font-bold uppercase tracking-[0.2em]">
               {step === 'register' ? 'Start your academic success today' : `Enter the code sent to ${formData.email}`}
             </p>
           </div>
 
           {status.message && (
             <div className={`mb-6 p-4 border rounded-2xl ${
-              status.type === 'success' 
-                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+              status.type === 'success'
+                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                 : 'bg-red-500/10 border-red-500/20 text-red-400'
             }`}>
               <p className="text-[11px] font-bold uppercase tracking-widest text-center">
@@ -174,10 +174,10 @@ export default function RegisterPage() {
                 <AuthInput icon={User} name="fullName" value={formData.fullName} onChange={handleChange} onBlur={handleBlur} placeholder="Full Name (e.g. John Doe)" error={touched.fullName && !isNameValid ? errors.fullName : ''} touched={touched.fullName} />
                 {/* Live name hint panel — shown while typing */}
                 {formData.fullName && (
-                  <div className="p-3.5 bg-white/[0.02] border border-white/5 rounded-2xl space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                  <div className="p-3.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="flex items-center gap-2 border-b border-[var(--card-border)] pb-2">
                       <UserCheck size={11} className="text-blue-400" />
-                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Name Format</span>
+                      <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest">Name Format</span>
                     </div>
                     <div className="grid grid-cols-1 gap-1.5">
                       {[
@@ -187,10 +187,10 @@ export default function RegisterPage() {
                       ].map(({ key, label }) => (
                         <div key={key} className="flex items-center gap-2">
                           <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all duration-300 ${
-                            nameRules[key] ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]' : 'bg-gray-700'
+                            nameRules[key] ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]' : 'bg-[var(--muted)]/30'
                           }`} />
                           <span className={`text-[9px] font-bold uppercase tracking-tight transition-colors duration-300 ${
-                            nameRules[key] ? 'text-emerald-400' : 'text-gray-500'
+                            nameRules[key] ? 'text-emerald-400' : 'text-[var(--muted)]'
                           }`}>{label}</span>
                         </div>
                       ))}
@@ -207,11 +207,11 @@ export default function RegisterPage() {
                 <AuthInput icon={Lock} type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} onBlur={handleBlur} placeholder="Confirm Password" error={errors.confirmPassword} touched={touched.confirmPassword} />
               </div>
 
-              <button 
-                disabled={isSubmitDisabled || isLoading} 
+              <button
+                disabled={isSubmitDisabled || isLoading}
                 className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 group/btn ${
-                  isSubmitDisabled || isLoading 
-                    ? 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5' 
+                  isSubmitDisabled || isLoading
+                    ? 'bg-[var(--card-bg)] text-[var(--muted)] cursor-not-allowed border border-[var(--card-border)]'
                     : 'bg-white text-black hover:bg-gray-200 active:scale-[0.98]'
                 }`}
               >
@@ -237,17 +237,17 @@ export default function RegisterPage() {
                     value={digit}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
-                    className="w-9 h-11 sm:w-12 sm:h-14 bg-white/5 border border-white/10 rounded-xl text-center text-white text-base sm:text-xl font-black focus:border-blue-500/50 focus:bg-blue-500/5 outline-none transition-all"
+                    className="w-9 h-11 sm:w-12 sm:h-14 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-center text-[var(--foreground)] text-base sm:text-xl font-black focus:border-blue-500/50 focus:bg-[var(--card-bg)] outline-none transition-all"
                   />
                 ))}
               </div>
 
               <div className="space-y-4">
-                <button 
-                  disabled={otp.some(d => !d) || isLoading} 
+                <button
+                  disabled={otp.some(d => !d) || isLoading}
                   className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 group/btn ${
-                    otp.some(d => !d) || isLoading 
-                      ? 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5' 
+                    otp.some(d => !d) || isLoading
+                      ? 'bg-[var(--card-bg)] text-[var(--muted)] cursor-not-allowed border border-[var(--card-border)]'
                       : 'bg-white text-black hover:bg-gray-200 active:scale-[0.98]'
                   }`}
                 >
@@ -262,20 +262,20 @@ export default function RegisterPage() {
                 </button>
 
                 <div className="flex flex-col gap-4">
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setStep('register')}
-                    className="text-[10px] font-bold text-gray-500 hover:text-white transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
+                    className="text-[10px] font-bold text-[var(--muted)] hover:text-[var(--foreground)] transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
                   >
                     <ArrowLeft size={12} /> Wrong email? Go back
                   </button>
-                  
+
                   {resendCooldown > 0 ? (
-                    <p className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                    <p className="text-[10px] font-bold text-[var(--muted)]/50 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
                       Resend in {resendCooldown}s
                     </p>
                   ) : (
-                    <button 
+                    <button
                       type="button"
                       onClick={handleSubmit}
                       className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
@@ -288,20 +288,20 @@ export default function RegisterPage() {
             </form>
           )}
 
-          <div className="mt-8 text-center border-t border-white/5 pt-6 space-y-4">
-            <p className="text-gray-500 text-[11px] font-bold uppercase tracking-widest">
+          <div className="mt-8 text-center border-t border-[var(--card-border)] pt-6 space-y-4">
+            <p className="text-[var(--muted)] text-[11px] font-bold uppercase tracking-widest">
               Already have an account?{' '}
-              <Link href="/auth" className="text-white hover:text-blue-400 transition-colors ml-1 font-black underline underline-offset-8 decoration-white/10 hover:decoration-blue-400/50">
+              <Link href="/auth" className="text-[var(--foreground)] hover:text-blue-400 transition-colors ml-1 font-black underline underline-offset-8 decoration-[var(--card-border)] hover:decoration-blue-400/50">
                 Sign In
               </Link>
             </p>
-            <p className="text-gray-600 text-[9px] font-bold uppercase tracking-[0.15em] leading-relaxed max-w-[280px] mx-auto">
+            <p className="text-[var(--muted)]/70 text-[9px] font-bold uppercase tracking-[0.15em] leading-relaxed max-w-[280px] mx-auto">
               By signing up, you agree to our{' '}
-              <Link href="/terms" className="text-slate-400 hover:text-white transition-all underline decoration-white/10 underline-offset-4">
+              <Link href="/terms" className="text-[var(--muted)] hover:text-[var(--foreground)] transition-all underline decoration-[var(--card-border)] underline-offset-4">
                 Terms of Service
               </Link>{' '}
               &{' '}
-              <Link href="/privacy" className="text-slate-400 hover:text-white transition-all underline decoration-white/10 underline-offset-4">
+              <Link href="/privacy" className="text-[var(--muted)] hover:text-[var(--foreground)] transition-all underline decoration-[var(--card-border)] underline-offset-4">
                 Privacy Policy
               </Link>
             </p>

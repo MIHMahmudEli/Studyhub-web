@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { apiRequest } from '@/lib/api';
 
 const VALID_MODES = ['dark', 'light'];
@@ -12,9 +12,9 @@ export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState('dark');
   const [darkThemeVariant, setDarkThemeVariant] = useState('current');
   const [lightThemeVariant, setLightThemeVariant] = useState('current');
-  const [preview, setPreview] = useState(null); // { mode, variant } for admin live-preview
+  const [preview, setPreview] = useState(null);
+  const lastSavedTheme = useRef('dark');
 
-  // Sync effective theme + variant to DOM
   useEffect(() => {
     const mode = preview?.mode || theme;
     const variant = preview?.variant || (mode === 'dark' ? darkThemeVariant : lightThemeVariant);
@@ -26,11 +26,11 @@ export function ThemeProvider({ children }) {
     }
   }, [theme, darkThemeVariant, lightThemeVariant, preview]);
 
-  // On mount: read localStorage, then fetch admin-selected theme variants
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const savedTheme = localStorage.getItem('preferred_theme') || localStorage.getItem('theme') || 'dark';
     if (VALID_MODES.includes(savedTheme)) {
       setTheme(savedTheme);
+      lastSavedTheme.current = savedTheme;
     }
 
     Promise.all([
@@ -48,11 +48,31 @@ export function ThemeProvider({ children }) {
       .catch(() => {});
   }, []);
 
+  // Set theme locally (used by ThemeSync to restore from DB)
+  const syncTheme = useCallback((newTheme) => {
+    if (!VALID_MODES.includes(newTheme)) return;
+    setPreview(null);
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    localStorage.setItem('preferred_theme', newTheme);
+    lastSavedTheme.current = newTheme;
+  }, []);
+
   const toggleTheme = useCallback(() => {
     setPreview(null);
     const newTheme = theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.classList.add('theme-transitioning');
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
+    localStorage.setItem('preferred_theme', newTheme);
+    lastSavedTheme.current = newTheme;
+
+    apiRequest('/users/profile', {
+      method: 'PATCH',
+      body: { preferred_theme: newTheme },
+    }).catch(() => {});
+
+    setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 500);
   }, [theme]);
 
   const previewTheme = useCallback((mode, variant) => {
@@ -86,6 +106,7 @@ export function ThemeProvider({ children }) {
       darkThemeVariant,
       lightThemeVariant,
       toggleTheme,
+      syncTheme,
       previewTheme,
       clearPreview,
       refreshThemeVariants,

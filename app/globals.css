@@ -8,7 +8,13 @@
 }
 
 :root {
-  /* App core tokens — Current Dark Theme (default) */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+}
+
+/* Allow scoping dark theme to child elements (e.g. landing page wrapper) */
+[data-theme="dark"] {
   --background: #060913;
   --foreground: #f8fafc;
   --card-bg: rgba(15, 22, 42, 0.7);
@@ -40,7 +46,6 @@
     radial-gradient(circle at 50% 80%, var(--nebula-3) 0%, transparent 40%),
     radial-gradient(circle at 10% 70%, var(--nebula-4) 0%, transparent 35%);
 
-  /* Landing page tokens */
   --bg:       #020408;
   --surface:  rgba(255, 255, 255, 0.02);
   --border:   rgba(255, 255, 255, 0.05);
@@ -50,17 +55,14 @@
   --text-1:   #f8fafc;
   --text-2:   #94a3b8;
   --text-3:   #475569;
-  --r-sm: 10px;
-  --r-md: 16px;
-  --r-lg: 24px;
 }
 
 [data-theme='light'] {
   --background: #f1f5f9;
   --foreground: #0f172a;
-  --card-bg: #ffffff;
-  --card-border: rgba(15, 23, 42, 0.08);
-  --muted: #475569;
+  --card-bg: #f8fafc;
+  --card-border: rgba(15, 23, 42, 0.12);
+  --muted: #64748b;
   --accent-glow: rgba(59, 130, 246, 0.04);
   --nebula-1: rgba(59, 130, 246, 0.04);
   --nebula-2: rgba(139, 92, 246, 0.03);
@@ -72,10 +74,10 @@
     radial-gradient(circle at 50% 80%, var(--nebula-3) 0%, transparent 40%),
     radial-gradient(circle at 10% 70%, var(--nebula-4) 0%, transparent 35%);
 
-  --bg:       #f8fafc;
-  --surface:  rgba(0, 0, 0, 0.02);
-  --border:   rgba(0, 0, 0, 0.06);
-  --border-h: rgba(0, 0, 0, 0.12);
+  --bg:       #f1f5f9;
+  --surface:  #ffffff;
+  --border:   rgba(0, 0, 0, 0.12);
+  --border-h: rgba(0, 0, 0, 0.22);
   --blue:     #2563eb;
   --violet:   #7c3aed;
   --text-1:   #0f172a;
@@ -137,12 +139,23 @@ main {
   background: transparent !important;
 }
 
-/* Smooth theme transitions for every element using CSS custom properties */
-[data-theme] * {
+/* Smooth theme transitions — only active during toggle, won't override element hover/transform */
+html.theme-transitioning,
+html.theme-transitioning * {
   transition: background-color 0.4s ease,
               color 0.4s ease,
               border-color 0.35s ease,
-              box-shadow 0.35s ease;
+              box-shadow 0.35s ease !important;
+}
+
+/* Override browser autofill background (white/yellow square) with themed card background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--card-bg) inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--foreground);
 }
 
 /* ─── Theme Variants ────────────────────────────────────────────── */
