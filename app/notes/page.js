@@ -48,7 +48,6 @@ export default function NotesPage() {
   const limit = 12;
   
   const [sortBy, setSortBy] = useState('latest');
-  const [searchKey, setSearchKey] = useState(0);
   
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
@@ -94,7 +93,7 @@ export default function NotesPage() {
     if (tokenReady && user) {
       fetchNotes(1);
     }
-  }, [tokenReady, user, sortBy, searchKey]);
+  }, [tokenReady, user, sortBy]);
 
   // Filter notes based on search query (client-side over loaded notes)
   const filteredNotes = useMemo(() => {
@@ -169,7 +168,7 @@ export default function NotesPage() {
             <SearchInput
               placeholder="SEARCH NOTES..."
               value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); setSearchKey(k => k + 1); }}
+              onChange={(e) => setSearchQuery(e.target.value)}
               focusBorderClass="focus:border-purple-500/30"
               widthClass="w-full sm:w-[280px]"
             />
