@@ -3,9 +3,8 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { ArrowRight, Mail, Lock, MousePointer2, Sun, Moon } from 'lucide-react';
+import { ArrowRight, Mail, Lock, MousePointer2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { useTheme } from '@/context/ThemeContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 import AuthInput from '@/components/auth/AuthInput';
 
@@ -17,7 +16,6 @@ export default function AuthPage() {
   const [error, setError] = useState('');
 
   const { login } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const router = useRouter();
 
   useEffect(() => setMounted(true), []);
@@ -53,14 +51,6 @@ export default function AuthPage() {
       <Link href="/" className={`hidden sm:flex absolute top-8 left-8 transition-all duration-700 delay-100 hover:scale-105 active:scale-95 group z-50 ${mounted ? 'opacity-100' : 'opacity-0 -translate-x-4'}`}>
         <StudyHubLogo size={32} textSize={18} />
       </Link>
-
-      <button
-        onClick={toggleTheme}
-        className={`absolute top-8 right-8 z-50 p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--muted)] hover:text-[var(--foreground)] transition-all duration-300 cursor-pointer ${mounted ? 'opacity-100' : 'opacity-0 translate-x-4'}`}
-        title="Toggle Theme"
-      >
-        {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-      </button>
 
       <div className={`w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <div className="h-1.5 w-full bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-cyan-600/50 opacity-30" />

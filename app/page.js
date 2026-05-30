@@ -19,13 +19,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div data-theme="dark" style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text-1)', overflowX: 'hidden', position: 'relative' }} className="transition-colors duration-500">
-      {/* Ambient glow orbs */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '-15%', left: '-10%', width: 700, height: 700, background: 'radial-gradient(circle, var(--blue) 0%, transparent 70%)', borderRadius: '50%', opacity: 0.12 }} />
-        <div style={{ position: 'absolute', bottom: '-15%', right: '-10%', width: 600, height: 600, background: 'radial-gradient(circle, var(--violet) 0%, transparent 70%)', borderRadius: '50%', opacity: 0.1 }} />
-      </div>
-
+    <div data-theme="dark" className="min-h-screen overflow-x-hidden relative transition-colors duration-500">
       <Navbar />
       <main>
         <Hero />

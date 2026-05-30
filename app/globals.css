@@ -160,6 +160,25 @@ main {
   background: transparent !important;
 }
 
+/* Smooth theme transitions — only active during toggle, won't override element hover/transform */
+html.theme-transitioning,
+html.theme-transitioning * {
+  transition: background-color 0.4s ease,
+              color 0.4s ease,
+              border-color 0.35s ease,
+              box-shadow 0.35s ease !important;
+}
+
+/* Override browser autofill background (white/yellow square) with themed card background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--card-bg) inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--foreground);
+}
+
 /* ─── Theme Variants ────────────────────────────────────────────── */
 /* Admin picks which variant users see via /admin/theme panel        */
 

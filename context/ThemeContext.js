@@ -51,8 +51,10 @@ export function ThemeProvider({ children }) {
   const toggleTheme = useCallback(() => {
     setPreview(null);
     const newTheme = theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.classList.add('theme-transitioning');
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
+    setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 500);
   }, [theme]);
 
   const previewTheme = useCallback((mode, variant) => {
