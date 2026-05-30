@@ -1,8 +1,6 @@
-'use client';
+﻿'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-
-const THEMES = ['dark', 'light', 'nebula'];
 
 const ThemeContext = createContext();
 
@@ -16,8 +14,7 @@ export function ThemeProvider({ children }) {
   }, []);
 
   const toggleTheme = () => {
-    const idx = THEMES.indexOf(theme);
-    const newTheme = THEMES[(idx + 1) % THEMES.length];
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
