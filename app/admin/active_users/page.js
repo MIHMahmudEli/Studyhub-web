@@ -384,7 +384,7 @@ export default function ActiveUsersPage() {
                 </div>
 
                 <div className="block md:hidden space-y-4">
-                  {dailyUsers.map(u => <UserCard key={u.id} user={u} showActiveTime />)}
+                  {dailyUsers.map(u => <UserCard key={u.id} user={u} showActiveTime showDept={false} />)}
                 </div>
 
                 {dailyLoadingMore && (
@@ -464,7 +464,7 @@ export default function ActiveUsersPage() {
                 </div>
 
                 <div className="block md:hidden space-y-4">
-                  {liveUsers.map(u => <UserCard key={u.id} user={u} showActiveTime isLive />)}
+                  {liveUsers.map(u => <UserCard key={u.id} user={u} showActiveTime isLive showDept={false} />)}
                 </div>
               </AdminPanel>
             </>
