@@ -2,6 +2,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import RouteTracker from "@/components/RouteTracker";
 import ScreenGate from "@/components/ScreenGate";
+import ThemeSync from "@/components/ThemeSync";
 import "./globals.css";
 
 export const metadata = {
@@ -14,10 +15,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth">
+    <html lang="en" data-theme="dark" data-scroll-behavior="smooth">
       <body className="font-sans antialiased">
         <ThemeProvider>
           <AuthProvider>
+            <ThemeSync />
             <RouteTracker />
             {/* Global Nebula Effect */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none -z-50">

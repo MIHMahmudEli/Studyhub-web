@@ -99,8 +99,8 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
-          <Link 
-            href="/auth" 
+          <Link
+            href="/auth"
             className="mt-4 px-5 py-3 bg-blue-600 text-white font-bold text-center rounded-xl no-underline"
             onClick={() => setMobileMenuOpen(false)}
           >

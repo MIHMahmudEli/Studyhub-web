@@ -27,23 +27,19 @@ export default function Footer() {
   };
 
   return (
-    <footer className="border-t border-white/5 py-16 px-6 relative overflow-hidden">
-      {/* Footer nebula glow */}
-      <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-purple-600/5 blur-[100px] rounded-full -z-10 animate-nebula" />
-      <div className="absolute top-[10%] left-[-5%] w-[300px] h-[300px] bg-blue-600/5 blur-[80px] rounded-full -z-10 animate-nebula [animation-delay:3s]" />
-
+    <footer className="border-t border-[var(--border)] py-16 px-6 relative overflow-hidden">
       <div className="max-w-[1120px] mx-auto relative z-10">
         <div className="flex justify-between items-start gap-10 flex-wrap mb-14">
           <div className="max-w-[300px]">
             <a href="/" className="no-underline inline-block mb-3">
               <StudyHubLogo size={32} textSize={16} />
             </a>
-            <p className="text-sm text-slate-700 leading-relaxed mt-3">
+            <p className="text-sm text-[var(--text-2)] leading-relaxed mt-3">
               Empowering students to learn collaboratively, share knowledge, and grow academically — together.
             </p>
           </div>
           <div>
-            <span className="text-[11px] font-bold tracking-widest uppercase text-slate-900 mb-4 block">
+            <span className="text-[11px] font-bold tracking-widest uppercase text-[var(--text-1)] mb-4 block">
               Navigate
             </span>
             <div className="flex flex-col gap-2.5">
@@ -51,7 +47,7 @@ export default function Footer() {
                 <a 
                   key={l.href} 
                   href={l.href} 
-                  className="text-sm text-slate-700 no-underline transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-gray-400 hover:translate-x-2"
+                  className="text-sm text-[var(--text-2)] no-underline transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[var(--text-1)] hover:translate-x-2"
                   onClick={(e) => handleScroll(e, l.href)}
                 >
                   {l.label}
@@ -60,14 +56,14 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="border-t border-white/[0.03] pt-6 flex justify-between items-center flex-wrap gap-4">
-          <p className="text-[13px] text-slate-700">© {new Date().getFullYear()} StudyHub. All rights reserved.</p>
+        <div className="border-t border-[var(--border)]/60 pt-6 flex justify-between items-center flex-wrap gap-4">
+          <p className="text-[13px] text-[var(--text-2)]">&copy; {new Date().getFullYear()} StudyHub. All rights reserved.</p>
           <div className="flex items-center gap-4">
-            <a href="/privacy" className="text-[13px] text-slate-700 hover:text-slate-400 no-underline transition-all duration-300">Privacy Policy</a>
-            <span className="text-slate-800/20 dark:text-white/10 text-[13px]">•</span>
-            <a href="/terms" className="text-[13px] text-slate-700 hover:text-slate-400 no-underline transition-all duration-300">Terms of Service</a>
+            <a href="/privacy" className="text-[13px] text-[var(--text-2)] hover:text-[var(--text-1)] no-underline transition-all duration-300">Privacy Policy</a>
+            <span className="text-[var(--border-h)] text-[13px]">&bull;</span>
+            <a href="/terms" className="text-[13px] text-[var(--text-2)] hover:text-[var(--text-1)] no-underline transition-all duration-300">Terms of Service</a>
           </div>
-          <p className="text-[13px] text-slate-700">Crafted for academic excellence</p>
+          <p className="text-[13px] text-[var(--text-2)]">Crafted for academic excellence</p>
         </div>
       </div>
     </footer>

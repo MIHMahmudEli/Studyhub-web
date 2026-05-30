@@ -28,9 +28,8 @@ function Card({ feature }) {
 
   return (
     <div 
-      className="bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] rounded-[24px] p-6 md:p-9 group hover:-translate-y-2 hover:bg-white/[0.05] hover:border-blue-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(59,130,246,0.05)] overflow-hidden relative"
+      className="bg-[var(--surface)] backdrop-blur-sm border border-[var(--border)] rounded-[24px] p-6 md:p-9 group hover:-translate-y-2 hover:bg-[var(--surface)] hover:border-blue-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-default hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_0_20px_rgba(59,130,246,0.05)] overflow-hidden relative"
     >
-      {/* Hover glow effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       <div 
         style={{ 
@@ -41,10 +40,10 @@ function Card({ feature }) {
       >
         <Icon size={22} color={feature.accent} strokeWidth={1.5} />
       </div>
-      <h3 className="text-[19px] font-bold text-[#f0f4ff] mb-2.5 group-hover:text-white transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+      <h3 className="text-[19px] font-bold text-[var(--text-1)] mb-2.5 group-hover:text-[var(--text-1)] transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
         {feature.title}
       </h3>
-      <p className="text-sm text-slate-500 leading-relaxed">
+      <p className="text-sm text-[var(--text-2)] leading-relaxed">
         {feature.description}
       </p>
     </div>
@@ -54,23 +53,17 @@ function Card({ feature }) {
 export default function Features() {
   return (
     <section id="features" className="px-6 pb-20 md:pb-[120px] relative overflow-hidden">
-      {/* Background starfield grid */}
-      <div className="absolute inset-0 -z-10 [background-image:radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:24px_24px] md:[background-size:32px_32px]" />
-      
-      {/* Background Glow */}
-      <div className="absolute top-[20%] right-[-10%] w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-indigo-600/5 blur-[80px] md:blur-[100px] rounded-full -z-10 animate-nebula" />
-
       <div className="max-w-[1120px] mx-auto">
-        <div className="border-t border-white/5 mb-12 md:mb-20" />
+        <div className="border-t border-[var(--border)] mb-12 md:mb-20" />
         <div className="mb-10 md:mb-14">
           <span className="block text-[10px] md:text-[11px] font-bold tracking-[0.12em] uppercase text-blue-500 mb-3">
             Capabilities
           </span>
-          <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[#f0f4ff] mb-4">
+          <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[var(--text-1)] mb-4">
             Built for everyone<br />
-            <span className="text-slate-700">in your institution.</span>
+            <span className="text-[var(--text-3)]">in your institution.</span>
           </h2>
-          <p className="text-sm md:text-base text-slate-500 leading-relaxed max-w-[480px]">
+          <p className="text-sm md:text-base text-[var(--text-2)] leading-relaxed max-w-[480px]">
             Whether you&apos;re a student, moderator, or admin — StudyHub gives you exactly the tools you need.
           </p>
         </div>

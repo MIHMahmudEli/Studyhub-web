@@ -125,15 +125,15 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#06080f] flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
-      <div className={`absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[120px] transition-opacity duration-1000 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
-      <div className={`absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-purple-600/5 rounded-full blur-[120px] transition-opacity duration-1000 delay-300 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
+    <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans transition-colors duration-500">
+      <div className={`absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--nebula-1)] rounded-full blur-[120px] transition-opacity duration-1000 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
+      <div className={`absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[var(--nebula-2)] rounded-full blur-[120px] transition-opacity duration-1000 delay-300 ${mounted ? 'opacity-100' : 'opacity-0'}`} />
 
       <Link href="/auth" className={`hidden sm:flex absolute top-8 left-8 transition-all duration-700 delay-100 hover:scale-105 active:scale-95 group z-50 ${mounted ? 'opacity-100' : 'opacity-0 -translate-x-4'}`}>
         <StudyHubLogo size={32} textSize={18} />
       </Link>
 
-      <div className={`w-full max-w-[420px] bg-[#0d111c]/70 border border-white/10 backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+      <div className={`w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <div className="h-1.5 w-full bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-cyan-600/50 opacity-30" />
 
         <div className="p-6 sm:p-10">
@@ -148,11 +148,11 @@ export default function ForgotPasswordPage() {
               <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20 shadow-[0_0_40px_rgba(16,185,129,0.1)]">
                 <CheckCircle2 size={40} className="text-emerald-400 animate-in zoom-in-50 duration-700" />
               </div>
-              <h2 className="text-2xl font-black text-white mb-3">Password Reset!</h2>
-              <p className="text-gray-400 text-sm leading-relaxed mb-8">
+              <h2 className="text-2xl font-black text-[var(--foreground)] mb-3">Password Reset!</h2>
+              <p className="text-[var(--muted)] text-sm leading-relaxed mb-8">
                 Your password has been successfully updated.
               </p>
-                <Link 
+                <Link
                   href="/auth"
                   className="w-full py-4 rounded-2xl bg-white text-black font-black text-sm hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
                 >
@@ -162,18 +162,18 @@ export default function ForgotPasswordPage() {
           ) : (
             <>
               <div className="text-center mb-8 relative">
-                <h1 className="text-3xl font-black text-white mb-2 tracking-tight bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-black text-[var(--foreground)] mb-2 tracking-tight bg-gradient-to-b from-[var(--foreground)] to-[var(--muted)] bg-clip-text text-transparent">
                   {step === 'email' ? 'Reset Password' : 'Verify Identity'}
                 </h1>
-                <p className="text-gray-500 text-[11px] font-bold uppercase tracking-[0.2em]">
+                <p className="text-[var(--muted)] text-[11px] font-bold uppercase tracking-[0.2em]">
                   {step === 'email' ? 'We will help you get back in' : `Enter the code sent to ${formData.email}`}
                 </p>
               </div>
 
               {status.message && (
                 <div className={`mb-6 p-4 border rounded-2xl ${
-                  status.type === 'success' 
-                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+                  status.type === 'success'
+                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                     : 'bg-red-500/10 border-red-500/20 text-red-400'
                 }`}>
                   <p className="text-[11px] font-bold uppercase tracking-widest text-center">
@@ -197,7 +197,7 @@ export default function ForgotPasswordPage() {
                           value={digit}
                           onChange={(e) => handleOtpChange(index, e.target.value)}
                           onKeyDown={(e) => handleKeyDown(index, e)}
-                          className="w-9 h-11 sm:w-12 sm:h-14 bg-white/5 border border-white/10 rounded-xl text-center text-white text-base sm:text-xl font-black focus:border-blue-500/50 focus:bg-blue-500/5 outline-none transition-all"
+                          className="w-9 h-11 sm:w-12 sm:h-14 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-center text-[var(--foreground)] text-base sm:text-xl font-black focus:border-blue-500/50 focus:bg-[var(--card-bg)] outline-none transition-all"
                         />
                       ))}
                     </div>
@@ -211,11 +211,11 @@ export default function ForgotPasswordPage() {
                 )}
 
                 <div className="space-y-4">
-                  <button 
-                    disabled={isSubmitDisabled || isLoading} 
+                  <button
+                    disabled={isSubmitDisabled || isLoading}
                     className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 group/btn ${
-                      isSubmitDisabled || isLoading 
-                        ? 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5' 
+                      isSubmitDisabled || isLoading
+                        ? 'bg-[var(--card-bg)] text-[var(--muted)] cursor-not-allowed border border-[var(--card-border)]'
                         : 'bg-white text-black hover:bg-gray-200 active:scale-[0.98]'
                     }`}
                   >
@@ -231,25 +231,25 @@ export default function ForgotPasswordPage() {
 
                   <div className="flex flex-col gap-4">
                     {step === 'email' ? (
-                      <Link href="/auth" className="w-full text-center text-[10px] font-bold text-gray-500 hover:text-white transition-colors uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                      <Link href="/auth" className="w-full text-center text-[10px] font-bold text-[var(--muted)] hover:text-[var(--foreground)] transition-colors uppercase tracking-[0.2em] flex items-center justify-center gap-2">
                         <ChevronLeft size={14} /> Back to Login
                       </Link>
                     ) : (
                       <>
-                        <button 
+                        <button
                           type="button"
                           onClick={() => setStep('email')}
-                          className="text-[10px] font-bold text-gray-500 hover:text-white transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
+                          className="text-[10px] font-bold text-[var(--muted)] hover:text-[var(--foreground)] transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
                         >
                           <ArrowLeft size={12} /> Wrong email? Go back
                         </button>
-                        
+
                         {resendTimer > 0 ? (
-                          <p className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                          <p className="text-[10px] font-bold text-[var(--muted)]/50 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
                             Resend in {resendTimer}s
                           </p>
                         ) : (
-                          <button 
+                          <button
                             type="button"
                             onClick={handleResend}
                             className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
