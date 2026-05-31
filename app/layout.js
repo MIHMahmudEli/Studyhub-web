@@ -1,5 +1,5 @@
 import { AuthProvider } from "@/context/AuthContext";
-import { ThemeProvider } from "@/context/ThemeContext";
+import { ThemeProvider } from "@/context/ThemeProvider";
 import RouteTracker from "@/components/RouteTracker";
 import ScreenGate from "@/components/ScreenGate";
 import ThemeSync from "@/components/ThemeSync";
