@@ -8,14 +8,17 @@ import "./globals.css";
 export const metadata = {
   title: "StudyHub | Premium Student Resource Platform",
   description: "The ultimate space for students to share notes, find resources, and excel in their studies.",
-  icons: {
-    icon: "/favicon.svg",
-  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="dark" data-scroll-behavior="smooth">
+      <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <meta httpEquiv="cache-control" content="no-cache, no-store, must-revalidate" />
+        <meta httpEquiv="pragma" content="no-cache" />
+        <meta httpEquiv="expires" content="0" />
+      </head>
       <body className="font-sans antialiased">
         <ThemeProvider>
           <AuthProvider>

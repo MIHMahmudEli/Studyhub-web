@@ -13,15 +13,15 @@ import Link from 'next/link';
 const DARK_THEMES = [
   {
     id: 'current',
-    label: 'Current Dark Theme',
-    desc: 'Enhanced nebula with starfield — vibrant indigo, purple, sky-blue, and pink nebula clouds.',
+    label: 'Deep Space',
+    desc: 'An immersive dark experience with a vibrant starfield and rich indigo, purple, sky-blue, and pink nebula clouds.',
     icon: Moon,
     preview: 'from-indigo-500 via-purple-500 to-pink-500',
   },
   {
     id: 'previous',
-    label: 'Previous Dark Theme',
-    desc: 'Subtle nebula with muted indigo, purple, and pink hues — no starfield effect.',
+    label: 'Midnight',
+    desc: 'A clean, minimal dark surface with subtle nebula accents and no starfield — perfect for reduced visual noise.',
     icon: Moon,
     preview: 'from-indigo-500/40 via-purple-500/30 to-pink-500/20',
   },
@@ -30,8 +30,8 @@ const DARK_THEMES = [
 const LIGHT_THEMES = [
   {
     id: 'current',
-    label: 'Current Light Theme',
-    desc: 'Clean bright surface with subtle nebula accents.',
+    label: 'Dawn',
+    desc: 'A crisp, bright surface with gentle nebula accents for a clean reading experience.',
     icon: Sun,
     preview: 'from-blue-400 via-purple-400 to-cyan-400',
   },

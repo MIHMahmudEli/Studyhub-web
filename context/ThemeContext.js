@@ -5,6 +5,8 @@ import { apiRequest } from '@/lib/api';
 
 const VALID_MODES = ['dark', 'light'];
 const VALID_VARIANTS = ['current', 'previous'];
+const CACHE_KEY_DARK = 'admin_dark_theme';
+const CACHE_KEY_LIGHT = 'admin_light_theme';
 
 const ThemeContext = createContext();
 
@@ -33,17 +35,24 @@ export function ThemeProvider({ children }) {
       lastSavedTheme.current = savedTheme;
     }
 
+    // Restore cached admin theme variants instantly (no flash)
+    const cachedDark = localStorage.getItem(CACHE_KEY_DARK);
+    const cachedLight = localStorage.getItem(CACHE_KEY_LIGHT);
+    if (VALID_VARIANTS.includes(cachedDark)) setDarkThemeVariant(cachedDark);
+    if (VALID_VARIANTS.includes(cachedLight)) setLightThemeVariant(cachedLight);
+
+    // Fetch fresh values from server in background, then update cache
     Promise.all([
       apiRequest('/admin/settings/dark_theme'),
       apiRequest('/admin/settings/light_theme'),
     ])
       .then(([darkRes, lightRes]) => {
-        setDarkThemeVariant(
-          VALID_VARIANTS.includes(darkRes?.value) ? darkRes.value : 'current'
-        );
-        setLightThemeVariant(
-          VALID_VARIANTS.includes(lightRes?.value) ? lightRes.value : 'current'
-        );
+        const newDark = VALID_VARIANTS.includes(darkRes?.value) ? darkRes.value : 'current';
+        const newLight = VALID_VARIANTS.includes(lightRes?.value) ? lightRes.value : 'current';
+        setDarkThemeVariant(newDark);
+        setLightThemeVariant(newLight);
+        localStorage.setItem(CACHE_KEY_DARK, newDark);
+        localStorage.setItem(CACHE_KEY_LIGHT, newLight);
       })
       .catch(() => {});
   }, []);
@@ -94,6 +103,8 @@ export function ThemeProvider({ children }) {
       const newLight = VALID_VARIANTS.includes(lightRes?.value) ? lightRes.value : 'current';
       setDarkThemeVariant(newDark);
       setLightThemeVariant(newLight);
+      localStorage.setItem(CACHE_KEY_DARK, newDark);
+      localStorage.setItem(CACHE_KEY_LIGHT, newLight);
       return { darkThemeVariant: newDark, lightThemeVariant: newLight };
     } catch {
       return { darkThemeVariant: 'current', lightThemeVariant: 'current' };

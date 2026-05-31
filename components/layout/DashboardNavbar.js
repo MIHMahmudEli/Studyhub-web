@@ -176,7 +176,7 @@ export default function DashboardNavbar() {
         {/* Mobile Hamburger Toggle */}
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="lg:hidden p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-[var(--foreground)] hover:border-blue-500/30 transition-all cursor-pointer flex items-center justify-center"
+          className="lg:hidden p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-2)] hover:text-[var(--foreground)] hover:border-blue-500/30 transition-all cursor-pointer flex items-center justify-center"
           title="Toggle Navigation Menu"
         >
           {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -185,7 +185,7 @@ export default function DashboardNavbar() {
 
       {/* Mobile Navigation Dropdown Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-[var(--background)]/95 border-b border-[var(--card-border)] backdrop-blur-2xl shadow-2xl p-6 flex flex-col gap-6 animate-in slide-in-from-top-4 duration-300 ease-out z-[99]">
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-[var(--background)]/95 backdrop-blur-2xl border-b border-[var(--card-border)] shadow-2xl p-6 flex flex-col gap-6 animate-in slide-in-from-top-4 duration-300 ease-out z-[99]">
           
           {/* Nav Links */}
           <div className="flex flex-col gap-2">
