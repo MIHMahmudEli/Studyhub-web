@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useCallback } from 'react';
+import { useState, useLayoutEffect, useCallback } from 'react';
 import { ArrowRight, Mail, Lock, MousePointer2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
@@ -20,6 +20,12 @@ function usePageTransition() {
   return { navigating, navigate };
 }
 
+function useEntrance() {
+  const [entered, setEntered] = useState(false);
+  useLayoutEffect(() => setEntered(true), []);
+  return entered;
+}
+
 export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -29,6 +35,7 @@ export default function AuthPage() {
   const { login } = useAuth();
   const router = useRouter();
   const { navigating, navigate } = usePageTransition();
+  const entered = useEntrance();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -53,32 +60,33 @@ export default function AuthPage() {
 
   const isSubmitDisabled = !(formData.email && formData.password);
 
+  const e = (delay) => `transition-all duration-[450ms] ease-out delay-${delay} ${entered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`;
+  const fade = (delay) => `transition-opacity duration-[450ms] ease-out delay-${delay} ${entered ? 'opacity-100' : 'opacity-0'}`;
+
   return (
     <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-blue-500/30 transition-colors duration-500">
       {navigating && (
         <div className="fixed inset-0 bg-[var(--background)] z-[100] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200" />
       )}
 
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--nebula-1)] rounded-full blur-[120px] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[var(--nebula-2)] rounded-full blur-[120px] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000 motion-safe:delay-300" />
+      <div className={`absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--nebula-1)] rounded-full blur-[120px] ${fade(0)}`} />
+      <div className={`absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[var(--nebula-2)] rounded-full blur-[120px] ${fade(100)}`} />
 
-      <Link href="/" className="hidden sm:flex absolute top-8 left-8 transition-all duration-500 ease-out hover:scale-105 active:scale-95 group z-50 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-4 motion-safe:duration-400">
+      <Link href="/" className={`hidden sm:flex absolute top-8 left-8 transition-all duration-500 ease-out hover:scale-105 active:scale-95 group z-50 ${e(50)}`}>
         <StudyHubLogo size={32} textSize={18} />
       </Link>
 
-      <div className="w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-6 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-200">
+      <div className={`w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative ${e(100)}`}>
         <div className="h-1.5 w-full bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-cyan-600/50 opacity-30" />
 
         <div className="p-6 sm:p-10">
-          {/* Mobile-only Top Logo */}
-          <div className="flex sm:hidden justify-center mb-6 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-400">
+          <div className={`flex sm:hidden justify-center mb-6 ${fade(150)}`}>
             <Link href="/" className="transition-all hover:scale-105 active:scale-95">
               <StudyHubLogo size={32} textSize={18} />
             </Link>
           </div>
 
-          {/* Title Section */}
-          <div className="text-center mb-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-100">
+          <div className={`text-center mb-8 ${e(150)}`}>
             <h1 className="text-3xl font-black text-[var(--foreground)] mb-2 tracking-tight bg-gradient-to-b from-[var(--foreground)] to-[var(--muted)] bg-clip-text text-transparent">
               Welcome Back
             </h1>
@@ -88,7 +96,7 @@ export default function AuthPage() {
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300">
+            <div className={`mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl ${fade(200)}`}>
               <p className="text-red-400 text-[11px] font-bold uppercase tracking-widest text-center">
                 {error}
               </p>
@@ -96,11 +104,11 @@ export default function AuthPage() {
           )}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-150">
+            <div className={e(200)}>
               <AuthInput icon={Mail} type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} placeholder="Email Address" />
             </div>
 
-            <div className="space-y-3 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-200">
+            <div className={`space-y-3 ${e(200)}`}>
               <AuthInput icon={Lock} type="password" name="password" value={formData.password} onChange={handleChange} onBlur={handleBlur} placeholder="Password" />
               <div className="flex justify-end pr-1">
                 <Link
@@ -113,7 +121,7 @@ export default function AuthPage() {
               </div>
             </div>
 
-            <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-250">
+            <div className={e(250)}>
               <button
                 disabled={isSubmitDisabled || isLoading}
                 className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-300 ease-out group/btn ${
@@ -134,7 +142,7 @@ export default function AuthPage() {
             </div>
           </form>
 
-          <div className="mt-8 text-center border-t border-[var(--card-border)] pt-6 space-y-4 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-300">
+          <div className={`mt-8 text-center border-t border-[var(--card-border)] pt-6 space-y-4 ${fade(300)}`}>
             <p className="text-[var(--muted)] text-[11px] font-bold uppercase tracking-widest">
               New to StudyHub?{' '}
               <Link

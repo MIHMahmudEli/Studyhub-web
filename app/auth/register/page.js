@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from 'react';
 import { Sparkles, Mail, Lock, User, ShieldCheck, ArrowLeft, RefreshCw, UserCheck } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
@@ -22,6 +22,12 @@ function usePageTransition() {
   return { navigating, navigate };
 }
 
+function useEntrance() {
+  const [entered, setEntered] = useState(false);
+  useLayoutEffect(() => setEntered(true), []);
+  return entered;
+}
+
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState('register');
@@ -35,6 +41,7 @@ export default function RegisterPage() {
   const { register, verifyEmail } = useAuth();
   const router = useRouter();
   const { navigating, navigate } = usePageTransition();
+  const entered = useEntrance();
 
   const passwordRules = useMemo(() => ({
     length: formData.password.length >= 8,
@@ -136,32 +143,33 @@ export default function RegisterPage() {
   const allPasswordRulesMet = Object.values(passwordRules).every(Boolean);
   const isSubmitDisabled = !(allPasswordRulesMet && isNameValid && !errors.email && formData.password === formData.confirmPassword && formData.fullName && formData.email);
 
+  const e = (delay) => `transition-all duration-[450ms] ease-out delay-${delay} ${entered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`;
+  const fade = (delay) => `transition-opacity duration-[450ms] ease-out delay-${delay} ${entered ? 'opacity-100' : 'opacity-0'}`;
+
   return (
     <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans transition-colors duration-500">
       {navigating && (
         <div className="fixed inset-0 bg-[var(--background)] z-[100] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200" />
       )}
 
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--nebula-1)] rounded-full blur-[120px] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[var(--nebula-2)] rounded-full blur-[120px] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000 motion-safe:delay-300" />
+      <div className={`absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--nebula-1)] rounded-full blur-[120px] ${fade(0)}`} />
+      <div className={`absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[var(--nebula-2)] rounded-full blur-[120px] ${fade(100)}`} />
 
-      <Link href="/" className="hidden sm:flex absolute top-8 left-8 transition-all duration-500 ease-out hover:scale-105 active:scale-95 group z-50 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-4 motion-safe:duration-400">
+      <Link href="/" className={`hidden sm:flex absolute top-8 left-8 transition-all duration-500 ease-out hover:scale-105 active:scale-95 group z-50 ${e(50)}`}>
         <StudyHubLogo size={32} textSize={18} />
       </Link>
 
-      <div className="w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-6 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-200">
+      <div className={`w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative ${e(100)}`}>
         <div className="h-1.5 w-full bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-cyan-600/50 opacity-30" />
 
         <div className="p-6 sm:p-10">
-          {/* Mobile-only Top Logo */}
-          <div className="flex sm:hidden justify-center mb-6 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-400">
+          <div className={`flex sm:hidden justify-center mb-6 ${fade(150)}`}>
             <Link href="/" className="transition-all hover:scale-105 active:scale-95">
               <StudyHubLogo size={32} textSize={18} />
             </Link>
           </div>
 
-          {/* Title Section */}
-          <div className="text-center mb-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-100">
+          <div className={`text-center mb-8 ${e(150)}`}>
             <h1 className="text-3xl font-black text-[var(--foreground)] mb-2 tracking-tight bg-gradient-to-b from-[var(--foreground)] to-[var(--muted)] bg-clip-text text-transparent">
               {step === 'register' ? 'Create Account' : 'Verify Email'}
             </h1>
@@ -171,7 +179,7 @@ export default function RegisterPage() {
           </div>
 
           {status.message && (
-            <div className={`mb-6 p-4 border rounded-2xl motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300 ${
+            <div className={`mb-6 p-4 border rounded-2xl ${fade(200)} ${
               status.type === 'success'
                 ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                 : 'bg-red-500/10 border-red-500/20 text-red-400'
@@ -184,10 +192,10 @@ export default function RegisterPage() {
 
           {step === 'register' ? (
             <form className="space-y-6" onSubmit={handleSubmit}>
-              <div className="space-y-3 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-150">
+              <div className={`space-y-3 ${e(200)}`}>
                 <AuthInput icon={User} name="fullName" value={formData.fullName} onChange={handleChange} onBlur={handleBlur} placeholder="Full Name (e.g. John Doe)" error={touched.fullName && !isNameValid ? errors.fullName : ''} touched={touched.fullName} />
                 {formData.fullName && (
-                  <div className="p-3.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 motion-safe:duration-300">
+                  <div className={`p-3.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl space-y-2 transition-all duration-300 ease-out ${entered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
                     <div className="flex items-center gap-2 border-b border-[var(--card-border)] pb-2">
                       <UserCheck size={11} className="text-blue-400" />
                       <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest">Name Format</span>
@@ -212,17 +220,17 @@ export default function RegisterPage() {
                 )}
               </div>
 
-              <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-200">
+              <div className={e(200)}>
                 <AuthInput icon={Mail} type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} placeholder="Email Address" error={errors.email} touched={touched.email} />
               </div>
 
-              <div className="space-y-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-250">
+              <div className={`space-y-4 ${e(200)}`}>
                 <AuthInput icon={Lock} type="password" name="password" value={formData.password} onChange={handleChange} onBlur={handleBlur} placeholder="Password" />
                 {formData.password && <ValidationRules rules={passwordRules} />}
                 <AuthInput icon={Lock} type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} onBlur={handleBlur} placeholder="Confirm Password" error={errors.confirmPassword} touched={touched.confirmPassword} />
               </div>
 
-              <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-300">
+              <div className={e(250)}>
                 <button
                   disabled={isSubmitDisabled || isLoading}
                   className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-300 ease-out group/btn ${
@@ -244,7 +252,7 @@ export default function RegisterPage() {
             </form>
           ) : (
             <form className="space-y-8" onSubmit={handleVerifySubmit}>
-              <div className="flex justify-between gap-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out">
+              <div className={`flex justify-between gap-2 ${e(200)}`}>
                 {otp.map((digit, index) => (
                   <input
                     key={index}
@@ -255,12 +263,11 @@ export default function RegisterPage() {
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     className="w-9 h-11 sm:w-12 sm:h-14 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-center text-[var(--foreground)] text-base sm:text-xl font-black focus:border-blue-500/50 focus:bg-[var(--card-bg)] outline-none transition-all duration-300"
-                    style={{ animationDelay: `${index * 50}ms` }}
                   />
                 ))}
               </div>
 
-              <div className="space-y-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-150">
+              <div className={`space-y-4 ${e(250)}`}>
                 <button
                   disabled={otp.some(d => !d) || isLoading}
                   className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-300 ease-out group/btn ${
@@ -306,7 +313,7 @@ export default function RegisterPage() {
             </form>
           )}
 
-          <div className="mt-8 text-center border-t border-[var(--card-border)] pt-6 space-y-4 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-350">
+          <div className={`mt-8 text-center border-t border-[var(--card-border)] pt-6 space-y-4 ${fade(300)}`}>
             <p className="text-[var(--muted)] text-[11px] font-bold uppercase tracking-widest">
               Already have an account?{' '}
               <Link

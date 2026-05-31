@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from 'react';
 import { ArrowRight, Sparkles, Mail, Lock, ChevronLeft, CheckCircle2, ShieldCheck, RefreshCw, X, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
@@ -21,8 +21,14 @@ function usePageTransition() {
   return { navigating, navigate };
 }
 
+function useEntrance() {
+  const [entered, setEntered] = useState(false);
+  useLayoutEffect(() => setEntered(true), []);
+  return entered;
+}
+
 export default function ForgotPasswordPage() {
-  const [step, setStep] = useState('email'); // 'email', 'otp'
+  const [step, setStep] = useState('email');
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
@@ -41,6 +47,7 @@ export default function ForgotPasswordPage() {
   const { forgotPassword, resetPassword } = useAuth();
   const router = useRouter();
   const { navigating, navigate } = usePageTransition();
+  const entered = useEntrance();
 
   useEffect(() => {
     let timer;
@@ -134,33 +141,35 @@ export default function ForgotPasswordPage() {
     }
   };
 
+  const e = (delay) => `transition-all duration-[450ms] ease-out delay-${delay} ${entered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`;
+  const fade = (delay) => `transition-opacity duration-[450ms] ease-out delay-${delay} ${entered ? 'opacity-100' : 'opacity-0'}`;
+
   return (
     <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans transition-colors duration-500">
       {navigating && (
         <div className="fixed inset-0 bg-[var(--background)] z-[100] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200" />
       )}
 
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--nebula-1)] rounded-full blur-[120px] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[var(--nebula-2)] rounded-full blur-[120px] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000 motion-safe:delay-300" />
+      <div className={`absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--nebula-1)] rounded-full blur-[120px] ${fade(0)}`} />
+      <div className={`absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[var(--nebula-2)] rounded-full blur-[120px] ${fade(100)}`} />
 
-      <Link href="/" className="hidden sm:flex absolute top-8 left-8 transition-all duration-500 ease-out hover:scale-105 active:scale-95 group z-50 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-4 motion-safe:duration-400">
+      <Link href="/" className={`hidden sm:flex absolute top-8 left-8 transition-all duration-500 ease-out hover:scale-105 active:scale-95 group z-50 ${e(50)}`}>
         <StudyHubLogo size={32} textSize={18} />
       </Link>
 
-      <div className="w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-6 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-200">
+      <div className={`w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative ${e(100)}`}>
         <div className="h-1.5 w-full bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-cyan-600/50 opacity-30" />
 
         <div className="p-6 sm:p-10">
-          {/* Mobile-only Top Logo */}
-          <div className="flex sm:hidden justify-center mb-6 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-400">
+          <div className={`flex sm:hidden justify-center mb-6 ${fade(150)}`}>
             <Link href="/auth" className="transition-all hover:scale-105 active:scale-95">
               <StudyHubLogo size={32} textSize={18} />
             </Link>
           </div>
 
           {isSuccess ? (
-            <div className="text-center py-6 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:duration-500">
-              <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20 shadow-[0_0_40px_rgba(16,185,129,0.1)] motion-safe:animate-in motion-safe:zoom-in-50 motion-safe:duration-700">
+            <div className={`text-center py-6 ${fade(150)}`}>
+              <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20 shadow-[0_0_40px_rgba(16,185,129,0.1)]">
                 <CheckCircle2 size={40} className="text-emerald-400" />
               </div>
               <h2 className="text-2xl font-black text-[var(--foreground)] mb-3">Password Reset!</h2>
@@ -176,8 +185,7 @@ export default function ForgotPasswordPage() {
             </div>
           ) : (
             <>
-              {/* Title Section */}
-              <div className="text-center mb-8 relative motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-100">
+              <div className={`text-center mb-8 relative ${e(150)}`}>
                 <h1 className="text-3xl font-black text-[var(--foreground)] mb-2 tracking-tight bg-gradient-to-b from-[var(--foreground)] to-[var(--muted)] bg-clip-text text-transparent">
                   {step === 'email' ? 'Reset Password' : 'Verify Identity'}
                 </h1>
@@ -187,7 +195,7 @@ export default function ForgotPasswordPage() {
               </div>
 
               {status.message && (
-                <div className={`mb-6 p-4 border rounded-2xl motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300 ${
+                <div className={`mb-6 p-4 border rounded-2xl ${fade(200)} ${
                   status.type === 'success'
                     ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                     : 'bg-red-500/10 border-red-500/20 text-red-400'
@@ -200,11 +208,11 @@ export default function ForgotPasswordPage() {
 
               <form className="space-y-6" onSubmit={handleSubmit}>
                 {step === 'email' ? (
-                  <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-150">
+                  <div className={e(200)}>
                     <AuthInput icon={Mail} type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} placeholder="Email Address" error={errors.email} touched={touched.email} />
                   </div>
                 ) : (
-                  <div className="space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-4 motion-safe:duration-500 motion-safe:ease-out">
+                  <div className={`space-y-8 ${e(200)}`}>
                     <div className="flex justify-between gap-2">
                       {otp.map((digit, index) => (
                         <input
@@ -216,7 +224,6 @@ export default function ForgotPasswordPage() {
                           onChange={(e) => handleOtpChange(index, e.target.value)}
                           onKeyDown={(e) => handleKeyDown(index, e)}
                           className="w-9 h-11 sm:w-12 sm:h-14 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-center text-[var(--foreground)] text-base sm:text-xl font-black focus:border-blue-500/50 focus:bg-[var(--card-bg)] outline-none transition-all duration-300"
-                          style={{ animationDelay: `${index * 50}ms` }}
                         />
                       ))}
                     </div>
@@ -230,7 +237,7 @@ export default function ForgotPasswordPage() {
                 )}
 
                 <div className="space-y-4">
-                  <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-200">
+                  <div className={e(250)}>
                     <button
                       disabled={isSubmitDisabled || isLoading}
                       className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-300 ease-out group/btn ${
@@ -250,7 +257,7 @@ export default function ForgotPasswordPage() {
                     </button>
                   </div>
 
-                  <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-250">
+                  <div className={`${fade(300)}`}>
                     {step === 'email' ? (
                       <Link
                         href="/auth"
