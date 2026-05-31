@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
@@ -9,7 +9,7 @@ import { apiRequest } from '@/lib/api';
 import {
   BarChart3, Users, FileText, MessageSquare, BookOpen, Shield,
   TrendingUp, Clock, Calendar, Activity, UserPlus, Download,
-  AlertCircle, ArrowLeft, Filter
+  AlertCircle, ArrowLeft, FileDown, Loader2
 } from 'lucide-react';
 import {
   LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie,
@@ -92,6 +92,9 @@ export default function AnalyticsPage() {
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
 
+  const dashboardRef = useRef(null);
+  const [exporting, setExporting] = useState(false);
+
   const [overview, setOverview] = useState(null);
   const [userAnalytics, setUserAnalytics] = useState(null);
   const [activityAnalytics, setActivityAnalytics] = useState(null);
@@ -104,6 +107,136 @@ export default function AnalyticsPage() {
       setTimeout(() => setToast(prev => ({ ...prev, show: false, isClosing: false })), 500);
     }, 5000);
   };
+
+  const exportPDF = useCallback(async () => {
+    const { toPng } = await import('html-to-image');
+    const { jsPDF } = await import('jspdf');
+
+    setExporting(true);
+    try {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pw = pdf.internal.pageSize.getWidth();
+      const ph = pdf.internal.pageSize.getHeight();
+      const margin = 15;
+      const contentWidth = pw - 2 * margin;
+      const filterLabel = FILTERS.find(f => f.key === filter)?.label || '30 Days';
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+      // Cover page
+      pdf.setFillColor(18, 24, 38);
+      pdf.rect(0, 0, pw, ph, 'F');
+      pdf.setFillColor(59, 130, 246);
+      pdf.rect(0, ph * 0.38, pw, 4, 'F');
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(32);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('StudyHub', margin, ph * 0.28);
+      pdf.setFontSize(16);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text('Platform Analytics Report', margin, ph * 0.33);
+
+      pdf.setFontSize(11);
+      pdf.setTextColor(148, 163, 184);
+      const details = [
+        `Date Range: ${filterLabel}`,
+        `Generated: ${dateStr} at ${timeStr}`,
+        `Report Period: ${overview?.reportPeriod || 'N/A'}`,
+      ];
+      details.forEach((d, i) => pdf.text(d, margin, ph * 0.46 + i * 7));
+
+      if (overview) {
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(255, 255, 255);
+        const stats = [
+          ['Total Users', overview.totalUsers.toLocaleString()],
+          ['Active Users', overview.activeUsers.toLocaleString()],
+          ['New Users', overview.newUsers.toLocaleString()],
+          ['Total Notes', overview.totalNotes.toLocaleString()],
+          ['Resources', overview.totalResources.toLocaleString()],
+          ['Reviews', overview.totalReviews.toLocaleString()],
+        ];
+        const cols = 3;
+        const cellW = contentWidth / cols;
+        let sx = margin, sy = ph * 0.58;
+        stats.forEach((s, i) => {
+          const col = i % cols;
+          const row = Math.floor(i / cols);
+          pdf.setFillColor(30, 41, 59);
+          pdf.roundedRect(sx + col * cellW + 2, sy + row * 16, cellW - 4, 13, 2, 2, 'F');
+          pdf.setFontSize(7);
+          pdf.setTextColor(148, 163, 184);
+          pdf.text(s[0], sx + col * cellW + 5, sy + row * 16 + 5);
+          pdf.setFontSize(10);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setTextColor(255, 255, 255);
+          pdf.text(s[1], sx + col * cellW + 5, sy + row * 16 + 13);
+          pdf.setFont('helvetica', 'normal');
+        });
+      }
+      pdf.addPage();
+
+      // Capture each section via html-to-image
+      const el = dashboardRef.current;
+      if (!el) { setExporting(false); return; }
+
+      const sections = el.querySelectorAll('[data-pdf-section]');
+      for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
+        const label = section.getAttribute('data-pdf-label') || '';
+
+        const dataUrl = await toPng(section, {
+          pixelRatio: 2,
+          backgroundColor: '#0f172a',
+        });
+
+        const imgW = contentWidth;
+        const img = new Image();
+        img.src = dataUrl;
+        await img.decode();
+        const imgH = (img.naturalHeight / img.naturalWidth) * imgW;
+
+        // Section header
+        pdf.setFontSize(11);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(59, 130, 246);
+        const lines = pdf.splitTextToSize(label, contentWidth);
+        const headerY = pdf.lastAutoPage || margin;
+        pdf.text(lines, margin, headerY);
+        pdf.lastAutoPage = headerY + 5;
+
+        // Check if image needs a new page
+        let yPos = (pdf.lastAutoPage || margin) + 2;
+        if (yPos + imgH > ph - margin) {
+          pdf.addPage();
+          yPos = margin + 2;
+        }
+
+        pdf.addImage(dataUrl, 'PNG', margin, yPos, imgW, imgH);
+        pdf.lastAutoPage = yPos + imgH + 10;
+      }
+
+      // Page numbers
+      const totalPages = pdf.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        if (i === 1) continue;
+        pdf.setFontSize(7);
+        pdf.setTextColor(148, 163, 184);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(`StudyHub Analytics Report — ${filterLabel} — Page ${i - 1} of ${totalPages - 1}`, margin, ph - 8);
+      }
+
+      pdf.save(`StudyHub_Analytics_${filter}_${now.toISOString().slice(0, 10)}.pdf`);
+      showToast('PDF exported successfully');
+    } catch (err) {
+      showToast('Failed to export PDF: ' + err.message, 'error');
+    } finally {
+      setExporting(false);
+    }
+  }, [filter, overview]);
 
   const fetchAnalytics = useCallback(async (f) => {
     setLoading(true);
@@ -166,7 +299,7 @@ export default function AnalyticsPage() {
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-32 transition-colors duration-500">
       <DashboardNavbar />
       <div className="pt-24 md:pt-32 px-4 md:px-8">
-        <div className="max-w-[1400px] mx-auto space-y-8 sm:space-y-12">
+        <div ref={dashboardRef} className="max-w-[1400px] mx-auto space-y-8 sm:space-y-12">
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
             <div className="space-y-2 sm:space-y-4 text-center md:text-left">
@@ -180,23 +313,43 @@ export default function AnalyticsPage() {
                 Comprehensive platform metrics, user insights, and content performance data.
               </p>
             </div>
-            <div className="w-full md:w-auto overflow-x-auto scrollbar-none -mx-4 md:mx-0 px-4 md:px-0">
-              <div className="inline-flex items-center gap-1 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl p-1 shadow-sm min-w-0">
-                {FILTERS.map(f => (
-                  <button
-                    key={f.key}
-                    onClick={() => setFilter(f.key)}
-                    className={`whitespace-nowrap px-3 sm:px-4 py-2 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer shrink-0 ${
-                      filter === f.key
-                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
-                        : 'text-slate-500 hover:text-[var(--foreground)] hover:bg-[var(--surface)] active:text-[var(--foreground)] active:bg-white/[0.06]'
-                    }`}
-                  >
-                    {f.label}
-                  </button>
-                ))}
+            <div className="flex flex-col gap-2">
+              <div className="w-full overflow-x-auto scrollbar-none -mx-4 md:mx-0 px-4 md:px-0">
+                <div className="inline-flex items-center gap-1 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl p-1 shadow-sm min-w-0">
+                  {FILTERS.map(f => (
+                    <button
+                      key={f.key}
+                      onClick={() => setFilter(f.key)}
+                      className={`whitespace-nowrap px-3 sm:px-4 py-2 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer shrink-0 ${
+                        filter === f.key
+                          ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
+                          : 'text-slate-500 hover:text-[var(--foreground)] hover:bg-[var(--surface)] active:text-[var(--foreground)] active:bg-white/[0.06]'
+                      }`}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex justify-end md:hidden">
+                <button
+                  onClick={exportPDF}
+                  disabled={exporting || loading || !overview}
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest bg-emerald-500 text-white hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                >
+                  {exporting ? <Loader2 size={12} className="animate-spin" /> : <FileDown size={12} />}
+                  <span>{exporting ? 'Exporting...' : 'PDF'}</span>
+                </button>
               </div>
             </div>
+            <button
+              onClick={exportPDF}
+              disabled={exporting || loading || !overview}
+              className="hidden md:flex shrink-0 items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-emerald-500 text-white hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              {exporting ? <Loader2 size={12} className="sm:size-3 animate-spin" /> : <FileDown size={12} className="sm:size-3" />}
+              <span className="hidden sm:inline">{exporting ? 'Exporting...' : 'Export PDF'}</span>
+            </button>
           </div>
 
           {error && (
@@ -206,13 +359,13 @@ export default function AnalyticsPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-2 sm:gap-4">
+          <div data-pdf-section data-pdf-label="Key Performance Indicators" className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
             {overviewKpis.map((kpi, i) => (
               <KpiCard key={i} {...kpi} loading={loading} />
             ))}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div data-pdf-section data-pdf-label="Charts &amp; Visualizations" className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 
             <ChartCard title="User Registrations" subtitle="New accounts over time">
               {loading ? (
@@ -329,7 +482,7 @@ export default function AnalyticsPage() {
 
           </div>
 
-          <div className="space-y-4 sm:space-y-6">
+          <div data-pdf-section data-pdf-label="Popular Notes — Top 10 by Downloads" className="space-y-4 sm:space-y-6">
             <h2 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-slate-500">Popular Notes</h2>
             <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl sm:rounded-2xl overflow-hidden">
               {loading ? (
@@ -379,7 +532,7 @@ export default function AnalyticsPage() {
           </div>
 
           {contentAnalytics?.totals && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+            <div data-pdf-section data-pdf-label="Content Summary" className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
               <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl sm:rounded-2xl p-3 sm:p-5 text-center">
                 <p className="text-lg sm:text-2xl font-black tracking-tight" style={{ color: COLORS.purple }}>{contentAnalytics.totals.notes}</p>
                 <p className="text-[6px] sm:text-[8px] font-black text-slate-500 uppercase tracking-widest mt-0.5 sm:mt-1">Total Notes</p>
