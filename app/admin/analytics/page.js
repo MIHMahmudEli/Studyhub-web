@@ -218,10 +218,9 @@ export default function AnalyticsPage() {
 
             <ChartCard title="User Registrations" subtitle="New accounts over time">
               {loading ? (
-                <div className="animate-pulse h-[200px] sm:h-[260px] bg-white/[0.03] rounded-xl" />
+                <div className="animate-pulse h-[230px] bg-white/[0.03] rounded-xl" />
               ) : (
-                <div className="h-[200px] sm:h-[260px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height={230}>
                   <AreaChart data={userAnalytics?.registrations?.map(r => ({ date: r.date, registrations: parseInt(r.count, 10) })) || []}>
                     <defs>
                       <linearGradient id="regGrad" x1="0" y1="0" x2="0" y2="1">
@@ -236,16 +235,14 @@ export default function AnalyticsPage() {
                     <Area type="monotone" dataKey="registrations" stroke={COLORS.blue} fill="url(#regGrad)" strokeWidth={2} name="Registrations" />
                   </AreaChart>
                 </ResponsiveContainer>
-                </div>
               )}
             </ChartCard>
 
             <ChartCard title="Role Distribution" subtitle="Users by role">
               {loading ? (
-                <div className="animate-pulse h-[200px] sm:h-[260px] bg-white/[0.03] rounded-xl" />
+                <div className="animate-pulse h-[230px] bg-white/[0.03] rounded-xl" />
               ) : (
-                <div className="h-[200px] sm:h-[260px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height={230}>
                   <PieChart>
                     <Pie data={rolePieData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={3} dataKey="value">
                       {rolePieData.map((_, i) => (
@@ -258,16 +255,14 @@ export default function AnalyticsPage() {
                     />
                   </PieChart>
                 </ResponsiveContainer>
-                </div>
               )}
             </ChartCard>
 
             <ChartCard title="Department Distribution" subtitle="Top 10 departments by user count">
               {loading ? (
-                <div className="animate-pulse h-[200px] sm:h-[260px] bg-white/[0.03] rounded-xl" />
+                <div className="animate-pulse h-[230px] bg-white/[0.03] rounded-xl" />
               ) : (
-                <div className="h-[200px] sm:h-[260px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height={230}>
                   <BarChart data={deptBarData} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                     <XAxis type="number" tick={{ fontSize: 8, fill: 'var(--text-2)' }} />
@@ -276,16 +271,14 @@ export default function AnalyticsPage() {
                     <Bar dataKey="count" fill={COLORS.purple} radius={[0, 4, 4, 0]} name="Users" />
                   </BarChart>
                 </ResponsiveContainer>
-                </div>
               )}
             </ChartCard>
 
             <ChartCard title="Login Activity" subtitle="Daily active users from sessions">
               {loading ? (
-                <div className="animate-pulse h-[200px] sm:h-[260px] bg-white/[0.03] rounded-xl" />
+                <div className="animate-pulse h-[230px] bg-white/[0.03] rounded-xl" />
               ) : (
-                <div className="h-[200px] sm:h-[260px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height={230}>
                   <LineChart data={activityAnalytics?.loginActivity?.map(a => ({ date: a.date, activeUsers: parseInt(a.activeUsers, 10) })) || []}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                     <XAxis dataKey="date" tick={{ fontSize: 8, fill: 'var(--text-2)' }} tickFormatter={v => v?.slice(5) || ''} angle={-30} textAnchor="end" height={40} />
@@ -294,16 +287,14 @@ export default function AnalyticsPage() {
                     <Line type="monotone" dataKey="activeUsers" stroke={COLORS.emerald} strokeWidth={2} dot={false} name="Active" />
                   </LineChart>
                 </ResponsiveContainer>
-                </div>
               )}
             </ChartCard>
 
             <ChartCard title="Content Created" subtitle="Notes & resources over time">
               {loading ? (
-                <div className="animate-pulse h-[200px] sm:h-[260px] bg-white/[0.03] rounded-xl" />
+                <div className="animate-pulse h-[230px] bg-white/[0.03] rounded-xl" />
               ) : (
-                <div className="h-[200px] sm:h-[260px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height={230}>
                   <BarChart data={(() => {
                     const noteMap = {};
                     (contentAnalytics?.notesCreated || []).forEach(n => { noteMap[n.date] = { ...noteMap[n.date], notes: parseInt(n.count, 10) }; });
@@ -319,16 +310,14 @@ export default function AnalyticsPage() {
                     <Legend wrapperStyle={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }} />
                   </BarChart>
                 </ResponsiveContainer>
-                </div>
               )}
             </ChartCard>
 
             <ChartCard title="Peak Activity Hours" subtitle="Most active hours of the day">
               {loading ? (
-                <div className="animate-pulse h-[200px] sm:h-[260px] bg-white/[0.03] rounded-xl" />
+                <div className="animate-pulse h-[230px] bg-white/[0.03] rounded-xl" />
               ) : (
-                <div className="h-[200px] sm:h-[260px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height={230}>
                   <BarChart data={activityAnalytics?.peakHours?.map(h => ({ hour: `${h.hour}:00`, users: h.activeUsers })) || []}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                     <XAxis dataKey="hour" tick={{ fontSize: 7, fill: 'var(--text-2)' }} angle={-45} textAnchor="end" height={50} interval={1} />
@@ -337,7 +326,6 @@ export default function AnalyticsPage() {
                     <Bar dataKey="users" fill={COLORS.cyan} radius={[3, 3, 0, 0]} name="Active Users" />
                   </BarChart>
                 </ResponsiveContainer>
-                </div>
               )}
             </ChartCard>
 
