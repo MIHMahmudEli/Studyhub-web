@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/context/ThemeProvider";
 import RouteTracker from "@/components/RouteTracker";
 import ScreenGate from "@/components/ScreenGate";
 import ThemeSync from "@/components/ThemeSync";
+import DeepSpace from "@/components/space/DeepSpace";
 import "./globals.css";
 
 export const metadata = {
@@ -31,7 +32,9 @@ export default function RootLayout({ children }) {
               <div className="absolute top-[35%] left-[55%] w-[35%] h-[35%] rounded-full bg-[var(--nebula-3)] blur-[100px] animate-nebula" style={{ animationDelay: '-12s' }} />
               <div className="absolute bottom-[20%] left-[5%] w-[25%] h-[25%] rounded-full bg-[var(--nebula-4)] blur-[90px] animate-nebula" style={{ animationDelay: '-18s' }} />
             </div>
-            
+
+            <DeepSpace />
+
             <ScreenGate>{children}</ScreenGate>
           </AuthProvider>
         </ThemeProvider>

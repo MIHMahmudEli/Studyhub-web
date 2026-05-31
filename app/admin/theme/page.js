@@ -7,6 +7,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { apiRequest } from '@/lib/api';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import Toast from '@/components/ui/Toast';
+import SpacePreview from '@/components/space/SpacePreview';
 import { Moon, Sun, Sparkles, Save, ArrowLeft, Palette, Check } from 'lucide-react';
 import Link from 'next/link';
 
@@ -14,9 +15,10 @@ const DARK_THEMES = [
   {
     id: 'current',
     label: 'Deep Space',
-    desc: 'An immersive dark experience with a vibrant starfield and rich indigo, purple, sky-blue, and pink nebula clouds.',
+    desc: 'An immersive deep-space experience with a twinkling starfield, realistic shooting stars, and rich indigo-purple-cosmic nebula clouds.',
     icon: Moon,
-    preview: 'from-indigo-500 via-purple-500 to-pink-500',
+    preview: 'from-indigo-600 via-purple-700 to-indigo-900',
+    hasAnimation: true,
   },
   {
     id: 'previous',
@@ -24,6 +26,7 @@ const DARK_THEMES = [
     desc: 'A clean, minimal dark surface with subtle nebula accents and no starfield — perfect for reduced visual noise.',
     icon: Moon,
     preview: 'from-indigo-500/40 via-purple-500/30 to-pink-500/20',
+    hasAnimation: false,
   },
 ];
 
@@ -157,13 +160,24 @@ export default function AdminThemePage() {
                     }`}
                   >
                     {isActive && (
-                      <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center">
+                      <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center z-10">
                         <Check size={14} className="text-white" />
                       </div>
                     )}
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${t.preview} flex items-center justify-center text-white mb-4 shadow-md`}>
-                      <Icon size={20} />
-                    </div>
+                    {t.hasAnimation ? (
+                      <div className="relative h-32 w-full rounded-2xl overflow-hidden mb-4 bg-gradient-to-br from-indigo-950 via-purple-950 to-blue-950 shadow-md">
+                        <SpacePreview />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-12 h-12 rounded-2xl bg-black/40 backdrop-blur-sm flex items-center justify-center text-white shadow-lg">
+                            <Icon size={20} />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${t.preview} flex items-center justify-center text-white mb-4 shadow-md`}>
+                        <Icon size={20} />
+                      </div>
+                    )}
                     <h3 className="text-xs font-black uppercase tracking-widest mb-1.5">{t.label}</h3>
                     <p className="text-[9px] font-medium text-slate-500 leading-relaxed">{t.desc}</p>
                   </button>

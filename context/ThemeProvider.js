@@ -117,6 +117,7 @@ export function ThemeProvider({ children }) {
       lightThemeVariant,
       toggleTheme,
       syncTheme,
+      preview,
       previewTheme,
       clearPreview,
       refreshThemeVariants,

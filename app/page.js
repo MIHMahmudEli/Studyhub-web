@@ -12,7 +12,8 @@ import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 
 export default function Home() {
   const [showScrollBtn, setShowScrollBtn] = useState(false);
-  const { darkThemeVariant } = useTheme();
+  const { darkThemeVariant, preview } = useTheme();
+  const variant = preview?.variant || darkThemeVariant;
 
   useEffect(() => {
     const onScroll = () => setShowScrollBtn(window.scrollY > 300);
@@ -21,7 +22,8 @@ export default function Home() {
   }, []);
 
   return (
-    <div data-theme="dark" data-theme-variant={darkThemeVariant} className="min-h-screen overflow-x-hidden relative transition-colors duration-500" style={{ backgroundColor: 'var(--background)', backgroundImage: 'var(--bg-image)', backgroundAttachment: 'fixed' }}>
+    <div data-theme="dark" data-theme-variant={variant} className="min-h-screen overflow-x-hidden relative transition-colors duration-500" style={{ background: 'none', backgroundColor: 'transparent' }}>
+      <div className="fixed inset-0 -z-10" style={{ backgroundColor: 'var(--background)', backgroundImage: 'var(--bg-image)', backgroundAttachment: 'fixed' }} />
       <Navbar />
       <main>
         <Hero />
