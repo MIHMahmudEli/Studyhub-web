@@ -18,8 +18,8 @@ export default function DeepSpace() {
     let animationId;
     let stars = [];
     let shootingStars = [];
-    let lastShootingStarTime = 0;
-    let shootingStarInterval = 3000 + Math.random() * 5000;
+    let lastSSTime = 0;
+    let ssInterval = 8000 + Math.random() * 12000;
     let width = 0;
     let height = 0;
 
@@ -33,16 +33,24 @@ export default function DeepSpace() {
       canvas.style.height = height + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const count = Math.min(180, Math.floor((width * height) / 7000));
+      const count = Math.min(100, Math.floor((width * height) / 13000));
       stars = [];
       for (let i = 0; i < count; i++) {
+        const x = Math.random() * width;
+        const y = Math.random() * height;
         stars.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          size: 0.2 + Math.random() * 1.0,
-          baseOpacity: 0.15 + Math.random() * 0.85,
-          twinkleSpeed: 0.002 + Math.random() * 0.018,
+          x, y,
+          originX: x,
+          originY: y,
+          size: 0.3 + Math.random() * 1.0,
+          baseOpacity: 0.2 + Math.random() * 0.8,
+          twinkleSpeed: 0.0007 + Math.random() * 0.0045,
           twinklePhase: Math.random() * Math.PI * 2,
+          twinkleAmount: 0.1 + Math.random() * 0.3,
+          orbitRadius: 25 + Math.random() * 25,
+          orbitSpeed: 0.003 + Math.random() * 0.006,
+          orbitAngle: Math.random() * Math.PI * 2,
+          direction: Math.random() > 0.5 ? 1 : -1,
         });
       }
     };
@@ -50,66 +58,98 @@ export default function DeepSpace() {
     resize();
     window.addEventListener('resize', resize);
 
-    const spawnShootingStar = () => ({
-      x: Math.random() * width,
-      y: Math.random() * height * 0.45,
-      angle: Math.PI / 4 + (Math.random() - 0.35) * (Math.PI / 2.5),
-      speed: 8 + Math.random() * 14,
-      length: 60 + Math.random() * 140,
-      life: 1,
-      decay: 0.005 + Math.random() * 0.015,
-      opacity: 0.5 + Math.random() * 0.5,
-    });
+    const spawnShootingStar = () => {
+      const angle = Math.PI / 3 + (Math.random() - 0.5) * (Math.PI / 3);
+      const speed = 1.2 + Math.random() * 2.5;
+      const life = 1;
+      const totalLife = life;
+      return {
+        x: Math.random() * width,
+        y: Math.random() * height * 0.4,
+        angle,
+        speed,
+        length: 80 + Math.random() * 200,
+        life,
+        totalLife,
+        decay: 0.0015 + Math.random() * 0.0035,
+        opacity: 0.35 + Math.random() * 0.45,
+        size: 1.2 + Math.random() * 1.2,
+        hue: 200 + Math.random() * 40,
+        spawnTime: performance.now(),
+        fadeInDuration: 600 + Math.random() * 800,
+      };
+    };
 
     const animate = (timestamp) => {
       ctx.clearRect(0, 0, width, height);
 
       for (let i = 0; i < stars.length; i++) {
         const s = stars[i];
+        s.orbitAngle += s.orbitSpeed * s.direction;
+        s.x = s.originX + Math.cos(s.orbitAngle) * s.orbitRadius;
+        s.y = s.originY + Math.sin(s.orbitAngle) * s.orbitRadius;
+
         const twinkle = Math.sin(timestamp * s.twinkleSpeed + s.twinklePhase);
-        const opacity = s.baseOpacity + twinkle * 0.25;
+        const opacity = s.baseOpacity * (0.92 + twinkle * s.twinkleAmount);
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${Math.max(0.04, opacity)})`;
+        ctx.fillStyle = `rgba(255,255,255,${Math.max(0.02, opacity)})`;
         ctx.fill();
       }
 
-      if (timestamp - lastShootingStarTime > shootingStarInterval) {
+      if (timestamp - lastSSTime > ssInterval) {
         shootingStars.push(spawnShootingStar());
-        lastShootingStarTime = timestamp;
-        shootingStarInterval = 2000 + Math.random() * 7000;
+        lastSSTime = timestamp;
+        ssInterval = 7000 + Math.random() * 18000;
       }
 
       for (let i = shootingStars.length - 1; i >= 0; i--) {
         const ss = shootingStars[i];
-        ss.life -= ss.decay;
+        ss.life -= ss.decay * (ss.speed / 1.8);
         ss.x += Math.cos(ss.angle) * ss.speed;
         ss.y += Math.sin(ss.angle) * ss.speed;
 
-        if (ss.life <= 0 || ss.x > width + 50 || ss.y > height + 50) {
+        if (ss.life <= 0 || ss.x > width + 100 || ss.y > height + 100) {
           shootingStars.splice(i, 1);
           continue;
         }
 
-        const tailX = ss.x - Math.cos(ss.angle) * ss.length;
-        const tailY = ss.y - Math.sin(ss.angle) * ss.length;
+        const elapsed = timestamp - ss.spawnTime;
+        const fadeIn = Math.min(1, elapsed / ss.fadeInDuration);
+        const currentOpacity = ss.opacity * ss.life * fadeIn;
+        if (currentOpacity < 0.01) continue;
+
+        const tailLen = ss.length * (0.5 + ss.life * 0.5);
+        const tailX = ss.x - Math.cos(ss.angle) * tailLen;
+        const tailY = ss.y - Math.sin(ss.angle) * tailLen;
 
         const grad = ctx.createLinearGradient(ss.x, ss.y, tailX, tailY);
-        grad.addColorStop(0, `rgba(200,215,255,${ss.opacity * ss.life})`);
-        grad.addColorStop(0.15, `rgba(180,200,255,${ss.opacity * ss.life * 0.7})`);
+        grad.addColorStop(0, `rgba(${ss.hue},${ss.hue + 30},255,${currentOpacity})`);
+        grad.addColorStop(0.2, `rgba(${ss.hue},${ss.hue + 20},255,${currentOpacity * 0.5})`);
+        grad.addColorStop(0.6, `rgba(${ss.hue + 20},${ss.hue + 40},255,${currentOpacity * 0.15})`);
         grad.addColorStop(1, 'rgba(255,255,255,0)');
 
+        const lineW = ss.size * (0.6 + ss.life * 0.6) * fadeIn;
         ctx.beginPath();
         ctx.moveTo(ss.x, ss.y);
         ctx.lineTo(tailX, tailY);
         ctx.strokeStyle = grad;
-        ctx.lineWidth = 1.5 + (1 - ss.life) * 0.8;
+        ctx.lineWidth = lineW;
         ctx.lineCap = 'round';
         ctx.stroke();
 
+        const glowRadius = ss.size * 2.5 * fadeIn;
+        const glow = ctx.createRadialGradient(ss.x, ss.y, 0, ss.x, ss.y, glowRadius);
+        glow.addColorStop(0, `rgba(230,240,255,${currentOpacity * 0.6})`);
+        glow.addColorStop(1, 'rgba(230,240,255,0)');
         ctx.beginPath();
-        ctx.arc(ss.x, ss.y, 1.5 + ss.life * 0.8, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(230,240,255,${ss.opacity * ss.life})`;
+        ctx.arc(ss.x, ss.y, glowRadius, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(ss.x, ss.y, ss.size * 0.8 * fadeIn, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(230,240,255,${currentOpacity * 0.9})`;
         ctx.fill();
       }
 
