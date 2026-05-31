@@ -156,7 +156,9 @@ export default function AdminDashboardPage() {
         (user?.role === 'admin' || user?.role === 'moderator')
           ? apiRequest('/admin/permissions').catch(() => [])
           : Promise.resolve([]),
-        apiRequest('/users?limit=1').catch(() => ({ total: 0 })),
+        user?.role === 'admin'
+          ? apiRequest('/users?limit=1').catch(() => ({ total: 0 }))
+          : Promise.resolve({ total: 0 }),
       ]);
 
       setPendingNotes(Array.isArray(pendingNotesData) ? pendingNotesData : (pendingNotesData?.data || []));
