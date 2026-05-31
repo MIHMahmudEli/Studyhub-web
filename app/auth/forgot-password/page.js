@@ -2,12 +2,24 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { ArrowRight, Sparkles, Mail, Lock, ChevronLeft, CheckCircle2, ShieldCheck, RefreshCw, X, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 import AuthInput from '@/components/auth/AuthInput';
 import ValidationRules from '@/components/auth/ValidationRules';
+
+function usePageTransition() {
+  const router = useRouter();
+  const [navigating, setNavigating] = useState(false);
+
+  const navigate = useCallback((href) => {
+    setNavigating(true);
+    setTimeout(() => router.push(href), 250);
+  }, [router]);
+
+  return { navigating, navigate };
+}
 
 export default function ForgotPasswordPage() {
   const [step, setStep] = useState('email'); // 'email', 'otp'
@@ -28,6 +40,7 @@ export default function ForgotPasswordPage() {
 
   const { forgotPassword, resetPassword } = useAuth();
   const router = useRouter();
+  const { navigating, navigate } = usePageTransition();
 
   useEffect(() => {
     let timer;
@@ -123,27 +136,32 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans transition-colors duration-500">
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--nebula-1)] rounded-full blur-[120px] animate-in fade-in duration-1000" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[var(--nebula-2)] rounded-full blur-[120px] animate-in fade-in duration-1000 delay-300" />
+      {navigating && (
+        <div className="fixed inset-0 bg-[var(--background)] z-[100] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200" />
+      )}
 
-      <Link href="/auth" className="hidden sm:flex absolute top-8 left-8 transition-all duration-700 delay-100 hover:scale-105 active:scale-95 group z-50 animate-in fade-in slide-in-from-left-4 duration-700">
+      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--nebula-1)] rounded-full blur-[120px] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[var(--nebula-2)] rounded-full blur-[120px] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000 motion-safe:delay-300" />
+
+      <Link href="/" className="hidden sm:flex absolute top-8 left-8 transition-all duration-500 ease-out hover:scale-105 active:scale-95 group z-50 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-4 motion-safe:duration-400">
         <StudyHubLogo size={32} textSize={18} />
       </Link>
 
-      <div className="w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
+      <div className="w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-6 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-200">
         <div className="h-1.5 w-full bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-cyan-600/50 opacity-30" />
 
         <div className="p-6 sm:p-10">
           {/* Mobile-only Top Logo */}
-          <div className="flex sm:hidden justify-center mb-6">
+          <div className="flex sm:hidden justify-center mb-6 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-400">
             <Link href="/auth" className="transition-all hover:scale-105 active:scale-95">
               <StudyHubLogo size={32} textSize={18} />
             </Link>
           </div>
+
           {isSuccess ? (
-            <div className="text-center py-6 animate-in fade-in zoom-in-95 duration-500">
-              <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20 shadow-[0_0_40px_rgba(16,185,129,0.1)]">
-                <CheckCircle2 size={40} className="text-emerald-400 animate-in zoom-in-50 duration-700" />
+            <div className="text-center py-6 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:duration-500">
+              <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20 shadow-[0_0_40px_rgba(16,185,129,0.1)] motion-safe:animate-in motion-safe:zoom-in-50 motion-safe:duration-700">
+                <CheckCircle2 size={40} className="text-emerald-400" />
               </div>
               <h2 className="text-2xl font-black text-[var(--foreground)] mb-3">Password Reset!</h2>
               <p className="text-[var(--muted)] text-sm leading-relaxed mb-8">
@@ -151,14 +169,15 @@ export default function ForgotPasswordPage() {
               </p>
                 <Link
                   href="/auth"
-                  className="w-full py-4 rounded-2xl bg-[var(--blue)] text-white font-black text-sm hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-2xl bg-[var(--blue)] text-white font-black text-sm hover:bg-blue-700 transition-all duration-300 flex items-center justify-center gap-2"
                 >
                   Sign In Now
                 </Link>
             </div>
           ) : (
             <>
-              <div className="text-center mb-8 relative">
+              {/* Title Section */}
+              <div className="text-center mb-8 relative motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-100">
                 <h1 className="text-3xl font-black text-[var(--foreground)] mb-2 tracking-tight bg-gradient-to-b from-[var(--foreground)] to-[var(--muted)] bg-clip-text text-transparent">
                   {step === 'email' ? 'Reset Password' : 'Verify Identity'}
                 </h1>
@@ -168,7 +187,7 @@ export default function ForgotPasswordPage() {
               </div>
 
               {status.message && (
-                <div className={`mb-6 p-4 border rounded-2xl ${
+                <div className={`mb-6 p-4 border rounded-2xl motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300 ${
                   status.type === 'success'
                     ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                     : 'bg-red-500/10 border-red-500/20 text-red-400'
@@ -181,9 +200,11 @@ export default function ForgotPasswordPage() {
 
               <form className="space-y-6" onSubmit={handleSubmit}>
                 {step === 'email' ? (
-                  <AuthInput icon={Mail} type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} placeholder="Email Address" error={errors.email} touched={touched.email} />
+                  <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-150">
+                    <AuthInput icon={Mail} type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} placeholder="Email Address" error={errors.email} touched={touched.email} />
+                  </div>
                 ) : (
-                  <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
+                  <div className="space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-4 motion-safe:duration-500 motion-safe:ease-out">
                     <div className="flex justify-between gap-2">
                       {otp.map((digit, index) => (
                         <input
@@ -194,7 +215,8 @@ export default function ForgotPasswordPage() {
                           value={digit}
                           onChange={(e) => handleOtpChange(index, e.target.value)}
                           onKeyDown={(e) => handleKeyDown(index, e)}
-                          className="w-9 h-11 sm:w-12 sm:h-14 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-center text-[var(--foreground)] text-base sm:text-xl font-black focus:border-blue-500/50 focus:bg-[var(--card-bg)] outline-none transition-all"
+                          className="w-9 h-11 sm:w-12 sm:h-14 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-center text-[var(--foreground)] text-base sm:text-xl font-black focus:border-blue-500/50 focus:bg-[var(--card-bg)] outline-none transition-all duration-300"
+                          style={{ animationDelay: `${index * 50}ms` }}
                         />
                       ))}
                     </div>
@@ -208,35 +230,41 @@ export default function ForgotPasswordPage() {
                 )}
 
                 <div className="space-y-4">
-                  <button
-                    disabled={isSubmitDisabled || isLoading}
-                    className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-500 group/btn ${
-                      isSubmitDisabled || isLoading
-                        ? 'bg-[var(--card-bg)] text-[var(--muted)] cursor-not-allowed border border-[var(--card-border)]'
-                        : 'bg-[var(--blue)] text-white shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-[0.98]'
-                    }`}
-                  >
-                    {isLoading ? (
-                      <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        {step === 'email' ? 'Send OTP Code' : 'Reset Password'}
-                        {step === 'email' ? <ArrowRight size={18} /> : <Sparkles size={18} />}
-                      </>
-                    )}
-                  </button>
+                  <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-200">
+                    <button
+                      disabled={isSubmitDisabled || isLoading}
+                      className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all duration-300 ease-out group/btn ${
+                        isSubmitDisabled || isLoading
+                          ? 'bg-[var(--card-bg)] text-[var(--muted)] cursor-not-allowed border border-[var(--card-border)]'
+                          : 'bg-[var(--blue)] text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]'
+                      }`}
+                    >
+                      {isLoading ? (
+                        <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          {step === 'email' ? 'Send OTP Code' : 'Reset Password'}
+                          {step === 'email' ? <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform duration-300" /> : <Sparkles size={18} className="group-hover/btn:scale-125 transition-transform duration-300" />}
+                        </>
+                      )}
+                    </button>
+                  </div>
 
-                  <div className="flex flex-col gap-4">
+                  <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:duration-400 motion-safe:ease-out motion-safe:delay-250">
                     {step === 'email' ? (
-                      <Link href="/auth" className="w-full text-center text-[10px] font-bold text-[var(--muted)] hover:text-[var(--foreground)] transition-colors uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                      <Link
+                        href="/auth"
+                        onClick={(e) => { e.preventDefault(); navigate('/auth'); }}
+                        className="w-full text-center text-[10px] font-bold text-[var(--muted)] hover:text-[var(--foreground)] transition-colors duration-300 uppercase tracking-[0.2em] flex items-center justify-center gap-2"
+                      >
                         <ChevronLeft size={14} /> Back to Login
                       </Link>
                     ) : (
-                      <>
+                      <div className="flex flex-col gap-4">
                         <button
                           type="button"
                           onClick={() => setStep('email')}
-                          className="text-[10px] font-bold text-[var(--muted)] hover:text-[var(--foreground)] transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
+                          className="text-[10px] font-bold text-[var(--muted)] hover:text-[var(--foreground)] transition-colors duration-300 uppercase tracking-widest flex items-center justify-center gap-2"
                         >
                           <ArrowLeft size={12} /> Wrong email? Go back
                         </button>
@@ -249,12 +277,12 @@ export default function ForgotPasswordPage() {
                           <button
                             type="button"
                             onClick={handleResend}
-                            className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
+                            className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors duration-300 uppercase tracking-widest flex items-center justify-center gap-2"
                           >
                             <RefreshCw size={12} /> Resend OTP
                           </button>
                         )}
-                      </>
+                      </div>
                     )}
                   </div>
                 </div>
