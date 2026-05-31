@@ -18,7 +18,6 @@ import {
 } from 'recharts';
 
 const FILTERS = [
-  { key: 'all', label: 'All Time' },
   { key: 'today', label: 'Today' },
   { key: '7d', label: '7 Days' },
   { key: '30d', label: '30 Days' },
@@ -88,7 +87,7 @@ function CustomTooltip({ active, payload, label }) {
 export default function AnalyticsPage() {
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('30d');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
@@ -181,17 +180,16 @@ export default function AnalyticsPage() {
                 Comprehensive platform metrics, user insights, and content performance data.
               </p>
             </div>
-            <div className="flex justify-center md:justify-end -mx-4 md:mx-0 px-4 md:px-0">
-              <div className="flex items-center gap-1.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl p-1.5 shadow-sm overflow-x-auto scrollbar-none">
-                <Filter size={14} className="text-slate-500 ml-1.5 shrink-0 hidden sm:block" />
+            <div className="w-full md:w-auto overflow-x-auto scrollbar-none -mx-4 md:mx-0 px-4 md:px-0">
+              <div className="inline-flex items-center gap-1 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl p-1 shadow-sm min-w-0">
                 {FILTERS.map(f => (
                   <button
                     key={f.key}
                     onClick={() => setFilter(f.key)}
-                    className={`whitespace-nowrap px-2 sm:px-3 py-1.5 rounded-lg text-[7px] sm:text-[8px] font-black uppercase tracking-widest transition-all cursor-pointer shrink-0 ${
+                    className={`whitespace-nowrap px-3 sm:px-4 py-2 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer shrink-0 ${
                       filter === f.key
-                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
-                        : 'text-slate-500 hover:text-[var(--foreground)] hover:bg-[var(--surface)]'
+                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
+                        : 'text-slate-500 hover:text-[var(--foreground)] hover:bg-[var(--surface)] active:text-[var(--foreground)] active:bg-white/[0.06]'
                     }`}
                   >
                     {f.label}
@@ -208,13 +206,13 @@ export default function AnalyticsPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-2 sm:gap-4">
             {overviewKpis.map((kpi, i) => (
               <KpiCard key={i} {...kpi} loading={loading} />
             ))}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 
             <ChartCard title="User Registrations" subtitle="New accounts over time">
               {loading ? (
