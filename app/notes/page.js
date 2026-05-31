@@ -52,12 +52,11 @@ export default function NotesPage() {
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
   const observer = useRef();
+  const loadingRef = useRef(false);
+  const fetchNotesRef = useRef();
+  const currentPageRef = useRef(currentPage);
+  const totalNotesRef = useRef(totalNotes);
 
-  useEffect(() => {
-    if (!authLoading && !user) router.replace('/auth');
-  }, [user, authLoading, router]);
-
-  // Fetch notes from database (server-side paginated)
   const fetchNotes = useCallback(async (pageNum, append = false) => {
     try {
       if (append) {
@@ -71,52 +70,79 @@ export default function NotesPage() {
         subject: note.courseTitle,
         course_code: note.code
       }));
+      const noMore = mapped.length < limit;
+      const newTotal = noMore ? 0 : res.total;
       if (append) {
-        setNotes(prev => [...prev, ...mapped]);
+        setNotes(prev => {
+          const seen = new Set(prev.map(n => n.id));
+          return [...prev, ...mapped.filter(n => !seen.has(n.id))];
+        });
       } else {
         setNotes(mapped);
       }
-      setTotalNotes(res.total);
+      setTotalNotes(newTotal);
       setCurrentPage(pageNum);
+      currentPageRef.current = pageNum;
+      totalNotesRef.current = newTotal;
     } catch (error) {
       console.error('Failed to fetch notes:', error);
     } finally {
       setLoading(false);
       setLoadingMore(false);
+      loadingRef.current = false;
     }
   }, [sortBy]);
 
-  // Initial fetch + refetch on sort or search change
+  // Sync stable refs
+  useEffect(() => { fetchNotesRef.current = fetchNotes; }, [fetchNotes]);
+  useEffect(() => { currentPageRef.current = currentPage; }, [currentPage]);
+  useEffect(() => { totalNotesRef.current = totalNotes; }, [totalNotes]);
+
+  // Initial fetch on mount
   useEffect(() => {
     setNotes([]);
     setCurrentPage(1);
+    currentPageRef.current = 1;
     if (tokenReady && user) {
       fetchNotes(1);
     }
-  }, [tokenReady, user, sortBy]);
+  }, [tokenReady, user]);
 
-  // Filter notes based on search query (client-side over loaded notes)
+  // Client-side sort + search filter
   const filteredNotes = useMemo(() => {
-    if (!searchQuery) return notes;
-    const q = searchQuery.toLowerCase();
-    return notes.filter(note =>
-      note.title.toLowerCase().includes(q) ||
-      (note.subject && note.subject.toLowerCase().includes(q)) ||
-      (note.course_code && note.course_code.toLowerCase().includes(q))
-    );
-  }, [searchQuery, notes]);
+    let result = [...notes];
 
-  const hasMore = notes.length < totalNotes;
+    if (sortBy === 'top-rated') {
+      result.sort((a, b) => (b.avg_rating || 0) - (a.avg_rating || 0));
+    } else if (sortBy === 'most-downloaded') {
+      result.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
+    }
 
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(note =>
+        note.title.toLowerCase().includes(q) ||
+        (note.subject && note.subject.toLowerCase().includes(q)) ||
+        (note.course_code && note.course_code.toLowerCase().includes(q))
+      );
+    }
+
+    return result;
+  }, [searchQuery, notes, sortBy]);
+
+  const hasMore = totalNotes > 0 && notes.length < totalNotes;
+
+  // Stable observer — never recreated, reads latest values from refs
   const lastNoteElementRef = useCallback(node => {
     if (observer.current) observer.current.disconnect();
     observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore && !loadingMore) {
-        fetchNotes(currentPage + 1, true);
+      if (entries[0].isIntersecting && !loadingRef.current && totalNotesRef.current > 0) {
+        loadingRef.current = true;
+        fetchNotesRef.current(currentPageRef.current + 1, true);
       }
     });
     if (node) observer.current.observe(node);
-  }, [hasMore, loadingMore, currentPage, fetchNotes]);
+  }, []);
 
   if (authLoading || loading) return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-32">
@@ -200,10 +226,8 @@ export default function NotesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredNotes.map((note, idx) => {
               const Icon = getSubjectIcon(note.subject, note.course_code);
-              const isLast = filteredNotes.length === idx + 1;
               return (
                 <NoteCard
-                  ref={isLast ? lastNoteElementRef : null}
                   key={note.id}
                   note={note}
                   icon={Icon}
@@ -214,6 +238,11 @@ export default function NotesPage() {
               );
             })}
           </div>
+
+          {/* Sentinel for infinite scroll */}
+          {hasMore && !loading && (
+            <div ref={lastNoteElementRef} className="h-1" />
+          )}
 
           {/* Loading More Indicator */}
           {loadingMore && (
