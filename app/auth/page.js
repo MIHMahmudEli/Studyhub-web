@@ -42,14 +42,14 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-blue-500/30 transition-colors duration-500">
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--nebula-1)] rounded-full blur-[120px]" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[var(--nebula-2)] rounded-full blur-[120px]" />
+      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--nebula-1)] rounded-full blur-[120px] animate-in fade-in duration-1000" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[var(--nebula-2)] rounded-full blur-[120px] animate-in fade-in duration-1000 delay-300" />
 
-      <Link href="/" className="hidden sm:flex absolute top-8 left-8 transition-all duration-700 delay-100 hover:scale-105 active:scale-95 group z-50">
+      <Link href="/" className="hidden sm:flex absolute top-8 left-8 transition-all duration-700 delay-100 hover:scale-105 active:scale-95 group z-50 animate-in fade-in slide-in-from-left-4 duration-700">
         <StudyHubLogo size={32} textSize={18} />
       </Link>
 
-      <div className="w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative">
+      <div className="w-full max-w-[420px] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-3xl rounded-[2.5rem] shadow-2xl overflow-hidden relative animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
         <div className="h-1.5 w-full bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-cyan-600/50 opacity-30" />
 
         <div className="p-6 sm:p-10">
