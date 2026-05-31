@@ -35,7 +35,8 @@ import {
   TrendingUp,
   Flame,
   LayoutDashboard,
-  Palette
+  Palette,
+  BarChart3
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -568,6 +569,20 @@ export default function AdminDashboardPage() {
                 subtitle="Dark / Light variants"
                 icon={Palette}
                 colorScheme="purple"
+                iconAnimation="animate-pulse"
+                loading={loadingData}
+              />
+            )}
+
+            {/* Analytics Card (Admin Only) */}
+            {user?.role === 'admin' && (
+              <StatsCard
+                href="/admin/analytics"
+                title="Analytics"
+                value="Dashboard"
+                subtitle="Platform insights & charts"
+                icon={BarChart3}
+                colorScheme="blue"
                 iconAnimation="animate-pulse"
                 loading={loadingData}
               />
