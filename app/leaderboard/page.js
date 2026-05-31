@@ -18,7 +18,10 @@ export default function LeaderboardPage() {
   const router = useRouter();
 
   const currentMonth = new Date().toLocaleString('default', { month: 'long' });
-  const previousMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleString('default', { month: 'long' });
+  const prevDate = new Date();
+  prevDate.setDate(1);
+  prevDate.setMonth(prevDate.getMonth() - 1);
+  const previousMonth = prevDate.toLocaleString('default', { month: 'long' });
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
