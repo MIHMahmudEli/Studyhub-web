@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { 
   ArrowLeft, 
   Download, 
+  Loader2,
   Share2, 
   BookmarkPlus, 
   FileText, 
@@ -50,7 +51,7 @@ const getDepartmentName = (code, subject, dept) => {
 export default function NotePreviewPage() {
   const { id } = useParams();
   const router = useRouter();
-  const { user, checkUser } = useAuth();
+  const { user, tokenReady } = useAuth();
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [contentLoaded, setContentLoaded] = useState(false);
@@ -61,7 +62,9 @@ export default function NotePreviewPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [totalRatings, setTotalRatings] = useState(0);
+  const [downloading, setDownloading] = useState(false);
 
+  // Fetch note data once on mount (public endpoint, no auth needed)
   useEffect(() => {
     const fetchNote = async () => {
       try {
@@ -75,7 +78,6 @@ export default function NotePreviewPage() {
         };
         setNote(mappedNote);
       } catch (error) {
-        // Silently ignore 401 (not logged in yet) — the interceptor will retry after refresh
         if (error?.status !== 401 && error?.response?.status !== 401) {
           console.error('Failed to fetch note:', error);
         }
@@ -84,26 +86,29 @@ export default function NotePreviewPage() {
       }
     };
 
+    if (id) fetchNote();
+  }, [id]);
+
+  // Check bookmark status once auth is ready
+  useEffect(() => {
     const checkBookmarkStatus = async () => {
       try {
         const bookmarks = await apiRequest('/bookmarks');
         const bookmarked = bookmarks.some(b => b.note_id === parseInt(id));
         setIsBookmarked(bookmarked);
       } catch (error) {
-        // Silently ignore 401 — expected when user is not logged in
         if (error?.status !== 401 && error?.response?.status !== 401) {
           console.error('Failed to check bookmark status:', error);
         }
       }
     };
 
-    if (id) {
-      fetchNote();
-      if (user) checkBookmarkStatus();
-    }
-  }, [id, user]);
+    if (user && tokenReady) checkBookmarkStatus();
+  }, [id, user, tokenReady]);
 
   const handleBookmarkToggle = async () => {
+    const prev = isBookmarked;
+    setIsBookmarked(!prev);
     try {
       const res = await apiRequest('/bookmarks/toggle', {
         method: 'POST',
@@ -111,6 +116,7 @@ export default function NotePreviewPage() {
       });
       setIsBookmarked(res.bookmarked);
     } catch (err) {
+      setIsBookmarked(prev);
       if (err?.status !== 401 && err?.response?.status !== 401) {
         console.error('Failed to toggle bookmark:', err);
       }
@@ -119,9 +125,9 @@ export default function NotePreviewPage() {
 
   const handleDownload = async () => {
     if (note?.file_path) {
+      setDownloading(true);
       try {
         await apiRequest(`/notes/${id}/download`, { method: 'POST' });
-        checkUser();
         setNote(prev => ({ ...prev, downloads: (prev.downloads || 0) + 1 }));
 
         const response = await fetch(note.file_path);
@@ -137,6 +143,8 @@ export default function NotePreviewPage() {
       } catch (err) {
         console.error('Download failed:', err);
         window.open(note.file_path, '_blank');
+      } finally {
+        setDownloading(false);
       }
     }
   };
@@ -162,6 +170,9 @@ export default function NotePreviewPage() {
         ...prev,
         avg_rating: data.avg_rating
       }));
+      if (data.total_ratings !== undefined) {
+        setTotalRatings(data.total_ratings);
+      }
     } catch (err) {
       console.error('Failed to refresh rating:', err);
     }
@@ -253,9 +264,11 @@ export default function NotePreviewPage() {
             </button>
             <button 
               onClick={handleDownload}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-purple-500 text-white rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-purple-600 transition-all shadow-xl shadow-purple-500/20 cursor-pointer"
+              disabled={downloading}
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-purple-500 text-white rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-purple-600 transition-all shadow-xl shadow-purple-500/20 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <Download size={14} /> Download
+              {downloading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+              {downloading ? 'Downloading...' : 'Download'}
             </button>
           </div>
         </div>
@@ -301,9 +314,11 @@ export default function NotePreviewPage() {
                       <h3 className="text-lg font-black uppercase tracking-widest text-slate-400">Preview Not Available</h3>
                       <button 
                         onClick={handleDownload}
-                        className="px-6 py-3 bg-purple-500/10 text-purple-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-purple-500 hover:text-white transition-all"
+                        disabled={downloading}
+                        className="px-6 py-3 bg-purple-500/10 text-purple-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-purple-500 hover:text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                       >
-                        Download to View
+                        {downloading ? <Loader2 size={14} className="animate-spin inline" /> : <FileText size={14} className="inline" />}
+                        {downloading ? ' Downloading...' : ' Download to View'}
                       </button>
                     </div>
                   )}

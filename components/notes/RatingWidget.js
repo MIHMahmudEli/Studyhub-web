@@ -103,7 +103,7 @@ function CommentItem({ review, uploaderId, currentUser, onDelete, onStartEdit, o
 }
 
 export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onReviewsFetched }) {
-  const { user } = useAuth();
+  const { user, tokenReady } = useAuth();
   const [toast, setToast] = useState({ show: false, message: '', type: 'error', isClosing: false });
 
   const [allReviews, setAllReviews] = useState([]);
@@ -148,10 +148,10 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
   useEffect(() => {
     if (noteId) {
       fetchComments();
-      if (user) fetchMyRating();
-      else setRatingLoading(false);
+      if (user && tokenReady) fetchMyRating();
+      else if (!user) setRatingLoading(false);
     }
-  }, [user, noteId]);
+  }, [user, noteId, tokenReady]);
 
   const fetchComments = async () => {
     try {
@@ -332,17 +332,37 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
   const submitRating = async () => {
     if (!user || pendingRating === 0) return;
     if (pendingRating === myRating) { showToast('No rating changes detected.', 'warning'); return; }
-    setRatingSubmitting(true);
+
+    const prevRating = myRating;
+    setMyRating(pendingRating);
+
+    // Optimistically update the reviews list
+    setAllReviews(prev => {
+      const existingIdx = prev.findIndex(r => r.user_id === user.id && r.comment === '');
+      if (existingIdx >= 0) {
+        const updated = [...prev];
+        updated[existingIdx] = { ...updated[existingIdx], rating: pendingRating };
+        return updated;
+      }
+      return [...prev, {
+        id: `temp-rating-${Date.now()}`,
+        user_id: user.id,
+        rating: pendingRating,
+        comment: '',
+        created_at: new Date().toISOString(),
+        user: { id: user.id, name: user.name, profile_pic: user.profile_pic },
+      }];
+    });
+
     try {
       await apiRequest(`/reviews/note/${noteId}/rate`, { method: 'POST', body: { rating: pendingRating } });
-      setMyRating(pendingRating);
       showToast('Rating saved successfully!', 'success');
       fetchComments();
       if (onRateSuccess) onRateSuccess();
     } catch (err) {
+      setMyRating(prevRating);
+      setAllReviews(prev => prev.filter(r => r.id !== `temp-rating-${Date.now()}`));
       showToast(err.message || 'Failed to save rating.', 'error');
-    } finally {
-      setRatingSubmitting(false);
     }
   };
 
