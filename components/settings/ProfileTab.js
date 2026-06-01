@@ -21,12 +21,6 @@ export default function ProfileTab({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const maxSize = 2 * 1024 * 1024;
-    if (file.size > maxSize) {
-      alert('File size must not exceed 2MB. Please select a smaller image.');
-      return;
-    }
-
     if (!file.type.startsWith('image/')) {
       alert('Invalid file type. Please upload a valid image (PNG, JPG, WEBP).');
       return;

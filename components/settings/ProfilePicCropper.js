@@ -46,17 +46,27 @@ async function getCroppedImg(imageSrc, pixelCrop, rotation = 0) {
   });
 }
 
-function compressImage(blob, maxSize = 2 * 1024 * 1024, quality = 0.9) {
+function compressImage(blob, maxSize = 2 * 1024 * 1024) {
   return new Promise((resolve) => {
     if (blob.size <= maxSize) return resolve(blob);
 
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
+      const MAX_DIM = 1200;
+      let { width, height } = img;
+      if (width > MAX_DIM || height > MAX_DIM) {
+        const ratio = Math.min(MAX_DIM / width, MAX_DIM / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+      canvas.width = width;
+      canvas.height = height;
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const ratio = blob.size / maxSize;
+      const startQuality = Math.min(0.92, Math.max(0.3, 0.85 / ratio));
 
       const tryCompress = (q) => {
         canvas.toBlob(
@@ -64,7 +74,7 @@ function compressImage(blob, maxSize = 2 * 1024 * 1024, quality = 0.9) {
             if (compressed.size <= maxSize || q <= 0.1) {
               resolve(compressed);
             } else {
-              tryCompress(q - 0.1);
+              tryCompress(Math.max(0.1, q - 0.08));
             }
           },
           'image/jpeg',
@@ -72,7 +82,7 @@ function compressImage(blob, maxSize = 2 * 1024 * 1024, quality = 0.9) {
         );
       };
 
-      tryCompress(quality);
+      tryCompress(startQuality);
     };
     img.src = URL.createObjectURL(blob);
   });
