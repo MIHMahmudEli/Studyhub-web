@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Bell, BellDot, CheckCheck, ChevronRight, ExternalLink, MessageCircle, FileText, AtSign, CheckCircle2, XCircle, Sparkles } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 const typeIcons = {
   comment_reply: MessageCircle,
@@ -49,6 +50,7 @@ function timeAgo(dateStr) {
 }
 
 export default function NotificationBell() {
+  const { user, tokenReady } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -77,10 +79,11 @@ export default function NotificationBell() {
   }, []);
 
   useEffect(() => {
+    if (!tokenReady || !user) return;
     fetchUnreadCount();
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
-  }, [fetchUnreadCount]);
+  }, [fetchUnreadCount, tokenReady, user]);
 
   useEffect(() => {
     if (open) fetchDropdown();
