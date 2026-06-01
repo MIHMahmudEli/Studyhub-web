@@ -54,9 +54,6 @@ export default function AdminDashboardPage() {
     { key: 'perm_view_active_users', value: 'admin' },
     { key: 'perm_view_users', value: 'admin' },
     { key: 'perm_view_resources', value: 'admin' },
-    { key: 'perm_manage_notes', value: 'admin' },
-    { key: 'perm_manage_resources', value: 'admin' },
-    { key: 'perm_manage_trending', value: 'admin' },
   ]);
   const [loadingData, setLoadingData] = useState(true);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
@@ -105,7 +102,15 @@ export default function AdminDashboardPage() {
     if (!user) return;
     try {
       const data = await apiRequest('/admin/permissions');
-      if (Array.isArray(data)) setPermissions(data);
+      if (Array.isArray(data)) {
+        const prevPerm = permissions.find(p => p.key === 'perm_view_users')?.value;
+        const newPerm = data.find(p => p.key === 'perm_view_users')?.value;
+        if (prevPerm !== newPerm && newPerm === 'admin+moderator') {
+          const countData = await apiRequest('/users?limit=1').catch(() => ({ total: 0 }));
+          setPlatformTotalUsers(countData?.total || 0);
+        }
+        setPermissions(data);
+      }
     } catch (err) {
       // silent
     }
@@ -126,14 +131,21 @@ export default function AdminDashboardPage() {
   const fetchAdminData = async () => {
     try {
       setLoadingData(true);
-      
-      const d = new Date();
-      const year = d.getUTCFullYear();
-      const month = String(d.getUTCMonth() + 1).padStart(2, '0');
-      const day = String(d.getUTCDate()).padStart(2, '0');
-      const todayStr = `${year}-${month}-${day}`;
 
-      // Fetch all dashboard data in parallel to avoid sequential API waterfalls
+      const todayStr = `${new Date().getUTCFullYear()}-${String(new Date().getUTCMonth() + 1).padStart(2, '0')}-${String(new Date().getUTCDate()).padStart(2, '0')}`;
+
+      // Fetch permissions first so we know what other data we can fetch
+      const permissionsData = await ((user?.role === 'admin' || user?.role === 'moderator')
+        ? apiRequest('/admin/permissions').catch(() => [])
+        : Promise.resolve([]));
+
+      const permArr = Array.isArray(permissionsData) ? permissionsData : [];
+      const activePerm = permArr.find(p => p.key === 'perm_view_active_users');
+      const usersPerm = permArr.find(p => p.key === 'perm_view_users');
+      const hasActivePerm = user?.role === 'admin' || activePerm?.value === 'admin+moderator';
+      const canViewUsers = user?.role === 'admin' || usersPerm?.value === 'admin+moderator';
+
+      // Everything else in parallel (including users count if permitted)
       const [
         pendingNotesData,
         pendingResData,
@@ -141,8 +153,7 @@ export default function AdminDashboardPage() {
         notesData,
         visibilityData,
         activeData,
-        permissionsData,
-        platformTotalData
+        platformTotalData,
       ] = await Promise.all([
         apiRequest('/notes/pending').catch(() => []),
         (user?.role === 'admin' || user?.role === 'moderator')
@@ -151,13 +162,10 @@ export default function AdminDashboardPage() {
         apiRequest('/resources').catch(() => []),
         apiRequest('/notes').catch(() => []),
         apiRequest('/admin/settings/resource_upload_visibility').catch(() => null),
-        user?.role === 'admin'
+        hasActivePerm
           ? apiRequest(`/users/active?date=${todayStr}`).catch(() => null)
           : Promise.resolve(null),
-        (user?.role === 'admin' || user?.role === 'moderator')
-          ? apiRequest('/admin/permissions').catch(() => [])
-          : Promise.resolve([]),
-        user?.role === 'admin'
+        canViewUsers
           ? apiRequest('/users?limit=1').catch(() => ({ total: 0 }))
           : Promise.resolve({ total: 0 }),
       ]);
@@ -166,14 +174,12 @@ export default function AdminDashboardPage() {
       setPendingResources(Array.isArray(pendingResData) ? pendingResData : (pendingResData?.data || []));
       setResources(Array.isArray(resourcesData) ? resourcesData : (resourcesData?.data || []));
       setNotes(Array.isArray(notesData) ? notesData : (notesData?.data || []));
-      
-      if (visibilityData && visibilityData.value) {
-        setUploadVisibility(visibilityData.value);
-      }
-      
+
+      if (visibilityData?.value) setUploadVisibility(visibilityData.value);
+
       setActiveUsersCount(activeData?.total || 0);
-      if (Array.isArray(permissionsData)) setPermissions(permissionsData);
       setPlatformTotalUsers(platformTotalData?.total || 0);
+      setPermissions(permArr);
 
     } catch (error) {
       console.error('Failed to load admin dashboard data:', error);
@@ -182,17 +188,7 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // For moderators: fetch active users once permissions confirm the toggle is ON
-  useEffect(() => {
-    if (!user || user.role !== 'moderator') return;
-    const perm = permissions.find(p => p.key === 'perm_view_active_users');
-    if (perm?.value !== 'admin+moderator') return;
-    const d = new Date();
-    const todayStr = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
-    apiRequest(`/users/active?date=${todayStr}`)
-      .then(res => setActiveUsersCount(res?.total || 0))
-      .catch(() => {});
-  }, [permissions, user]);
+
 
   // 3. User Directory Fetch & Infinite Scroll Logic
   const fetchUsersBatch = async (searchQuery = '', offsetVal = 0, reset = false) => {
@@ -206,6 +202,7 @@ export default function AdminDashboardPage() {
           setUsersList(prev => [...prev, ...res.users]);
         }
         setTotalUsersCount(res.total || 0);
+        setPlatformTotalUsers(res.total || 0);
         const newTotalLen = (reset ? 0 : usersList.length) + res.users.length;
         setHasMoreUsers(newTotalLen < (res.total || 0));
         setUsersOffset(offsetVal + 20);
@@ -219,19 +216,20 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // Fetch user directory — initial load is immediate, search is debounced
+  // Fetch user directory — fires on mount and when permissions/search change
   useEffect(() => {
     if (!tokenReady || !user || (user.role !== 'admin' && user.role !== 'moderator')) return;
     if (user.role !== 'admin' && permissions.find(p => p.key === 'perm_view_users')?.value !== 'admin+moderator') {
       usersFetchedRef.current = false;
       return;
     }
-    // Skip if already fetched for empty search (guards against duplicate on permissions load)
     if (userSearch === '' && usersFetchedRef.current) return;
     usersFetchedRef.current = userSearch === '';
-    const delay = userSearch ? 400 : 0;
-    const timer = setTimeout(() => fetchUsersBatch(userSearch, 0, true), delay);
-    return () => clearTimeout(timer);
+    if (userSearch) {
+      const timer = setTimeout(() => fetchUsersBatch(userSearch, 0, true), 400);
+      return () => clearTimeout(timer);
+    }
+    fetchUsersBatch(userSearch, 0, true);
   }, [tokenReady, user, userSearch, permissions]);
 
   const loadMoreUsers = () => {
@@ -476,9 +474,6 @@ export default function AdminDashboardPage() {
               colorScheme="purple"
               iconAnimation="animate-pulse"
               loading={loadingData}
-              permissionKey={user?.role === 'admin' ? 'perm_manage_notes' : undefined}
-              permissionValue={permissions.find(p => p.key === 'perm_manage_notes')?.value}
-              onPermissionToggle={handlePermissionToggle}
             />
 
             {/* Pending Resources (Admin & Moderator) */}
@@ -492,13 +487,10 @@ export default function AdminDashboardPage() {
                 colorScheme="amber"
                 iconAnimation="animate-pulse"
                 loading={loadingData}
-                permissionKey={user?.role === 'admin' ? 'perm_manage_resources' : undefined}
-                permissionValue={permissions.find(p => p.key === 'perm_manage_resources')?.value}
-                onPermissionToggle={handlePermissionToggle}
               />
             )}
 
-            {/* Total Users / User Directory (Admin & Moderator with permission) */}
+              {/* Total Users / User Directory (Admin & Moderator with permission) */}
             {(user?.role === 'admin' || permissions.find(p => p.key === 'perm_view_users')?.value === 'admin+moderator') && (
               <StatsCard
                 href="/admin/users"
@@ -507,7 +499,7 @@ export default function AdminDashboardPage() {
                 subtitle="Registered students"
                 icon={Users}
                 colorScheme="blue"
-                loading={loadingUsers || loadingData}
+                loading={loadingData}
                 permissionKey={user?.role === 'admin' ? 'perm_view_users' : undefined}
                 permissionValue={permissions.find(p => p.key === 'perm_view_users')?.value}
                 onPermissionToggle={handlePermissionToggle}
@@ -540,9 +532,6 @@ export default function AdminDashboardPage() {
               colorScheme="orange"
               iconAnimation="animate-bounce"
               loading={loadingData}
-              permissionKey={user?.role === 'admin' ? 'perm_manage_trending' : undefined}
-              permissionValue={permissions.find(p => p.key === 'perm_manage_trending')?.value}
-              onPermissionToggle={handlePermissionToggle}
             />
 
             {/* Trending Notes Card (Admin & Moderator) */}
@@ -555,9 +544,6 @@ export default function AdminDashboardPage() {
               colorScheme="rose"
               iconAnimation="animate-pulse"
               loading={loadingData}
-              permissionKey={user?.role === 'admin' ? 'perm_manage_trending' : undefined}
-              permissionValue={permissions.find(p => p.key === 'perm_manage_trending')?.value}
-              onPermissionToggle={handlePermissionToggle}
             />
 
             {/* Theme Management Card (Admin Only) */}
@@ -616,9 +602,6 @@ export default function AdminDashboardPage() {
                   icon={Layers}
                   colorScheme="amber"
                   loading={loadingData}
-                  permissionKey={user?.role === 'admin' ? 'perm_manage_resources' : undefined}
-                  permissionValue={permissions.find(p => p.key === 'perm_manage_resources')?.value}
-                  onPermissionToggle={handlePermissionToggle}
                 />
               )}
 
@@ -631,9 +614,6 @@ export default function AdminDashboardPage() {
                 icon={Clock}
                 colorScheme="purple"
                 loading={loadingData}
-                permissionKey={user?.role === 'admin' ? 'perm_manage_notes' : undefined}
-                permissionValue={permissions.find(p => p.key === 'perm_manage_notes')?.value}
-                onPermissionToggle={handlePermissionToggle}
               />
 
               {/* Feature Card: Student Dashboard */}
