@@ -60,7 +60,7 @@ export default function AdminThemePage() {
   };
 
   useEffect(() => {
-    if (!authLoading && (!user || (user.role !== 'admin' && user.role !== 'moderator'))) {
+    if (!authLoading && (!user || user.role !== 'admin')) {
       router.push('/dashboard');
     }
   }, [user, authLoading, router]);
@@ -105,7 +105,7 @@ export default function AdminThemePage() {
     }
   };
 
-  if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
+  if (authLoading || !user || user.role !== 'admin') return null;
 
   return (
     <main className="min-h-screen text-[var(--foreground)] pb-32 transition-colors duration-500">
