@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { 
   BookOpen,
@@ -61,13 +61,11 @@ export default function AdminResourcesCatalogPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [resources, setResources] = useState([]);
   const [loadingResources, setLoadingResources] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalResources, setTotalResources] = useState(0);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
   const [permOk, setPermOk] = useState(null);
   const observerRef = useRef(null);
-  const limit = 12;
+  const [coursePage, setCoursePage] = useState(1);
+  const COURSES_PER_PAGE = 12;
 
   useEffect(() => {
     if (!tokenReady || !user) return;
@@ -102,32 +100,20 @@ export default function AdminResourcesCatalogPage() {
 
   useEffect(() => {
     if (tokenReady && user && (user.role === 'admin' || user.role === 'moderator')) {
-      fetchResources(1);
+      fetchResources();
     }
   }, [tokenReady, user]);
 
-  const fetchResources = async (pageNum, append = false) => {
+  const fetchResources = async () => {
     try {
-      if (append) {
-        setLoadingMore(true);
-      } else {
-        setLoadingResources(true);
-      }
-      const res = await apiRequest(`/resources?page=${pageNum}&limit=${limit}`);
-      const newResources = Array.isArray(res) ? res : (res?.data || []);
-      if (append) {
-        setResources(prev => [...prev, ...newResources]);
-      } else {
-        setResources(newResources);
-      }
-      setTotalResources(res?.total || 0);
-      setCurrentPage(pageNum);
+      setLoadingResources(true);
+      const res = await apiRequest('/resources?page=1&limit=500');
+      setResources(Array.isArray(res) ? res : (res?.data || []));
     } catch (err) {
       console.error('Failed to fetch resources:', err);
       showToast(err.message || 'Failed to load library resources.', 'error');
     } finally {
       setLoadingResources(false);
-      setLoadingMore(false);
     }
   };
 
@@ -172,13 +158,17 @@ export default function AdminResourcesCatalogPage() {
     );
   }, [allCourses, searchQuery]);
 
-  const hasMore = resources.length < totalResources;
+  const paginatedCourses = useMemo(() => {
+    return filteredCourses.slice(0, coursePage * COURSES_PER_PAGE);
+  }, [filteredCourses, coursePage]);
+
+  const hasMoreCourses = paginatedCourses.length < filteredCourses.length;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) {
-          fetchResources(currentPage + 1, true);
+        if (entries[0].isIntersecting && hasMoreCourses && !loadingResources) {
+          setCoursePage(prev => prev + 1);
         }
       },
       { threshold: 0.1 }
@@ -186,7 +176,7 @@ export default function AdminResourcesCatalogPage() {
     const el = observerRef.current;
     if (el) observer.observe(el);
     return () => { if (el) observer.unobserve(el); };
-  }, [hasMore, loadingMore, currentPage]);
+  }, [hasMoreCourses, loadingResources]);
 
   if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
   if (!permOk) return null;
@@ -238,7 +228,7 @@ export default function AdminResourcesCatalogPage() {
           >
             {/* Grid of Dynamic Course Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mt-2">
-              {filteredCourses.map((course, idx) => {
+              {paginatedCourses.map((course, idx) => {
                 const Icon = getCourseIcon(course.title);
                 return (
                   <CourseCard
@@ -254,18 +244,10 @@ export default function AdminResourcesCatalogPage() {
               })}
             </div>
 
-            {/* Loading More Indicator */}
-            {loadingMore && (
-              <div className="flex items-center justify-center pt-8">
-                <div className="flex items-center gap-3 px-6 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl">
-                  <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">Loading more resources...</span>
-                </div>
-              </div>
-            )}
-
             {/* Infinite Scroll Sentinel */}
-            <div ref={observerRef} className="w-full h-4" />
+            {hasMoreCourses && (
+              <div ref={observerRef} className="w-full h-4 mt-8" />
+            )}
           </AdminPanel>
 
         </div>
