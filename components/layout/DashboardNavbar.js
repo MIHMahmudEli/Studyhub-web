@@ -88,8 +88,10 @@ export default function DashboardNavbar() {
           </button>
         </div>
 
-        {/* Notifications — always visible */}
-        <NotificationBell />
+        {/* Desktop: Notification bell */}
+        <div className="hidden lg:block">
+          <NotificationBell />
+        </div>
 
         {/* Desktop: S Portal, User Stats, Logout */}
         <div className="hidden lg:flex items-center gap-2">
@@ -175,14 +177,17 @@ export default function DashboardNavbar() {
           </button>
         </div>
 
-        {/* Mobile Hamburger Toggle */}
-        <button 
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="lg:hidden p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-2)] hover:text-[var(--foreground)] hover:border-blue-500/30 transition-all cursor-pointer flex items-center justify-center"
-          title="Toggle Navigation Menu"
-        >
-          {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-        </button>
+        {/* Mobile: Notification bell + Hamburger side by side */}
+        <div className="flex lg:hidden items-center gap-1">
+          <NotificationBell />
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-2)] hover:text-[var(--foreground)] hover:border-blue-500/30 transition-all cursor-pointer flex items-center justify-center"
+            title="Toggle Navigation Menu"
+          >
+            {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation Dropdown Menu */}
