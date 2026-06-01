@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { 
   BookOpen,
@@ -9,7 +9,6 @@ import {
   Database,
   Code2,
   Network,
-  Loader2,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -59,12 +58,10 @@ export default function ResourcesPage() {
   const [resources, setResources] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
   const [loadingResources, setLoadingResources] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalResources, setTotalResources] = useState(0);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
   const observerRef = useRef(null);
-  const limit = 12;
+  const [coursePage, setCoursePage] = useState(1);
+  const COURSES_PER_PAGE = 12;
 
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type, isClosing: false });
@@ -82,32 +79,20 @@ export default function ResourcesPage() {
 
   useEffect(() => {
     if (tokenReady && user) {
-      fetchResources(1);
+      fetchResources();
       fetchBookmarks();
     }
   }, [tokenReady, user]);
 
-  const fetchResources = async (pageNum, append = false) => {
+  const fetchResources = async () => {
     try {
-      if (append) {
-        setLoadingMore(true);
-      } else {
-        setLoadingResources(true);
-      }
-      const res = await apiRequest(`/resources?page=${pageNum}&limit=${limit}`);
-      const newResources = Array.isArray(res) ? res : (res?.data || []);
-      if (append) {
-        setResources(prev => [...prev, ...newResources]);
-      } else {
-        setResources(newResources);
-      }
-      setTotalResources(res?.total || 0);
-      setCurrentPage(pageNum);
+      setLoadingResources(true);
+      const res = await apiRequest('/resources?page=1&limit=500');
+      setResources(Array.isArray(res) ? res : (res?.data || []));
     } catch (err) {
       console.error('Failed to fetch resources:', err);
     } finally {
       setLoadingResources(false);
-      setLoadingMore(false);
     }
   };
 
@@ -180,13 +165,17 @@ export default function ResourcesPage() {
     );
   }, [allCourses, searchQuery]);
 
-  const hasMore = resources.length < totalResources;
+  const paginatedCourses = useMemo(() => {
+    return filteredCourses.slice(0, coursePage * COURSES_PER_PAGE);
+  }, [filteredCourses, coursePage]);
+
+  const hasMoreCourses = paginatedCourses.length < filteredCourses.length;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) {
-          fetchResources(currentPage + 1, true);
+        if (entries[0].isIntersecting && hasMoreCourses && !loadingResources) {
+          setCoursePage(prev => prev + 1);
         }
       },
       { threshold: 0.1 }
@@ -194,7 +183,7 @@ export default function ResourcesPage() {
     const el = observerRef.current;
     if (el) observer.observe(el);
     return () => { if (el) observer.unobserve(el); };
-  }, [hasMore, loadingMore, currentPage]);
+  }, [hasMoreCourses, loadingResources]);
 
   if (authLoading) return null;
 
@@ -231,7 +220,7 @@ export default function ResourcesPage() {
             <Skeleton type="card" count={8} />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {filteredCourses.map((course, idx) => {
+              {paginatedCourses.map((course, idx) => {
                 const Icon = getCourseIcon(course.title);
                 const isBookmarked = bookmarks.some(b => b.subject_name === course.title);
                 return (
@@ -252,17 +241,10 @@ export default function ResourcesPage() {
           )}
 
           {/* Loading More Indicator */}
-          {loadingMore && (
-            <div className="flex items-center justify-center pt-12">
-              <div className="flex items-center gap-3 px-6 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl">
-                <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">Loading more resources...</span>
-              </div>
-            </div>
-          )}
-
           {/* Infinite scroll sentinel */}
-          <div ref={observerRef} className="w-full h-4" />
+          {hasMoreCourses && (
+            <div ref={observerRef} className="w-full h-4 mt-8" />
+          )}
         </div>
       </div>
 
