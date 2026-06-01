@@ -190,7 +190,7 @@ export default function DashboardNavbar() {
 
       {/* Mobile Navigation Dropdown Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-[var(--background)]/95 backdrop-blur-2xl border-b border-[var(--card-border)] shadow-2xl p-6 flex flex-col gap-6 animate-in slide-in-from-top-4 duration-300 ease-out z-[99]">
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-[var(--background)]/95 backdrop-blur-2xl border-b border-[var(--card-border)] shadow-2xl p-6 flex flex-col gap-6 animate-in slide-in-from-top-4 duration-300 ease-out z-[99] max-h-[calc(100vh-4rem)] overflow-y-auto">
           
           {/* Nav Links */}
           <div className="flex flex-col gap-2">
