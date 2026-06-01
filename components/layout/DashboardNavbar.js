@@ -17,11 +17,13 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
-  X
+  X,
+  Bell,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
+import NotificationBell from '@/components/notifications/NotificationBell';
 
 const navLinks = [
   { name: 'Notes', href: '/notes', icon: FileText },
@@ -85,6 +87,9 @@ export default function DashboardNavbar() {
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
+
+          {/* Notifications */}
+          <NotificationBell />
 
           {/* Student View Toggle (Admins & Moderators Only) */}
           {isAdminOrMod && (
@@ -265,6 +270,14 @@ export default function DashboardNavbar() {
                 <LayoutDashboard size={14} /> Student Dashboard View
               </Link>
             )}
+
+            <Link
+              href="/notifications"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-center gap-2 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-blue-500 hover:border-blue-500/30 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all cursor-pointer"
+            >
+              <Bell size={14} /> Notifications
+            </Link>
 
             <div className="grid grid-cols-2 gap-3">
               <button 
