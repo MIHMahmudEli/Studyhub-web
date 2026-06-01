@@ -178,6 +178,17 @@ export default function ActiveUsersPage() {
   const countdownRef = useRef(null);
   const LIVE_MINUTES = 5;
   const POLL_SECONDS = 15;
+  const [permOk, setPermOk] = useState(null);
+
+  useEffect(() => {
+    if (!tokenReady || !user) return;
+    if (user.role === 'admin') { setPermOk(true); return; }
+    apiRequest('/admin/permissions').then(data => {
+      const perm = Array.isArray(data) ? data.find(p => p.key === 'perm_view_active_users') : null;
+      if (perm?.value === 'admin+moderator') { setPermOk(true); }
+      else { router.push('/admin/dashboard'); }
+    }).catch(() => router.push('/admin/dashboard'));
+  }, [tokenReady, user, router]);
 
   // ── Fetch Daily ──────────────────────────────────────────────────────────────
   const fetchDailyUsers = useCallback(async (dateStr, pageNum, append = false) => {
@@ -267,6 +278,7 @@ export default function ActiveUsersPage() {
   }, [tokenReady, user, mode, fetchLiveUsers]);
 
   if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
+  if (!permOk) return null;
 
   const isToday = selectedDate === getTodayStr();
   const isYesterday = selectedDate === getYesterdayStr();

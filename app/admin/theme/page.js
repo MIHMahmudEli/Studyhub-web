@@ -105,7 +105,7 @@ export default function AdminThemePage() {
     }
   };
 
-  if (authLoading || !user) return null;
+  if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
 
   return (
     <main className="min-h-screen text-[var(--foreground)] pb-32 transition-colors duration-500">

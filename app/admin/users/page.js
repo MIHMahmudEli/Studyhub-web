@@ -30,6 +30,8 @@ export default function AdminUsersPage() {
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
 
+  const [permOk, setPermOk] = useState(null);
+
   const [usersList, setUsersList] = useState([]);
   const [totalUsersCount, setTotalUsersCount] = useState(0);
   const [userSearch, setUserSearch] = useState('');
@@ -51,6 +53,17 @@ export default function AdminUsersPage() {
     setToast(prev => ({ ...prev, isClosing: true }));
     setTimeout(() => setToast(prev => ({ ...prev, show: false, isClosing: false })), 500);
   };
+
+  // ─── Permission check ─────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!tokenReady || !user) return;
+    if (user.role === 'admin') { setPermOk(true); return; }
+    apiRequest('/admin/permissions').then(data => {
+      const perm = Array.isArray(data) ? data.find(p => p.key === 'perm_view_users') : null;
+      if (perm?.value === 'admin+moderator') { setPermOk(true); }
+      else { router.push('/admin/dashboard'); }
+    }).catch(() => router.push('/admin/dashboard'));
+  }, [tokenReady, user, router]);
 
   // ─── Fetch users ──────────────────────────────────────────────────────────
   const fetchUsersBatch = useCallback(async (searchQuery = '', offsetVal = 0, reset = false) => {
@@ -147,6 +160,7 @@ export default function AdminUsersPage() {
   };
 
   if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
+  if (!permOk) return null;
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-32 transition-colors duration-500">

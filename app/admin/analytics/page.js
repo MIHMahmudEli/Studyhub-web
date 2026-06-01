@@ -272,7 +272,7 @@ export default function AnalyticsPage() {
     }
   }, [tokenReady, user, filter, fetchAnalytics]);
 
-  if (authLoading || !user) return null;
+  if (authLoading || !user || user.role !== 'admin') return null;
 
   const overviewKpis = overview ? [
     { title: 'Total Users', value: overview.totalUsers.toLocaleString(), subtitle: 'Registered accounts', icon: Users, color: COLORS.blue },

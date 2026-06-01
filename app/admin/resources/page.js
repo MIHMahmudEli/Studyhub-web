@@ -65,8 +65,19 @@ export default function AdminResourcesCatalogPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResources, setTotalResources] = useState(0);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
+  const [permOk, setPermOk] = useState(null);
   const observerRef = useRef(null);
   const limit = 12;
+
+  useEffect(() => {
+    if (!tokenReady || !user) return;
+    if (user.role === 'admin') { setPermOk(true); return; }
+    apiRequest('/admin/permissions').then(data => {
+      const perm = Array.isArray(data) ? data.find(p => p.key === 'perm_view_resources') : null;
+      if (perm?.value === 'admin+moderator') { setPermOk(true); }
+      else { router.push('/admin/dashboard'); }
+    }).catch(() => router.push('/admin/dashboard'));
+  }, [tokenReady, user, router]);
 
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type, isClosing: false });
@@ -178,6 +189,7 @@ export default function AdminResourcesCatalogPage() {
   }, [hasMore, loadingMore, currentPage]);
 
   if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
+  if (!permOk) return null;
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-32 transition-colors duration-500">
