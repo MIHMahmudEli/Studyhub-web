@@ -16,9 +16,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { apiRequest } from '@/lib/api';
-import coursesData from '@/lib/data/courses.json';
 import Toast from '@/components/ui/Toast';
-import Skeleton from '@/components/ui/Skeleton';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminPanel from '@/components/admin/AdminPanel';
 import SearchInput from '@/components/ui/SearchInput';
@@ -54,18 +52,21 @@ const getCourseDept = (code, title) => {
   return 'CSE';
 };
 
+const getCourseSlug = (title) => title.replace(/\s+/g, '-').toLowerCase();
+
 export default function AdminResourcesCatalogPage() {
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
   
   const [searchQuery, setSearchQuery] = useState('');
-  const [resources, setResources] = useState([]);
-  const [loadingResources, setLoadingResources] = useState(true);
+  const [courses, setCourses] = useState([]);
+  const [totalCourses, setTotalCourses] = useState(0);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
   const [permOk, setPermOk] = useState(null);
   const observerRef = useRef(null);
-  const [coursePage, setCoursePage] = useState(1);
-  const COURSES_PER_PAGE = 12;
+  const loadingMoreRef = useRef(false);
 
   useEffect(() => {
     if (!tokenReady || !user) return;
@@ -98,85 +99,70 @@ export default function AdminResourcesCatalogPage() {
     }
   }, [user, authLoading, router]);
 
+  const fetchCourses = (page) => {
+    if (page === 1) setInitialLoading(true); else setLoadingMore(true);
+    apiRequest(`/resources/courses?page=${page}&limit=12`)
+      .then(res => {
+        const data = res?.data || [];
+        const enriched = data.map(c => ({
+          title: c.subject,
+          code: c.course_code || 'N/A',
+          dept: getCourseDept(c.course_code, c.subject),
+          resourceCount: parseInt(c.resourceCount) || 0,
+          slug: getCourseSlug(c.subject)
+        }));
+        setCourses(prev => page === 1 ? enriched : [...prev, ...enriched]);
+        setTotalCourses(res?.total || 0);
+      })
+      .catch(err => {
+        console.error('Failed to fetch courses:', err);
+        showToast(err.message || 'Failed to load courses.', 'error');
+      })
+      .finally(() => {
+        setInitialLoading(false);
+        setLoadingMore(false);
+        loadingMoreRef.current = false;
+      });
+  };
+
   useEffect(() => {
     if (tokenReady && user && (user.role === 'admin' || user.role === 'moderator')) {
-      fetchResources();
+      fetchCourses(1);
     }
   }, [tokenReady, user]);
 
-  const fetchResources = async () => {
-    try {
-      setLoadingResources(true);
-      const res = await apiRequest('/resources?page=1&limit=500');
-      setResources(Array.isArray(res) ? res : (res?.data || []));
-    } catch (err) {
-      console.error('Failed to fetch resources:', err);
-      showToast(err.message || 'Failed to load library resources.', 'error');
-    } finally {
-      setLoadingResources(false);
-    }
-  };
-
-  const allCourses = useMemo(() => {
-    const groups = {};
-    coursesData.forEach(item => {
-      if (!groups[item.courseTitle]) {
-        groups[item.courseTitle] = {
-          title: item.courseTitle,
-          code: item.code,
-          dept: item.dept,
-          resourceCount: 0,
-          slug: item.courseTitle.replace(/\s+/g, '-').toLowerCase()
-        };
-      }
-    });
-    resources.forEach(item => {
-      const courseTitle = item.subject || item.course_code || 'General Course';
-      if (!groups[courseTitle]) {
-        groups[courseTitle] = {
-          title: courseTitle,
-          code: item.course_code || 'N/A',
-          dept: getCourseDept(item.course_code, courseTitle),
-          resourceCount: 0,
-          slug: courseTitle.replace(/\s+/g, '-').toLowerCase()
-        };
-      }
-      groups[courseTitle].resourceCount += 1;
-    });
-    return Object.values(groups)
-      .filter(g => g.resourceCount > 0)
-      .sort((a, b) => b.resourceCount - a.resourceCount);
-  }, [resources]);
+  const hasMoreCourses = courses.length < totalCourses;
 
   const filteredCourses = useMemo(() => {
-    if (!searchQuery) return allCourses;
+    if (!searchQuery) return courses;
     const q = searchQuery.toLowerCase();
-    return allCourses.filter(c => 
+    return courses.filter(c => 
       c.title.toLowerCase().includes(q) || 
-      (c.code && c.code.toLowerCase().includes(q)) ||
-      (c.dept && c.dept.toLowerCase().includes(q))
+      c.code.toLowerCase().includes(q) ||
+      c.dept.toLowerCase().includes(q)
     );
-  }, [allCourses, searchQuery]);
-
-  const paginatedCourses = useMemo(() => {
-    return filteredCourses.slice(0, coursePage * COURSES_PER_PAGE);
-  }, [filteredCourses, coursePage]);
-
-  const hasMoreCourses = paginatedCourses.length < filteredCourses.length;
+  }, [courses, searchQuery]);
 
   useEffect(() => {
+    const el = observerRef.current;
+    if (!el || !hasMoreCourses || loadingMore) return;
+
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting && hasMoreCourses && !loadingResources) {
-          setCoursePage(prev => prev + 1);
+        if (entries[0].isIntersecting && !loadingMoreRef.current) {
+          loadingMoreRef.current = true;
+          setCourses(prev => {
+            const nextPage = Math.floor(prev.length / 12) + 1;
+            fetchCourses(nextPage);
+            return prev;
+          });
         }
       },
       { threshold: 0.1 }
     );
-    const el = observerRef.current;
-    if (el) observer.observe(el);
-    return () => { if (el) observer.unobserve(el); };
-  }, [hasMoreCourses, loadingResources]);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMoreCourses, loadingMore]);
 
   if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
   if (!permOk) return null;
@@ -199,7 +185,7 @@ export default function AdminResourcesCatalogPage() {
             glowColor="bg-emerald-500/10"
             statsIcon={Layers}
             statsTitle="Active Library Assets"
-            statsValue={`${resources.length} Uploaded Files`}
+            statsValue={`${totalCourses} Total Courses`}
             statsColorClass="text-emerald-500 bg-emerald-500/10 border-emerald-500/20"
           />
 
@@ -209,10 +195,10 @@ export default function AdminResourcesCatalogPage() {
             panelIconClass="text-emerald-500"
             panelTitle="Course Resource Catalogues"
             panelSubtitle="Select a course to moderate mid or final term materials."
-            badgeText={`Unique Courses: ${allCourses.length}`}
+            badgeText={`Unique Courses: ${totalCourses}`}
             badgeColorClass="bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-            loading={loadingResources}
-            isEmpty={allCourses.length === 0}
+            loading={initialLoading}
+            isEmpty={courses.length === 0 && !initialLoading}
             emptyIcon={BookOpen}
             emptyTitle="No Course Resources Found"
             emptyDescription="There are currently no active academic resources uploaded."
@@ -228,7 +214,7 @@ export default function AdminResourcesCatalogPage() {
           >
             {/* Grid of Dynamic Course Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mt-2">
-              {paginatedCourses.map((course, idx) => {
+              {filteredCourses.map((course, idx) => {
                 const Icon = getCourseIcon(course.title);
                 return (
                   <CourseCard
@@ -244,9 +230,14 @@ export default function AdminResourcesCatalogPage() {
               })}
             </div>
 
-            {/* Infinite Scroll Sentinel */}
-            {hasMoreCourses && (
+            {/* Infinite Scroll Sentinel — hidden while search is active */}
+            {hasMoreCourses && !searchQuery && (
               <div ref={observerRef} className="w-full h-4 mt-8" />
+            )}
+            {loadingMore && (
+              <div className="flex justify-center mt-8">
+                <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+              </div>
             )}
           </AdminPanel>
 
