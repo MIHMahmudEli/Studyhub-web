@@ -78,7 +78,7 @@ export default function DashboardNavbar() {
         </div>
 
         {/* User Actions & Stats - Desktop */}
-        <div className="hidden lg:flex items-center gap-4">
+        <div className="hidden lg:flex items-center gap-2">
           {/* Theme Toggle */}
           <button 
             onClick={toggleTheme}
