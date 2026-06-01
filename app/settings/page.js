@@ -77,24 +77,10 @@ export default function SettingsPage() {
     setTimeout(() => setToast(prev => ({ ...prev, show: false, isClosing: false })), 500);
   };
 
-  const handleProfilePicUpload = async (e) => {
-    const file = e.target.files?.[0];
+  const handleProfilePicUpload = async (file) => {
     if (!file) return;
 
     clearAlerts();
-
-    // 1. Enforce size limit of 2MB
-    const maxSize = 2 * 1024 * 1024; // 2MB
-    if (file.size > maxSize) {
-      showToast('File size must not exceed 2MB. Please select a smaller image.', 'error');
-      return;
-    }
-
-    // 2. Validate file type (image only)
-    if (!file.type.startsWith('image/')) {
-      showToast('Invalid file type. Please upload a valid image (PNG, JPG, WEBP).', 'error');
-      return;
-    }
 
     setUploadingPic(true);
 

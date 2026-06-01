@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import { Camera, UploadCloud, Trash2, Save, UserCheck, Sparkles } from 'lucide-react';
 import { getNameValidation, getSuggestedName } from '@/lib/nameUtils';
+import ProfilePicCropper from './ProfilePicCropper';
 
 export default function ProfileTab({
   user,
@@ -13,6 +14,32 @@ export default function ProfileTab({
   departments,
   saving
 }) {
+  const [cropperFile, setCropperFile] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const onFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const maxSize = 2 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert('File size must not exceed 2MB. Please select a smaller image.');
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      alert('Invalid file type. Please upload a valid image (PNG, JPG, WEBP).');
+      return;
+    }
+
+    setCropperFile(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleCroppedSave = (finalFile) => {
+    setCropperFile(null);
+    handleProfilePicUpload(finalFile);
+  };
   const [nameFocused, setNameFocused] = useState(false);
   const nameRules = useMemo(() => getNameValidation(profileForm.name), [profileForm.name]);
   const isNameValid = Object.values(nameRules).every(Boolean);
@@ -48,11 +75,12 @@ export default function ProfileTab({
           </label>
           
           <input 
+            ref={fileInputRef}
             type="file"
             id="profile-pic-input"
             accept="image/png, image/jpeg, image/jpg, image/webp"
             className="hidden"
-            onChange={handleProfilePicUpload}
+            onChange={onFileSelect}
             disabled={uploadingPic}
           />
         </div>
@@ -70,6 +98,14 @@ export default function ProfileTab({
             >
               <UploadCloud size={12} /> {uploadingPic ? 'Uploading...' : 'Choose Image'}
             </label>
+
+            {cropperFile && (
+              <ProfilePicCropper
+                file={cropperFile}
+                onSave={handleCroppedSave}
+                onCancel={() => setCropperFile(null)}
+              />
+            )}
             
             {user.profile_pic && (
               <button 
