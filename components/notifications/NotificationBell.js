@@ -81,8 +81,15 @@ export default function NotificationBell() {
   useEffect(() => {
     if (!tokenReady || !user) return;
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 30000);
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchUnreadCount, 15000);
+
+    const onFocus = () => fetchUnreadCount();
+    window.addEventListener('focus', onFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+    };
   }, [fetchUnreadCount, tokenReady, user]);
 
   useEffect(() => {

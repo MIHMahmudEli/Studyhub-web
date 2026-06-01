@@ -77,9 +77,8 @@ export default function DashboardNavbar() {
           </div>
         </div>
 
-        {/* User Actions & Stats - Desktop */}
+        {/* Desktop: Theme */}
         <div className="hidden lg:flex items-center gap-2">
-          {/* Theme Toggle */}
           <button 
             onClick={toggleTheme}
             className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-[var(--foreground)] transition-all cursor-pointer"
@@ -87,6 +86,103 @@ export default function DashboardNavbar() {
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
+        </div>
+
+        {/* Notifications — always visible */}
+        <NotificationBell />
+
+        {/* Desktop: S Portal, User Stats, Logout */}
+        <div className="hidden lg:flex items-center gap-2">
+          {isAdminOrMod && (
+            <Link
+              href="/dashboard"
+              className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-2 ${
+                pathname === '/dashboard'
+                  ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500 shadow-md'
+                  : 'bg-[var(--card-bg)] border-[var(--card-border)] hover:border-indigo-500/30 text-slate-400 hover:text-indigo-500'
+              }`}
+              title="Student Dashboard View"
+            >
+              <LayoutDashboard size={18} />
+              <span className="text-[11px] font-black uppercase tracking-wider hidden xl:inline">SD</span>
+            </Link>
+          )}
+
+          <Link 
+            href={dashboardHref} 
+            className={`relative flex items-center gap-3 rounded-2xl px-4 py-2 transition-all cursor-pointer border group ${
+              pathname === dashboardHref
+                ? 'bg-blue-500/10 border-blue-500/30'
+                : 'bg-[var(--card-bg)] border-[var(--card-border)] hover:border-blue-500/30'
+            }`}
+          >
+            <div className="relative group/points flex items-center gap-2 text-amber-500 py-0.5 px-1 hover:bg-amber-500/5 dark:hover:bg-amber-500/10 rounded-lg transition-colors">
+              <Coins size={16} />
+              <span className="text-xs font-black tracking-tighter">{user?.points || 0}</span>
+
+              <div className="absolute right-0 top-full mt-3.5 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/[0.08] rounded-2xl p-4 shadow-2xl opacity-0 translate-y-2 pointer-events-none group-hover/points:opacity-100 group-hover/points:translate-y-0 transition-all duration-300 z-[9999] backdrop-blur-xl">
+                <div className="flex items-center gap-2 pb-2 mb-2.5 border-b border-slate-100 dark:border-white/[0.05]">
+                  <Coins size={14} className="text-amber-500 animate-pulse" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-200">Points System</span>
+                </div>
+                <ul className="space-y-2.5">
+                  <li className="flex items-center justify-between gap-3">
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Download a note</span>
+                    <span className="text-[9px] font-black text-amber-500 shrink-0 bg-amber-500/10 dark:bg-amber-500/5 px-2 py-0.5 rounded-md border border-amber-500/20">+1 PTS</span>
+                  </li>
+                  <li className="flex items-center justify-between gap-3">
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Notes Owner reward</span>
+                    <span className="text-[9px] font-black text-amber-500 shrink-0 bg-amber-500/10 dark:bg-amber-500/5 px-2 py-0.5 rounded-md border border-amber-500/20">+1 PTS</span>
+                  </li>
+                  <li className="flex items-center justify-between gap-3">
+                    <span className="text-[10px] font-bold text-emerald-500 dark:text-emerald-400 uppercase tracking-wide">Approved notes</span>
+                    <span className="text-[9px] font-black text-emerald-500 shrink-0 bg-emerald-500/10 dark:bg-emerald-500/5 px-2 py-0.5 rounded-md border border-emerald-500/20">+5 PTS</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="w-px h-3 bg-[var(--card-border)]" />
+            
+            <div className="flex items-center gap-2 shrink-0">
+              {user?.profile_pic ? (
+                <img 
+                  src={user.profile_pic} 
+                  alt={user?.name} 
+                  className="w-5 h-5 rounded-md object-cover border border-[var(--card-border)]"
+                />
+              ) : (
+                <div className="w-5 h-5 rounded-md bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-black text-[9px] uppercase shadow-sm shrink-0">
+                  {user?.name ? user.name[0] : 'U'}
+                </div>
+              )}
+              <span className={`text-[12px] font-black uppercase tracking-tighter truncate max-w-[100px] transition-colors ${
+                pathname === dashboardHref
+                  ? 'text-blue-500'
+                  : 'text-[var(--foreground)] group-hover:text-blue-500'
+              }`}>
+                {user?.name?.split(' ')[0]}
+              </span>
+            </div>
+          </Link>
+
+          <button 
+            onClick={logout}
+            className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/20 transition-all cursor-pointer"
+            title="Sign Out"
+          >
+            <LogOut size={18} />
+          </button>
+        </div>
+
+        {/* Mobile Hamburger Toggle */}
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="lg:hidden p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-2)] hover:text-[var(--foreground)] hover:border-blue-500/30 transition-all cursor-pointer flex items-center justify-center"
+          title="Toggle Navigation Menu"
+        >
+          {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+        </button>
 
           {/* Notifications */}
           <NotificationBell />
