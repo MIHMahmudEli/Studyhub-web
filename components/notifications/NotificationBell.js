@@ -146,7 +146,7 @@ export default function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute top-full mt-3 z-[9999] left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 w-[calc(100vw-2rem)] max-w-[420px] sm:w-[380px] lg:w-[420px] bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="fixed inset-x-4 top-16 z-[9999] sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-3 w-auto sm:w-[380px] lg:w-[420px] bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--card-border)]">
             <h3 className="text-[13px] font-black tracking-tight flex items-center gap-2">
