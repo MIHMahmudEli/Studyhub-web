@@ -344,14 +344,14 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
         updated[existingIdx] = { ...updated[existingIdx], rating: pendingRating };
         return updated;
       }
-      return [...prev, {
+      return [{
         id: `temp-rating-${Date.now()}`,
         user_id: user.id,
         rating: pendingRating,
         comment: '',
         created_at: new Date().toISOString(),
         user: { id: user.id, name: user.name, profile_pic: user.profile_pic },
-      }];
+      }, ...prev];
     });
 
     try {
@@ -375,7 +375,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
     if (pendingFns.current['comment']) return;
 
     const optimistic = buildOptimisticComment(text);
-    setAllReviews(prev => [...prev, optimistic]);
+    setAllReviews(prev => [optimistic, ...prev]);
     setNewComment('');
     pendingFns.current['comment'] = true;
 
