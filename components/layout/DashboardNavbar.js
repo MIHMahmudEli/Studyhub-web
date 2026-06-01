@@ -112,13 +112,13 @@ export default function DashboardNavbar() {
 
           <Link 
             href={dashboardHref} 
-            className={`relative flex items-center gap-3 rounded-2xl px-4 py-2 transition-all cursor-pointer border group ${
+            className={`relative flex items-center gap-1.5 rounded-2xl px-3 py-1.5 transition-all cursor-pointer border group ${
               pathname === dashboardHref
                 ? 'bg-blue-500/10 border-blue-500/30'
                 : 'bg-[var(--card-bg)] border-[var(--card-border)] hover:border-blue-500/30'
             }`}
           >
-            <div className="relative group/points flex items-center gap-2 text-amber-500 py-0.5 px-1 hover:bg-amber-500/5 dark:hover:bg-amber-500/10 rounded-lg transition-colors">
+            <div className="relative group/points flex items-center gap-1 text-amber-500 py-0.5 px-1 hover:bg-amber-500/5 dark:hover:bg-amber-500/10 rounded-lg transition-colors">
               <Coins size={16} />
               <span className="text-xs font-black tracking-tighter">{user?.points || 0}</span>
 
@@ -146,7 +146,7 @@ export default function DashboardNavbar() {
 
             <div className="w-px h-3 bg-[var(--card-border)]" />
             
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1 shrink-0">
               {user?.profile_pic ? (
                 <img 
                   src={user.profile_pic} 
