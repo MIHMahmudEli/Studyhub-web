@@ -77,8 +77,8 @@ export default function DashboardNavbar() {
           </div>
         </div>
 
-        {/* Desktop: Theme */}
-        <div className="hidden lg:flex items-center gap-2">
+        {/* Desktop: Theme, Notifications, S Portal, User Stats, Logout */}
+        <div className="hidden lg:flex items-center gap-1">
           <button 
             onClick={toggleTheme}
             className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-[var(--foreground)] transition-all cursor-pointer"
@@ -86,15 +86,8 @@ export default function DashboardNavbar() {
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
-        </div>
 
-        {/* Desktop: Notification bell */}
-        <div className="hidden lg:block">
           <NotificationBell />
-        </div>
-
-        {/* Desktop: S Portal, User Stats, Logout */}
-        <div className="hidden lg:flex items-center gap-2">
           {isAdminOrMod && (
             <Link
               href="/dashboard"
