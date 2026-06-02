@@ -5,6 +5,7 @@ import ScreenGate from "@/components/ScreenGate";
 import ThemeSync from "@/components/ThemeSync";
 import DeepSpace from "@/components/space/DeepSpace";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
+import QueryProvider from "@/lib/query-provider";
 import { inter, jakarta } from "@/lib/fonts";
 import "./globals.css";
 
@@ -37,7 +38,7 @@ export default function RootLayout({ children }) {
 
             <DeepSpace />
 
-            <ErrorBoundary><ScreenGate>{children}</ScreenGate></ErrorBoundary>
+            <ErrorBoundary><QueryProvider><ScreenGate>{children}</ScreenGate></QueryProvider></ErrorBoundary>
           </AuthProvider>
         </ThemeProvider>
       </body>
