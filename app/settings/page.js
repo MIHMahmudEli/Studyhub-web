@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
@@ -367,9 +368,11 @@ export default function SettingsPage() {
                 {/* Profile Card Summary */}
                 <div className="flex items-center gap-4 pb-6 border-b border-[var(--card-border)] mb-4">
                   {user.profile_pic ? (
-                    <img 
+                    <Image 
                       src={user.profile_pic} 
                       alt={user.name} 
+                      width={56}
+                      height={56}
                       className="w-14 h-14 rounded-2xl object-cover shadow-lg border border-[var(--card-border)]"
                     />
                   ) : (

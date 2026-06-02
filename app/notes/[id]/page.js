@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { useAuth } from '@/context/AuthContext';
@@ -28,6 +29,7 @@ import { NoteDetailSkeleton } from '@/components/ui/Skeleton';
 import EditNoteModal from '@/components/notes/EditNoteModal';
 import DeleteConfirmModal from '@/components/notes/DeleteConfirmModal';
 import RatingWidget from '@/components/notes/RatingWidget';
+import Toast from '@/components/ui/Toast';
 import ReactionBar from '@/components/notes/ReactionBar';
 
 const getDepartmentName = (code, subject, dept) => {
@@ -63,6 +65,17 @@ export default function NotePreviewPage() {
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [totalRatings, setTotalRatings] = useState(0);
   const [downloading, setDownloading] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type, isClosing: false });
+    setTimeout(() => closeToast(), 5000);
+  };
+
+  const closeToast = () => {
+    setToast(prev => ({ ...prev, isClosing: true }));
+    setTimeout(() => setToast(prev => ({ ...prev, show: false, isClosing: false })), 500);
+  };
 
   // Fetch note data once on mount (public endpoint, no auth needed)
   useEffect(() => {
@@ -235,7 +248,7 @@ export default function NotePreviewPage() {
             <button 
               onClick={() => {
                 navigator.clipboard.writeText(window.location.href);
-                alert('Link copied to clipboard!');
+                showToast('Link copied to clipboard!', 'success');
               }}
               className="flex items-center justify-center gap-2 px-5 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-[10px] font-black tracking-widest uppercase text-slate-500 hover:text-purple-500 transition-all shadow-sm cursor-pointer"
             >
@@ -302,10 +315,12 @@ export default function NotePreviewPage() {
                       onLoad={() => setContentLoaded(true)}
                     />
                   ) : ['jpg', 'jpeg', 'png', 'webp'].includes(note.file_type?.toLowerCase()) ? (
-                    <img 
+                    <Image 
                       src={note.file_path} 
                       alt={note.title}
-                      className={`w-full h-full object-contain transition-opacity duration-500 ${contentLoaded ? 'opacity-100' : 'opacity-0'}`}
+                      fill
+                      className={`object-contain transition-opacity duration-500 ${contentLoaded ? 'opacity-100' : 'opacity-0'}`}
+                      sizes="(max-width: 1024px) 100vw, 66vw"
                       onLoad={() => setContentLoaded(true)}
                     />
                   ) : (
@@ -457,9 +472,11 @@ export default function NotePreviewPage() {
               {/* Author Card */}
               <button onClick={() => router.push(`/profile/${note.uploader_id}`)} className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex items-center gap-4 shadow-sm group cursor-pointer hover:border-purple-500/30 transition-all duration-300 text-left">
                 {note.uploader?.profile_pic ? (
-                  <img 
+                  <Image 
                     src={note.uploader.profile_pic} 
-                    alt={note.uploader?.name} 
+                    alt={note.uploader?.name || ''} 
+                    width={48}
+                    height={48}
                     className="w-12 h-12 rounded-2xl object-cover border border-[var(--card-border)] shadow-sm shrink-0"
                   />
                 ) : (
@@ -507,6 +524,7 @@ export default function NotePreviewPage() {
         note={note} 
         onDelete={handleDeleteComplete} 
       />
+      <Toast toast={toast} closeToast={closeToast} />
     </main>
   );
 }

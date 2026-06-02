@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft, Coins, FileText, Calendar, Zap, Sparkles, User,
@@ -330,7 +331,7 @@ export default function PublicProfilePage() {
                 <div className="relative w-24 h-24 mx-auto mb-5">
                   <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-[var(--card-border)] overflow-hidden flex items-center justify-center text-3xl font-black shadow-2xl">
                     {profile.profile_pic ? (
-                      <img src={profile.profile_pic} alt={profile.name} className="w-full h-full object-cover" />
+                      <Image src={profile.profile_pic} alt={profile.name} width={96} height={96} className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-purple-500">
                         {profile.name.charAt(0)}

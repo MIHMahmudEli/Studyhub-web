@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -183,7 +184,7 @@ export default function PendingNotesPage() {
                       <td className="py-4 sm:py-5 whitespace-nowrap">
                         <button onClick={() => router.push(`/profile/${note.uploader_id}`)} className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity text-left">
                           {note.uploader?.profile_pic ? (
-                            <img src={note.uploader.profile_pic} alt="" className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
+                            <Image src={note.uploader.profile_pic} alt="" width={24} height={24} className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
                           ) : (
                             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-[10px] font-black text-white shrink-0">
                               {note.uploader?.name?.[0] || 'U'}

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Crown, Coins, FileText, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { getLevelInfo } from './leaderboardUtils';
@@ -70,7 +71,7 @@ export default function PodiumCard({ user, rank, color, isLarge = false }) {
         <div className={`relative mx-auto mb-4 ${isLarge ? 'w-16 h-16 sm:w-24 sm:h-24' : 'w-14 h-14 sm:w-20 sm:h-20'} rounded-2xl sm:rounded-3xl bg-gradient-to-br ${s.gradient} p-[2px] sm:p-[3px] shadow-md ${s.glow} group-hover:scale-105 transition-transform duration-300`}>
           <div className="w-full h-full rounded-[inherit] bg-[var(--background)] overflow-hidden flex items-center justify-center font-black text-xl sm:text-2xl">
             {user.profile_pic
-              ? <img src={user.profile_pic} alt={user.name} className="w-full h-full object-cover" />
+              ? <Image src={user.profile_pic} alt={user.name} width={96} height={96} className="w-full h-full object-cover" />
               : <span className={`bg-gradient-to-br ${s.gradient} bg-clip-text text-transparent`}>{user.name.charAt(0)}</span>
             }
           </div>

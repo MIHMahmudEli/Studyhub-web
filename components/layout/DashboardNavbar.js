@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
+import Image from 'next/image';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 import NotificationBell from '@/components/notifications/NotificationBell';
 
@@ -141,9 +142,11 @@ export default function DashboardNavbar() {
             
             <div className="flex items-center gap-1 shrink-0">
               {user?.profile_pic ? (
-                <img 
+                <Image 
                   src={user.profile_pic} 
                   alt={user?.name} 
+                  width={20}
+                  height={20}
                   className="w-5 h-5 rounded-md object-cover border border-[var(--card-border)]"
                 />
               ) : (
@@ -228,9 +231,11 @@ export default function DashboardNavbar() {
             >
               <div className="flex items-center gap-2 min-w-0">
                 {user?.profile_pic ? (
-                  <img 
+                  <Image 
                     src={user.profile_pic} 
                     alt={user?.name} 
+                    width={20}
+                    height={20}
                     className="w-5 h-5 rounded-md object-cover border border-[var(--card-border)]"
                   />
                 ) : (
