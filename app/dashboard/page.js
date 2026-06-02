@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { User, ArrowRight, ExternalLink } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -89,7 +90,7 @@ export default function StudentDashboard() {
             <div className="flex items-center justify-between relative z-10">
               <div className="flex items-center gap-4">
                 {user?.profile_pic ? (
-                  <img src={user.profile_pic} alt={user.name} className="w-14 h-14 rounded-2xl object-cover border border-[var(--card-border)] shadow-sm" />
+                  <Image src={user.profile_pic} alt={user.name} width={56} height={56} className="w-14 h-14 rounded-2xl object-cover border border-[var(--card-border)] shadow-sm" />
                 ) : (
                   <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-black text-xl uppercase shadow-sm">
                     {user?.name ? user.name[0] : 'U'}

@@ -1,4 +1,7 @@
+import Image from 'next/image';
+
 export default function StudyHubLogo({ size = 36, textSize = 18 }) {
+  const iconSize = Math.round(size * 0.43);
   return (
     <div className="flex items-center gap-2.5 no-underline group">
       {/* Icon — with pulsing aura */}
@@ -13,11 +16,13 @@ export default function StudyHubLogo({ size = 36, textSize = 18 }) {
           }}
           className="relative flex items-center justify-center shrink-0 shadow-[0_4px_14px_rgba(59,130,246,0.4)] bg-gradient-to-br from-blue-500 to-purple-600 z-10"
         >
-          <img
+          <Image
             src="/favicon.svg"
             alt="StudyHub icon"
-            style={{ width: '60%', height: '60%' }}
+            width={iconSize}
+            height={iconSize}
             className="block"
+            style={{ width: 'auto', height: 'auto' }}
           />
         </div>
       </div>

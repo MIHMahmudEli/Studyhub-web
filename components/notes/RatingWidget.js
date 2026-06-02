@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { Star, AlertCircle, CheckCircle2, X, Edit2, Trash2, MessageSquarePlus, SendHorizonal, ThumbsUp, ThumbsDown, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
@@ -16,7 +17,7 @@ function CommentItem({ review, uploaderId, currentUser, onDelete, onStartEdit, o
     <div className={`bg-slate-50 dark:bg-white/[0.02] rounded-2xl p-4 sm:p-5 border border-[var(--card-border)] group transition-all hover:bg-slate-100/50 dark:hover:bg-white/[0.04] ${isTemp ? 'opacity-60 pointer-events-none' : ''}`}>
       <div className="flex items-start gap-3 sm:gap-4">
         {review.user?.profile_pic ? (
-          <img src={review.user.profile_pic} alt={review.user?.name} className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover border border-[var(--card-border)] shadow-md shrink-0 select-none" />
+          <Image src={review.user.profile_pic} alt={review.user?.name || ''} width={36} height={36} className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover border border-[var(--card-border)] shadow-md shrink-0 select-none" />
         ) : (
           <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-xs font-black uppercase shrink-0 select-none shadow-inner">
             {review.user?.name ? review.user.name.charAt(0) : '#'}
