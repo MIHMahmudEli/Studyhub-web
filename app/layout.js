@@ -4,6 +4,7 @@ import RouteTracker from "@/components/RouteTracker";
 import ScreenGate from "@/components/ScreenGate";
 import ThemeSync from "@/components/ThemeSync";
 import DeepSpace from "@/components/space/DeepSpace";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import { inter, jakarta } from "@/lib/fonts";
 import "./globals.css";
 
@@ -36,7 +37,7 @@ export default function RootLayout({ children }) {
 
             <DeepSpace />
 
-            <ScreenGate>{children}</ScreenGate>
+            <ErrorBoundary><ScreenGate>{children}</ScreenGate></ErrorBoundary>
           </AuthProvider>
         </ThemeProvider>
       </body>
