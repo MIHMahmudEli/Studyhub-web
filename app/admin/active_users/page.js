@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -75,7 +76,7 @@ function UserRow({ u, isLive, router }) {
           {/* Avatar with presence dot */}
           <div className="relative shrink-0">
             {u.profile_pic ? (
-              <img src={u.profile_pic} alt="" className="w-9 h-9 rounded-xl object-cover border border-[var(--card-border)]" />
+              <Image src={u.profile_pic} alt="" width={36} height={36} className="w-9 h-9 rounded-xl object-cover border border-[var(--card-border)]" />
             ) : (
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black text-white ${
                 isLive && presence?.isNow

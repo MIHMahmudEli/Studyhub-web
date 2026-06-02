@@ -4,6 +4,9 @@ import RouteTracker from "@/components/RouteTracker";
 import ScreenGate from "@/components/ScreenGate";
 import ThemeSync from "@/components/ThemeSync";
 import DeepSpace from "@/components/space/DeepSpace";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
+import QueryProvider from "@/lib/query-provider";
+import { inter, jakarta } from "@/lib/fonts";
 import "./globals.css";
 
 export const metadata = {
@@ -13,7 +16,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-theme="dark" data-scroll-behavior="smooth">
+    <html lang="en" data-theme="dark" data-scroll-behavior="smooth" className={`${inter.variable} ${jakarta.variable}`}>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <meta httpEquiv="cache-control" content="no-cache, no-store, must-revalidate" />
@@ -35,7 +38,7 @@ export default function RootLayout({ children }) {
 
             <DeepSpace />
 
-            <ScreenGate>{children}</ScreenGate>
+            <ErrorBoundary><QueryProvider><ScreenGate>{children}</ScreenGate></QueryProvider></ErrorBoundary>
           </AuthProvider>
         </ThemeProvider>
       </body>

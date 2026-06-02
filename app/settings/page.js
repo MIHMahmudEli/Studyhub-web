@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
@@ -19,10 +20,12 @@ import {
 import { useTheme } from '@/context/ThemeContext';
 import coursesData from '@/lib/data/courses.json';
 import Toast from '@/components/ui/Toast';
-import ProfileTab from '@/components/settings/ProfileTab';
-import SecurityTab from '@/components/settings/SecurityTab';
-import PreferencesTab from '@/components/settings/PreferencesTab';
-import SocialLinksTab from '@/components/settings/SocialLinksTab';
+import dynamic from 'next/dynamic';
+
+const ProfileTab = dynamic(() => import('@/components/settings/ProfileTab'));
+const SecurityTab = dynamic(() => import('@/components/settings/SecurityTab'));
+const PreferencesTab = dynamic(() => import('@/components/settings/PreferencesTab'));
+const SocialLinksTab = dynamic(() => import('@/components/settings/SocialLinksTab'));
 
 export default function SettingsPage() {
   const { user, loading: authLoading, checkUser } = useAuth();
@@ -367,9 +370,11 @@ export default function SettingsPage() {
                 {/* Profile Card Summary */}
                 <div className="flex items-center gap-4 pb-6 border-b border-[var(--card-border)] mb-4">
                   {user.profile_pic ? (
-                    <img 
+                    <Image 
                       src={user.profile_pic} 
                       alt={user.name} 
+                      width={56}
+                      height={56}
                       className="w-14 h-14 rounded-2xl object-cover shadow-lg border border-[var(--card-border)]"
                     />
                   ) : (

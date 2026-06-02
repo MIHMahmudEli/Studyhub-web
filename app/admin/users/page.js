@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -231,7 +232,7 @@ export default function AdminUsersPage() {
                       <td className="py-4 sm:py-5 pl-4 max-w-[220px] sm:max-w-[250px]">
                         <button onClick={() => router.push(`/profile/${u.id}`)} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity text-left">
                           {u.profile_pic ? (
-                            <img src={u.profile_pic} alt="" className="w-8 h-8 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
+                            <Image src={u.profile_pic} alt="" width={32} height={32} className="w-8 h-8 rounded-xl object-cover border border-[var(--card-border)] shrink-0" />
                           ) : (
                             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-black text-white shrink-0">
                               {u.name?.[0] || 'U'}
