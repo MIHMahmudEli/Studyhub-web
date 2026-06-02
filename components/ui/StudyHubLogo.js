@@ -22,6 +22,7 @@ export default function StudyHubLogo({ size = 36, textSize = 18 }) {
             width={iconSize}
             height={iconSize}
             className="block"
+            style={{ width: 'auto', height: 'auto' }}
           />
         </div>
       </div>
