@@ -32,6 +32,7 @@ export default function ForgotPasswordPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
+  const resendRef = useRef(null);
   const [status, setStatus] = useState({ type: '', message: '' });
   
   const [formData, setFormData] = useState({
@@ -50,11 +51,10 @@ export default function ForgotPasswordPage() {
   const entered = useEntrance();
 
   useEffect(() => {
-    let timer;
     if (resendTimer > 0) {
-      timer = setInterval(() => setResendTimer(prev => prev - 1), 1000);
+      resendRef.current = setTimeout(() => setResendTimer(prev => prev - 1), 1000);
     }
-    return () => clearInterval(timer);
+    return () => clearTimeout(resendRef.current);
   }, [resendTimer]);
 
   const passwordRules = useMemo(() => ({
