@@ -20,10 +20,12 @@ import {
 import { useTheme } from '@/context/ThemeContext';
 import coursesData from '@/lib/data/courses.json';
 import Toast from '@/components/ui/Toast';
-import ProfileTab from '@/components/settings/ProfileTab';
-import SecurityTab from '@/components/settings/SecurityTab';
-import PreferencesTab from '@/components/settings/PreferencesTab';
-import SocialLinksTab from '@/components/settings/SocialLinksTab';
+import dynamic from 'next/dynamic';
+
+const ProfileTab = dynamic(() => import('@/components/settings/ProfileTab'));
+const SecurityTab = dynamic(() => import('@/components/settings/SecurityTab'));
+const PreferencesTab = dynamic(() => import('@/components/settings/PreferencesTab'));
+const SocialLinksTab = dynamic(() => import('@/components/settings/SocialLinksTab'));
 
 export default function SettingsPage() {
   const { user, loading: authLoading, checkUser } = useAuth();

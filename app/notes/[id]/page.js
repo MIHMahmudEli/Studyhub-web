@@ -1,17 +1,21 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { FileText } from 'lucide-react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { NoteDetailSkeleton } from '@/components/ui/Skeleton';
 import NoteHeader from '@/components/notes/NoteHeader';
 import NotePreview from '@/components/notes/NotePreview';
 import NoteMetadata from '@/components/notes/NoteMetadata';
-import EditNoteModal from '@/components/notes/EditNoteModal';
-import DeleteConfirmModal from '@/components/notes/DeleteConfirmModal';
-import RatingWidget from '@/components/notes/RatingWidget';
 import ReactionBar from '@/components/notes/ReactionBar';
 import Toast from '@/components/ui/Toast';
 import { useNotePage } from '@/lib/hooks/useNotePage';
+
+const RatingWidget = dynamic(() => import('@/components/notes/RatingWidget'), {
+  loading: () => <div className="animate-pulse h-32 rounded-2xl bg-[var(--card-bg)]" />,
+});
+const EditNoteModal = dynamic(() => import('@/components/notes/EditNoteModal'));
+const DeleteConfirmModal = dynamic(() => import('@/components/notes/DeleteConfirmModal'));
 
 export default function NotePreviewPage() {
   const {
