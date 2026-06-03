@@ -147,7 +147,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
   };
 
   useEffect(() => {
-    if (noteId) {
+    if (noteId && (!user || tokenReady)) {
       fetchComments();
       if (user && tokenReady) fetchMyRating();
       else if (!user) setRatingLoading(false);
