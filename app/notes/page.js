@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { Suspense, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Filter, 
   SortDesc, 
@@ -38,8 +38,9 @@ const getSubjectIcon = (subject, code) => {
   return FileText;
 };
 
-export default function NotesPage() {
-  const [searchQuery, setSearchQuery] = useState('');
+function NotesPageInner() {
+  const searchParams = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [notes, setNotes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalNotes, setTotalNotes] = useState(0);
@@ -47,7 +48,7 @@ export default function NotesPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const limit = 12;
   
-  const [sortBy, setSortBy] = useState('latest');
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'latest');
   
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
@@ -107,6 +108,21 @@ export default function NotesPage() {
       fetchNotes(1);
     }
   }, [tokenReady, user]);
+
+  // Sync URL params
+  const debounceRef = useRef(null);
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (searchQuery) params.set('search', searchQuery);
+      else params.delete('search');
+      if (sortBy && sortBy !== 'latest') params.set('sort', sortBy);
+      else params.delete('sort');
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }, 400);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [searchQuery, sortBy, router, searchParams]);
 
   // Client-side sort + search filter
   const filteredNotes = useMemo(() => {
@@ -278,5 +294,13 @@ export default function NotesPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function NotesPage() {
+  return (
+    <Suspense fallback={null}>
+      <NotesPageInner />
+    </Suspense>
   );
 }

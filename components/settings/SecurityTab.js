@@ -1,4 +1,6 @@
-import { Eye, EyeOff, Save } from 'lucide-react';
+import { useState } from 'react';
+import { Eye, EyeOff, Save, AlertCircle } from 'lucide-react';
+import { securitySchema, validate } from '@/lib/schemas';
 
 export default function SecurityTab({
   securityForm,
@@ -9,8 +11,21 @@ export default function SecurityTab({
   passwordRules,
   saving
 }) {
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const result = validate(securitySchema, securityForm);
+    if (!result.valid) {
+      setFieldErrors(result.errors.fields);
+      return;
+    }
+    setFieldErrors({});
+    handleUpdatePassword(e);
+  };
+
   return (
-    <form onSubmit={handleUpdatePassword} className="space-y-6 animate-fade-in">
+    <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
       <div>
         <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Security & Password</h3>
         <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mt-1">Configure security updates for your login credentials.</p>
@@ -25,9 +40,9 @@ export default function SecurityTab({
               type={showPassword.current ? "text" : "password"} 
               name="currentPassword" 
               value={securityForm.currentPassword} 
-              onChange={handleSecurityChange}
+              onChange={(e) => { setFieldErrors(prev => ({ ...prev, currentPassword: undefined })); handleSecurityChange(e); }}
               required
-              className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors pr-12"
+              className={`w-full px-5 py-4 bg-[var(--card-bg)] border text-[var(--foreground)] rounded-2xl text-xs font-semibold focus:outline-none transition-colors pr-12 ${fieldErrors.currentPassword ? 'border-red-500/50' : 'border-[var(--card-border)] focus:border-blue-500/50'}`}
               placeholder="Enter current password to verify"
             />
             <button 
@@ -38,6 +53,11 @@ export default function SecurityTab({
               {showPassword.current ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
+          {fieldErrors.currentPassword && (
+            <p className="flex items-center gap-1 mt-1.5 text-[9px] font-bold text-red-400 uppercase tracking-widest">
+              <AlertCircle size={10} /> {fieldErrors.currentPassword[0]}
+            </p>
+          )}
         </div>
 
         {/* New Password Field */}
@@ -48,9 +68,9 @@ export default function SecurityTab({
               type={showPassword.new ? "text" : "password"} 
               name="newPassword" 
               value={securityForm.newPassword} 
-              onChange={handleSecurityChange}
+              onChange={(e) => { setFieldErrors(prev => ({ ...prev, newPassword: undefined })); handleSecurityChange(e); }}
               required
-              className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors pr-12"
+              className={`w-full px-5 py-4 bg-[var(--card-bg)] border text-[var(--foreground)] rounded-2xl text-xs font-semibold focus:outline-none transition-colors pr-12 ${fieldErrors.newPassword ? 'border-red-500/50' : 'border-[var(--card-border)] focus:border-blue-500/50'}`}
               placeholder="Min. 8 characters"
             />
             <button 
@@ -61,6 +81,11 @@ export default function SecurityTab({
               {showPassword.new ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
+          {fieldErrors.newPassword && (
+            <p className="flex items-center gap-1 mt-1.5 text-[9px] font-bold text-red-400 uppercase tracking-widest">
+              <AlertCircle size={10} /> {fieldErrors.newPassword[0]}
+            </p>
+          )}
 
           {/* Interactive Password Strength Indicators */}
           {securityForm.newPassword && (
@@ -89,9 +114,9 @@ export default function SecurityTab({
               type={showPassword.confirm ? "text" : "password"} 
               name="confirmPassword" 
               value={securityForm.confirmPassword} 
-              onChange={handleSecurityChange}
+              onChange={(e) => { setFieldErrors(prev => ({ ...prev, confirmPassword: undefined })); handleSecurityChange(e); }}
               required
-              className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] rounded-2xl text-xs font-semibold focus:outline-none focus:border-blue-500/50 transition-colors pr-12"
+              className={`w-full px-5 py-4 bg-[var(--card-bg)] border text-[var(--foreground)] rounded-2xl text-xs font-semibold focus:outline-none transition-colors pr-12 ${fieldErrors.confirmPassword ? 'border-red-500/50' : 'border-[var(--card-border)] focus:border-blue-500/50'}`}
               placeholder="Repeat new password"
             />
             <button 
@@ -102,6 +127,11 @@ export default function SecurityTab({
               {showPassword.confirm ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
+          {fieldErrors.confirmPassword && (
+            <p className="flex items-center gap-1 mt-1.5 text-[9px] font-bold text-red-400 uppercase tracking-widest">
+              <AlertCircle size={10} /> {fieldErrors.confirmPassword[0]}
+            </p>
+          )}
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { Suspense, useState, useMemo, useEffect, useRef } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { 
   Bookmark, 
@@ -20,7 +20,7 @@ import {
   Search,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { apiRequest } from '@/lib/api';
 import { BookmarkListSkeleton, ResourceListSkeleton } from '@/components/ui/Skeleton';
@@ -57,9 +57,10 @@ const getCourseIcon = (title) => {
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
-export default function BookmarkPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
+function BookmarkPageInner() {
+  const searchParams = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'all');
   const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
@@ -103,6 +104,21 @@ export default function BookmarkPage() {
       showToast('Failed to remove bookmark.', 'error');
     });
   };
+
+  // Sync URL params
+  const debounceRef = useRef(null);
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (searchQuery) params.set('search', searchQuery);
+      else params.delete('search');
+      if (activeTab && activeTab !== 'all') params.set('tab', activeTab);
+      else params.delete('tab');
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }, 400);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [searchQuery, activeTab, router, searchParams]);
 
   // ─── Filtering ──────────────────────────────────────────────────────────────
   const { savedNotes, savedCourses, savedResources } = useMemo(() => ({
@@ -436,5 +452,13 @@ export default function BookmarkPage() {
       {/* ─── Toast ──────────────────────────────────────────────────────────── */}
       <Toast toast={toast} closeToast={closeToast} />
     </main>
+  );
+}
+
+export default function BookmarkPage() {
+  return (
+    <Suspense fallback={null}>
+      <BookmarkPageInner />
+    </Suspense>
   );
 }
