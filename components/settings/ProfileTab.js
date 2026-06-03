@@ -1,7 +1,8 @@
 import { useMemo, useState, useRef } from 'react';
 import Image from 'next/image';
-import { Camera, UploadCloud, Trash2, Save, UserCheck, Sparkles } from 'lucide-react';
+import { Camera, UploadCloud, Trash2, Save, UserCheck, Sparkles, AlertCircle } from 'lucide-react';
 import { getNameValidation, getSuggestedName } from '@/lib/nameUtils';
+import { profileSchema, validate } from '@/lib/schemas';
 import ProfilePicCropper from './ProfilePicCropper';
 
 export default function ProfileTab({
@@ -17,6 +18,7 @@ export default function ProfileTab({
 }) {
   const [cropperFile, setCropperFile] = useState(null);
   const fileInputRef = useRef(null);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const onFileSelect = (e) => {
     const file = e.target.files?.[0];
@@ -35,13 +37,25 @@ export default function ProfileTab({
     setCropperFile(null);
     handleProfilePicUpload(finalFile);
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const result = validate(profileSchema, profileForm);
+    if (!result.valid) {
+      setFieldErrors(result.errors.fields);
+      return;
+    }
+    setFieldErrors({});
+    handleSaveProfile(e);
+  };
+
   const [nameFocused, setNameFocused] = useState(false);
   const nameRules = useMemo(() => getNameValidation(profileForm.name), [profileForm.name]);
   const isNameValid = Object.values(nameRules).every(Boolean);
   const suggestedName = useMemo(() => getSuggestedName(profileForm.name), [profileForm.name]);
 
   return (
-    <form onSubmit={handleSaveProfile} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Personal Info</h3>
         <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mt-1">Review and update your university profile details.</p>
@@ -125,7 +139,7 @@ export default function ProfileTab({
             type="text" 
             name="name" 
             value={profileForm.name} 
-            onChange={handleProfileChange}
+            onChange={(e) => { setFieldErrors(prev => ({ ...prev, name: undefined })); handleProfileChange(e); }}
             onFocus={() => setNameFocused(true)}
             onBlur={() => setNameFocused(false)}
             required
@@ -158,19 +172,24 @@ export default function ProfileTab({
             </div>
           )}
           {/* Suggested name banner */}
-          {nameFocused && suggestedName && !isNameValid && (
-            <button
-              type="button"
-              onClick={() => handleProfileChange({ target: { name: 'name', value: suggestedName } })}
-              className="w-full flex items-center gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl animate-in fade-in duration-300 cursor-pointer hover:bg-amber-500/20 transition-colors text-left"
-            >
-              <Sparkles size={12} className="text-amber-500 shrink-0" />
-              <p className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
-                Did you mean: <span className="underline underline-offset-2 decoration-amber-500/40">{suggestedName}</span>
+            {nameFocused && suggestedName && !isNameValid && (
+              <button
+                type="button"
+                onClick={() => { setFieldErrors(prev => ({ ...prev, name: undefined })); handleProfileChange({ target: { name: 'name', value: suggestedName } }); }}
+                className="w-full flex items-center gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl animate-in fade-in duration-300 cursor-pointer hover:bg-amber-500/20 transition-colors text-left"
+              >
+                <Sparkles size={12} className="text-amber-500 shrink-0" />
+                <p className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                  Did you mean: <span className="underline underline-offset-2 decoration-amber-500/40">{suggestedName}</span>
+                </p>
+              </button>
+            )}
+            {fieldErrors.name && (
+              <p className="flex items-center gap-1 mt-1.5 text-[9px] font-bold text-red-400 uppercase tracking-widest">
+                <AlertCircle size={10} /> {fieldErrors.name[0]}
               </p>
-            </button>
-          )}
-        </div>
+            )}
+          </div>
 
         <div className="space-y-2">
           <label className="text-[9px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400">Email Address (Read-only)</label>

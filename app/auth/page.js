@@ -7,6 +7,7 @@ import { ArrowRight, Mail, Lock, MousePointer2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 import AuthInput from '@/components/auth/AuthInput';
+import { loginSchema, validate } from '@/lib/schemas';
 
 function usePageTransition() {
   const router = useRouter();
@@ -31,6 +32,7 @@ export default function AuthPage() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [touched, setTouched] = useState({});
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const { login } = useAuth();
   const router = useRouter();
@@ -41,14 +43,23 @@ export default function AuthPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (!touched[e.target.name]) setTouched(prev => ({ ...prev, [e.target.name]: true }));
     if (error) setError('');
+    setFieldErrors(prev => ({ ...prev, [e.target.name]: undefined }));
   };
 
   const handleBlur = (e) => setTouched({ ...touched, [e.target.name]: true });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     setError('');
+    setFieldErrors({});
+
+    const result = validate(loginSchema, formData);
+    if (!result.valid) {
+      setFieldErrors(result.errors.fields);
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       await login(formData.email, formData.password);
@@ -105,11 +116,11 @@ export default function AuthPage() {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className={e(200)}>
-              <AuthInput icon={Mail} type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} placeholder="Email Address" />
+              <AuthInput icon={Mail} type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} placeholder="Email Address" error={fieldErrors.email?.[0]} touched={touched.email} />
             </div>
 
             <div className={`space-y-3 ${e(200)}`}>
-              <AuthInput icon={Lock} type="password" name="password" value={formData.password} onChange={handleChange} onBlur={handleBlur} placeholder="Password" />
+              <AuthInput icon={Lock} type="password" name="password" value={formData.password} onChange={handleChange} onBlur={handleBlur} placeholder="Password" error={fieldErrors.password?.[0]} touched={touched.password} />
               <div className="flex justify-end pr-1">
                 <Link
                   href="/auth/forgot-password"

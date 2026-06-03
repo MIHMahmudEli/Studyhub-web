@@ -1,6 +1,8 @@
 'use client';
 
-import { Save, Trash2, Link2 } from 'lucide-react';
+import { useState } from 'react';
+import { Save, Trash2, Link2, AlertCircle } from 'lucide-react';
+import { socialLinksSchema, validate } from '@/lib/schemas';
 
 // ─── Brand SVG Icons ─────────────────────────────────────────────────────────
 function GitHubIcon({ size = 20 }) {
@@ -72,14 +74,26 @@ const SOCIAL_FIELDS = [
 ];
 
 export default function SocialLinksTab({ profileForm, handleProfileChange, handleSaveProfile, saving }) {
+  const [fieldErrors, setFieldErrors] = useState({});
   const hasAnyLink = SOCIAL_FIELDS.some(f => profileForm[f.key]);
 
   const clearField = (key) => {
     handleProfileChange({ target: { name: key, value: '' } });
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const result = validate(socialLinksSchema, profileForm);
+    if (!result.valid) {
+      setFieldErrors(result.errors.fields);
+      return;
+    }
+    setFieldErrors({});
+    handleSaveProfile(e);
+  };
+
   return (
-    <form onSubmit={handleSaveProfile} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-slate-200">Social Links</h3>
         <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mt-1">
@@ -106,10 +120,15 @@ export default function SocialLinksTab({ profileForm, handleProfileChange, handl
                 type="url"
                 name={key}
                 value={profileForm[key] || ''}
-                onChange={handleProfileChange}
+                onChange={(e) => { setFieldErrors((prev) => ({ ...prev, [key]: undefined })); handleProfileChange(e); }}
                 placeholder={placeholder}
                 className="w-full bg-transparent border-none text-xs font-semibold text-[var(--foreground)] focus:outline-none placeholder:text-slate-400/50 p-0"
               />
+              {fieldErrors[key] && (
+                <p className="flex items-center gap-1 mt-1 text-[8px] font-bold text-red-400 uppercase tracking-widest">
+                  <AlertCircle size={10} /> {fieldErrors[key][0]}
+                </p>
+              )}
             </div>
 
             {profileForm[key] && (
