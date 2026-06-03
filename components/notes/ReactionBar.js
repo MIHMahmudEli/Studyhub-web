@@ -15,7 +15,7 @@ const REACTIONS = [
 ];
 
 export default function ReactionBar({ noteId }) {
-  const { user } = useAuth();
+  const { user, tokenReady } = useAuth();
   const [reactions, setReactions] = useState({});
   const [userReaction, setUserReaction] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,10 +33,10 @@ export default function ReactionBar({ noteId }) {
   };
 
   useEffect(() => {
-    if (noteId) {
+    if (noteId && (!user || tokenReady)) {
       fetchReactions();
     }
-  }, [noteId]);
+  }, [noteId, user, tokenReady]);
 
   const fetchReactions = async () => {
     try {
