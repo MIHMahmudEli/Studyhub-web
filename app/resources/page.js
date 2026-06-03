@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useState, useRef } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { 
   BookOpen,
@@ -12,7 +12,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { apiRequest } from '@/lib/api';
 import Toast from '@/components/ui/Toast';
 import Skeleton from '@/components/ui/Skeleton';
@@ -52,11 +52,12 @@ const getCourseDept = (code, title) => {
 
 const getCourseSlug = (title) => title.replace(/\s+/g, '-').toLowerCase();
 
-export default function ResourcesPage() {
+function ResourcesPageInner() {
+  const searchParams = useSearchParams();
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
   
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [courses, setCourses] = useState([]);
   const [totalCourses, setTotalCourses] = useState(0);
   const [bookmarks, setBookmarks] = useState([]);
@@ -141,6 +142,19 @@ export default function ResourcesPage() {
   };
 
   const hasMoreCourses = courses.length < totalCourses;
+
+  // Sync URL param
+  const debounceRef = useRef(null);
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (searchQuery) params.set('search', searchQuery);
+      else params.delete('search');
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }, 400);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [searchQuery, router, searchParams]);
 
   const filteredCourses = useMemo(() => {
     if (!searchQuery) return courses;
@@ -243,5 +257,13 @@ export default function ResourcesPage() {
       {/* ─── Toast ──────────────────────────────────────────────────────────── */}
       <Toast toast={toast} closeToast={closeToast} />
     </main>
+  );
+}
+
+export default function ResourcesPage() {
+  return (
+    <Suspense fallback={null}>
+      <ResourcesPageInner />
+    </Suspense>
   );
 }
