@@ -6,41 +6,6 @@ import { useAuth } from '@/context/AuthContext';
 
 const SECTIONS = [
   {
-    title: 'Content Management',
-    items: [
-      {
-        href: '/upload',
-        icon: UploadCloud,
-        label: 'Upload New Note',
-        desc: 'Contribute study materials',
-        color: 'text-purple-500',
-        bg: 'bg-purple-500/10',
-        border: 'border-purple-500/20',
-        adminOnly: false,
-      },
-      {
-        href: '/dashboard/uploaded-notes',
-        icon: FileText,
-        label: 'Uploaded Notes',
-        desc: 'Manage your contributions',
-        color: 'text-orange-500',
-        bg: 'bg-orange-500/10',
-        border: 'border-orange-500/20',
-        adminOnly: false,
-      },
-      {
-        href: '/resources/upload_resources',
-        icon: Layers,
-        label: 'Publish Resource',
-        desc: 'Share academic resources',
-        color: 'text-amber-500',
-        bg: 'bg-amber-500/10',
-        border: 'border-amber-500/20',
-        adminOnly: true,
-      },
-    ],
-  },
-  {
     title: 'Discovery & Rankings',
     items: [
       {
@@ -72,6 +37,41 @@ const SECTIONS = [
         bg: 'bg-emerald-500/10',
         border: 'border-emerald-500/20',
         adminOnly: false,
+      },
+    ],
+  },
+  {
+    title: 'Content Management',
+    items: [
+      {
+        href: '/upload',
+        icon: UploadCloud,
+        label: 'Upload New Note',
+        desc: 'Contribute study materials',
+        color: 'text-purple-500',
+        bg: 'bg-purple-500/10',
+        border: 'border-purple-500/20',
+        adminOnly: false,
+      },
+      {
+        href: '/dashboard/uploaded-notes',
+        icon: FileText,
+        label: 'Uploaded Notes',
+        desc: 'Manage your contributions',
+        color: 'text-orange-500',
+        bg: 'bg-orange-500/10',
+        border: 'border-orange-500/20',
+        adminOnly: false,
+      },
+      {
+        href: '/resources/upload_resources',
+        icon: Layers,
+        label: 'Publish Resource',
+        desc: 'Share academic resources',
+        color: 'text-amber-500',
+        bg: 'bg-amber-500/10',
+        border: 'border-amber-500/20',
+        adminOnly: true,
       },
     ],
   },
