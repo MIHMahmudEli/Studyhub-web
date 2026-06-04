@@ -8,6 +8,7 @@ import { apiRequest } from '@/lib/api';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import Toast from '@/components/ui/Toast';
 import SpacePreview from '@/components/space/SpacePreview';
+import RamadanPreview from '@/components/ramadan/RamadanPreview';
 import { Moon, Sun, Sparkles, Save, ArrowLeft, Palette, Check } from 'lucide-react';
 import Link from 'next/link';
 
@@ -28,6 +29,14 @@ const DARK_THEMES = [
     preview: 'from-indigo-500/40 via-purple-500/30 to-pink-500/20',
     hasAnimation: false,
   },
+  {
+    id: 'ramadan',
+    label: 'Ramadan Night',
+    desc: 'A warm festive dark theme with golden crescent glow, emerald accents, and the spiritual ambiance of Ramadan nights.',
+    icon: Moon,
+    preview: 'from-amber-700 via-emerald-800 to-amber-900',
+    hasAnimation: true,
+  },
 ];
 
 const LIGHT_THEMES = [
@@ -37,6 +46,14 @@ const LIGHT_THEMES = [
     desc: 'A crisp, bright surface with gentle nebula accents for a clean reading experience.',
     icon: Sun,
     preview: 'from-blue-400 via-purple-400 to-cyan-400',
+  },
+  {
+    id: 'ramadan',
+    label: 'Eid Morning',
+    desc: 'A warm golden-light theme celebrating the joy, brightness, and festive spirit of Eid.',
+    icon: Sun,
+    preview: 'from-amber-300 via-yellow-200 to-emerald-300',
+    hasAnimation: true,
   },
 ];
 
@@ -167,8 +184,8 @@ export default function AdminThemePage() {
                     <div className="relative h-32 w-full rounded-2xl overflow-hidden mb-4 shadow-md">
                       {t.hasAnimation ? (
                         <>
-                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-purple-950 to-blue-950" />
-                          <SpacePreview />
+                          <div className={`absolute inset-0 bg-gradient-to-br ${t.preview}`} />
+                          {t.id === 'ramadan' ? <RamadanPreview /> : <SpacePreview />}
                         </>
                       ) : (
                         <div className={`absolute inset-0 bg-gradient-to-br ${t.preview}`} />
@@ -198,7 +215,7 @@ export default function AdminThemePage() {
                 <p className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Choose which light variant users see in Light Mode</p>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {LIGHT_THEMES.map((t) => {
                 const isActive = selectedLight === t.id;
                 const Icon = t.icon;
@@ -213,12 +230,24 @@ export default function AdminThemePage() {
                     }`}
                   >
                     {isActive && (
-                      <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center">
+                      <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center z-10">
                         <Check size={14} className="text-white" />
                       </div>
                     )}
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${t.preview} flex items-center justify-center text-white mb-4 shadow-md`}>
-                      <Icon size={20} />
+                    <div className="relative h-32 w-full rounded-2xl overflow-hidden mb-4 shadow-md">
+                      {t.hasAnimation ? (
+                        <>
+                          <div className={`absolute inset-0 bg-gradient-to-br ${t.preview}`} />
+                          <RamadanPreview light />
+                        </>
+                      ) : (
+                        <div className={`absolute inset-0 bg-gradient-to-br ${t.preview}`} />
+                      )}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-2xl bg-black/20 backdrop-blur-sm flex items-center justify-center text-white shadow-lg">
+                          <Icon size={20} />
+                        </div>
+                      </div>
                     </div>
                     <h3 className="text-xs font-black uppercase tracking-widest mb-1.5">{t.label}</h3>
                     <p className="text-[9px] font-medium text-slate-500 leading-relaxed">{t.desc}</p>

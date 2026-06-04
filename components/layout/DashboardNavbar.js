@@ -38,7 +38,7 @@ const navLinks = [
 export default function DashboardNavbar({ showBackButton, onBack }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, darkThemeVariant, lightThemeVariant, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const isAdminOrMod = user?.role === 'admin' || user?.role === 'moderator';
@@ -92,7 +92,7 @@ export default function DashboardNavbar({ showBackButton, onBack }) {
         <div className="hidden lg:flex items-center gap-1">
           <button 
             onClick={toggleTheme}
-            className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-[var(--foreground)] transition-all cursor-pointer"
+            className="p-2.5 rounded-xl lantern-btn bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-[var(--foreground)] transition-all cursor-pointer"
             title="Toggle Theme"
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}

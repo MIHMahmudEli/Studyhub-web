@@ -4,6 +4,10 @@ import RouteTracker from "@/components/RouteTracker";
 import ScreenGate from "@/components/ScreenGate";
 import ThemeSync from "@/components/ThemeSync";
 import DeepSpace from "@/components/space/DeepSpace";
+import RamadanDecoration from "@/components/ramadan/Decoration";
+import { BlessingsProvider } from "@/components/ramadan/Blessings";
+import RamadanReflectionPanel from "@/components/ramadan/ReflectionPanel";
+import EidTransition from "@/components/ramadan/EidTransition";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import QueryProvider from "@/lib/query-provider";
 import { inter, jakarta } from "@/lib/fonts";
@@ -23,7 +27,7 @@ export default function RootLayout({ children }) {
         <meta httpEquiv="pragma" content="no-cache" />
         <meta httpEquiv="expires" content="0" />
         <script dangerouslySetInnerHTML={{
-          __html: `(function(){try{var t=localStorage.getItem('preferred_theme')||localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);var vk=t==='dark'?'admin_dark_theme':'admin_light_theme',v=localStorage.getItem(vk);if(v==='current'||v==='previous')document.documentElement.setAttribute('data-theme-variant',v)}catch(e){}})()`,
+          __html: `(function(){try{var t=localStorage.getItem('preferred_theme')||localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);var vk=t==='dark'?'admin_dark_theme':'admin_light_theme',v=localStorage.getItem(vk);if(v==='current'||v==='previous'||v==='ramadan')document.documentElement.setAttribute('data-theme-variant',v)}catch(e){}})()`,
         }} />
       </head>
       <body className="font-sans antialiased">
@@ -40,8 +44,9 @@ export default function RootLayout({ children }) {
             </div>
 
             <DeepSpace />
+            <RamadanDecoration />
 
-            <ErrorBoundary><QueryProvider><ScreenGate>{children}</ScreenGate></QueryProvider></ErrorBoundary>
+            <ErrorBoundary><QueryProvider><ScreenGate><BlessingsProvider>{children}<RamadanReflectionPanel /><EidTransition /></BlessingsProvider></ScreenGate></QueryProvider></ErrorBoundary>
           </AuthProvider>
         </ThemeProvider>
       </body>

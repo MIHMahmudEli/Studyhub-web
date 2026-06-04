@@ -2,14 +2,23 @@
 
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function Hero() {
+  const { theme, darkThemeVariant, lightThemeVariant } = useTheme();
+  const ramadanVariant = theme === 'dark' ? darkThemeVariant : lightThemeVariant;
+
   return (
     <section className="pt-32 md:pt-[160px] px-6 pb-20 md:pb-[120px] text-center relative overflow-hidden fade-up">
       {/* Center atmospheric glow — subtle and theme-aware */}
       <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-full max-w-[800px] h-[300px] md:h-[500px] bg-[radial-gradient(ellipse,var(--blue)/0.12_0%,transparent_70%)] -z-10" />
 
       <div className="max-w-[800px] mx-auto">
+        {ramadanVariant === 'ramadan' && (
+          <div className="inline-flex items-center gap-2 py-1.5 px-4 bg-amber-500/10 border border-amber-500/25 rounded-full text-amber-500 text-[12px] font-bold uppercase tracking-widest mb-3 fade-up animate-ramadan-glow">
+            🌙 Ramadan Mubarak — A blessed month of knowledge and growth
+          </div>
+        )}
         <div className="inline-flex items-center gap-2 py-1.5 px-4 bg-blue-500/10 border border-blue-500/25 rounded-full text-blue-400 text-[12px] font-bold uppercase tracking-widest mb-7 fade-up">
           ✦ Academic Collaboration Platform
         </div>

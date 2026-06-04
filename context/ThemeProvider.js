@@ -5,7 +5,7 @@ import { ThemeContext } from './ThemeContext';
 import { apiRequest } from '@/lib/api';
 
 const VALID_MODES = ['dark', 'light'];
-const VALID_VARIANTS = ['current', 'previous'];
+const VALID_VARIANTS = ['current', 'previous', 'ramadan'];
 const CACHE_KEY_DARK = 'admin_dark_theme';
 const CACHE_KEY_LIGHT = 'admin_light_theme';
 

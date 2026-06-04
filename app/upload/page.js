@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { useBlessings } from '@/components/ramadan/Blessings';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import coursesData from '@/lib/data/courses.json';
@@ -45,9 +46,11 @@ export default function UploadPage() {
   });
 
   const { user, loading: authLoading } = useAuth();
+  const blessings = useBlessings();
   const router = useRouter();
   const suggestionsRef = useRef(null);
   const fileInputRef = useRef(null);
+  const formRef = useRef(null);
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/auth');
@@ -190,6 +193,11 @@ export default function UploadPage() {
       setFiles([]);
       setFormData({ title: '', course: '', description: '' });
       setCourseSearch('');
+      blessings?.trigger?.('May your effort be blessed 🤲');
+      if (formRef.current) {
+        formRef.current.classList.add('ramadan-save-pulse');
+        setTimeout(() => formRef.current?.classList.remove('ramadan-save-pulse'), 1500);
+      }
     } catch (err) {
       console.error('Upload error:', err);
       setStatus({ type: 'error', message: err.message || `Failed at file ${uploadProgress.current + 1}.` });
@@ -215,7 +223,7 @@ export default function UploadPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
             {/* Form Section */}
-            <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-6">
+            <form ref={formRef} onSubmit={handleSubmit} className="lg:col-span-3 space-y-6 rounded-[2.5rem]">
               <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 md:p-10 shadow-xl backdrop-blur-xl relative overflow-hidden">
                 <MetadataFormFields
                   hideTitle={true}

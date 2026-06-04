@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useLayoutEffect, useCallback } from 'react';
 import { ArrowRight, Mail, Lock, MousePointer2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useBlessings } from '@/components/ramadan/Blessings';
 import StudyHubLogo from '@/components/ui/StudyHubLogo';
 import AuthInput from '@/components/auth/AuthInput';
 import { loginSchema, validate } from '@/lib/schemas';
@@ -35,6 +36,7 @@ export default function AuthPage() {
   const [fieldErrors, setFieldErrors] = useState({});
 
   const { login } = useAuth();
+  const blessings = useBlessings();
   const router = useRouter();
   const { navigating, navigate } = usePageTransition();
   const entered = useEntrance();
@@ -63,6 +65,7 @@ export default function AuthPage() {
 
     try {
       await login(formData.email, formData.password);
+      blessings?.trigger?.('Ramadan Mubarak 🌙 Welcome back');
     } catch (err) {
       setError(err.message || 'Invalid email or password');
       setIsLoading(false);

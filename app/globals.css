@@ -5,6 +5,11 @@
 
 @theme {
   --font-sans: var(--font-inter), system-ui, sans-serif;
+  /* Remap common slate shades to CSS variables so Ramadan theme
+     variants can warm-tone hardcoded Tailwind classes globally.   */
+  --color-slate-400: var(--sh-slate-400, #94a3b8);
+  --color-slate-500: var(--sh-slate-500, #64748b);
+  --color-slate-600: var(--sh-slate-600, #475569);
 }
 
 :root {
@@ -152,6 +157,289 @@ input:-webkit-autofill:active {
     radial-gradient(circle at 80% 50%, var(--nebula-2) 0%, transparent 40%),
     radial-gradient(circle at 40% 80%, var(--nebula-3) 0%, transparent 40%);
 }
+
+/* Ramadan Theme — gold, emerald, festive */
+[data-theme="dark"][data-theme-variant="ramadan"] {
+  --background: #060a14;
+  --foreground: #fefce8;
+  --card-bg: rgba(15, 18, 30, 0.8);
+  --card-border: rgba(251, 191, 36, 0.22);
+  --muted: #a18b5e;
+  --accent-glow: rgba(251, 191, 36, 0.18);
+  --nebula-1: rgba(251, 191, 36, 0.22);
+  --nebula-2: rgba(245, 158, 11, 0.18);
+  --nebula-3: rgba(16, 185, 129, 0.14);
+  --nebula-4: rgba(239, 68, 68, 0.10);
+  --bg-image:
+    radial-gradient(ellipse at 50% 0%, rgba(251,191,36,0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 40%, rgba(245,158,11,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 60%, rgba(16,185,129,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(239,68,68,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 45% 45%, rgba(6,10,20,0.5) 0%, transparent 60%);
+  --bg: #060a14;
+  --surface: rgba(255, 255, 255, 0.025);
+  --border: rgba(251, 191, 36, 0.10);
+  --border-h: rgba(251, 191, 36, 0.22);
+  --blue: #10b981;
+  --violet: #f59e0b;
+  --text-1: #fefce8;
+  --text-2: #d4c5a0;
+  --text-3: #8a7b5a;
+
+  --sh-slate-400: #d4c5a0;
+  --sh-slate-500: #a18b5e;
+  --sh-slate-600: #8a7b5a;
+}
+
+[data-theme="light"][data-theme-variant="ramadan"] {
+  --background: #fffbeb;
+  --foreground: #1c1917;
+  --card-bg: #ffffff;
+  --card-border: rgba(180, 83, 9, 0.16);
+  --muted: #78716c;
+  --accent-glow: rgba(245, 158, 11, 0.08);
+  --nebula-1: rgba(251, 191, 36, 0.08);
+  --nebula-2: rgba(245, 158, 11, 0.06);
+  --nebula-3: rgba(16, 185, 129, 0.05);
+  --nebula-4: rgba(251, 191, 36, 0.06);
+  --bg-image:
+    radial-gradient(circle at 20% 20%, var(--nebula-1) 0%, transparent 40%),
+    radial-gradient(circle at 80% 30%, var(--nebula-2) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, var(--nebula-3) 0%, transparent 40%),
+    radial-gradient(circle at 10% 70%, var(--nebula-4) 0%, transparent 35%);
+  --bg: #fffbeb;
+  --surface: #ffffff;
+  --border: rgba(180, 83, 9, 0.12);
+  --border-h: rgba(180, 83, 9, 0.24);
+  --card-hover-bg: rgba(255, 255, 255, 0.9);
+  --blue: #059669;
+  --violet: #b45309;
+  --text-1: #1c1917;
+  --text-2: #57534e;
+  --text-3: #78716c;
+
+  --sh-slate-400: #78716c;
+  --sh-slate-500: #57534e;
+  --sh-slate-600: #44403c;
+}
+
+/* ─── Ramadan Animations ──────────────────────────────────────── */
+@keyframes ramadan-lantern-rise {
+  0% { transform: translateY(0) translateX(0) scale(0.6); opacity: 0; }
+  10% { opacity: 0.7; }
+  85% { opacity: 0.25; }
+  100% { transform: translateY(-110vh) translateX(40px) scale(1.0); opacity: 0; }
+}
+
+@keyframes ramadan-glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(251, 191, 36, 0.15); }
+  50% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.35); }
+}
+
+@keyframes ramadan-star-shimmer {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+@keyframes ramadan-moon-glow {
+  0%, 100% { opacity: 0.12; filter: blur(2px); }
+  50% { opacity: 0.22; filter: blur(0px); }
+}
+
+/* Aurora shimmer — slow, wavy curtain across the sky */
+@keyframes ramadan-aurora {
+  0% { opacity: 0; transform: translateX(-30%) scaleY(0.6); }
+  20% { opacity: 0.12; }
+  50% { opacity: 0.06; transform: translateX(5%) scaleY(1.3); }
+  80% { opacity: 0.10; }
+  100% { opacity: 0; transform: translateX(40%) scaleY(0.7); }
+}
+
+/* Slow geometric rotation for Islamic pattern overlay */
+@keyframes ramadan-geo-spin {
+  from { transform: rotate(0deg) scale(1); }
+  to { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes ramadan-geo-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+/* Lantern ignition — warm golden light spread on hover */
+@keyframes ramadan-lantern-ignite {
+  0% { box-shadow: 0 0 0 rgba(251,191,36,0); }
+  100% { box-shadow: 0 0 30px rgba(251,191,36,0.25), 0 0 60px rgba(251,191,36,0.08); }
+}
+
+/* Breathing glow for cards and UI elements */
+@keyframes ramadan-breathe {
+  0%, 100% { border-color: rgba(251, 191, 36, 0.15); box-shadow: 0 0 8px rgba(251,191,36,0.04); }
+  50% { border-color: rgba(251, 191, 36, 0.28); box-shadow: 0 0 20px rgba(251,191,36,0.1); }
+}
+
+/* Click ripple effect */
+@keyframes ramadan-ripple {
+  0% { transform: scale(0); opacity: 0.5; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+/* Text shimmer for blessing messages */
+@keyframes ramadan-shimmer-in {
+  0% { opacity: 0; transform: translateY(12px) scale(0.95); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes ramadan-shimmer-out {
+  0% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: translateY(-12px) scale(0.95); filter: blur(4px); }
+}
+
+/* Cursor glow - subtle golden halo around caret */
+@keyframes ramadan-cursor-glow {
+  0%, 100% { box-shadow: 0 0 2px rgba(251,191,36,0.2); }
+  50% { box-shadow: 0 0 6px rgba(251,191,36,0.4); }
+}
+
+.animate-ramadan-lantern { animation: ramadan-lantern-rise 18s ease-in-out infinite; }
+.animate-ramadan-glow { animation: ramadan-glow-pulse 3s ease-in-out infinite; }
+.animate-ramadan-star { animation: ramadan-star-shimmer 4s ease-in-out infinite; }
+.animate-ramadan-moon { animation: ramadan-moon-glow 5s ease-in-out infinite; }
+.animate-ramadan-aurora { animation: ramadan-aurora 12s ease-in-out infinite; }
+.animate-ramadan-geo { animation: ramadan-geo-spin 120s linear infinite; }
+.animate-ramadan-breathe { animation: ramadan-breathe 4s ease-in-out infinite; }
+
+/* ─── Ramadan "Lantern Magic" Button System ───────────────────── */
+/* Lantern-style buttons with golden glow ignition on hover */
+[data-theme-variant="ramadan"] .lantern-btn {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(251,191,36,0.06), rgba(245,158,11,0.03));
+  border: 1px solid rgba(251,191,36,0.18);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-theme-variant="ramadan"] .lantern-btn:hover {
+  border-color: rgba(251,191,36,0.5);
+  box-shadow: 0 0 24px rgba(251,191,36,0.2), 0 0 48px rgba(251,191,36,0.06);
+  background: linear-gradient(135deg, rgba(251,191,36,0.12), rgba(245,158,11,0.06));
+  transform: translateY(-1px);
+}
+[data-theme-variant="ramadan"] .lantern-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Light spread pseudo-element on lantern buttons */
+[data-theme-variant="ramadan"] .lantern-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(251,191,36,0.2), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+[data-theme-variant="ramadan"] .lantern-btn:hover::before {
+  opacity: 1;
+}
+
+/* Click ripple on lantern buttons */
+[data-theme-variant="ramadan"] .lantern-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--rx, 50%) var(--ry, 50%), rgba(251,191,36,0.35), transparent 60%);
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+[data-theme-variant="ramadan"] .lantern-btn:active::after {
+  animation: ramadan-ripple 0.6s ease-out forwards;
+}
+
+/* ─── Ramadan Card Breathing Glow ─────────────────────────────── */
+[data-theme-variant="ramadan"] .lantern-card {
+  border: 1px solid rgba(251, 191, 36, 0.12);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-theme-variant="ramadan"] .lantern-card:hover {
+  border-color: rgba(251, 191, 36, 0.3);
+  box-shadow: 0 0 20px rgba(251,191,36,0.08), 0 8px 32px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+/* ─── Ramadan Cursor Glow ─────────────────────────────────────── */
+[data-theme-variant="ramadan"] input,
+[data-theme-variant="ramadan"] textarea,
+[data-theme-variant="ramadan"] [contenteditable="true"] {
+  caret-color: #fbbf24;
+  animation: ramadan-cursor-glow 2s ease-in-out infinite;
+}
+
+/* ─── Ramadan Input Focus ─────────────────────────────────────── */
+[data-theme-variant="ramadan"] input:focus,
+[data-theme-variant="ramadan"] textarea:focus,
+[data-theme-variant="ramadan"] select:focus {
+  outline: none;
+  border-color: rgba(251, 191, 36, 0.4) !important;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.12) !important;
+  transition: all 0.3s ease;
+}
+
+/* ─── Smooth transition override for all Ramadan elements ─────── */
+[data-theme-variant="ramadan"] * {
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─── Ramadan Save Pulse ──────────────────────────────────────── */
+/* Triggers a soft moonlight wash across an element after a save/submit */
+@keyframes ramadan-save-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(251,191,36,0); }
+  20%  { box-shadow: 0 0 0 6px rgba(251,191,36,0.35), 0 0 60px rgba(251,191,36,0.18); }
+  100% { box-shadow: 0 0 0 18px rgba(251,191,36,0), 0 0 0 rgba(251,191,36,0); }
+}
+.ramadan-save-pulse { animation: ramadan-save-pulse 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* ─── Eid Sunrise transition ──────────────────────────────────── */
+@keyframes ramadan-sunrise-bg {
+  0%   { background: linear-gradient(to top, #060a14 0%, #060a14 100%); }
+  35%  { background: linear-gradient(to top, #2d1810 0%, #1a0f1c 60%, #060a14 100%); }
+  60%  { background: linear-gradient(to top, #f59e0b 0%, #f97316 25%, #7c2d12 55%, #1e1b4b 100%); }
+  85%  { background: linear-gradient(to top, #fef3c7 0%, #fbbf24 30%, #f59e0b 55%, #f97316 80%, #7c2d12 100%); }
+  100% { background: linear-gradient(to top, #fef3c7 0%, #fde68a 35%, #fbbf24 70%, #f59e0b 100%); }
+}
+@keyframes ramadan-sun-rise {
+  0%   { transform: translateY(120%) scale(0.6); opacity: 0; }
+  40%  { transform: translateY(80%) scale(0.85); opacity: 0.4; }
+  100% { transform: translateY(15%) scale(1); opacity: 1; }
+}
+@keyframes ramadan-eid-text-rise {
+  0%, 30% { opacity: 0; transform: translateY(20px) scale(0.94); filter: blur(8px); }
+  70%, 100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+/* ─── Streak flame breathing glow ─────────────────────────────── */
+@keyframes ramadan-flame {
+  0%, 100% { transform: scale(1) rotate(-2deg); filter: drop-shadow(0 0 6px rgba(251,191,36,0.4)); }
+  50%      { transform: scale(1.06) rotate(2deg); filter: drop-shadow(0 0 14px rgba(251,146,60,0.6)); }
+}
+.animate-ramadan-flame { animation: ramadan-flame 2.4s ease-in-out infinite; }
+
+/* ─── Lantern ring (used on dashboard widgets) ────────────────── */
+@keyframes ramadan-ring-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.animate-ramadan-ring { animation: ramadan-ring-rotate 60s linear infinite; }
+
+/* ─── Number tick (gentle flip-style) ─────────────────────────── */
+@keyframes ramadan-tick {
+  0%   { transform: translateY(-6px); opacity: 0; }
+  60%  { transform: translateY(2px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.ramadan-tick { animation: ramadan-tick 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 
 @keyframes nebula-float {
   0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.8; }

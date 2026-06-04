@@ -14,6 +14,7 @@ import StatsGrid from '@/components/dashboard/StatsGrid';
 import RoutineBanner from '@/components/dashboard/RoutineBanner';
 import QuickShortcuts from '@/components/dashboard/QuickShortcuts';
 import DashboardSkeleton from '@/components/dashboard/DashboardSkeleton';
+import RamadanDashboardPanel from '@/components/ramadan/RamadanDashboardPanel';
 
 export default function StudentDashboard() {
   const { user, loading: authLoading, tokenReady } = useAuth();
@@ -81,11 +82,14 @@ export default function StudentDashboard() {
           {/* Premium Overview Cards */}
           <StatsGrid stats={stats} loading={loadingNotes} />
 
+          {/* Ramadan Companion — countdown, journey, streak (only in Ramadan theme) */}
+          <RamadanDashboardPanel />
+
           {/* Premium Routine Generator Banner */}
           <RoutineBanner />
 
           {/* My Public Profile Card */}
-          <button onClick={() => router.push(`/profile/${user?.id}`)} className="w-full group relative overflow-hidden rounded-[2.5rem] border border-[var(--card-border)] bg-[var(--card-bg)] p-6 md:p-8 text-left shadow-lg hover:border-blue-500/30 transition-all duration-500 cursor-pointer">
+          <button onClick={() => router.push(`/profile/${user?.id}`)} className="w-full lantern-card group relative overflow-hidden rounded-[2.5rem] border border-[var(--card-border)] bg-[var(--card-bg)] p-6 md:p-8 text-left shadow-lg hover:border-blue-500/30 transition-all duration-500 cursor-pointer">
             <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-gradient-to-br from-blue-500/5 to-purple-500/5 blur-[60px] rounded-full pointer-events-none" />
             <div className="flex items-center justify-between relative z-10">
               <div className="flex items-center gap-4">
