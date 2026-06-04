@@ -23,6 +23,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import { apiRequest } from '@/lib/api';
 import Toast from '@/components/ui/Toast';
 import Skeleton from '@/components/ui/Skeleton';
+import ResourcePreviewModal from '@/components/resources/ResourcePreviewModal';
 
 export default function TermResourcesPage() {
   const { id: slug, term } = useParams();
@@ -34,6 +35,7 @@ export default function TermResourcesPage() {
   const [loadingResources, setLoadingResources] = useState(true);
   const [downloadingId, setDownloadingId] = useState(null);
   const [downloadingAll, setDownloadingAll] = useState(false);
+  const [previewResource, setPreviewResource] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
 
   const showToast = (message, type = 'success') => {
@@ -60,7 +62,7 @@ export default function TermResourcesPage() {
   const fetchResources = async () => {
     try {
       setLoadingResources(true);
-      const res = await apiRequest('/resources');
+      const res = await apiRequest('/resources?limit=1000');
       const data = Array.isArray(res) ? res : (res?.data || []);
       setResourcesList(data);
     } catch (err) {
@@ -154,7 +156,13 @@ export default function TermResourcesPage() {
         const blob = await response.blob();
         const ext = (res.file_type || 'pdf').toLowerCase();
         zip.file(`${res.title}.${ext}`, blob);
+        if (res.id && !res.uploader_id?.toString().startsWith('legacy')) {
+          apiRequest(`/resources/${res.id}/download`, { method: 'POST' }).catch(() => {});
+        }
       }
+      setResourcesList(prev => prev.map(r =>
+        filteredResources.some(fr => fr.id === r.id) ? { ...r, downloads: (r.downloads || 0) + 1 } : r
+      ));
       const content = await zip.generateAsync({ type: 'blob' });
       const url = URL.createObjectURL(content);
       const a = document.createElement('a');
@@ -176,7 +184,7 @@ export default function TermResourcesPage() {
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-20 transition-colors duration-500">
-      <DashboardNavbar />
+      <DashboardNavbar showBackButton={!!previewResource} onBack={() => setPreviewResource(null)} />
 
       <div className="pt-24 md:pt-32 px-4 md:px-8">
         <div className="max-w-[1100px] mx-auto">
@@ -289,14 +297,12 @@ export default function TermResourcesPage() {
                       >
                         <Bookmark size={16} className={isBookmarked ? "fill-current" : ""} />
                       </button>
-                      <a 
-                        href={res.file_path}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        onClick={() => setPreviewResource(res)}
                         className="p-2 md:p-2.5 rounded-lg md:rounded-xl bg-slate-100 dark:bg-white/[0.05] text-slate-500 hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-all flex items-center justify-center"
                       >
                         <Eye size={16} />
-                      </a>
+                      </button>
                     </div>
                   </div>
                 );
@@ -309,6 +315,13 @@ export default function TermResourcesPage() {
           </div>
         </div>
       </div>
+
+      {/* ─── RESOURCE PREVIEW MODAL ─────────────────────────────────────────── */}
+      <ResourcePreviewModal
+        resource={previewResource}
+        isOpen={!!previewResource}
+        onClose={() => setPreviewResource(null)}
+      />
 
       {/* ─── TOAST NOTIFICATION CONTAINER ─────────────────────────────────────── */}
       <Toast toast={toast} closeToast={closeToast} />

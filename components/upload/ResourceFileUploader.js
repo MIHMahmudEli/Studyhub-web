@@ -31,15 +31,24 @@ export default function ResourceFileUploader({ file, setFile, setStatus }) {
 
   const validateAndSetFile = (selectedFile) => {
     const validTypes = [
-      'application/pdf', 
-      'application/msword', 
+      'application/pdf',
+      'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'application/vnd.ms-powerpoint',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/plain',
+      'application/rtf',
+      'application/zip',
+      'application/vnd.rar',
+      'image/jpeg',
+      'image/png',
+      'image/webp',
     ];
     
     if (!validTypes.includes(selectedFile.type)) {
-      setStatus({ type: 'error', message: 'Please upload a valid PDF, DOC/DOCX, or PPT/PPTX file.' });
+      setStatus({ type: 'error', message: 'Please upload a valid PDF, DOC/DOCX, PPT/PPTX, XLS/XLSX, image, text, or archive file.' });
       return;
     }
     if (selectedFile.size > 50 * 1024 * 1024) {
@@ -82,7 +91,7 @@ export default function ResourceFileUploader({ file, setFile, setStatus }) {
           </div>
           <h3 className="text-lg font-bold mb-2 text-[var(--foreground)]">Drop resource file here</h3>
           <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-8 leading-relaxed">
-            Supports PDF, DOC, PPT <br /> (Max 50MB)
+            Supports PDF, DOC, PPT, XLS, Images, ZIP <br /> (Max 50MB)
           </p>
           <button 
             type="button"
@@ -98,7 +107,7 @@ export default function ResourceFileUploader({ file, setFile, setStatus }) {
         type="file" 
         className="hidden" 
         onChange={handleFileSelect}
-        accept=".pdf,.doc,.docx,.ppt,.pptx"
+        accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.rtf,.zip,.rar,.jpg,.jpeg,.png,.webp"
       />
     </div>
   );

@@ -24,6 +24,7 @@ import { supabase } from '@/lib/supabase';
 import Toast from '@/components/ui/Toast';
 import Skeleton from '@/components/ui/Skeleton';
 import EditResourceModal from '@/components/admin/EditResourceModal';
+import ResourcePreviewModal from '@/components/resources/ResourcePreviewModal';
 
 export default function AdminTermResourcesPage() {
   const { id: slug, term } = useParams();
@@ -35,6 +36,7 @@ export default function AdminTermResourcesPage() {
   const [deletingId, setDeletingId] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
+  const [previewResource, setPreviewResource] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
 
   const showToast = (message, type = 'success') => {
@@ -67,7 +69,7 @@ export default function AdminTermResourcesPage() {
   const fetchResources = async () => {
     try {
       setLoadingResources(true);
-      const res = await apiRequest('/resources');
+      const res = await apiRequest('/resources?limit=1000');
       const data = Array.isArray(res) ? res : (res?.data || []);
       setResourcesList(data);
     } catch (err) {
@@ -147,7 +149,7 @@ export default function AdminTermResourcesPage() {
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-20 transition-colors duration-500">
-      <DashboardNavbar />
+      <DashboardNavbar showBackButton={!!previewResource} onBack={() => setPreviewResource(null)} />
 
       <div className="pt-24 md:pt-32 px-4 md:px-8">
         <div className="max-w-[1100px] mx-auto">
@@ -225,16 +227,14 @@ export default function AdminTermResourcesPage() {
                     {/* Management and Operations Actions */}
                     <div className="flex items-center gap-2 sm:shrink-0">
                       
-                      {/* View Link */}
-                      <a 
-                        href={res.file_path}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      {/* Preview */}
+                      <button
+                        onClick={() => setPreviewResource(res)}
                         className="p-2 md:p-2.5 rounded-lg md:rounded-xl bg-slate-100 dark:bg-white/[0.05] text-slate-500 hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-all flex items-center justify-center cursor-pointer"
-                        title="View File"
+                        title="Preview File"
                       >
                         <Eye size={16} />
-                      </a>
+                      </button>
 
                       {/* Edit Button (if authorized) */}
                       {canManage && (
@@ -289,6 +289,13 @@ export default function AdminTermResourcesPage() {
         onClose={() => { setIsEditModalOpen(false); setSelectedResource(null); }}
         resource={selectedResource}
         onSave={handleSaveResource}
+      />
+
+      {/* Preview Modal */}
+      <ResourcePreviewModal
+        resource={previewResource}
+        isOpen={!!previewResource}
+        onClose={() => setPreviewResource(null)}
       />
 
       <Toast toast={toast} closeToast={closeToast} />

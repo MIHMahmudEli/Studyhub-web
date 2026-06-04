@@ -80,7 +80,7 @@ export function ThemeProvider({ children }) {
       body: { preferred_theme: newTheme },
     }).catch(() => {});
 
-    setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 500);
+    setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 250);
   }, [theme]);
 
   const previewTheme = useCallback((mode, variant) => {

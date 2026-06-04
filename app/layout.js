@@ -16,12 +16,15 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-theme="dark" data-scroll-behavior="smooth" className={`${inter.variable} ${jakarta.variable}`}>
+    <html lang="en" data-theme="dark" data-scroll-behavior="smooth" suppressHydrationWarning className={`${inter.variable} ${jakarta.variable}`}>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <meta httpEquiv="cache-control" content="no-cache, no-store, must-revalidate" />
         <meta httpEquiv="pragma" content="no-cache" />
         <meta httpEquiv="expires" content="0" />
+        <script dangerouslySetInnerHTML={{
+          __html: `(function(){try{var t=localStorage.getItem('preferred_theme')||localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);var vk=t==='dark'?'admin_dark_theme':'admin_light_theme',v=localStorage.getItem(vk);if(v==='current'||v==='previous')document.documentElement.setAttribute('data-theme-variant',v)}catch(e){}})()`,
+        }} />
       </head>
       <body className="font-sans antialiased">
         <ThemeProvider>

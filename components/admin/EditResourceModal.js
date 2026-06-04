@@ -316,7 +316,7 @@ export default function EditResourceModal({ isOpen, onClose, resource, onSave })
                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
                   {file ? file.name : "Drag or Click to replace file"}
                 </p>
-                <p className="text-[7px] text-slate-400 mt-0.5">PDF, DOCX, ZIP, IMAGES (MAX 10MB)</p>
+                <p className="text-[7px] text-slate-400 mt-0.5">PDF, DOC, PPT, XLS, Images, ZIP (Max 50MB)</p>
               </div>
             </div>
           </div>

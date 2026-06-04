@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
+  ArrowLeft,
   FileText, 
   Layers, 
   Bookmark, 
@@ -34,7 +35,7 @@ const navLinks = [
   { name: 'Upload', href: '/upload', icon: UploadCloud },
 ];
 
-export default function DashboardNavbar() {
+export default function DashboardNavbar({ showBackButton, onBack }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -51,9 +52,18 @@ export default function DashboardNavbar() {
         
         {/* Logo Section */}
         <div className="flex items-center gap-10">
-          <Link href="/notes" className="transition-transform hover:scale-105 active:scale-95">
-            <StudyHubLogo size={28} textSize={18} />
-          </Link>
+          {showBackButton ? (
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition-all shrink-0 shadow-lg shadow-blue-500/25 text-xs font-black uppercase tracking-widest animate-in fade-in slide-in-from-left-4 duration-300"
+            >
+              <ArrowLeft size={16} className="animate-[arrow-slide_1.5s_ease-in-out_infinite]" /> Back
+            </button>
+          ) : (
+            <Link href="/notes" className="transition-transform hover:scale-105 active:scale-95">
+              <StudyHubLogo size={28} textSize={18} />
+            </Link>
+          )}
 
           {/* Navigation Links - Desktop */}
           <div className="hidden lg:flex items-center gap-1">

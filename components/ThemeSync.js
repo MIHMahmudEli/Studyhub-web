@@ -16,10 +16,17 @@ export default function ThemeSync() {
       return;
     }
     if (synced.current) return;
-    if (user.preferred_theme) {
+
+    // localStorage is set synchronously on toggle — it always reflects the
+    // user's most recent action. Trust it over the sessionStorage-cached DB
+    // value, which may be stale (the async PATCH may not have completed).
+    const localPref = localStorage.getItem('preferred_theme');
+    if (localPref === 'dark' || localPref === 'light') {
+      syncTheme(localPref);
+    } else if (user.preferred_theme) {
       syncTheme(user.preferred_theme);
-      localStorage.setItem('preferred_theme', user.preferred_theme);
     }
+
     synced.current = true;
   }, [user, loading, syncTheme]);
 

@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { useState } from 'react';
 import { FileText } from 'lucide-react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { NoteDetailSkeleton } from '@/components/ui/Skeleton';
@@ -9,6 +10,7 @@ import NotePreview from '@/components/notes/NotePreview';
 import NoteMetadata from '@/components/notes/NoteMetadata';
 import ReactionBar from '@/components/notes/ReactionBar';
 import Toast from '@/components/ui/Toast';
+import ResourcePreviewModal from '@/components/resources/ResourcePreviewModal';
 import { useNotePage } from '@/lib/hooks/useNotePage';
 
 const RatingWidget = dynamic(() => import('@/components/notes/RatingWidget'), {
@@ -20,7 +22,7 @@ const DeleteConfirmModal = dynamic(() => import('@/components/notes/DeleteConfir
 export default function NotePreviewPage() {
   const {
     note, loading,
-    isReadingMode, setIsReadingMode,
+    isReadingMode,
     isBookmarked, isEditModalOpen, setIsEditModalOpen,
     isDeleteConfirmOpen, setIsDeleteConfirmOpen,
     totalRatings, setTotalRatings, downloading, toast, isUploaderOrAdmin,
@@ -28,6 +30,8 @@ export default function NotePreviewPage() {
     handleEditSave, handleDeleteComplete, handleRateSuccess,
     showToast, closeToast,
   } = useNotePage();
+
+  const [previewResource, setPreviewResource] = useState(null);
 
   if (loading) {
     return (
@@ -63,19 +67,18 @@ export default function NotePreviewPage() {
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-20">
-      <DashboardNavbar />
+      <DashboardNavbar showBackButton={!!previewResource} onBack={() => setPreviewResource(null)} />
 
       <div className="pt-24 md:pt-32 px-4 md:px-8 max-w-[1400px] mx-auto">
         <NoteHeader
           downloading={downloading}
           isBookmarked={isBookmarked}
-          isReadingMode={isReadingMode}
           onBack={() => window.history.back()}
           onShare={() => {
             navigator.clipboard.writeText(window.location.href);
             showToast('Link copied to clipboard!', 'success');
           }}
-          onToggleReadingMode={() => setIsReadingMode(!isReadingMode)}
+          onToggleReadingMode={() => setPreviewResource(note)}
           onToggleBookmark={handleBookmarkToggle}
           onDownload={handleDownload}
         />
@@ -131,6 +134,12 @@ export default function NotePreviewPage() {
         onClose={() => setIsDeleteConfirmOpen(false)}
         note={note}
         onDelete={handleDeleteComplete}
+      />
+
+      <ResourcePreviewModal
+        resource={previewResource}
+        isOpen={!!previewResource}
+        onClose={() => setPreviewResource(null)}
       />
 
       <Toast toast={toast} closeToast={closeToast} />

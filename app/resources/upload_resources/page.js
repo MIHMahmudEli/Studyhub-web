@@ -22,11 +22,26 @@ import MetadataFormFields from '@/components/upload/MetadataFormFields';
 import PageHeader from '@/components/ui/PageHeader';
 
 const VALID_TYPES = [
+  // Documents
   'application/pdf',
   'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  // Presentations
   'application/vnd.ms-powerpoint',
   'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  // Spreadsheets
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  // Text
+  'text/plain',
+  'application/rtf',
+  // Archives
+  'application/zip',
+  'application/vnd.rar',
+  // Images
+  'image/jpeg',
+  'image/png',
+  'image/webp',
 ];
 
 export default function UploadResourcePage() {
@@ -103,7 +118,7 @@ export default function UploadResourcePage() {
 
   const addFile = (selectedFile) => {
     if (!VALID_TYPES.includes(selectedFile.type)) {
-      setStatus({ type: 'error', message: 'Please upload a valid PDF, DOC/DOCX, or PPT/PPTX file.' });
+      setStatus({ type: 'error', message: 'Please upload a valid PDF, DOC/DOCX, PPT/PPTX, XLS/XLSX, image, text, or archive file.' });
       return;
     }
     if (selectedFile.size > 50 * 1024 * 1024) {
@@ -360,7 +375,7 @@ export default function UploadResourcePage() {
                       <UploadCloud size={24} />
                     </div>
                     <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Drop files or click to browse</p>
-                    <p className="text-[9px] font-bold text-slate-500">PDF, DOC, PPT (Max 50MB each)</p>
+                    <p className="text-[9px] font-bold text-slate-500">PDF, DOC, PPT, XLS, Images, ZIP (Max 50MB each)</p>
                   </div>
                 ) : (
                   <button
@@ -378,7 +393,7 @@ export default function UploadResourcePage() {
                   type="file"
                   className="hidden"
                   onChange={handleInputChange}
-                  accept=".pdf,.doc,.docx,.ppt,.pptx"
+                  accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.rtf,.zip,.rar,.jpg,.jpeg,.png,.webp"
                 />
               </div>
 
