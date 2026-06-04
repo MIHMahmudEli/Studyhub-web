@@ -10,7 +10,12 @@ const CACHE_KEY_DARK = 'admin_dark_theme';
 const CACHE_KEY_LIGHT = 'admin_light_theme';
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('preferred_theme') || localStorage.getItem('theme') || 'dark';
+    }
+    return 'dark';
+  });
   const [darkThemeVariant, setDarkThemeVariant] = useState('current');
   const [lightThemeVariant, setLightThemeVariant] = useState('current');
   const [preview, setPreview] = useState(null);
@@ -69,7 +74,6 @@ export function ThemeProvider({ children }) {
   const toggleTheme = useCallback(() => {
     setPreview(null);
     const newTheme = theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.classList.add('theme-transitioning');
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
     localStorage.setItem('preferred_theme', newTheme);
@@ -79,8 +83,6 @@ export function ThemeProvider({ children }) {
       method: 'PATCH',
       body: { preferred_theme: newTheme },
     }).catch(() => {});
-
-    setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 250);
   }, [theme]);
 
   const previewTheme = useCallback((mode, variant) => {
