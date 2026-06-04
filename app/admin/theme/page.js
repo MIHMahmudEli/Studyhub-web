@@ -164,20 +164,21 @@ export default function AdminThemePage() {
                         <Check size={14} className="text-white" />
                       </div>
                     )}
-                    {t.hasAnimation ? (
-                      <div className="relative h-32 w-full rounded-2xl overflow-hidden mb-4 bg-gradient-to-br from-indigo-950 via-purple-950 to-blue-950 shadow-md">
-                        <SpacePreview />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-12 h-12 rounded-2xl bg-black/40 backdrop-blur-sm flex items-center justify-center text-white shadow-lg">
-                            <Icon size={20} />
-                          </div>
+                    <div className="relative h-32 w-full rounded-2xl overflow-hidden mb-4 shadow-md">
+                      {t.hasAnimation ? (
+                        <>
+                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-purple-950 to-blue-950" />
+                          <SpacePreview />
+                        </>
+                      ) : (
+                        <div className={`absolute inset-0 bg-gradient-to-br ${t.preview}`} />
+                      )}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-2xl bg-black/40 backdrop-blur-sm flex items-center justify-center text-white shadow-lg">
+                          <Icon size={20} />
                         </div>
                       </div>
-                    ) : (
-                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${t.preview} flex items-center justify-center text-white mb-4 shadow-md`}>
-                        <Icon size={20} />
-                      </div>
-                    )}
+                    </div>
                     <h3 className="text-xs font-black uppercase tracking-widest mb-1.5">{t.label}</h3>
                     <p className="text-[9px] font-medium text-slate-500 leading-relaxed">{t.desc}</p>
                   </button>
