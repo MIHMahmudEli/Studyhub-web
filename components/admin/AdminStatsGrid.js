@@ -9,7 +9,7 @@ import {
 export default function AdminStatsGrid({
   user, loadingData,
   permissions, activeUsersCount, platformTotalUsers,
-  pendingNotes, pendingResources, resources, notes,
+  pendingNotes, pendingNotesTotal, pendingResources, pendingResourcesTotal, resources, notes,
   onPermissionToggle,
 }) {
   const hasPermission = (key) =>
@@ -36,7 +36,7 @@ export default function AdminStatsGrid({
       <StatsCard
         href="/admin/pending_notes"
         title="Pending Notes"
-        value={pendingNotes.length}
+        value={pendingNotesTotal}
         subtitle="Awaiting moderation"
         icon={Clock}
         colorScheme="purple"
@@ -48,7 +48,7 @@ export default function AdminStatsGrid({
         <StatsCard
           href="/admin/pending_resources"
           title="Pending Resources"
-          value={pendingResources.length}
+          value={pendingResourcesTotal}
           subtitle="Awaiting approval"
           icon={Layers}
           colorScheme="amber"

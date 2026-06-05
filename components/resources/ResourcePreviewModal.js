@@ -55,11 +55,17 @@ function usePdfProgress(directUrl) {
   const [progress, setProgress] = useState(0);
   const [blobUrl, setBlobUrl] = useState(null);
   const [error, setError] = useState(null);
-  const cancelledRef = useRef(false);
 
   useEffect(() => {
+    // Reset on every url change (including null)
+    setProgress(0);
+    setBlobUrl(null);
+    setError(null);
+
     if (!directUrl) return;
-    cancelledRef.current = false;
+
+    // Local flag captured by this closure — immune to stale ref mutations
+    let active = true;
 
     (async () => {
       try {
@@ -70,27 +76,27 @@ function usePdfProgress(directUrl) {
         let received = 0;
         const chunks = [];
         while (true) {
-          if (cancelledRef.current) return;
+          if (!active) return;
           const { done, value } = await reader.read();
           if (done) break;
           chunks.push(value);
           received += value.length;
-          if (contentLength) {
+          if (contentLength && active) {
             setProgress(Math.min(Math.round((received / contentLength) * 100), 99));
           }
         }
         const blob = new Blob(chunks, { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
-        if (!cancelledRef.current) {
+        if (active) {
           setBlobUrl(url);
           setProgress(100);
         }
       } catch (err) {
-        if (!cancelledRef.current) setError(err.message);
+        if (active) setError(err.message);
       }
     })();
 
-    return () => { cancelledRef.current = true; };
+    return () => { active = false; };
   }, [directUrl]);
 
   useEffect(() => {

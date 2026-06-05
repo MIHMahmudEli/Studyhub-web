@@ -3,7 +3,7 @@
 import ShortcutCard from '@/components/admin/ShortcutCard';
 import { Layers, Clock, LayoutDashboard } from 'lucide-react';
 
-export default function AdminShortcuts({ user, loadingData, pendingNotes, pendingResources }) {
+export default function AdminShortcuts({ user, loadingData, pendingNotesTotal, pendingResourcesTotal, pendingNotes, pendingResources }) {
   return (
     <div className="space-y-4 sm:space-y-6">
       <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Management Shortcuts</h3>
@@ -23,7 +23,7 @@ export default function AdminShortcuts({ user, loadingData, pendingNotes, pendin
             href="/admin/pending_resources"
             title="Resources Moderation"
             description="Review library uploads"
-            badgeText={`${pendingResources.length} Pending`}
+            badgeText={`${pendingResourcesTotal} Pending`}
             icon={Layers}
             colorScheme="amber"
             loading={loadingData}
@@ -34,7 +34,7 @@ export default function AdminShortcuts({ user, loadingData, pendingNotes, pendin
           href="/admin/pending_notes"
           title="Notes Moderation Queue"
           description="Review student notes"
-          badgeText={`${pendingNotes.length} Pending`}
+          badgeText={`${pendingNotesTotal} Pending`}
           icon={Clock}
           colorScheme="purple"
           loading={loadingData}

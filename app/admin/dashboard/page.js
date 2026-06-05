@@ -13,7 +13,7 @@ export default function AdminDashboardPage() {
     user, authLoading, loadingData, toast, closeToast,
     uploadVisibility, permissions,
     activeUsersCount, platformTotalUsers,
-    pendingNotes, pendingResources, resources, notes,
+    pendingNotes, pendingNotesTotal, pendingResources, pendingResourcesTotal, resources, notes,
     handleVisibilityChange, handlePermissionToggle,
   } = useAdminDashboard();
 
@@ -43,7 +43,9 @@ export default function AdminDashboardPage() {
             activeUsersCount={activeUsersCount}
             platformTotalUsers={platformTotalUsers}
             pendingNotes={pendingNotes}
+            pendingNotesTotal={pendingNotesTotal}
             pendingResources={pendingResources}
+            pendingResourcesTotal={pendingResourcesTotal}
             resources={resources}
             notes={notes}
             onPermissionToggle={handlePermissionToggle}
@@ -53,7 +55,9 @@ export default function AdminDashboardPage() {
             user={user}
             loadingData={loadingData}
             pendingNotes={pendingNotes}
+            pendingNotesTotal={pendingNotesTotal}
             pendingResources={pendingResources}
+            pendingResourcesTotal={pendingResourcesTotal}
           />
 
         </div>

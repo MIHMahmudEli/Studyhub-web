@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import Image from 'next/image';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -38,8 +37,11 @@ export default function PendingNotesPage() {
   const [totalPending, setTotalPending] = useState(0);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
-  const limit = 12;
+  const limit = 20;
   const observerRef = useRef(null);
+  const readyRef = useRef(false);
+  const pendingJobsRef = useRef({});
+  const [jobCount, setJobCount] = useState(0);
 
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type, isClosing: false });
@@ -53,12 +55,13 @@ export default function PendingNotesPage() {
 
   // Role verification (Admin and Moderator can access)
   useEffect(() => {
-    if (!authLoading) {
-      if (!user) {
-        router.push('/auth');
-      } else if (user.role !== 'admin' && user.role !== 'moderator') {
-        router.push('/dashboard');
-      }
+    if (authLoading) return;
+    if (!user) {
+      router.push('/auth');
+    } else if (user.role !== 'admin' && user.role !== 'moderator') {
+      router.push('/dashboard');
+    } else {
+      readyRef.current = true;
     }
   }, [user, authLoading, router]);
 
@@ -97,15 +100,18 @@ export default function PendingNotesPage() {
   };
 
   const handleNoteStatus = async (id, newStatus) => {
+    setPendingNotes(prev => prev.filter(n => n.id !== id));
     try {
-      await apiRequest(`/notes/${id}/status`, {
+      const res = await apiRequest(`/notes/${id}/status`, {
         method: 'PATCH',
         body: JSON.stringify({ status: newStatus })
       });
-      showToast(`Note #${id} has been ${newStatus} successfully.`, 'success');
-      setPendingNotes(prev => prev.filter(n => n.id !== id));
+      if (res?.jobId) {
+        pendingJobsRef.current[res.jobId] = { itemId: id, type: 'note', newStatus };
+        setJobCount(c => c + 1);
+      }
     } catch (err) {
-      console.error(`Failed to update note status:`, err);
+      console.error(`Failed to queue note status update:`, err);
       showToast(err.message || `Failed to update note status.`, 'error');
     }
   };
@@ -126,10 +132,35 @@ export default function PendingNotesPage() {
     return () => { if (el) observer.unobserve(el); };
   }, [hasMore, loadingMore, currentPage]);
 
-  if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
+  // Poll for moderation job results (failure notifications only)
+  useEffect(() => {
+    if (jobCount === 0) return;
+    const interval = setInterval(async () => {
+      const ids = Object.keys(pendingJobsRef.current);
+      if (ids.length === 0) { setJobCount(0); return; }
+      try {
+        const statuses = await apiRequest(`/moderation/jobs/status?ids=${ids.join(',')}`);
+        for (const s of statuses) {
+          const job = pendingJobsRef.current[s.jobId];
+          if (!job) continue;
+          if (s.status === 'failed') {
+            showToast(`Failed to ${job.newStatus} note #${job.itemId}. ${s.error || ''}`, 'error');
+            delete pendingJobsRef.current[s.jobId];
+            setJobCount(c => c - 1);
+          } else if (s.status === 'completed') {
+            delete pendingJobsRef.current[s.jobId];
+            setJobCount(c => c - 1);
+          }
+        }
+      } catch { /* poll will retry next cycle */ }
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [jobCount]);
+
+  if (!readyRef.current && (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator'))) return null;
 
   return (
-    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-32 transition-colors duration-500">
+    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-32">
       <DashboardNavbar />
 
       <div className="pt-24 md:pt-32 px-4 md:px-8">
@@ -144,7 +175,7 @@ export default function PendingNotesPage() {
             glowColor="bg-purple-500/10"
             statsIcon={Clock}
             statsTitle="Moderation Queue"
-            statsValue={`${pendingNotes.length} Awaiting Approval`}
+            statsValue={`${totalPending} Awaiting Approval`}
             statsColorClass="text-purple-500 bg-purple-500/10 border-purple-500/20"
           />
 
@@ -176,7 +207,7 @@ export default function PendingNotesPage() {
                 </thead>
                 <tbody className="divide-y divide-[var(--card-border)] text-xs font-bold">
                   {pendingNotes.map((note) => (
-                    <tr key={note.id} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={note.id} className="hover:bg-white/[0.02] transition-colors" style={{ contentVisibility: 'auto' }}>
                       <td className="py-4 sm:py-5 pl-4 max-w-[250px] sm:max-w-[300px]">
                         <p className="font-black text-sm text-[var(--foreground)] truncate">{note.title}</p>
                         <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 truncate">{note.course_code} • {note.dept}</p>
@@ -184,7 +215,7 @@ export default function PendingNotesPage() {
                       <td className="py-4 sm:py-5 whitespace-nowrap">
                         <button onClick={() => router.push(`/profile/${note.uploader_id}`)} className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity text-left">
                           {note.uploader?.profile_pic ? (
-                            <Image src={note.uploader.profile_pic} alt="" width={24} height={24} className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
+                            <img src={note.uploader.profile_pic} alt="" width={24} height={24} className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
                           ) : (
                             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-[10px] font-black text-white shrink-0">
                               {note.uploader?.name?.[0] || 'U'}
