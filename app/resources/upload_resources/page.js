@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
+import { uploadToR2 } from '@/lib/r2';
 import { useRouter } from 'next/navigation';
 import coursesData from '@/lib/data/courses.json';
 import MetadataFormFields from '@/components/upload/MetadataFormFields';
@@ -121,8 +121,8 @@ export default function UploadResourcePage() {
       setStatus({ type: 'error', message: 'Please upload a valid PDF, DOC/DOCX, PPT/PPTX, XLS/XLSX, image, text, or archive file.' });
       return;
     }
-    if (selectedFile.size > 50 * 1024 * 1024) {
-      setStatus({ type: 'error', message: 'File size must be less than 50MB.' });
+    if (selectedFile.size > 200 * 1024 * 1024) {
+      setStatus({ type: 'error', message: 'File size must be less than 200MB.' });
       return;
     }
     setFiles(prev => [...prev, { file: selectedFile, id: `${Date.now()}-${Math.random().toString(36).substring(2, 8)}` }]);
@@ -148,18 +148,8 @@ export default function UploadResourcePage() {
     const { file } = fileEntry;
     const fileExt = file.name.split('.').pop() || 'pdf';
 
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('resources')
-      .upload(filePath, file, { cacheControl: '3600', upsert: true });
-
-    if (uploadError) throw uploadError;
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('resources')
-      .getPublicUrl(filePath);
+    const key = `resources/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const publicUrl = await uploadToR2(file, key);
 
     const title = file.name.replace(/\.[^/.]+$/, "");
 
@@ -190,10 +180,6 @@ export default function UploadResourcePage() {
     setStatus({ type: '', message: '' });
 
     try {
-      try {
-        await supabase.storage.createBucket('resources', { public: true });
-      } catch (_) {}
-
       let uploaded = 0;
       for (const entry of files) {
         setStatus({ type: '', message: `Uploading file ${uploaded + 1} of ${files.length}...` });
@@ -375,7 +361,7 @@ export default function UploadResourcePage() {
                       <UploadCloud size={24} />
                     </div>
                     <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Drop files or click to browse</p>
-                    <p className="text-[9px] font-bold text-slate-500">PDF, DOC, PPT, XLS, Images, ZIP (Max 50MB each)</p>
+                    <p className="text-[9px] font-bold text-slate-500">PDF, DOC, PPT, XLS, Images, ZIP (Max 200MB each)</p>
                   </div>
                 ) : (
                   <button

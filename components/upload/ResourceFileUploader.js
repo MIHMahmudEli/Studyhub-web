@@ -51,8 +51,8 @@ export default function ResourceFileUploader({ file, setFile, setStatus }) {
       setStatus({ type: 'error', message: 'Please upload a valid PDF, DOC/DOCX, PPT/PPTX, XLS/XLSX, image, text, or archive file.' });
       return;
     }
-    if (selectedFile.size > 50 * 1024 * 1024) {
-      setStatus({ type: 'error', message: 'File size must be less than 50MB.' });
+    if (selectedFile.size > 200 * 1024 * 1024) {
+      setStatus({ type: 'error', message: 'File size must be less than 200MB.' });
       return;
     }
     setFile(selectedFile);
@@ -91,7 +91,7 @@ export default function ResourceFileUploader({ file, setFile, setStatus }) {
           </div>
           <h3 className="text-lg font-bold mb-2 text-[var(--foreground)]">Drop resource file here</h3>
           <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-8 leading-relaxed">
-            Supports PDF, DOC, PPT, XLS, Images, ZIP <br /> (Max 50MB)
+            Supports PDF, DOC, PPT, XLS, Images, ZIP <br /> (Max 200MB)
           </p>
           <button 
             type="button"

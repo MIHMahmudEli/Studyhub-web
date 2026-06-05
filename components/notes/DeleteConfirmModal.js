@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
-import { supabase } from '@/lib/supabase';
+import { deleteFromR2 } from '@/lib/r2';
 
 export default function DeleteConfirmModal({ isOpen, onClose, note, onDelete }) {
   const [deleting, setDeleting] = useState(false);
@@ -11,15 +11,10 @@ export default function DeleteConfirmModal({ isOpen, onClose, note, onDelete }) 
   const handleDeleteSubmit = async () => {
     setDeleting(true);
     try {
-      // 1. Delete the file from Supabase storage
+      // 1. Delete the file from R2
       if (note.file_path) {
         try {
-          const fileName = note.file_path.split('/notes/').pop();
-          if (fileName) {
-            await supabase.storage
-              .from('notes')
-              .remove([fileName]);
-          }
+          await deleteFromR2(note.file_path);
         } catch (err) {
           console.warn('Failed to delete note file from storage:', err);
         }

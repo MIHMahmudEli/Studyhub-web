@@ -35,8 +35,8 @@ export default function FileUploader({ file, setFile, setStatus }) {
       setStatus({ type: 'error', message: 'Please upload a PDF, Word document, or Image.' });
       return;
     }
-    if (selectedFile.size > 50 * 1024 * 1024) {
-      setStatus({ type: 'error', message: 'File size must be less than 50MB.' });
+    if (selectedFile.size > 200 * 1024 * 1024) {
+      setStatus({ type: 'error', message: 'File size must be less than 200MB.' });
       return;
     }
     setFile(selectedFile);
@@ -75,7 +75,7 @@ export default function FileUploader({ file, setFile, setStatus }) {
           </div>
           <h3 className="text-lg font-bold mb-2">Drop your notes here</h3>
           <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-8 leading-relaxed">
-            Supports PDF, PNG, JPG, DOCX <br /> (Max 50MB)
+            Supports PDF, PNG, JPG, DOCX <br /> (Max 200MB)
           </p>
           <button 
             type="button"

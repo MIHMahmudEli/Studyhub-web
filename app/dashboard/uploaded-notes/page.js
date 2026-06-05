@@ -7,7 +7,7 @@ import Link from 'next/link';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import Toast from '@/components/ui/Toast';
 import { apiRequest } from '@/lib/api';
-import { supabase } from '@/lib/supabase';
+import { deleteFromR2 } from '@/lib/r2';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminPanel from '@/components/admin/AdminPanel';
 import {
@@ -117,14 +117,9 @@ export default function UploadedNotesPage() {
       const noteToDelete = myNotes.find(n => n.id === id);
       if (noteToDelete && noteToDelete.file_path) {
         try {
-          const fileName = noteToDelete.file_path.split('/notes/').pop();
-          if (fileName) {
-            await supabase.storage
-              .from('notes')
-              .remove([fileName]);
-          }
+          await deleteFromR2(noteToDelete.file_path);
         } catch (err) {
-          console.warn('Failed to delete file from Supabase storage:', err);
+          console.warn('Failed to delete file from R2:', err);
         }
       }
 

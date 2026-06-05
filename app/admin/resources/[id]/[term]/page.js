@@ -20,7 +20,7 @@ import { useRouter, useParams } from 'next/navigation';
 import coursesData from '@/lib/data/courses.json';
 import PageHeader from '@/components/ui/PageHeader';
 import { apiRequest } from '@/lib/api';
-import { supabase } from '@/lib/supabase';
+import { deleteFromR2 } from '@/lib/r2';
 import Toast from '@/components/ui/Toast';
 import Skeleton from '@/components/ui/Skeleton';
 import EditResourceModal from '@/components/admin/EditResourceModal';
@@ -106,17 +106,12 @@ export default function AdminTermResourcesPage() {
     try {
       setDeletingId(res.id);
 
-      // 1. Delete the physical file from Supabase storage first to save space
+      // 1. Delete the physical file from R2 first to save space
       if (res.file_path) {
         try {
-          const fileName = res.file_path.split('/resources/').pop();
-          if (fileName) {
-            await supabase.storage
-              .from('resources')
-              .remove([fileName]);
-          }
+          await deleteFromR2(res.file_path);
         } catch (err) {
-          console.warn('Failed to clean up Supabase storage file:', err);
+          console.warn('Failed to clean up R2 file:', err);
         }
       }
 

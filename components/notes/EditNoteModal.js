@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { FileText } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
-import { supabase } from '@/lib/supabase';
+import { uploadToR2, deleteFromR2 } from '@/lib/r2';
 import coursesData from '@/lib/data/courses.json';
 
 export default function EditNoteModal({ isOpen, onClose, note, onSave }) {
@@ -92,18 +92,8 @@ export default function EditNoteModal({ isOpen, onClose, note, onSave }) {
       let filePayload = {};
       if (newFile) {
         const fileExt = newFile.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const filePath = `${fileName}`;
-
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('notes')
-          .upload(filePath, newFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('notes')
-          .getPublicUrl(filePath);
+        const key = `notes/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const publicUrl = await uploadToR2(newFile, key);
 
         filePayload = {
           file_path: publicUrl,
@@ -112,12 +102,7 @@ export default function EditNoteModal({ isOpen, onClose, note, onSave }) {
 
         if (note.file_path) {
           try {
-            const oldFileName = note.file_path.split('/notes/').pop();
-            if (oldFileName) {
-              await supabase.storage
-                .from('notes')
-                .remove([oldFileName]);
-            }
+            await deleteFromR2(note.file_path);
           } catch (err) {
             console.warn('Failed to delete old file from storage:', err);
           }

@@ -11,7 +11,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
-import { supabase } from '@/lib/supabase';
+import { uploadToR2, deleteFromR2 } from '@/lib/r2';
 import coursesData from '@/lib/data/courses.json';
 
 export default function EditResourceModal({ isOpen, onClose, resource, onSave }) {
@@ -99,37 +99,16 @@ export default function EditResourceModal({ isOpen, onClose, resource, onSave })
       if (file) {
         setStatus({ type: 'info', message: 'Uploading new resource file...' });
 
-        // Ensure resources bucket exists
-        try {
-          await supabase.storage.createBucket('resources', { public: true });
-        } catch (_) {}
-
-        // Upload to Supabase Storage
         const fileExt = file.name.split('.').pop() || 'pdf';
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const filePath = `${fileName}`;
+        const key = `resources/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const publicUrl = await uploadToR2(file, key);
 
-        const { error: uploadError } = await supabase.storage
-          .from('resources')
-          .upload(filePath, file, { cacheControl: '3600', upsert: true });
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('resources')
-          .getPublicUrl(filePath);
-
-        // Delete the older replaced file from Supabase storage to save cloud space
+        // Delete the older replaced file from R2 to save space
         if (resource.file_path) {
           try {
-            const oldFileName = resource.file_path.split('/resources/').pop();
-            if (oldFileName) {
-              await supabase.storage
-                .from('resources')
-                .remove([oldFileName]);
-            }
+            await deleteFromR2(resource.file_path);
           } catch (err) {
-            console.warn('Failed to delete old replaced file from Supabase storage:', err);
+            console.warn('Failed to delete old replaced file from R2:', err);
           }
         }
 
@@ -316,7 +295,7 @@ export default function EditResourceModal({ isOpen, onClose, resource, onSave })
                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
                   {file ? file.name : "Drag or Click to replace file"}
                 </p>
-                <p className="text-[7px] text-slate-400 mt-0.5">PDF, DOC, PPT, XLS, Images, ZIP (Max 50MB)</p>
+                <p className="text-[7px] text-slate-400 mt-0.5">PDF, DOC, PPT, XLS, Images, ZIP (Max 200MB)</p>
               </div>
             </div>
           </div>

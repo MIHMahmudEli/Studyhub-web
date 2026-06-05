@@ -21,7 +21,7 @@ import {
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { useBlessings } from '@/components/ramadan/Blessings';
-import { supabase } from '@/lib/supabase';
+import { uploadToR2 } from '@/lib/r2';
 import { useRouter } from 'next/navigation';
 import coursesData from '@/lib/data/courses.json';
 
@@ -104,8 +104,8 @@ export default function UploadPage() {
       setStatus({ type: 'error', message: 'Please upload a PDF, Word document, or Image.' });
       return;
     }
-    if (selectedFile.size > 50 * 1024 * 1024) {
-      setStatus({ type: 'error', message: 'File size must be less than 50MB.' });
+    if (selectedFile.size > 200 * 1024 * 1024) {
+      setStatus({ type: 'error', message: 'File size must be less than 200MB.' });
       return;
     }
     setFiles(prev => [...prev, { file: selectedFile, id: `${Date.now()}-${Math.random().toString(36).substring(2, 8)}` }]);
@@ -131,18 +131,8 @@ export default function UploadPage() {
     const { file } = fileEntry;
     const fileExt = file.name.split('.').pop();
 
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('notes')
-      .upload(filePath, file);
-
-    if (uploadError) throw uploadError;
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('notes')
-      .getPublicUrl(filePath);
+    const key = `notes/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const publicUrl = await uploadToR2(file, key);
 
     const courseObj = coursesData.find(c => c.courseTitle === formData.course);
 
@@ -310,7 +300,7 @@ export default function UploadPage() {
                       <UploadCloud size={24} />
                     </div>
                     <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Drop files or click to browse</p>
-                    <p className="text-[9px] font-bold text-slate-500">PDF, PNG, JPG, DOCX (Max 50MB each)</p>
+                    <p className="text-[9px] font-bold text-slate-500">PDF, PNG, JPG, DOCX (Max 200MB each)</p>
                   </div>
                 ) : (
                   <button
