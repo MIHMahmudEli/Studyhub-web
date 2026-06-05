@@ -2,8 +2,19 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { FileText, Loader2 } from 'lucide-react';
+import { FileText, Loader2, ExternalLink } from 'lucide-react';
 import { getDisplayUrl } from '@/lib/r2';
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isMobile;
+}
 
 function CircularProgress({ percent }) {
   const radius = 40;
@@ -92,6 +103,7 @@ function usePdfProgress(directUrl) {
 
 export default function NotePreview({ note, isReadingMode, downloading, onDownload }) {
   const displayUrl = getDisplayUrl(note.file_path);
+  const isMobile = useIsMobile();
   const isPdf = displayUrl && note.file_type?.toLowerCase() === 'pdf';
   const isImage = displayUrl && ['jpg', 'jpeg', 'png', 'webp'].includes(note.file_type?.toLowerCase());
   const isPreviewable = displayUrl && (isPdf || isImage);
@@ -217,8 +229,32 @@ export default function NotePreview({ note, isReadingMode, downloading, onDownlo
           </div>
 
           {isPdf ? (
-            pdfError ? (
-              // Fallback to direct URL if blob fetch fails (e.g. CORS)
+            isMobile ? (
+              // Mobile: iframes can't render PDFs — show a styled open button instead
+              <div className="flex flex-col items-center justify-center h-full gap-6 px-6">
+                <div className="w-20 h-20 rounded-3xl bg-purple-500/10 flex items-center justify-center">
+                  <FileText size={40} className="text-purple-500" />
+                </div>
+                <div className="text-center space-y-2">
+                  <h3 className="text-base font-black uppercase tracking-widest text-slate-700 dark:text-slate-200">
+                    {note.title}
+                  </h3>
+                  <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">
+                    PDF preview is not supported on mobile browsers
+                  </p>
+                </div>
+                <a
+                  href={displayUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-8 py-4 bg-purple-500 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-purple-600 active:scale-95 transition-all shadow-lg shadow-purple-500/30"
+                >
+                  <ExternalLink size={16} />
+                  Open PDF
+                </a>
+              </div>
+            ) : pdfError ? (
+              // Desktop fallback to direct URL if blob fetch fails (e.g. CORS)
               <iframe
                 src={`${displayUrl}#toolbar=0&navpanes=0`}
                 className="w-full h-full border-none"
