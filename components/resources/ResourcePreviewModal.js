@@ -8,7 +8,7 @@ const OFFICE_TYPES = ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'];
 const ARCHIVE_TYPES = ['zip', 'rar'];
 const TEXT_TYPES = ['txt', 'rtf'];
 
-const R2_PUBLIC = 'https://pub-aef2edcdffe24ec4999b508f46e4bc59.r2.dev';
+import { getDisplayUrl } from '@/lib/r2';
 
 function getFileCategory(fileType) {
   const ft = (fileType || '').toLowerCase();
@@ -18,12 +18,6 @@ function getFileCategory(fileType) {
   if (ARCHIVE_TYPES.includes(ft)) return 'archive';
   if (TEXT_TYPES.includes(ft)) return 'text';
   return 'unknown';
-}
-
-function extractKey(proxyUrl) {
-  if (!proxyUrl) return null;
-  const param = proxyUrl.split('?key=')[1];
-  return param || null;
 }
 
 function ProgressOverlay({ progress, visible }) {
@@ -109,8 +103,7 @@ function usePdfProgress(directUrl) {
 
 export default function ResourcePreviewModal({ resource, isOpen, onClose }) {
   const category = getFileCategory(resource?.file_type);
-  const key = extractKey(resource?.file_path);
-  const directUrl = key ? `${R2_PUBLIC}/${key}` : (resource?.file_path || '');
+  const directUrl = getDisplayUrl(resource?.file_path) || '';
   const title = resource?.title || '';
 
   const { progress: pdfProgress, blobUrl, error: pdfError, loading: pdfLoading } = usePdfProgress(
@@ -238,7 +231,7 @@ function FallbackView({ resource }) {
         Download the file to view its contents.
       </p>
       <a
-        href={resource.file_path}
+        href={getDisplayUrl(resource.file_path)}
         download
         className="flex items-center gap-2 px-5 py-3 rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition-all text-[10px] font-black uppercase tracking-widest"
       >

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { FileText, Loader2 } from 'lucide-react';
+import { getDisplayUrl } from '@/lib/r2';
 
 function CircularProgress({ percent }) {
   const radius = 40;
@@ -90,13 +91,14 @@ function usePdfProgress(directUrl) {
 }
 
 export default function NotePreview({ note, isReadingMode, downloading, onDownload }) {
-  const isPdf = note.file_path && note.file_type?.toLowerCase() === 'pdf';
-  const isImage = note.file_path && ['jpg', 'jpeg', 'png', 'webp'].includes(note.file_type?.toLowerCase());
-  const isPreviewable = note.file_path && (isPdf || isImage);
+  const displayUrl = getDisplayUrl(note.file_path);
+  const isPdf = displayUrl && note.file_type?.toLowerCase() === 'pdf';
+  const isImage = displayUrl && ['jpg', 'jpeg', 'png', 'webp'].includes(note.file_type?.toLowerCase());
+  const isPreviewable = displayUrl && (isPdf || isImage);
 
   // Hook for real PDF progress
   const { progress: pdfProgress, blobUrl, error: pdfError, loading: pdfLoading } = usePdfProgress(
-    isPdf ? note.file_path : null
+    isPdf ? displayUrl : null
   );
 
   const [frameLoaded, setFrameLoaded] = useState(false);
@@ -115,7 +117,7 @@ export default function NotePreview({ note, isReadingMode, downloading, onDownlo
     if (fallbackTimeoutRef.current) {
       clearTimeout(fallbackTimeoutRef.current);
     }
-  }, [note.id, note.file_path]);
+  }, [note.id, displayUrl]);
 
   // Handle PDF progress synchronization
   useEffect(() => {
@@ -173,7 +175,7 @@ export default function NotePreview({ note, isReadingMode, downloading, onDownlo
       clearInterval(simRef.current);
       clearInterval(fillRef.current);
     };
-  }, [note.id, note.file_path, isPdf]);
+  }, [note.id, displayUrl, isPdf]);
 
   // Fill up simulated progress when non-PDF frame loads
   useEffect(() => {
@@ -200,7 +202,7 @@ export default function NotePreview({ note, isReadingMode, downloading, onDownlo
 
   return (
     <div className={`w-full bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] overflow-hidden shadow-2xl relative group transition-all duration-500 ${isReadingMode ? 'h-[85vh]' : 'h-[500px] md:h-[800px]'}`}>
-      {note.file_path ? (
+      {displayUrl ? (
         <>
           <div className={`absolute inset-0 w-full h-full bg-slate-50 dark:bg-black/60 flex flex-col items-center justify-center z-10 space-y-5 transition-opacity duration-700 ${showOverlay ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             <CircularProgress percent={loadProgress} />
@@ -218,7 +220,7 @@ export default function NotePreview({ note, isReadingMode, downloading, onDownlo
             pdfError ? (
               // Fallback to direct URL if blob fetch fails (e.g. CORS)
               <iframe
-                src={`${note.file_path}#toolbar=0&navpanes=0`}
+                src={`${displayUrl}#toolbar=0&navpanes=0`}
                 className="w-full h-full border-none"
                 title={note.title}
               />
@@ -234,7 +236,7 @@ export default function NotePreview({ note, isReadingMode, downloading, onDownlo
             )
           ) : isImage ? (
             <Image
-              src={note.file_path}
+              src={displayUrl}
               alt={note.title}
               fill
               className="object-contain"
