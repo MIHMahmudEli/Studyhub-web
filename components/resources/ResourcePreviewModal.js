@@ -1,7 +1,18 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { FileText, Download, Loader2 } from 'lucide-react';
+import { FileText, Download, Loader2, ExternalLink } from 'lucide-react';
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isMobile;
+}
 
 const IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'webp'];
 const OFFICE_TYPES = ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'];
@@ -105,6 +116,7 @@ export default function ResourcePreviewModal({ resource, isOpen, onClose }) {
   const category = getFileCategory(resource?.file_type);
   const directUrl = getDisplayUrl(resource?.file_path) || '';
   const title = resource?.title || '';
+  const isMobile = useIsMobile();
 
   const { progress: pdfProgress, blobUrl, error: pdfError, loading: pdfLoading } = usePdfProgress(
     category === 'pdf' ? directUrl : null
@@ -138,6 +150,33 @@ export default function ResourcePreviewModal({ resource, isOpen, onClose }) {
   const renderPreview = () => {
     switch (category) {
       case 'pdf':
+        // Mobile: iframes can't render PDFs — show a styled open button instead
+        if (isMobile) {
+          return (
+            <div className="flex flex-col items-center justify-center h-full gap-6 px-6">
+              <div className="w-20 h-20 rounded-3xl bg-blue-500/10 flex items-center justify-center">
+                <FileText size={40} className="text-blue-500" />
+              </div>
+              <div className="text-center space-y-2">
+                <h3 className="text-base font-black uppercase tracking-widest text-slate-700 dark:text-slate-200">
+                  {title}
+                </h3>
+                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">
+                  PDF preview is not supported on mobile browsers
+                </p>
+              </div>
+              <a
+                href={directUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-8 py-4 bg-blue-500 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-600 active:scale-95 transition-all shadow-lg shadow-blue-500/30"
+              >
+                <ExternalLink size={16} />
+                Open PDF
+              </a>
+            </div>
+          );
+        }
         if (pdfError) {
           return (
             <iframe

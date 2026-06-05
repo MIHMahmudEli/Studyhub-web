@@ -24,6 +24,7 @@ import { apiRequest } from '@/lib/api';
 import Toast from '@/components/ui/Toast';
 import Skeleton from '@/components/ui/Skeleton';
 import ResourcePreviewModal from '@/components/resources/ResourcePreviewModal';
+import { getDisplayUrl } from '@/lib/r2';
 
 export default function TermResourcesPage() {
   const { id: slug, term } = useParams();
@@ -128,7 +129,8 @@ export default function TermResourcesPage() {
         await apiRequest(`/resources/${res.id}/download`, { method: 'POST' });
         setResourcesList(prev => prev.map(r => r.id === res.id ? { ...r, downloads: (r.downloads || 0) + 1 } : r));
       }
-      const response = await fetch(res.file_path);
+      const fileUrl = getDisplayUrl(res.file_path);
+      const response = await fetch(fileUrl);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -141,7 +143,7 @@ export default function TermResourcesPage() {
       URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Download error:', err);
-      window.open(res.file_path, '_blank');
+      window.open(getDisplayUrl(res.file_path), '_blank');
     } finally {
       setDownloadingId(null);
     }
@@ -152,7 +154,8 @@ export default function TermResourcesPage() {
       setDownloadingAll(true);
       const zip = new JSZip();
       for (const res of filteredResources) {
-        const response = await fetch(res.file_path);
+        const fileUrl = getDisplayUrl(res.file_path);
+        const response = await fetch(fileUrl);
         const blob = await response.blob();
         const ext = (res.file_type || 'pdf').toLowerCase();
         zip.file(`${res.title}.${ext}`, blob);
