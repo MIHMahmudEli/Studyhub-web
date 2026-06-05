@@ -1,5 +1,4 @@
 import { useMemo, useState, useRef } from 'react';
-import Image from 'next/image';
 import { Camera, UploadCloud, Trash2, Save, UserCheck, Sparkles, AlertCircle } from 'lucide-react';
 import { getNameValidation, getSuggestedName } from '@/lib/nameUtils';
 import { profileSchema, validate } from '@/lib/schemas';
@@ -65,11 +64,9 @@ export default function ProfileTab({
       <div className="p-6 bg-slate-500/5 border border-[var(--card-border)] rounded-[2rem] flex flex-col md:flex-row items-center gap-6">
         <div className="relative group shrink-0 w-24 h-24">
           {user.profile_pic ? (
-            <Image 
+            <img 
               src={user.profile_pic} 
               alt={user.name} 
-              width={96}
-              height={96}
               className="w-24 h-24 rounded-3xl object-cover border border-[var(--card-border)] shadow-md group-hover:brightness-75 transition-all duration-300"
             />
           ) : (

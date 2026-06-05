@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { Edit, Trash2, BookOpen, GraduationCap, Star, Download, Layers, Clock, User } from 'lucide-react';
 import { getDepartmentName } from '@/lib/nameUtils';
 
@@ -119,11 +118,9 @@ function AuthorCard({ uploader, uploaderId }) {
       className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex items-center gap-4 shadow-sm group cursor-pointer hover:border-purple-500/30 transition-all duration-300 text-left"
     >
       {uploader?.profile_pic ? (
-        <Image
+        <img
           src={uploader.profile_pic}
           alt={uploader?.name || ''}
-          width={48}
-          height={48}
           className="w-12 h-12 rounded-2xl object-cover border border-[var(--card-border)] shadow-sm shrink-0"
         />
       ) : (

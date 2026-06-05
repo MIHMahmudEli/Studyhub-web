@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import {
   User,
   Lock,
@@ -21,11 +20,9 @@ export default function SettingsSidebar({ user, activeTab, onTabChange }) {
     <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 shadow-sm backdrop-blur-xl space-y-2">
       <div className="flex items-center gap-4 pb-6 border-b border-[var(--card-border)] mb-4">
         {user.profile_pic ? (
-          <Image
+          <img
             src={user.profile_pic}
             alt={user.name}
-            width={56}
-            height={56}
             className="w-14 h-14 rounded-2xl object-cover shadow-lg border border-[var(--card-border)]"
           />
         ) : (

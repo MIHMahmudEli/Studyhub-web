@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { TrendingUp, Coins, FileText, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { getLevelInfo } from './leaderboardUtils';
@@ -12,7 +11,7 @@ function Avatar({ user, onClick }) {
       className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center font-black text-sm shrink-0 cursor-pointer hover:opacity-80 transition-opacity bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-[var(--card-border)] text-blue-500"
     >
       {user.profile_pic
-        ? <Image src={user.profile_pic} alt={user.name} width={40} height={40} className="w-full h-full object-cover" />
+        ? <img src={user.profile_pic} alt={user.name} className="w-full h-full object-cover" />
         : user.name.charAt(0)
       }
     </button>

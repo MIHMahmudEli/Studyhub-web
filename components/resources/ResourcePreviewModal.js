@@ -1,11 +1,14 @@
 'use client';
 
-import { FileText, Download } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { FileText, Download, Loader2 } from 'lucide-react';
 
 const IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'webp'];
 const OFFICE_TYPES = ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'];
 const ARCHIVE_TYPES = ['zip', 'rar'];
 const TEXT_TYPES = ['txt', 'rtf'];
+
+const R2_PUBLIC = 'https://pub-aef2edcdffe24ec4999b508f46e4bc59.r2.dev';
 
 function getFileCategory(fileType) {
   const ft = (fileType || '').toLowerCase();
@@ -17,50 +20,193 @@ function getFileCategory(fileType) {
   return 'unknown';
 }
 
-export default function ResourcePreviewModal({ resource, isOpen, onClose }) {
-  if (!isOpen || !resource) return null;
+function extractKey(proxyUrl) {
+  if (!proxyUrl) return null;
+  const param = proxyUrl.split('?key=')[1];
+  return param || null;
+}
 
-  const category = getFileCategory(resource.file_type);
-  const filePath = resource.file_path;
-  const title = resource.title;
-  const fileType = (resource.file_type || '').toUpperCase() || 'UNKNOWN';
+function ProgressOverlay({ progress, visible }) {
+  if (!visible) return null;
+  return (
+    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[var(--background)]">
+      <div className="w-64 max-w-[80vw]">
+        <div className="flex items-center gap-3 mb-3">
+          <Loader2 size={18} className="text-blue-500 animate-spin shrink-0" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            Loading preview...
+          </span>
+        </div>
+        <div className="w-full h-2 bg-slate-200 dark:bg-white/[0.06] rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <p className="text-right text-[10px] font-black text-slate-500 mt-1.5 tabular-nums">
+          {progress}%
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function usePdfProgress(directUrl) {
+  const [progress, setProgress] = useState(0);
+  const [blobUrl, setBlobUrl] = useState(null);
+  const [error, setError] = useState(null);
+  const cancelledRef = useRef(false);
+
+  useEffect(() => {
+    if (!directUrl) return;
+    cancelledRef.current = false;
+
+    (async () => {
+      try {
+        const response = await fetch(directUrl);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const contentLength = +response.headers.get('Content-Length');
+        const reader = response.body.getReader();
+        let received = 0;
+        const chunks = [];
+        while (true) {
+          if (cancelledRef.current) return;
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+          received += value.length;
+          if (contentLength) {
+            setProgress(Math.min(Math.round((received / contentLength) * 100), 99));
+          }
+        }
+        const blob = new Blob(chunks, { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        if (!cancelledRef.current) {
+          setBlobUrl(url);
+          setProgress(100);
+        }
+      } catch (err) {
+        if (!cancelledRef.current) setError(err.message);
+      }
+    })();
+
+    return () => { cancelledRef.current = true; };
+  }, [directUrl]);
+
+  useEffect(() => {
+    return () => { if (blobUrl) URL.revokeObjectURL(blobUrl); };
+  }, [blobUrl]);
+
+  const loading = !blobUrl && !error;
+  return { progress, blobUrl, error, loading };
+}
+
+export default function ResourcePreviewModal({ resource, isOpen, onClose }) {
+  const category = getFileCategory(resource?.file_type);
+  const key = extractKey(resource?.file_path);
+  const directUrl = key ? `${R2_PUBLIC}/${key}` : (resource?.file_path || '');
+  const title = resource?.title || '';
+
+  const { progress: pdfProgress, blobUrl, error: pdfError, loading: pdfLoading } = usePdfProgress(
+    category === 'pdf' ? directUrl : null
+  );
+
+  const [contentLoaded, setContentLoaded] = useState(false);
+  const [simProgress, setSimProgress] = useState(0);
+  const simTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (contentLoaded) {
+      setSimProgress(100);
+      return;
+    }
+    setSimProgress(0);
+    simTimerRef.current = setInterval(() => {
+      setSimProgress(prev => {
+        if (prev >= 90) return prev;
+        const remaining = 90 - prev;
+        return Math.min(90, prev + Math.max(0.5, remaining / 10));
+      });
+    }, 150);
+    return () => clearInterval(simTimerRef.current);
+  }, [contentLoaded]);
+
+  const progress = category === 'pdf' ? pdfProgress : simProgress;
+  const loading = category === 'pdf' ? pdfLoading : !contentLoaded;
+
+  if (!isOpen || !resource) return null;
 
   const renderPreview = () => {
     switch (category) {
       case 'pdf':
+        if (pdfError) {
+          return (
+            <iframe
+              src={`${directUrl}#toolbar=0`}
+              className="w-full h-full rounded-xl"
+              title={title}
+            />
+          );
+        }
         return (
-          <iframe
-            src={`${filePath}#toolbar=0`}
-            className="w-full h-full rounded-xl"
-            title={title}
-          />
+          <div className="relative w-full h-full">
+            <ProgressOverlay progress={pdfProgress} visible={pdfLoading} />
+            {blobUrl && (
+              <iframe
+                src={`${blobUrl}#toolbar=0`}
+                className="w-full h-full rounded-xl"
+                title={title}
+              />
+            )}
+            {!pdfLoading && !blobUrl && !pdfError && (
+              <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                No preview available
+              </div>
+            )}
+          </div>
         );
+
       case 'image':
         return (
-          <div className="flex items-center justify-center h-full p-4">
-            <img
-              src={filePath}
-              alt={title}
-              className="max-w-full max-h-full object-contain rounded-xl"
+          <div className="relative w-full h-full">
+            <ProgressOverlay progress={progress} visible={loading} />
+            <div className={`flex items-center justify-center h-full p-4 ${loading ? 'opacity-0 absolute inset-0' : ''}`}>
+              <img
+                src={directUrl}
+                alt={title}
+                className="max-w-full max-h-full object-contain rounded-xl"
+                onLoad={() => setContentLoaded(true)}
+              />
+            </div>
+          </div>
+        );
+
+      case 'office':
+        return (
+          <div className="relative w-full h-full">
+            <ProgressOverlay progress={progress} visible={loading} />
+            <iframe
+              src={`https://docs.google.com/viewer?url=${encodeURIComponent(directUrl)}&embedded=true`}
+              className="w-full h-full rounded-xl"
+              title={title}
+              onLoad={() => setContentLoaded(true)}
             />
           </div>
         );
-      case 'office':
-        return (
-          <iframe
-            src={`https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(filePath)}&wdDownloadButton=0&wdToolbar=0&embed=1`}
-            className="w-full h-full rounded-xl"
-            title={title}
-          />
-        );
+
       case 'text':
         return (
-          <iframe
-            src={filePath}
-            className="w-full h-full rounded-xl"
-            title={title}
-          />
+          <div className="relative w-full h-full">
+            <ProgressOverlay progress={progress} visible={loading} />
+            <iframe
+              src={directUrl}
+              className="w-full h-full rounded-xl"
+              title={title}
+              onLoad={() => setContentLoaded(true)}
+            />
+          </div>
         );
+
       default:
         return <FallbackView resource={resource} />;
     }

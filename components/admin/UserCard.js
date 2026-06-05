@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { Clock, Award, UserX, UserCheck } from 'lucide-react';
 
 const ACTIVE_NOW_THRESHOLD_SEC = 90;
@@ -43,7 +42,7 @@ export default function UserCard({
       <button onClick={() => router.push(`/profile/${u.id}`)} className="flex items-center gap-3 w-full text-left cursor-pointer hover:opacity-80 transition-opacity">
         <div className="relative shrink-0">
           {u.profile_pic ? (
-            <Image src={u.profile_pic} alt="" width={40} height={40} className="w-10 h-10 rounded-xl object-cover border border-[var(--card-border)]" />
+            <img src={u.profile_pic} alt="" className="w-10 h-10 rounded-xl object-cover border border-[var(--card-border)]" />
           ) : (
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white ${
               isLive && presence?.isNow

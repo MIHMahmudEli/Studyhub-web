@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { CheckCircle2, XCircle, ExternalLink } from 'lucide-react';
 
 export default function PendingModerationCard({
@@ -52,7 +51,7 @@ export default function PendingModerationCard({
 
       <div className="flex items-center gap-2 pt-2 border-t border-[var(--card-border)]">
         {item.uploader?.profile_pic ? (
-          <Image src={item.uploader.profile_pic} alt="" width={24} height={24} className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
+          <img src={item.uploader.profile_pic} alt="" className="w-6 h-6 rounded-full object-cover border border-[var(--card-border)] shrink-0" />
         ) : (
           <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-white shrink-0 ${theme.avatarBg}`}>
             {item.uploader?.name?.[0] || 'U'}
