@@ -49,7 +49,7 @@ export default function MetadataFormFields({
             type="text"
             required
             placeholder={titlePlaceholder}
-            className={`w-full bg-[var(--background)]/50 border rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all ${
+            className={`w-full bg-[var(--background)]/50 border rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-[border-color,box-shadow] ${
               errors.title ? 'border-red-500/50' : 'border-[var(--card-border)]'
             }`}
             value={formData.title}
@@ -74,7 +74,7 @@ export default function MetadataFormFields({
             type="text" 
             required
             placeholder="Search course name or code..."
-            className={`w-full bg-[var(--background)]/50 border rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all ${
+            className={`w-full bg-[var(--background)]/50 border rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-[border-color,box-shadow] ${
               errors.course ? 'border-red-500/50' : 'border-[var(--card-border)]'
             }`}
             value={courseSearch}
@@ -127,6 +127,12 @@ export default function MetadataFormFields({
             ))}
           </div>
         )}
+
+        {!formData.course && courseSearch.length > 0 && !showSuggestions && (
+          <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mt-3 ml-3 animate-in fade-in slide-in-from-left-2 duration-300">
+            Select a course from the suggestions
+          </p>
+        )}
       </div>
 
       {/* Term Selector (For Admin Upload) */}
@@ -136,7 +142,7 @@ export default function MetadataFormFields({
             Exam Term <span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-2 gap-4">
-            <label className={`relative flex items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+            <label className={`relative flex items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-[border-color] ${
               formData.term === 'mid' 
                 ? 'border-blue-500 bg-blue-500/10 text-blue-500' 
                 : 'border-[var(--card-border)] bg-[var(--card-bg)] text-slate-500 hover:border-blue-500/50'
@@ -151,7 +157,7 @@ export default function MetadataFormFields({
               />
               <span className="text-xs font-black uppercase tracking-widest">Midterm</span>
             </label>
-            <label className={`relative flex items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+            <label className={`relative flex items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-[border-color] ${
               formData.term === 'final' 
                 ? 'border-purple-500 bg-purple-500/10 text-purple-500' 
                 : 'border-[var(--card-border)] bg-[var(--card-bg)] text-slate-500 hover:border-purple-500/50'
@@ -180,7 +186,7 @@ export default function MetadataFormFields({
         <textarea 
           rows={descriptionRows}
           placeholder={descriptionPlaceholder}
-          className="w-full bg-[var(--background)]/50 border border-[var(--card-border)] rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-all resize-none"
+          className="w-full bg-[var(--background)]/50 border border-[var(--card-border)] rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-blue-500/5 transition-[border-color,box-shadow] resize-none"
           value={formData.description}
           onChange={(e) => setFormData({...formData, description: e.target.value})}
         />
