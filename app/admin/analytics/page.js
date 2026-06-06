@@ -649,10 +649,10 @@ export default function AnalyticsPage() {
                 {loading ? [...Array(4)].map((_, i) => (
                   <div key={i} className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] p-5 sm:p-7 h-[110px] animate-pulse" />
                 )) : [
-                  { label: 'Total Resources', value: contentAnalytics.totals.totalResources, color: COLORS.amber, icon: BookOpen },
-                  { label: 'Approved', value: contentAnalytics.totals.approvedResources, color: COLORS.emerald, icon: CheckCircle2 },
-                  { label: 'Pending', value: contentAnalytics.totals.pendingResources, color: COLORS.amber, icon: Clock },
-                  { label: 'Downloads', value: contentAnalytics.totals.resourceDownloads?.toLocaleString(), color: COLORS.cyan, icon: Download },
+                  { label: 'Total Resources', value: contentAnalytics.totals.totalResources ?? 0, color: COLORS.amber, icon: BookOpen },
+                  { label: 'Approved', value: contentAnalytics.totals.approvedResources ?? 0, color: COLORS.emerald, icon: CheckCircle2 },
+                  { label: 'Pending', value: contentAnalytics.totals.pendingResources ?? 0, color: COLORS.amber, icon: Clock },
+                  { label: 'Downloads', value: (contentAnalytics.totals.resourceDownloads ?? 0).toLocaleString(), color: COLORS.cyan, icon: Download },
                 ].map((s, i) => (
                   <div key={i}
                     className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-7 shadow-sm transition-all duration-500 hover:-translate-y-1 overflow-hidden"
