@@ -38,6 +38,26 @@ const COLORS = {
 
 const PIE_COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#f43f5e', '#06b6d4'];
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const formatDateLabel = (dateStr) => {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  const m = parseInt(parts[0], 10);
+  const d = parseInt(parts[1], 10);
+  if (m >= 1 && m <= 12) return `${MONTHS[m - 1]} ${d}`;
+  return dateStr;
+};
+
+const formatHourLabel = (hourStr) => {
+  const h = parseInt(hourStr, 10);
+  if (isNaN(h)) return hourStr;
+  if (h === 0) return '12AM';
+  if (h < 12) return `${h}AM`;
+  if (h === 12) return '12PM';
+  return `${h - 12}PM`;
+};
+
 // ─── Skeleton ──────────────────────────────────────────────────────────────
 function Skeleton({ className = '' }) {
   return (
@@ -330,7 +350,7 @@ export default function AnalyticsPage() {
     return Object.entries(noteMap).sort(([a], [b]) => a.localeCompare(b)).map(([date, vals]) => ({ date, ...vals }));
   })();
 
-  const axisStyle = { fontSize: 8, fill: 'var(--text-2)', fontWeight: 700 };
+  const axisStyle = { fontSize: 9, fill: 'var(--text-2)', fontWeight: 700 };
   const gridStyle = { strokeDasharray: '3 3', stroke: 'rgba(255,255,255,0.05)' };
 
   return (
@@ -429,22 +449,24 @@ export default function AnalyticsPage() {
                 subtitle="New accounts over time"
                 badge={{ label: 'Users', color: COLORS.blue }}
               >
-                {loading ? <Skeleton className="h-[220px]" /> : (
-                  <ResponsiveContainer width="100%" height={220}>
-                    <AreaChart data={userAnalytics?.registrations?.map(r => ({ date: r.date?.slice(5) || '', registrations: parseInt(r.count, 10) })) || []}>
-                      <defs>
-                        <linearGradient id="regGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={COLORS.blue} stopOpacity={0.25} />
-                          <stop offset="95%" stopColor={COLORS.blue} stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid {...gridStyle} />
-                      <XAxis dataKey="date" tick={axisStyle} angle={-30} textAnchor="end" height={36} interval="preserveStartEnd" />
-                      <YAxis tick={axisStyle} width={32} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Area type="monotone" dataKey="registrations" stroke={COLORS.blue} fill="url(#regGrad)" strokeWidth={2} name="Registrations" dot={false} activeDot={{ r: 4, fill: COLORS.blue }} />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
+                  <div className="h-[180px] sm:h-[220px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={userAnalytics?.registrations?.map(r => ({ date: r.date?.slice(5) || '', registrations: parseInt(r.count, 10) })) || []}>
+                        <defs>
+                          <linearGradient id="regGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor={COLORS.blue} stopOpacity={0.25} />
+                            <stop offset="95%" stopColor={COLORS.blue} stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid {...gridStyle} />
+                        <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
+                        <YAxis tick={axisStyle} width={28} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Area type="monotone" dataKey="registrations" stroke={COLORS.blue} fill="url(#regGrad)" strokeWidth={2} name="Registrations" dot={false} activeDot={{ r: 4, fill: COLORS.blue }} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
                 )}
               </ChartCard>
 
@@ -454,22 +476,24 @@ export default function AnalyticsPage() {
                 subtitle="Daily active sessions"
                 badge={{ label: 'Activity', color: COLORS.emerald }}
               >
-                {loading ? <Skeleton className="h-[220px]" /> : (
-                  <ResponsiveContainer width="100%" height={220}>
-                    <LineChart data={activityAnalytics?.loginActivity?.map(a => ({ date: a.date?.slice(5) || '', activeUsers: parseInt(a.activeUsers, 10) })) || []}>
-                      <defs>
-                        <linearGradient id="actGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={COLORS.emerald} stopOpacity={0.2} />
-                          <stop offset="95%" stopColor={COLORS.emerald} stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid {...gridStyle} />
-                      <XAxis dataKey="date" tick={axisStyle} angle={-30} textAnchor="end" height={36} interval="preserveStartEnd" />
-                      <YAxis tick={axisStyle} width={32} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Line type="monotone" dataKey="activeUsers" stroke={COLORS.emerald} strokeWidth={2.5} dot={false} name="Active Users" activeDot={{ r: 4, fill: COLORS.emerald }} />
-                    </LineChart>
-                  </ResponsiveContainer>
+                {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
+                  <div className="h-[180px] sm:h-[220px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={activityAnalytics?.loginActivity?.map(a => ({ date: a.date?.slice(5) || '', activeUsers: parseInt(a.activeUsers, 10) })) || []}>
+                        <defs>
+                          <linearGradient id="actGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor={COLORS.emerald} stopOpacity={0.2} />
+                            <stop offset="95%" stopColor={COLORS.emerald} stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid {...gridStyle} />
+                        <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
+                        <YAxis tick={axisStyle} width={28} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Line type="monotone" dataKey="activeUsers" stroke={COLORS.emerald} strokeWidth={2.5} dot={false} name="Active Users" activeDot={{ r: 4, fill: COLORS.emerald }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
                 )}
               </ChartCard>
 
@@ -479,18 +503,20 @@ export default function AnalyticsPage() {
                 subtitle="Notes & resources over time"
                 badge={{ label: 'Content', color: COLORS.purple }}
               >
-                {loading ? <Skeleton className="h-[220px]" /> : (
-                  <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={contentChartData} barGap={2}>
-                      <CartesianGrid {...gridStyle} />
-                      <XAxis dataKey="date" tick={axisStyle} tickFormatter={v => v?.slice(5) || v} angle={-30} textAnchor="end" height={36} interval="preserveStartEnd" />
-                      <YAxis tick={axisStyle} width={32} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Bar dataKey="notes" fill={COLORS.purple} radius={[4, 4, 0, 0]} name="Notes" stackId="a" />
-                      <Bar dataKey="resources" fill={COLORS.amber} radius={[4, 4, 0, 0]} name="Resources" stackId="a" />
-                      <Legend wrapperStyle={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', paddingTop: '8px' }} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
+                  <div className="h-[180px] sm:h-[220px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={contentChartData} barGap={2}>
+                        <CartesianGrid {...gridStyle} />
+                        <XAxis dataKey="date" tick={axisStyle} tickFormatter={formatDateLabel} interval="preserveStartEnd" />
+                        <YAxis tick={axisStyle} width={28} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Bar dataKey="notes" fill={COLORS.purple} radius={[4, 4, 0, 0]} name="Notes" stackId="a" />
+                        <Bar dataKey="resources" fill={COLORS.amber} radius={[4, 4, 0, 0]} name="Resources" stackId="a" />
+                        <Legend wrapperStyle={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', paddingTop: '8px' }} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
                 )}
               </ChartCard>
 
@@ -500,23 +526,25 @@ export default function AnalyticsPage() {
                 subtitle="Most active hours of the day"
                 badge={{ label: 'Heatmap', color: COLORS.cyan }}
               >
-                {loading ? <Skeleton className="h-[220px]" /> : (
-                  <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={activityAnalytics?.peakHours?.map(h => ({ hour: `${h.hour}h`, users: h.activeUsers })) || []}>
-                      <CartesianGrid {...gridStyle} />
-                      <XAxis dataKey="hour" tick={axisStyle} angle={-45} textAnchor="end" height={42} interval={1} />
-                      <YAxis tick={axisStyle} width={28} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Bar dataKey="users" radius={[4, 4, 0, 0]} name="Active Users">
-                        {(activityAnalytics?.peakHours || []).map((entry, i) => {
-                          const max = Math.max(...(activityAnalytics?.peakHours || []).map(h => h.activeUsers));
-                          const ratio = max > 0 ? entry.activeUsers / max : 0;
-                          const opacity = 0.3 + ratio * 0.7;
-                          return <Cell key={i} fill={COLORS.cyan} fillOpacity={opacity} />;
-                        })}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
+                {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
+                  <div className="h-[180px] sm:h-[220px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={activityAnalytics?.peakHours?.map(h => ({ hour: `${h.hour}`, users: h.activeUsers })) || []}>
+                        <CartesianGrid {...gridStyle} />
+                        <XAxis dataKey="hour" tickFormatter={formatHourLabel} tick={axisStyle} interval={1} />
+                        <YAxis tick={axisStyle} width={28} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Bar dataKey="users" radius={[4, 4, 0, 0]} name="Active Users">
+                          {(activityAnalytics?.peakHours || []).map((entry, i) => {
+                            const max = Math.max(...(activityAnalytics?.peakHours || []).map(h => h.activeUsers));
+                            const ratio = max > 0 ? entry.activeUsers / max : 0;
+                            const opacity = 0.3 + ratio * 0.7;
+                            return <Cell key={i} fill={COLORS.cyan} fillOpacity={opacity} />;
+                          })}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
                 )}
               </ChartCard>
 
@@ -526,18 +554,20 @@ export default function AnalyticsPage() {
                 subtitle="Users by assigned role"
                 badge={{ label: 'Roles', color: COLORS.indigo }}
               >
-                {loading ? <Skeleton className="h-[220px]" /> : (
-                  <ResponsiveContainer width="100%" height={220}>
-                    <PieChart>
-                      <Pie data={rolePieData} cx="50%" cy="50%" innerRadius={52} outerRadius={78} paddingAngle={3} dataKey="value" strokeWidth={0}>
-                        {rolePieData.map((_, i) => (
-                          <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }} />
-                    </PieChart>
-                  </ResponsiveContainer>
+                {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
+                  <div className="h-[180px] sm:h-[220px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={rolePieData} cx="50%" cy="50%" innerRadius={40} outerRadius={66} paddingAngle={3} dataKey="value" strokeWidth={0}>
+                          {rolePieData.map((_, i) => (
+                            <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
                 )}
               </ChartCard>
 
@@ -547,20 +577,22 @@ export default function AnalyticsPage() {
                 subtitle="Top departments by user count"
                 badge={{ label: 'Depts', color: COLORS.orange }}
               >
-                {loading ? <Skeleton className="h-[220px]" /> : (
-                  <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={deptBarData} layout="vertical" barSize={10}>
-                      <CartesianGrid {...gridStyle} />
-                      <XAxis type="number" tick={axisStyle} />
-                      <YAxis dataKey="name" type="category" tick={{ ...axisStyle, fontSize: 7 }} width={68} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Bar dataKey="count" radius={[0, 5, 5, 0]} name="Users">
-                        {deptBarData.map((_, i) => (
-                          <Cell key={i} fill={COLORS.orange} fillOpacity={0.45 + (i % 4) * 0.14} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
+                {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
+                  <div className="h-[180px] sm:h-[220px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={deptBarData} layout="vertical" barSize={10}>
+                        <CartesianGrid {...gridStyle} />
+                        <XAxis type="number" tick={axisStyle} />
+                        <YAxis dataKey="name" type="category" tick={axisStyle} width={80} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Bar dataKey="count" radius={[0, 5, 5, 0]} name="Users">
+                          {deptBarData.map((_, i) => (
+                            <Cell key={i} fill={COLORS.orange} fillOpacity={0.45 + (i % 4) * 0.14} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
                 )}
               </ChartCard>
 
