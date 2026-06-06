@@ -128,14 +128,16 @@ function ChartCard({ title, subtitle, badge, children, className = '' }) {
 }
 
 // ─── Custom Tooltip ────────────────────────────────────────────────────────
-function CustomTooltip({ active, payload, label }) {
+function CustomTooltip({ active, payload, label, hideLabel }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="flex items-center gap-2 px-2 py-1">
+    <div className="bg-[var(--card-bg)]/90 border border-[var(--card-border)] rounded-2xl p-3 shadow-2xl backdrop-blur-xl">
+      {!hideLabel && <p className="text-[8px] font-black uppercase tracking-widest mb-2 text-slate-500">{label}</p>}
       {payload.map((entry, i) => (
-        <span key={i} className="text-[11px] font-bold" style={{ color: entry.color }}>
-          {entry.value}
-        </span>
+        <p key={i} className="text-[11px] font-bold flex items-center gap-1.5" style={{ color: entry.color }}>
+          <span className="w-1.5 h-1.5 rounded-full inline-block shrink-0" style={{ backgroundColor: entry.color }} />
+          {entry.name}: <span className="font-black">{entry.value}</span>
+        </p>
       ))}
     </div>
   );
@@ -531,7 +533,7 @@ export default function AnalyticsPage() {
                         <CartesianGrid {...gridStyle} />
                         <XAxis dataKey="hour" tickFormatter={formatHourLabel} tick={axisStyle} interval={1} />
                         <YAxis tick={axisStyle} width={28} />
-                        <Tooltip content={<CustomTooltip />} cursor={false} />
+                        <Tooltip content={<CustomTooltip hideLabel />} cursor={false} />
                         <Bar dataKey="users" radius={[4, 4, 0, 0]} name="Active Users" activeBar={{ stroke: COLORS.cyan, strokeWidth: 2, fillOpacity: 0.9 }}>
                           {(activityAnalytics?.peakHours || []).map((entry, i) => {
                             const max = Math.max(...(activityAnalytics?.peakHours || []).map(h => h.activeUsers));
