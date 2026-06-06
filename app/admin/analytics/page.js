@@ -639,6 +639,46 @@ export default function AnalyticsPage() {
             </div>
           )}
 
+          {/* ─── Resource Summary Cards ──────────────────────────────────── */}
+          {(loading || contentAnalytics?.totals) && (
+            <div data-pdf-section data-pdf-label="Resource Summary">
+              <div className="mb-5">
+                <SectionHeader label="Summary" title="Resources Overview" color={COLORS.amber} />
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                {loading ? [...Array(4)].map((_, i) => (
+                  <div key={i} className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] p-5 sm:p-7 h-[110px] animate-pulse" />
+                )) : [
+                  { label: 'Total Resources', value: contentAnalytics.totals.totalResources, color: COLORS.amber, icon: BookOpen },
+                  { label: 'Approved', value: contentAnalytics.totals.approvedResources, color: COLORS.emerald, icon: CheckCircle2 },
+                  { label: 'Pending', value: contentAnalytics.totals.pendingResources, color: COLORS.amber, icon: Clock },
+                  { label: 'Downloads', value: contentAnalytics.totals.resourceDownloads?.toLocaleString(), color: COLORS.cyan, icon: Download },
+                ].map((s, i) => (
+                  <div key={i}
+                    className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-7 shadow-sm transition-all duration-500 hover:-translate-y-1 overflow-hidden"
+                  >
+                    <div
+                      className="absolute inset-0 rounded-[1.75rem] sm:rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                      style={{ background: `radial-gradient(circle at 30% 30%, ${s.color}12, transparent 70%)` }}
+                    />
+                    <div className="relative z-10 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">{s.label}</p>
+                        <p className="text-2xl sm:text-3xl font-black tracking-tight leading-none" style={{ color: s.color }}>{s.value}</p>
+                      </div>
+                      <div
+                        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110"
+                        style={{ backgroundColor: `${s.color}12`, borderColor: `${s.color}25`, color: s.color }}
+                      >
+                        <s.icon size={16} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* ─── Popular Notes Table ──────────────────────────────────────── */}
           <div data-pdf-section data-pdf-label="Popular Notes — Top 10 by Downloads">
             <div className="mb-5">
