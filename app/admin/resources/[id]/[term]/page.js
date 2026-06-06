@@ -25,6 +25,7 @@ import Toast from '@/components/ui/Toast';
 import Skeleton from '@/components/ui/Skeleton';
 import EditResourceModal from '@/components/admin/EditResourceModal';
 import ResourcePreviewModal from '@/components/resources/ResourcePreviewModal';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 
 export default function AdminTermResourcesPage() {
   const { id: slug, term } = useParams();
@@ -34,6 +35,7 @@ export default function AdminTermResourcesPage() {
   const [resourcesList, setResourcesList] = useState([]);
   const [loadingResources, setLoadingResources] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
   const [previewResource, setPreviewResource] = useState(null);
@@ -98,28 +100,31 @@ export default function AdminTermResourcesPage() {
   }, [slug, term, resourcesList]);
 
   // Deletion logic
-  const handleDeleteResource = async (res) => {
-    if (!confirm(`Are you sure you want to permanently delete "${res.title}"?`)) {
-      return;
-    }
+  const handleDeleteClick = (res) => {
+    setDeleteTarget(res);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
 
     try {
-      setDeletingId(res.id);
+      setDeletingId(deleteTarget.id);
+      setDeleteTarget(null);
 
       // 1. Delete the physical file from R2 first to save space
-      if (res.file_path) {
+      if (deleteTarget.file_path) {
         try {
-          await deleteFromR2(res.file_path);
+          await deleteFromR2(deleteTarget.file_path);
         } catch (err) {
           console.warn('Failed to clean up R2 file:', err);
         }
       }
 
       // 2. Delete DB record via API
-      await apiRequest(`/resources/${res.id}`, { method: 'DELETE' });
+      await apiRequest(`/resources/${deleteTarget.id}`, { method: 'DELETE' });
 
       // Update state locally
-      setResourcesList(prev => prev.filter(r => r.id !== res.id));
+      setResourcesList(prev => prev.filter(r => r.id !== deleteTarget.id));
       showToast('Resource deleted successfully.', 'success');
 
     } catch (err) {
@@ -245,7 +250,7 @@ export default function AdminTermResourcesPage() {
                       {/* Delete Button (if authorized) */}
                       {canManage && (
                         <button 
-                          onClick={() => handleDeleteResource(res)}
+                          onClick={() => handleDeleteClick(res)}
                           disabled={deletingId === res.id}
                           className="p-2 md:p-2.5 rounded-lg md:rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center cursor-pointer"
                           title="Delete File"
@@ -277,6 +282,17 @@ export default function AdminTermResourcesPage() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        loading={deletingId === deleteTarget?.id}
+        title={deleteTarget ? `Delete "${deleteTarget.title}"?` : 'Delete?'}
+        description="This action is permanent and cannot be undone. The file will be removed from storage and all download records will be lost."
+        confirmText="Delete Resource"
+      />
 
       {/* Edit Details & File Replacement Modal */}
       <EditResourceModal 

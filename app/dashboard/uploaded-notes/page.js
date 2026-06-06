@@ -22,6 +22,7 @@ import {
   FileText,
   Loader2
 } from 'lucide-react';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 
 export default function UploadedNotesPage() {
   const { user, loading: authLoading, checkUser } = useAuth();
@@ -35,6 +36,7 @@ export default function UploadedNotesPage() {
   const [total, setTotal] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
   const sentinelRef = useRef(null);
   const LIMIT = 12;
@@ -106,15 +108,18 @@ export default function UploadedNotesPage() {
     return () => { if (el) observer.unobserve(el); };
   }, [hasMore, loadingMore, loading, page, fetchNotes]);
 
-  const handleDeleteNote = async (id) => {
-    if (!confirm('Are you absolutely sure you want to delete this note? This action cannot be undone.')) {
-      return;
-    }
+  const handleDeleteClick = (id) => {
+    setDeleteTarget(id);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
 
     try {
-      setDeletingId(id);
+      setDeletingId(deleteTarget);
+      setDeleteTarget(null);
 
-      const noteToDelete = myNotes.find(n => n.id === id);
+      const noteToDelete = myNotes.find(n => n.id === deleteTarget);
       if (noteToDelete && noteToDelete.file_path) {
         try {
           await deleteFromR2(noteToDelete.file_path);
@@ -123,9 +128,9 @@ export default function UploadedNotesPage() {
         }
       }
 
-      await apiRequest(`/notes/${id}`, { method: 'DELETE' });
+      await apiRequest(`/notes/${deleteTarget}`, { method: 'DELETE' });
 
-      setMyNotes(prev => prev.filter(n => n.id !== id));
+      setMyNotes(prev => prev.filter(n => n.id !== deleteTarget));
       setTotal(prev => prev - 1);
       showToast('Note deleted successfully.', 'success');
 
@@ -249,7 +254,7 @@ export default function UploadedNotesPage() {
                             </Link>
                           )}
                           <button
-                            onClick={() => handleDeleteNote(note.id)}
+                            onClick={() => handleDeleteClick(note.id)}
                             disabled={deletingId === note.id}
                             className="px-3.5 py-2 sm:px-4 sm:py-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl border border-red-500/20 transition-all uppercase text-[10px] tracking-widest font-black flex items-center gap-1 cursor-pointer shrink-0"
                           >
@@ -356,6 +361,16 @@ export default function UploadedNotesPage() {
 
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        loading={deletingId === deleteTarget}
+        title="Delete Publication?"
+        description="This action is permanent and cannot be undone. All points earned and downloaded data will be archived."
+        confirmText="Delete Note"
+      />
 
       <Toast toast={toast} closeToast={closeToast} />
     </main>
