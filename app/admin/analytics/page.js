@@ -557,8 +557,8 @@ export default function AnalyticsPage() {
                 {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
                   <div className="h-[180px] sm:h-[220px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie data={rolePieData} cx="50%" cy="50%" innerRadius={40} outerRadius={66} paddingAngle={3} dataKey="value" strokeWidth={0}>
+                      <PieChart margin={{ top: 0, right: 0, bottom: 10, left: 0 }}>
+                        <Pie data={rolePieData} cx="50%" cy="50%" innerRadius={45} outerRadius={80} paddingAngle={3} dataKey="value" strokeWidth={0}>
                           {rolePieData.map((_, i) => (
                             <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                           ))}
