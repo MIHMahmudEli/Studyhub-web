@@ -131,13 +131,11 @@ function ChartCard({ title, subtitle, badge, children, className = '' }) {
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-black/70 dark:bg-black/80 border border-white/[0.08] rounded-2xl p-3 shadow-2xl backdrop-blur-xl">
-      <p className="text-[8px] font-black uppercase tracking-widest mb-2 text-slate-400">{label}</p>
+    <div className="flex items-center gap-2 px-2 py-1">
       {payload.map((entry, i) => (
-        <p key={i} className="text-[11px] font-bold flex items-center gap-1.5" style={{ color: entry.color }}>
-          <span className="w-1.5 h-1.5 rounded-full inline-block shrink-0" style={{ backgroundColor: entry.color }} />
-          {entry.name}: <span className="font-black">{entry.value}</span>
-        </p>
+        <span key={i} className="text-[11px] font-bold" style={{ color: entry.color }}>
+          {entry.value}
+        </span>
       ))}
     </div>
   );
@@ -452,17 +450,17 @@ export default function AnalyticsPage() {
                 {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
                   <div className="h-[180px] sm:h-[220px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={userAnalytics?.registrations?.map(r => ({ date: r.date?.slice(5) || '', registrations: parseInt(r.count, 10) })) || []}>
-                        <defs>
-                          <linearGradient id="regGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor={COLORS.blue} stopOpacity={0.25} />
-                            <stop offset="95%" stopColor={COLORS.blue} stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid {...gridStyle} />
-                        <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
-                        <YAxis tick={axisStyle} width={28} />
-                        <Tooltip content={<CustomTooltip />} />
+                    <AreaChart data={userAnalytics?.registrations?.map(r => ({ date: r.date?.slice(5) || '', registrations: parseInt(r.count, 10) })) || []}>
+                      <defs>
+                        <linearGradient id="regGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={COLORS.blue} stopOpacity={0.25} />
+                          <stop offset="95%" stopColor={COLORS.blue} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid {...gridStyle} />
+                      <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
+                      <YAxis tick={axisStyle} width={28} />
+                      <Tooltip content={<CustomTooltip />} cursor={false} />
                         <Area type="monotone" dataKey="registrations" stroke={COLORS.blue} fill="url(#regGrad)" strokeWidth={2} name="Registrations" dot={false} activeDot={{ r: 4, fill: COLORS.blue }} />
                       </AreaChart>
                     </ResponsiveContainer>
@@ -489,7 +487,7 @@ export default function AnalyticsPage() {
                         <CartesianGrid {...gridStyle} />
                         <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
                         <YAxis tick={axisStyle} width={28} />
-                        <Tooltip content={<CustomTooltip />} />
+                        <Tooltip content={<CustomTooltip />} cursor={false} />
                         <Line type="monotone" dataKey="activeUsers" stroke={COLORS.emerald} strokeWidth={2.5} dot={false} name="Active Users" activeDot={{ r: 4, fill: COLORS.emerald }} />
                       </LineChart>
                     </ResponsiveContainer>
@@ -510,7 +508,7 @@ export default function AnalyticsPage() {
                         <CartesianGrid {...gridStyle} />
                         <XAxis dataKey="date" tick={axisStyle} tickFormatter={formatDateLabel} interval="preserveStartEnd" />
                         <YAxis tick={axisStyle} width={28} />
-                        <Tooltip content={<CustomTooltip />} />
+                        <Tooltip content={<CustomTooltip />} cursor={false} />
                         <Bar dataKey="notes" fill={COLORS.purple} radius={[4, 4, 0, 0]} name="Notes" stackId="a" activeBar={{ stroke: COLORS.purple, strokeWidth: 2, fillOpacity: 1 }} />
                         <Bar dataKey="resources" fill={COLORS.amber} radius={[4, 4, 0, 0]} name="Resources" stackId="a" activeBar={{ stroke: COLORS.amber, strokeWidth: 2, fillOpacity: 1 }} />
                         <Legend wrapperStyle={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', paddingTop: '8px' }} />
@@ -533,7 +531,7 @@ export default function AnalyticsPage() {
                         <CartesianGrid {...gridStyle} />
                         <XAxis dataKey="hour" tickFormatter={formatHourLabel} tick={axisStyle} interval={1} />
                         <YAxis tick={axisStyle} width={28} />
-                        <Tooltip content={<CustomTooltip />} />
+                        <Tooltip content={<CustomTooltip />} cursor={false} />
                         <Bar dataKey="users" radius={[4, 4, 0, 0]} name="Active Users" activeBar={{ stroke: COLORS.cyan, strokeWidth: 2, fillOpacity: 0.9 }}>
                           {(activityAnalytics?.peakHours || []).map((entry, i) => {
                             const max = Math.max(...(activityAnalytics?.peakHours || []).map(h => h.activeUsers));
@@ -563,7 +561,7 @@ export default function AnalyticsPage() {
                             <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip content={<CustomTooltip />} />
+                        <Tooltip content={<CustomTooltip />} cursor={false} />
                         <Legend wrapperStyle={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }} />
                       </PieChart>
                     </ResponsiveContainer>
@@ -584,7 +582,7 @@ export default function AnalyticsPage() {
                         <CartesianGrid {...gridStyle} />
                         <XAxis type="number" tick={axisStyle} />
                         <YAxis dataKey="name" type="category" tick={axisStyle} width={80} />
-                        <Tooltip content={<CustomTooltip />} />
+                        <Tooltip content={<CustomTooltip />} cursor={false} />
                         <Bar dataKey="count" radius={[0, 5, 5, 0]} name="Users">
                           {deptBarData.map((_, i) => (
                             <Cell key={i} fill={COLORS.orange} fillOpacity={0.45 + (i % 4) * 0.14} />
