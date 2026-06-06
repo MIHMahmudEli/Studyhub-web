@@ -131,8 +131,8 @@ function ChartCard({ title, subtitle, badge, children, className = '' }) {
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-3 shadow-2xl backdrop-blur-xl">
-      <p className="text-[8px] font-black uppercase tracking-widest mb-2 text-slate-500">{label}</p>
+    <div className="bg-black/70 dark:bg-black/80 border border-white/[0.08] rounded-2xl p-3 shadow-2xl backdrop-blur-xl">
+      <p className="text-[8px] font-black uppercase tracking-widest mb-2 text-slate-400">{label}</p>
       {payload.map((entry, i) => (
         <p key={i} className="text-[11px] font-bold flex items-center gap-1.5" style={{ color: entry.color }}>
           <span className="w-1.5 h-1.5 rounded-full inline-block shrink-0" style={{ backgroundColor: entry.color }} />
@@ -511,8 +511,8 @@ export default function AnalyticsPage() {
                         <XAxis dataKey="date" tick={axisStyle} tickFormatter={formatDateLabel} interval="preserveStartEnd" />
                         <YAxis tick={axisStyle} width={28} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Bar dataKey="notes" fill={COLORS.purple} radius={[4, 4, 0, 0]} name="Notes" stackId="a" />
-                        <Bar dataKey="resources" fill={COLORS.amber} radius={[4, 4, 0, 0]} name="Resources" stackId="a" />
+                        <Bar dataKey="notes" fill={COLORS.purple} radius={[4, 4, 0, 0]} name="Notes" stackId="a" activeBar={{ stroke: COLORS.purple, strokeWidth: 2, fillOpacity: 1 }} />
+                        <Bar dataKey="resources" fill={COLORS.amber} radius={[4, 4, 0, 0]} name="Resources" stackId="a" activeBar={{ stroke: COLORS.amber, strokeWidth: 2, fillOpacity: 1 }} />
                         <Legend wrapperStyle={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', paddingTop: '8px' }} />
                       </BarChart>
                     </ResponsiveContainer>
@@ -534,7 +534,7 @@ export default function AnalyticsPage() {
                         <XAxis dataKey="hour" tickFormatter={formatHourLabel} tick={axisStyle} interval={1} />
                         <YAxis tick={axisStyle} width={28} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Bar dataKey="users" radius={[4, 4, 0, 0]} name="Active Users">
+                        <Bar dataKey="users" radius={[4, 4, 0, 0]} name="Active Users" activeBar={{ stroke: COLORS.cyan, strokeWidth: 2, fillOpacity: 0.9 }}>
                           {(activityAnalytics?.peakHours || []).map((entry, i) => {
                             const max = Math.max(...(activityAnalytics?.peakHours || []).map(h => h.activeUsers));
                             const ratio = max > 0 ? entry.activeUsers / max : 0;
