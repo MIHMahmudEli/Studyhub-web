@@ -9,7 +9,8 @@ import { apiRequest } from '@/lib/api';
 import {
   BarChart3, Users, FileText, MessageSquare, BookOpen, Shield,
   TrendingUp, Activity, UserPlus, Download,
-  AlertCircle, FileDown, Loader2, Star, CheckCircle2, Clock, Zap
+  AlertCircle, FileDown, Loader2, Star, CheckCircle2, Clock, Zap,
+  ArrowUpRight, ArrowDownRight, MousePointerClick, MessageCircle
 } from 'lucide-react';
 import {
   LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie,
@@ -380,7 +381,7 @@ export default function AnalyticsPage() {
                 </span>
               </h1>
               <p className="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-widest max-w-md">
-                Comprehensive metrics · User insights · Content performance
+                Growth metrics · User insights · Content & Interaction analytics
               </p>
             </div>
 
@@ -517,33 +518,6 @@ export default function AnalyticsPage() {
                   </div>
               </ChartCard>
 
-              {/* Peak Activity Hours */}
-              <ChartCard
-                title="Peak Activity Hours"
-                subtitle="Most active hours of the day"
-                badge={{ label: 'Heatmap', color: COLORS.cyan }}
-              >
-                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={loading ? [] : (activityAnalytics?.peakHours?.map(h => ({ hour: `${h.hour}`, users: h.activeUsers })) || [])}>
-                        <CartesianGrid {...gridStyle} />
-                        <XAxis dataKey="hour" tickFormatter={formatHourLabel} tick={axisStyle} interval={1} />
-                        <YAxis tick={axisStyle} width={28} />
-                        <Tooltip content={<CustomTooltip hideLabel />} cursor={false} />
-                        <Bar dataKey="users" radius={[4, 4, 0, 0]} name="Active Users" activeBar={{ stroke: COLORS.cyan, strokeWidth: 2, fillOpacity: 0.9 }}>
-                          {(activityAnalytics?.peakHours || []).map((entry, i) => {
-                            const max = Math.max(...(activityAnalytics?.peakHours || []).map(h => h.activeUsers));
-                            const ratio = max > 0 ? entry.activeUsers / max : 0;
-                            const opacity = 0.3 + ratio * 0.7;
-                            return <Cell key={i} fill={COLORS.cyan} fillOpacity={opacity} />;
-                          })}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                    {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
-                  </div>
-              </ChartCard>
-
               {/* Role Distribution */}
               <ChartCard
                 title="Role Distribution"
@@ -590,6 +564,225 @@ export default function AnalyticsPage() {
                   </div>
               </ChartCard>
 
+            </div>
+          </div>
+
+          {/* ─── Growth Analytics (Telegram-style) ──────────────────────── */}
+          <div data-pdf-section data-pdf-label="Growth Analytics">
+            <div className="mb-5">
+              <SectionHeader label="Growth" title="User & Content Growth" color={COLORS.emerald} />
+            </div>
+
+            {/* Growth KPI cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+              {loading ? [...Array(4)].map((_, i) => (
+                <div key={i} className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] p-5 sm:p-7 h-[110px] animate-pulse" />
+              )) : (() => {
+                const regs = (userAnalytics?.registrations || []).map(r => parseInt(r.count, 10));
+                const prevRegs = regs.slice(0, -1);
+                const growth = regs.length > 1 && prevRegs.length > 0
+                  ? (((regs[regs.length - 1] - prevRegs[prevRegs.length - 1]) / prevRegs[prevRegs.length - 1]) * 100).toFixed(1)
+                  : '—';
+                const totalGrowth = overview?.totalUsers
+                  ? ((overview.newUsers / Math.max(overview.totalUsers - overview.newUsers, 1)) * 100).toFixed(1)
+                  : '—';
+                return [
+                  { label: 'New Users', value: overview?.newUsers?.toLocaleString() || '0', subtitle: `+${growth}% vs prev`, color: COLORS.emerald, icon: TrendingUp },
+                  { label: 'Total Users', value: overview?.totalUsers?.toLocaleString() || '0', subtitle: `+${totalGrowth}% growth`, color: COLORS.blue, icon: Users },
+                  { label: 'Content Added', value: ((contentAnalytics?.totals?.notes || 0) + (contentAnalytics?.totals?.totalResources || 0)).toLocaleString(), subtitle: 'Total created', color: COLORS.purple, icon: FileText },
+                  { label: 'Total Downloads', value: ((contentAnalytics?.totals?.totalDownloads || 0) + (contentAnalytics?.totals?.resourceDownloads || 0)).toLocaleString(), subtitle: 'All time', color: COLORS.cyan, icon: Download },
+                ].map((s, i) => (
+                  <div key={i}
+                    className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-7 shadow-sm transition-all duration-500 hover:-translate-y-1 overflow-hidden"
+                  >
+                    <div className="absolute inset-0 rounded-[1.75rem] sm:rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: `radial-gradient(circle at 30% 30%, ${s.color}12, transparent 70%)` }} />
+                    <div className="relative z-10 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">{s.label}</p>
+                        <p className="text-2xl sm:text-3xl font-black tracking-tight leading-none" style={{ color: s.color }}>{s.value}</p>
+                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">{s.subtitle}</p>
+                      </div>
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110" style={{ backgroundColor: `${s.color}12`, borderColor: `${s.color}25`, color: s.color }}>
+                        <s.icon size={16} />
+                      </div>
+                    </div>
+                  </div>
+                ));
+              })()}
+            </div>
+
+            {/* Cumulative Growth Chart */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+              <ChartCard
+                title="Cumulative User Growth"
+                subtitle="Total user accumulation over time"
+                badge={{ label: 'Growth', color: COLORS.emerald }}
+              >
+                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={(() => {
+                      const regs = (userAnalytics?.registrations || []).map(r => ({ date: r.date?.slice(5) || '', count: parseInt(r.count, 10) }));
+                      let cum = 0;
+                      return regs.map(r => { cum += r.count; return { date: r.date, total: cum }; });
+                    })()}>
+                      <defs>
+                        <linearGradient id="cumGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={COLORS.emerald} stopOpacity={0.3} />
+                          <stop offset="95%" stopColor={COLORS.emerald} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid {...gridStyle} />
+                      <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
+                      <YAxis tick={axisStyle} width={28} />
+                      <Tooltip content={<CustomTooltip />} cursor={false} />
+                      <Area type="monotone" dataKey="total" stroke={COLORS.emerald} fill="url(#cumGrad)" strokeWidth={2.5} name="Total Users" dot={false} activeDot={{ r: 4, fill: COLORS.emerald }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                  {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
+                </div>
+              </ChartCard>
+
+              {/* Daily New Users (bar) */}
+              <ChartCard
+                title="Daily Registrations"
+                subtitle="New users per day"
+                badge={{ label: 'Users', color: COLORS.blue }}
+              >
+                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={loading ? [] : (userAnalytics?.registrations?.map(r => ({ date: r.date?.slice(5) || '', count: parseInt(r.count, 10) })) || [])} barSize={8}>
+                      <CartesianGrid {...gridStyle} />
+                      <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
+                      <YAxis tick={axisStyle} width={28} />
+                      <Tooltip content={<CustomTooltip />} cursor={false} />
+                      <Bar dataKey="count" radius={[4, 4, 0, 0]} fill={COLORS.blue} name="Registrations" activeBar={{ stroke: COLORS.blue, strokeWidth: 2, fillOpacity: 1 }} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                  {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
+                </div>
+              </ChartCard>
+            </div>
+          </div>
+
+          {/* ─── Interaction Analytics (Telegram-style) ──────────────────── */}
+          <div data-pdf-section data-pdf-label="Interaction Analytics">
+            <div className="mb-5">
+              <SectionHeader label="Interaction" title="Engagement & Activity" color={COLORS.rose} />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+              {/* Reviews / Engagement Over Time */}
+              <ChartCard
+                title="Engagement Over Time"
+                subtitle="Reviews & comments per day"
+                badge={{ label: 'Engagement', color: COLORS.rose }}
+              >
+                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={loading ? [] : (contentAnalytics?.reviewsCreated?.map(r => ({ date: r.date?.slice(5) || '', reviews: parseInt(r.count, 10) })) || [])}>
+                      <defs>
+                        <linearGradient id="engGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={COLORS.rose} stopOpacity={0.25} />
+                          <stop offset="95%" stopColor={COLORS.rose} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid {...gridStyle} />
+                      <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
+                      <YAxis tick={axisStyle} width={28} />
+                      <Tooltip content={<CustomTooltip />} cursor={false} />
+                      <Area type="monotone" dataKey="reviews" stroke={COLORS.rose} fill="url(#engGrad)" strokeWidth={2} name="Reviews" dot={false} activeDot={{ r: 4, fill: COLORS.rose }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                  {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
+                </div>
+              </ChartCard>
+
+              {/* Active Users by Day of Week */}
+              <ChartCard
+                title="Weekly Activity Pattern"
+                subtitle="Active users by day of week"
+                badge={{ label: 'Pattern', color: COLORS.indigo }}
+              >
+                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={loading ? [] : (activityAnalytics?.activeDays?.map(d => ({ day: d.day?.slice(0, 3) || '', users: d.activeUsers })) || [])} barSize={20}>
+                      <CartesianGrid {...gridStyle} />
+                      <XAxis dataKey="day" tick={axisStyle} />
+                      <YAxis tick={axisStyle} width={28} />
+                      <Tooltip content={<CustomTooltip />} cursor={false} />
+                      <Bar dataKey="users" radius={[4, 4, 0, 0]} name="Active Users" activeBar={{ stroke: COLORS.indigo, strokeWidth: 2, fillOpacity: 1 }}>
+                        {(activityAnalytics?.activeDays || []).map((_, i) => {
+                          const isWeekend = i >= 5;
+                          return <Cell key={i} fill={isWeekend ? COLORS.rose : COLORS.indigo} fillOpacity={isWeekend ? 0.8 : 0.5} />;
+                        })}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                  {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
+                </div>
+              </ChartCard>
+
+              {/* Currently Active + Stats */}
+              <ChartCard
+                title="Live Activity"
+                subtitle="Currently active and period totals"
+                badge={{ label: 'Live', color: COLORS.emerald }}
+              >
+                <div className="flex flex-col gap-4 p-2">
+                  <div className="flex items-center gap-4">
+                    <div className="relative w-16 h-16 flex items-center justify-center">
+                      <div className="absolute inset-0 rounded-full bg-emerald-500/10 animate-pulse" />
+                      <div className="w-10 h-10 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center">
+                        <Activity size={18} className="text-emerald-400" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500">Currently Active</p>
+                      <p className="text-3xl font-black text-emerald-400">{activityAnalytics?.currentlyActive || 0}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[var(--card-border)]">
+                    {[
+                      { label: 'Avg Daily Active', value: activityAnalytics?.loginActivity?.length ? Math.round(activityAnalytics.loginActivity.reduce((s, a) => s + parseInt(a.activeUsers, 10), 0) / activityAnalytics.loginActivity.length) : 0, color: COLORS.cyan },
+                      { label: 'Peak Daily', value: activityAnalytics?.loginActivity?.length ? Math.max(...activityAnalytics.loginActivity.map(a => parseInt(a.activeUsers, 10))) : 0, color: COLORS.amber },
+                      { label: 'Total Reviews', value: overview?.totalReviews?.toLocaleString() || '0', color: COLORS.purple },
+                      { label: 'Engagement Rate', value: activityAnalytics?.loginActivity?.length && overview?.totalUsers ? ((activityAnalytics.loginActivity.reduce((s, a) => s + parseInt(a.activeUsers, 10), 0) / activityAnalytics.loginActivity.length / overview.totalUsers) * 100).toFixed(1) + '%' : '0%', color: COLORS.rose },
+                    ].map((s, i) => (
+                      <div key={i} className="text-center p-2 rounded-xl bg-white/[0.02]">
+                        <p className="text-[7px] font-black uppercase tracking-widest text-slate-500 mb-1">{s.label}</p>
+                        <p className="text-lg font-black" style={{ color: s.color }}>{s.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </ChartCard>
+
+              {/* Peak Hours */}
+              <ChartCard
+                title="Peak Activity Hours"
+                subtitle="Most active hours of the day"
+                badge={{ label: 'Heatmap', color: COLORS.cyan }}
+              >
+                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={loading ? [] : (activityAnalytics?.peakHours?.map(h => ({ hour: `${h.hour}`, users: h.activeUsers })) || [])}>
+                      <CartesianGrid {...gridStyle} />
+                      <XAxis dataKey="hour" tickFormatter={formatHourLabel} tick={axisStyle} interval={1} />
+                      <YAxis tick={axisStyle} width={28} />
+                      <Tooltip content={<CustomTooltip hideLabel />} cursor={false} />
+                      <Bar dataKey="users" radius={[4, 4, 0, 0]} name="Active Users" activeBar={{ stroke: COLORS.cyan, strokeWidth: 2, fillOpacity: 0.9 }}>
+                        {(activityAnalytics?.peakHours || []).map((entry, i) => {
+                          const max = Math.max(...(activityAnalytics?.peakHours || []).map(h => h.activeUsers));
+                          const ratio = max > 0 ? entry.activeUsers / max : 0;
+                          const opacity = 0.3 + ratio * 0.7;
+                          return <Cell key={i} fill={COLORS.cyan} fillOpacity={opacity} />;
+                        })}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                  {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
+                </div>
+              </ChartCard>
             </div>
           </div>
 
