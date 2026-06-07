@@ -108,7 +108,7 @@ function KpiCard({ title, value, subtitle, icon: Icon, color, loading }) {
 // ─── Chart Card ────────────────────────────────────────────────────────────
 function ChartCard({ title, subtitle, badge, children, className = '' }) {
   return (
-    <div className={`group bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-7 shadow-sm transition-all duration-500 hover:border-[var(--border-h)] ${className}`}>
+    <div className={`group min-w-0 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-7 shadow-sm transition-all duration-500 hover:border-[var(--border-h)] ${className}`}>
       <div className="flex items-start justify-between gap-3 mb-5 sm:mb-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -449,10 +449,9 @@ export default function AnalyticsPage() {
                 subtitle="New accounts over time"
                 badge={{ label: 'Users', color: COLORS.blue }}
               >
-                {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
-                  <div className="h-[180px] sm:h-[220px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={userAnalytics?.registrations?.map(r => ({ date: r.date?.slice(5) || '', registrations: parseInt(r.count, 10) })) || []}>
+                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={loading ? [] : (userAnalytics?.registrations?.map(r => ({ date: r.date?.slice(5) || '', registrations: parseInt(r.count, 10) })) || [])}>
                       <defs>
                         <linearGradient id="regGrad" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor={COLORS.blue} stopOpacity={0.25} />
@@ -466,8 +465,8 @@ export default function AnalyticsPage() {
                         <Area type="monotone" dataKey="registrations" stroke={COLORS.blue} fill="url(#regGrad)" strokeWidth={2} name="Registrations" dot={false} activeDot={{ r: 4, fill: COLORS.blue }} />
                       </AreaChart>
                     </ResponsiveContainer>
+                    {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
                   </div>
-                )}
               </ChartCard>
 
               {/* Login Activity */}
@@ -476,10 +475,9 @@ export default function AnalyticsPage() {
                 subtitle="Daily active sessions"
                 badge={{ label: 'Activity', color: COLORS.emerald }}
               >
-                {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
-                  <div className="h-[180px] sm:h-[220px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={activityAnalytics?.loginActivity?.map(a => ({ date: a.date?.slice(5) || '', activeUsers: parseInt(a.activeUsers, 10) })) || []}>
+                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={loading ? [] : (activityAnalytics?.loginActivity?.map(a => ({ date: a.date?.slice(5) || '', activeUsers: parseInt(a.activeUsers, 10) })) || [])}>
                         <defs>
                           <linearGradient id="actGrad" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor={COLORS.emerald} stopOpacity={0.2} />
@@ -493,8 +491,8 @@ export default function AnalyticsPage() {
                         <Line type="monotone" dataKey="activeUsers" stroke={COLORS.emerald} strokeWidth={2.5} dot={false} name="Active Users" activeDot={{ r: 4, fill: COLORS.emerald }} />
                       </LineChart>
                     </ResponsiveContainer>
+                    {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
                   </div>
-                )}
               </ChartCard>
 
               {/* Content Created */}
@@ -503,10 +501,9 @@ export default function AnalyticsPage() {
                 subtitle="Notes & resources over time"
                 badge={{ label: 'Content', color: COLORS.purple }}
               >
-                {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
-                  <div className="h-[180px] sm:h-[220px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={contentChartData} barGap={2}>
+                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={contentChartData} barGap={2}>
                         <CartesianGrid {...gridStyle} />
                         <XAxis dataKey="date" tick={axisStyle} tickFormatter={formatDateLabel} interval="preserveStartEnd" />
                         <YAxis tick={axisStyle} width={28} />
@@ -516,8 +513,8 @@ export default function AnalyticsPage() {
                         <Legend wrapperStyle={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', paddingTop: '8px' }} />
                       </BarChart>
                     </ResponsiveContainer>
+                    {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
                   </div>
-                )}
               </ChartCard>
 
               {/* Peak Activity Hours */}
@@ -526,10 +523,9 @@ export default function AnalyticsPage() {
                 subtitle="Most active hours of the day"
                 badge={{ label: 'Heatmap', color: COLORS.cyan }}
               >
-                {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
-                  <div className="h-[180px] sm:h-[220px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={activityAnalytics?.peakHours?.map(h => ({ hour: `${h.hour}`, users: h.activeUsers })) || []}>
+                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={loading ? [] : (activityAnalytics?.peakHours?.map(h => ({ hour: `${h.hour}`, users: h.activeUsers })) || [])}>
                         <CartesianGrid {...gridStyle} />
                         <XAxis dataKey="hour" tickFormatter={formatHourLabel} tick={axisStyle} interval={1} />
                         <YAxis tick={axisStyle} width={28} />
@@ -544,8 +540,8 @@ export default function AnalyticsPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+                    {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
                   </div>
-                )}
               </ChartCard>
 
               {/* Role Distribution */}
@@ -554,10 +550,9 @@ export default function AnalyticsPage() {
                 subtitle="Users by assigned role"
                 badge={{ label: 'Roles', color: COLORS.indigo }}
               >
-                {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
-                  <div className="h-[180px] sm:h-[220px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart margin={{ top: 0, right: 0, bottom: 10, left: 0 }}>
+                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart margin={{ top: 0, right: 0, bottom: 10, left: 0 }}>
                         <Pie data={rolePieData} cx="50%" cy="50%" innerRadius={45} outerRadius={80} paddingAngle={3} dataKey="value" strokeWidth={0}>
                           {rolePieData.map((_, i) => (
                             <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
@@ -567,8 +562,8 @@ export default function AnalyticsPage() {
                         <Legend wrapperStyle={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }} />
                       </PieChart>
                     </ResponsiveContainer>
+                    {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
                   </div>
-                )}
               </ChartCard>
 
               {/* Department Distribution */}
@@ -577,10 +572,9 @@ export default function AnalyticsPage() {
                 subtitle="Top departments by user count"
                 badge={{ label: 'Depts', color: COLORS.orange }}
               >
-                {loading ? <Skeleton className="h-[180px] sm:h-[220px]" /> : (
-                  <div className="h-[180px] sm:h-[220px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={deptBarData} layout="vertical" barSize={10}>
+                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={deptBarData} layout="vertical" barSize={10}>
                         <CartesianGrid {...gridStyle} />
                         <XAxis type="number" tick={axisStyle} />
                         <YAxis dataKey="name" type="category" tick={axisStyle} width={80} />
@@ -592,8 +586,8 @@ export default function AnalyticsPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+                    {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
                   </div>
-                )}
               </ChartCard>
 
             </div>

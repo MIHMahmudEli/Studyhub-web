@@ -11,9 +11,6 @@ export function proxy(request) {
   );
 
   if (isPublic) {
-    if (pathname.startsWith('/auth') && refreshToken) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
     return NextResponse.next();
   }
 
