@@ -103,6 +103,7 @@ export default function PendingResourcesPage() {
 
   const handleResourceStatus = async (id, newStatus) => {
     setPendingResources(prev => prev.filter(r => r.id !== id));
+    setTotalPending(prev => Math.max(0, prev - 1));
     try {
       const res = await apiRequest(`/resources/${id}/status`, {
         method: 'PATCH',

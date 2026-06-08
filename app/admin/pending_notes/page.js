@@ -103,6 +103,7 @@ export default function PendingNotesPage() {
 
   const handleNoteStatus = async (id, newStatus) => {
     setPendingNotes(prev => prev.filter(n => n.id !== id));
+    setTotalPending(prev => Math.max(0, prev - 1));
     try {
       const res = await apiRequest(`/notes/${id}/status`, {
         method: 'PATCH',
