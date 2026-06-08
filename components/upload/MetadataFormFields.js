@@ -128,7 +128,7 @@ export default function MetadataFormFields({
           </div>
         )}
 
-        {!formData.course && courseSearch.length > 0 && !showSuggestions && (
+        {!formData.course && !formData.courseTitle && courseSearch.length > 0 && !showSuggestions && (
           <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mt-3 ml-3 animate-in fade-in slide-in-from-left-2 duration-300">
             Select a course from the suggestions
           </p>
