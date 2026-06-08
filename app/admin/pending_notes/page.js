@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useSocket } from '@/context/SocketContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
@@ -28,6 +29,7 @@ import {
 
 export default function PendingNotesPage() {
   const { user, loading: authLoading, tokenReady } = useAuth();
+  const { on } = useSocket();
   const router = useRouter();
 
   const [pendingNotes, setPendingNotes] = useState([]);
@@ -132,30 +134,20 @@ export default function PendingNotesPage() {
     return () => { if (el) observer.unobserve(el); };
   }, [hasMore, loadingMore, currentPage]);
 
-  // Poll for moderation job results (failure notifications only)
+  // Listen for moderation results via WebSocket
   useEffect(() => {
-    if (jobCount === 0) return;
-    const interval = setInterval(async () => {
-      const ids = Object.keys(pendingJobsRef.current);
-      if (ids.length === 0) { setJobCount(0); return; }
-      try {
-        const statuses = await apiRequest(`/moderation/jobs/status?ids=${ids.join(',')}`);
-        for (const s of statuses) {
-          const job = pendingJobsRef.current[s.jobId];
-          if (!job) continue;
-          if (s.status === 'failed') {
-            showToast(`Failed to ${job.newStatus} note #${job.itemId}. ${s.error || ''}`, 'error');
-            delete pendingJobsRef.current[s.jobId];
-            setJobCount(c => c - 1);
-          } else if (s.status === 'completed') {
-            delete pendingJobsRef.current[s.jobId];
-            setJobCount(c => c - 1);
-          }
-        }
-      } catch { /* poll will retry next cycle */ }
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [jobCount]);
+    if (!on) return;
+    const unsubResolved = on('moderation:resolved', (data) => {
+      if (data.type === 'note') delete pendingJobsRef.current[data.itemId];
+    });
+    const unsubFailed = on('moderation:failed', (data) => {
+      if (data.type === 'note') {
+        showToast(`Failed to ${data.newStatus} note #${data.itemId}. ${data.error || ''}`, 'error');
+        delete pendingJobsRef.current[data.itemId];
+      }
+    });
+    return () => { unsubResolved(); unsubFailed(); };
+  }, [on]);
 
   if (!readyRef.current && (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator'))) return null;
 

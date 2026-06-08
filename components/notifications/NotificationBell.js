@@ -6,12 +6,15 @@ import { useRouter } from 'next/navigation';
 import { Bell, BellDot, CheckCheck, ChevronRight, ExternalLink, MessageCircle, FileText, AtSign, CheckCircle2, XCircle, Sparkles } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { useSocket } from '@/context/SocketContext';
 
 const typeIcons = {
   comment_reply: MessageCircle,
   mention: AtSign,
   note_approved: CheckCircle2,
   note_rejected: XCircle,
+  resource_approved: CheckCircle2,
+  resource_rejected: XCircle,
   note_comment: MessageCircle,
   community_reply: MessageCircle,
   community_mention: AtSign,
@@ -26,6 +29,8 @@ const typeColors = {
   mention: 'text-purple-500 bg-purple-500/10',
   note_approved: 'text-emerald-500 bg-emerald-500/10',
   note_rejected: 'text-red-500 bg-red-500/10',
+  resource_approved: 'text-emerald-500 bg-emerald-500/10',
+  resource_rejected: 'text-red-500 bg-red-500/10',
   note_comment: 'text-cyan-500 bg-cyan-500/10',
   community_reply: 'text-blue-500 bg-blue-500/10',
   community_mention: 'text-purple-500 bg-purple-500/10',
@@ -51,6 +56,7 @@ function timeAgo(dateStr) {
 
 export default function NotificationBell() {
   const { user, tokenReady } = useAuth();
+  const { on } = useSocket();
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -81,16 +87,22 @@ export default function NotificationBell() {
   useEffect(() => {
     if (!tokenReady || !user) return;
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 15000);
+
+    const unsub = on('notification:new', (notification) => {
+      setUnreadCount(prev => prev + 1);
+      if (open) {
+        setNotifications(prev => [notification, ...prev].slice(0, 5));
+      }
+    });
 
     const onFocus = () => fetchUnreadCount();
     window.addEventListener('focus', onFocus);
 
     return () => {
-      clearInterval(interval);
+      unsub();
       window.removeEventListener('focus', onFocus);
     };
-  }, [fetchUnreadCount, tokenReady, user]);
+  }, [fetchUnreadCount, tokenReady, user, on, open]);
 
   useEffect(() => {
     if (open) fetchDropdown();

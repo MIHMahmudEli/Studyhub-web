@@ -1,4 +1,5 @@
 import { AuthProvider } from "@/context/AuthContext";
+import { SocketProvider } from "@/context/SocketContext";
 import { ThemeProvider } from "@/context/ThemeProvider";
 import RouteTracker from "@/components/RouteTracker";
 import ScreenGate from "@/components/ScreenGate";
@@ -33,6 +34,7 @@ export default function RootLayout({ children }) {
       <body className="font-sans antialiased">
         <ThemeProvider>
           <AuthProvider>
+            <SocketProvider>
             <ThemeSync />
             <RouteTracker />
             {/* Global Nebula Effect */}
@@ -47,6 +49,7 @@ export default function RootLayout({ children }) {
             <RamadanDecoration />
 
             <ErrorBoundary><QueryProvider><ScreenGate><BlessingsProvider>{children}<RamadanReflectionPanel /><EidTransition /></BlessingsProvider></ScreenGate></QueryProvider></ErrorBoundary>
+          </SocketProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
