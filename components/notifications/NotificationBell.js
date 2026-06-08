@@ -62,6 +62,8 @@ export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
+  const openRef = useRef(open);
+  openRef.current = open;
   const router = useRouter();
 
   const fetchUnreadCount = useCallback(async () => {
@@ -88,21 +90,27 @@ export default function NotificationBell() {
     if (!tokenReady || !user) return;
     fetchUnreadCount();
 
-    const unsub = on('notification:new', (notification) => {
-      setUnreadCount(prev => prev + 1);
-      if (open) {
-        setNotifications(prev => [notification, ...prev].slice(0, 5));
-      }
-    });
-
+    const interval = setInterval(fetchUnreadCount, 60000);
     const onFocus = () => fetchUnreadCount();
     window.addEventListener('focus', onFocus);
 
     return () => {
-      unsub();
+      clearInterval(interval);
       window.removeEventListener('focus', onFocus);
     };
-  }, [fetchUnreadCount, tokenReady, user, on, open]);
+  }, [fetchUnreadCount, tokenReady, user]);
+
+  useEffect(() => {
+    if (!tokenReady || !user) return;
+    const unsub = on('notification:new', (notification) => {
+      setUnreadCount(prev => prev + 1);
+      if (openRef.current) {
+        setNotifications(prev => [notification, ...prev].slice(0, 5));
+      }
+    });
+
+    return unsub;
+  }, [tokenReady, user, on]);
 
   useEffect(() => {
     if (open) fetchDropdown();

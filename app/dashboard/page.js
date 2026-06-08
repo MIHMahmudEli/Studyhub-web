@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { User, ArrowRight, ExternalLink } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useSocket } from '@/context/SocketContext';
 import { useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { apiRequest } from '@/lib/api';
@@ -18,6 +19,7 @@ import RamadanDashboardPanel from '@/components/ramadan/RamadanDashboardPanel';
 
 export default function StudentDashboard() {
   const { user, loading: authLoading, tokenReady } = useAuth();
+  const { on } = useSocket();
   const router = useRouter();
   
   const [loadingNotes, setLoadingNotes] = useState(true);
@@ -39,6 +41,16 @@ export default function StudentDashboard() {
       fetchDashboardData();
     }
   }, [tokenReady, user]);
+
+  useEffect(() => {
+    if (!tokenReady || !user) return;
+    const unsub = on('points:updated', (data) => {
+      if (data?.points !== undefined) {
+        setStats(prev => ({ ...prev, points: data.points }));
+      }
+    });
+    return unsub;
+  }, [tokenReady, user, on]);
 
   const fetchDashboardData = async () => {
     try {
