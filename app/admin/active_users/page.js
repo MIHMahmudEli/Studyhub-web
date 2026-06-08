@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
+import { useSocket } from '@/context/SocketContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
@@ -153,6 +154,7 @@ function UserRow({ u, isLive, router }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ActiveUsersPage() {
   const { user, loading: authLoading, tokenReady } = useAuth();
+  const { on } = useSocket();
   const router = useRouter();
 
   const [mode, setMode] = useState('daily'); // 'daily' | 'live'
@@ -171,14 +173,10 @@ export default function ActiveUsersPage() {
   // ── Live state ──
   const [liveUsers, setLiveUsers] = useState([]);
   const [liveTotal, setLiveTotal] = useState(0);
-  const [liveLoading, setLiveLoading] = useState(false);
+  const [liveLoading, setLiveLoading] = useState(true);
   const [liveError, setLiveError] = useState(null);
   const [lastRefreshed, setLastRefreshed] = useState(null);
-  const [countdown, setCountdown] = useState(15);
-  const liveIntervalRef = useRef(null);
-  const countdownRef = useRef(null);
   const LIVE_MINUTES = 5;
-  const POLL_SECONDS = 15;
   const [permOk, setPermOk] = useState(null);
 
   useEffect(() => {
@@ -233,15 +231,14 @@ export default function ActiveUsersPage() {
     return () => { if (el) observer.unobserve(el); };
   }, [dailyHasMore, dailyLoadingMore, dailyPage, selectedDate, fetchDailyUsers]);
 
-  // ── Fetch Live ───────────────────────────────────────────────────────────────
+  // ── Fetch Live (initial fetch on mount) ──────────────────────────────────────
   const fetchLiveUsers = useCallback(async () => {
     try {
       setLiveError(null);
-      const res = await apiRequest(`/users/active/now?minutes=${LIVE_MINUTES}&page=1&limit=50&_t=${Date.now()}`);
-      const raw = res?.data || [];
+      const res = await apiRequest(`/users/active/now?minutes=${LIVE_MINUTES}&page=1&limit=50`);
       const now = Date.now();
       const cutoff = LIVE_MINUTES * 60 * 1000;
-      const filtered = raw.filter(u => {
+      const filtered = (res?.data || []).filter(u => {
         const t = new Date(u.last_active_at).getTime();
         return !isNaN(t) && now - t < cutoff;
       });
@@ -258,25 +255,28 @@ export default function ActiveUsersPage() {
 
   useEffect(() => {
     if (!tokenReady || !user || mode !== 'live') return;
-
     setLiveLoading(true);
-    setCountdown(POLL_SECONDS);
     fetchLiveUsers();
-
-    liveIntervalRef.current = setInterval(() => {
-      fetchLiveUsers();
-      setCountdown(POLL_SECONDS);
-    }, POLL_SECONDS * 1000);
-
-    countdownRef.current = setInterval(() => {
-      setCountdown(prev => (prev <= 1 ? POLL_SECONDS : prev - 1));
-    }, 1000);
-
-    return () => {
-      clearInterval(liveIntervalRef.current);
-      clearInterval(countdownRef.current);
-    };
   }, [tokenReady, user, mode, fetchLiveUsers]);
+
+  // ── Listen for live socket updates ───────────────────────────────────────────
+  useEffect(() => {
+    if (!on) return;
+    const unsub = on('live-users:updated', (data) => {
+      if (!data) return;
+      const now = Date.now();
+      const cutoff = LIVE_MINUTES * 60 * 1000;
+      const filtered = (data.data || []).filter(u => {
+        const t = new Date(u.last_active_at).getTime();
+        return !isNaN(t) && now - t < cutoff;
+      });
+      setLiveUsers(filtered);
+      setLiveTotal(filtered.length);
+      setLastRefreshed(new Date(data.timestamp));
+      setLiveLoading(false);
+    });
+    return unsub;
+  }, [on]);
 
   if (authLoading || !user || (user.role !== 'admin' && user.role !== 'moderator')) return null;
   if (!permOk) return null;
@@ -424,24 +424,18 @@ export default function ActiveUsersPage() {
                     <p className="text-[11px] font-black uppercase tracking-widest text-red-400">Live Mode — Last {LIVE_MINUTES} Minutes</p>
                     {lastRefreshed && (
                       <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
-                        Last refreshed: {lastRefreshed.toLocaleTimeString()}
+                        Real-time via WebSocket
                       </p>
                     )}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl">
-                    <RefreshCw size={12} className={`text-red-400 ${countdown <= 3 ? 'animate-spin' : ''}`} />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-red-400">
-                      Refreshing in {countdown}s
+                  <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                    <Radio size={12} className="text-emerald-400" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">
+                      Live
                     </span>
                   </div>
-                  <button
-                    onClick={() => { setLiveLoading(true); fetchLiveUsers(); setCountdown(POLL_SECONDS); }}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-all cursor-pointer"
-                  >
-                    <RefreshCw size={12} /> Refresh
-                  </button>
                 </div>
               </div>
 
@@ -449,7 +443,7 @@ export default function ActiveUsersPage() {
                 panelIcon={Radio}
                 panelIconClass="text-red-500 animate-pulse"
                 panelTitle={`Currently Online — Last ${LIVE_MINUTES} min`}
-                panelSubtitle="Users who made a request in the last 5 minutes. Auto-refreshes every 15 seconds."
+                panelSubtitle="Users who made a request in the last 5 minutes. Updated in real-time via WebSocket."
                 badgeText={`Online Now: ${liveTotal}`}
                 badgeColorClass="bg-red-500/10 text-red-500 border-red-500/20"
                 loading={liveLoading}
