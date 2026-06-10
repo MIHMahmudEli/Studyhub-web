@@ -5,9 +5,6 @@ import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
-  Filter, 
-  SortDesc, 
-  Search, 
   FileText, 
   Atom, 
   Calculator, 
@@ -24,6 +21,7 @@ import { NoteCardSkeleton } from '@/components/ui/Skeleton';
 import PageHeader from '@/components/ui/PageHeader';
 import SearchInput from '@/components/ui/SearchInput';
 import NoteCard from '@/components/ui/NoteCard';
+import EmptyState from '@/components/ui/EmptyState';
 
 // Helper to select icon based on subject
 const getSubjectIcon = (subject, code) => {
@@ -49,7 +47,10 @@ function NotesPageInner() {
   const limit = 12;
   
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'latest');
-  
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestionsContainerRef = useRef(null);
+
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
   const observer = useRef();
@@ -58,6 +59,9 @@ function NotesPageInner() {
   const currentPageRef = useRef(currentPage);
   const totalNotesRef = useRef(totalNotes);
 
+  const searchQueryRef = useRef(searchQuery);
+  useEffect(() => { searchQueryRef.current = searchQuery; }, [searchQuery]);
+
   const fetchNotes = useCallback(async (pageNum, append = false) => {
     try {
       if (append) {
@@ -65,7 +69,12 @@ function NotesPageInner() {
       } else {
         setLoading(true);
       }
-      const res = await apiRequest(`/notes?sort=${sortBy}&page=${pageNum}&limit=${limit}`);
+      let endpoint = `/notes?sort=${sortBy}&page=${pageNum}&limit=${limit}`;
+      const currentSearch = searchQueryRef.current;
+      if (currentSearch && currentSearch.trim().length >= 3) {
+        endpoint += `&search=${encodeURIComponent(currentSearch.trim())}`;
+      }
+      const res = await apiRequest(endpoint);
       const mapped = res.data.map(note => ({
         ...note,
         subject: note.courseTitle,
@@ -99,14 +108,25 @@ function NotesPageInner() {
   useEffect(() => { currentPageRef.current = currentPage; }, [currentPage]);
   useEffect(() => { totalNotesRef.current = totalNotes; }, [totalNotes]);
 
-  // Initial fetch on mount
+  // Fetch on mount + re-fetch when sort changes
   useEffect(() => {
+    if (!tokenReady || !user) return;
+    const timer = setTimeout(() => {
+      setNotes([]);
+      setCurrentPage(1);
+      currentPageRef.current = 1;
+      fetchNotesRef.current(1);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [sortBy, tokenReady, user]);
+
+  // Manual search trigger (Enter key / suggestion click)
+  const handleSearchSubmit = useCallback(() => {
+    if (!tokenReady || !user) return;
     setNotes([]);
     setCurrentPage(1);
     currentPageRef.current = 1;
-    if (tokenReady && user) {
-      fetchNotes(1);
-    }
+    fetchNotesRef.current(1);
   }, [tokenReady, user]);
 
   // Sync URL params
@@ -124,8 +144,8 @@ function NotesPageInner() {
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [searchQuery, sortBy, router, searchParams]);
 
-  // Client-side sort + search filter
-  const filteredNotes = useMemo(() => {
+  // Client-side sort only (search is handled server-side)
+  const sortedNotes = useMemo(() => {
     let result = [...notes];
 
     if (sortBy === 'top-rated') {
@@ -134,17 +154,53 @@ function NotesPageInner() {
       result.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
     }
 
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(note =>
-        note.title.toLowerCase().includes(q) ||
-        (note.subject && note.subject.toLowerCase().includes(q)) ||
-        (note.course_code && note.course_code.toLowerCase().includes(q))
-      );
-    }
-
     return result;
-  }, [searchQuery, notes, sortBy]);
+  }, [notes, sortBy]);
+
+  // Debounced suggestion fetch (triggered only by user typing, not programmatic changes)
+  const suggestionDebounceRef = useRef(null);
+  const fetchSuggestions = useCallback(async (query) => {
+    if (!query || query.trim().length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    try {
+      const res = await apiRequest(`/notes?search=${encodeURIComponent(query.trim())}&limit=5&sort=latest`);
+      setSuggestions(res.data || []);
+      setShowSuggestions(true);
+    } catch (err) {
+      console.error('Failed to fetch suggestions:', err);
+    }
+  }, []);
+
+  const onSearchInputChange = useCallback((val) => {
+    setSearchQuery(val);
+
+    if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+
+    if (!val) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    } else {
+      setShowSuggestions(true);
+      suggestionDebounceRef.current = setTimeout(() => {
+        if (val.trim().length >= 3) {
+          fetchSuggestions(val);
+        }
+      }, 300);
+    }
+  }, [fetchSuggestions]);
+
+  // Close suggestions on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (suggestionsContainerRef.current && !suggestionsContainerRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const hasMore = totalNotes > 0 && notes.length < totalNotes;
 
@@ -159,6 +215,24 @@ function NotesPageInner() {
     });
     if (node) observer.current.observe(node);
   }, []);
+
+  const notesGrid = useMemo(() => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {sortedNotes.map((note, idx) => {
+        const Icon = getSubjectIcon(note.subject, note.course_code);
+        return (
+          <NoteCard
+            key={note.id}
+            note={note}
+            icon={Icon}
+            accentColor="purple"
+            animationDelay={(idx % limit) * 40}
+            onClick={() => router.push(`/notes/${note.id}`)}
+          />
+        );
+      })}
+    </div>
+  ), [sortedNotes, limit, router]);
 
   if (authLoading || loading) return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-32">
@@ -206,14 +280,63 @@ function NotesPageInner() {
             titleGradient="from-purple-500 to-blue-500"
             description="Explore the highest-rated student notes, lecture materials, and study guides from across the campus."
           >
-            {/* ─── Premium Search & Sort filters ──────────────────────────────── */}
-            <SearchInput
-              placeholder="SEARCH NOTES..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              focusBorderClass="focus:border-purple-500/30"
-              widthClass="w-full sm:w-[280px]"
-            />
+            {/* ─── Premium Search with suggestions & Sort filters ──────────────── */}
+            <div className="relative w-full sm:w-[280px]" ref={suggestionsContainerRef}>
+              <SearchInput
+                placeholder="SEARCH NOTES..."
+                value={searchQuery}
+                onChange={(e) => onSearchInputChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+                    setShowSuggestions(false);
+                    handleSearchSubmit();
+                  }
+                  if (e.key === 'Escape') {
+                    if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+                    setSearchQuery('');
+                    searchQueryRef.current = '';
+                    setSuggestions([]);
+                    setShowSuggestions(false);
+                  }
+                }}
+                onClear={() => {
+                  if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+                  setSearchQuery('');
+                  searchQueryRef.current = '';
+                  setSuggestions([]);
+                  setShowSuggestions(false);
+                }}
+                focusBorderClass="focus:border-purple-500/30"
+                widthClass="w-full"
+              />
+              {/* Suggestions Dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-y-auto max-h-[300px] z-50 backdrop-blur-xl">
+                  {suggestions.map((note) => (
+                    <button
+                      key={note.id}
+                      type="button"
+                      onClick={() => {
+                        if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+                        setSearchQuery(note.title);
+                        searchQueryRef.current = note.title;
+                        setShowSuggestions(false);
+                        handleSearchSubmit();
+                      }}
+                      className="w-full px-6 py-4 text-left hover:bg-purple-500/5 flex items-center justify-between group transition-colors"
+                    >
+                      <div>
+                        <p className="text-sm font-bold text-[var(--foreground)] group-hover:text-purple-500 transition-colors">{note.title}</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                          {note.code ? `${note.code} • ` : ''}{note.courseTitle}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <button 
                 onClick={() => setSortBy('most-downloaded')}
@@ -239,21 +362,7 @@ function NotesPageInner() {
           </PageHeader>
 
           {/* ─── Majestic Notes Grid ──────────────────────────────────────────── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredNotes.map((note, idx) => {
-              const Icon = getSubjectIcon(note.subject, note.course_code);
-              return (
-                <NoteCard
-                  key={note.id}
-                  note={note}
-                  icon={Icon}
-                  accentColor="purple"
-                  animationDelay={(idx % limit) * 40}
-                  onClick={() => router.push(`/notes/${note.id}`)}
-                />
-              );
-            })}
-          </div>
+          {notesGrid}
 
           {/* Sentinel for infinite scroll */}
           {hasMore && !loading && (
@@ -271,20 +380,16 @@ function NotesPageInner() {
           )}
 
           {/* Empty State */}
-          {!loading && !loadingMore && filteredNotes.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-32 text-center">
-              <div className="w-24 h-24 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-3xl flex items-center justify-center text-slate-400 mb-8 shadow-xl">
-                <FileText size={48} strokeWidth={1} />
-              </div>
-              <h3 className="text-xl font-black uppercase tracking-widest mb-2">No Notes Found</h3>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 max-w-[400px]">
-                We couldn't find any notes matching your search criteria. Try adjusting your filters.
-              </p>
-            </div>
+          {!loading && !loadingMore && sortedNotes.length === 0 && (
+            <EmptyState
+              icon={FileText}
+              title="No Notes Found"
+              message="We couldn't find any notes matching your search criteria. Try adjusting your filters."
+            />
           )}
 
           {/* Infinite Scroll End Indicator */}
-          {!hasMore && filteredNotes.length > 0 && (
+          {!hasMore && sortedNotes.length > 0 && (
             <div className="text-center mt-20 pt-10 border-t border-slate-200 dark:border-white/5">
               <p className="text-slate-500 text-[9px] font-black uppercase tracking-[0.3em]">
                 End of Notes Archive

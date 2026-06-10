@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useMemo, useEffect, useRef } from 'react';
+import { Suspense, useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { 
   Bookmark, 
@@ -55,6 +55,16 @@ const getCourseIcon = (title) => {
   return BookOpen;
 };
 
+// ─── Section heading helper ───────────────────────────────────────────────────
+const SectionHeading = ({ colorClass, bgClass, borderClass, icon: Icon, label }) => (
+  <div className="flex items-center gap-4">
+    <div className={`w-10 h-10 rounded-xl ${bgClass} flex items-center justify-center ${colorClass} border ${borderClass} shadow-lg`}>
+      <Icon size={20} />
+    </div>
+    <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">{label}</h2>
+  </div>
+);
+
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 function BookmarkPageInner() {
@@ -64,6 +74,10 @@ function BookmarkPageInner() {
   const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [hasAnyBookmarks, setHasAnyBookmarks] = useState(false);
+  const suggestionsContainerRef = useRef(null);
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();
 
@@ -80,21 +94,43 @@ function BookmarkPageInner() {
     if (!authLoading && !user) router.push('/auth');
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    const fetchBookmarks = async () => {
-      if (!tokenReady || !user) return;
-      try {
-        setLoading(true);
-        const data = await apiRequest('/bookmarks');
-        setBookmarks(data);
-      } catch (err) {
-        console.error('Failed to fetch bookmarks:', err);
-      } finally {
-        setLoading(false);
+  const searchQueryRef = useRef(searchQuery);
+  useEffect(() => { searchQueryRef.current = searchQuery; }, [searchQuery]);
+
+  // Fetch bookmarks (with optional search, reads from ref)
+  const fetchBookmarks = useCallback(async () => {
+    if (!tokenReady || !user) return;
+    try {
+      setLoading(true);
+      let endpoint = '/bookmarks';
+      const currentSearch = searchQueryRef.current;
+      if (currentSearch && currentSearch.trim().length >= 3) {
+        endpoint += `?search=${encodeURIComponent(currentSearch.trim())}`;
       }
-    };
-    fetchBookmarks();
+      const data = await apiRequest(endpoint);
+      setBookmarks(data || []);
+      if (!currentSearch) setHasAnyBookmarks((data || []).length > 0);
+    } catch (err) {
+      console.error('Failed to fetch bookmarks:', err);
+    } finally {
+      setLoading(false);
+    }
   }, [tokenReady, user]);
+
+  // Fetch on mount
+  useEffect(() => {
+    if (!tokenReady || !user) return;
+    const timer = setTimeout(() => {
+      fetchBookmarks();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [tokenReady, user, fetchBookmarks]);
+
+  // Manual search trigger (Enter key / suggestion click)
+  const handleSearchSubmit = useCallback(() => {
+    if (!tokenReady || !user) return;
+    fetchBookmarks();
+  }, [tokenReady, user, fetchBookmarks]);
 
   const handleRemoveBookmark = (id) => {
     const removed = bookmarks.find(b => b.id === id);
@@ -104,6 +140,51 @@ function BookmarkPageInner() {
       showToast('Failed to remove bookmark.', 'error');
     });
   };
+
+  // Debounced suggestion fetch (triggered only by user typing)
+  const suggestionDebounceRef = useRef(null);
+  const fetchSuggestions = useCallback(async (query) => {
+    if (!query || query.trim().length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    try {
+      const data = await apiRequest(`/bookmarks?search=${encodeURIComponent(query.trim())}`);
+      setSuggestions((data || []).slice(0, 5));
+      setShowSuggestions(true);
+    } catch (err) {
+      console.error('Failed to fetch suggestions:', err);
+    }
+  }, []);
+
+  const onSearchInputChange = useCallback((val) => {
+    setSearchQuery(val);
+
+    if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+
+    if (!val) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    } else {
+      setShowSuggestions(true);
+      suggestionDebounceRef.current = setTimeout(() => {
+        if (val.trim().length >= 3) {
+          fetchSuggestions(val);
+        }
+      }, 300);
+    }
+  }, [fetchSuggestions]);
+
+  // Close suggestions on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (suggestionsContainerRef.current && !suggestionsContainerRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Sync URL params
   const debounceRef = useRef(null);
@@ -120,37 +201,19 @@ function BookmarkPageInner() {
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [searchQuery, activeTab, router, searchParams]);
 
-  // ─── Filtering ──────────────────────────────────────────────────────────────
+  // ─── Categorization (no client-side search filtering — handled server-side) ─
   const { savedNotes, savedCourses, savedResources } = useMemo(() => ({
     savedNotes:     bookmarks.filter(b => b.note_id !== null),
     savedResources: bookmarks.filter(b => b.resource_id !== null),
     savedCourses:   bookmarks.filter(b => b.subject_name !== null && !b.note_id && !b.resource_id),
   }), [bookmarks]);
 
-  const filterBySearch = (items) => {
-    if (!searchQuery) return items;
-    const q = searchQuery.toLowerCase();
-    return items.filter(item => {
-      const target = item.note || {};
-      return (
-        item.subject_name?.toLowerCase().includes(q) ||
-        target.title?.toLowerCase().includes(q) ||
-        target.courseTitle?.toLowerCase().includes(q) ||
-        target.code?.toLowerCase().includes(q)
-      );
-    });
-  };
+  const displayCourses   = activeTab === 'all' || activeTab === 'courses' ? savedCourses   : [];
+  const displayNotes     = activeTab === 'all' || activeTab === 'notes'   ? savedNotes     : [];
+  const displayResources = activeTab === 'all' || activeTab === 'files'   ? savedResources : [];
 
-  const filteredCourses   = useMemo(() => filterBySearch(savedCourses),   [savedCourses, searchQuery]);
-  const filteredNotes     = useMemo(() => filterBySearch(savedNotes),     [savedNotes, searchQuery]);
-  const filteredResources = useMemo(() => filterBySearch(savedResources), [savedResources, searchQuery]);
-
-  const displayCourses   = activeTab === 'all' || activeTab === 'courses' ? filteredCourses   : [];
-  const displayNotes     = activeTab === 'all' || activeTab === 'notes'   ? filteredNotes     : [];
-  const displayResources = activeTab === 'all' || activeTab === 'files'   ? filteredResources : [];
-
-  const hasSearchResults = filteredCourses.length > 0 || filteredNotes.length > 0 || filteredResources.length > 0;
-  const isArchiveEmpty   = savedNotes.length === 0 && savedCourses.length === 0 && savedResources.length === 0;
+  const hasSearchResults = savedCourses.length > 0 || savedNotes.length > 0 || savedResources.length > 0;
+  const isArchiveEmpty   = !hasAnyBookmarks;
 
   // ─── Loading skeleton ───────────────────────────────────────────────────────
   if (authLoading || !user || loading) {
@@ -221,16 +284,6 @@ function BookmarkPageInner() {
     return null;
   }
 
-  // ─── Section heading helper ─────────────────────────────────────────────────
-  const SectionHeading = ({ colorClass, bgClass, borderClass, icon: Icon, label }) => (
-    <div className="flex items-center gap-4">
-      <div className={`w-10 h-10 rounded-xl ${bgClass} flex items-center justify-center ${colorClass} border ${borderClass} shadow-lg`}>
-        <Icon size={20} />
-      </div>
-      <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">{label}</h2>
-    </div>
-  );
-
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-500 pb-32">
       <DashboardNavbar />
@@ -249,14 +302,70 @@ function BookmarkPageInner() {
             titleGradient="from-blue-500 to-purple-500"
             description="Your personalized repository of essential academic resources and curated study materials."
           >
-            {/* ─── Premium Search ────────────────────────────────────────── */}
-            <SearchInput
-              placeholder="SEARCH ARCHIVES..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              focusBorderClass="focus:border-blue-500/30"
-              widthClass="w-full md:w-[320px]"
-            />
+            {/* ─── Premium Search with suggestions ───────────────────────── */}
+            <div className="relative w-full md:w-[320px]" ref={suggestionsContainerRef}>
+              <SearchInput
+                placeholder="SEARCH ARCHIVES..."
+                value={searchQuery}
+                onChange={(e) => onSearchInputChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+                    setShowSuggestions(false);
+                    handleSearchSubmit();
+                  }
+                  if (e.key === 'Escape') {
+                    if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+                    setSearchQuery('');
+                    searchQueryRef.current = '';
+                    setSuggestions([]);
+                    setShowSuggestions(false);
+                  }
+                }}
+                onClear={() => {
+                  if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+                  setSearchQuery('');
+                  searchQueryRef.current = '';
+                  setSuggestions([]);
+                  setShowSuggestions(false);
+                }}
+                focusBorderClass="focus:border-blue-500/30"
+                widthClass="w-full"
+              />
+              {/* Suggestions Dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-y-auto max-h-[300px] z-50 backdrop-blur-xl">
+                  {suggestions.map((bm) => {
+                    const suggestionTitle = bm.note?.title || bm.resource?.title || bm.subject_name;
+                    const suggestionSub = bm.note?.code || bm.resource?.course_code || '';
+                    return (
+                      <button
+                        key={bm.id}
+                        type="button"
+                        onClick={() => {
+                          if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+                          const val = suggestionTitle || '';
+                          setSearchQuery(val);
+                          searchQueryRef.current = val;
+                          setShowSuggestions(false);
+                          handleSearchSubmit();
+                        }}
+                        className="w-full px-6 py-4 text-left hover:bg-blue-500/5 flex items-center justify-between group transition-colors"
+                      >
+                        <div>
+                          <p className="text-sm font-bold text-[var(--foreground)] group-hover:text-blue-500 transition-colors">
+                            {suggestionTitle || 'Untitled'}
+                          </p>
+                          {suggestionSub && (
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{suggestionSub}</p>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </PageHeader>
 
           {/* ─── Category Filter Tabs ───────────────────────────────────────── */}

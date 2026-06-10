@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useState, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import { 
   BookOpen,
@@ -19,6 +19,7 @@ import Skeleton from '@/components/ui/Skeleton';
 import PageHeader from '@/components/ui/PageHeader';
 import SearchInput from '@/components/ui/SearchInput';
 import CourseCard from '@/components/ui/CourseCard';
+import EmptyState from '@/components/ui/EmptyState';
 
 const getCourseIcon = (title) => {
   if (!title) return BookOpen;
@@ -64,6 +65,9 @@ function ResourcesPageInner() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestionsContainerRef = useRef(null);
   const observerRef = useRef(null);
   const loadingMoreRef = useRef(false);
 
@@ -81,16 +85,17 @@ function ResourcesPageInner() {
     if (!authLoading && !user) router.push('/auth');
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    if (tokenReady && user) {
-      fetchCourses(1);
-      fetchBookmarks();
-    }
-  }, [tokenReady, user]);
+  const searchQueryRef = useRef(searchQuery);
+  useEffect(() => { searchQueryRef.current = searchQuery; }, [searchQuery]);
 
-  const fetchCourses = (page) => {
-    if (page === 1) setInitialLoading(true); else setLoadingMore(true);
-    apiRequest(`/resources/courses?page=${page}&limit=12`)
+  const fetchCourses = useCallback((page, append = false) => {
+    if (append) setLoadingMore(true); else setInitialLoading(true);
+    let endpoint = `/resources/courses?page=${page}&limit=12`;
+    const currentSearch = searchQueryRef.current;
+    if (currentSearch && currentSearch.trim().length >= 3) {
+      endpoint += `&search=${encodeURIComponent(currentSearch.trim())}`;
+    }
+    apiRequest(endpoint)
       .then(res => {
         const data = res?.data || [];
         const enriched = data.map(c => ({
@@ -100,7 +105,7 @@ function ResourcesPageInner() {
           resourceCount: parseInt(c.resourceCount) || 0,
           slug: getCourseSlug(c.subject)
         }));
-        setCourses(prev => page === 1 ? enriched : [...prev, ...enriched]);
+        setCourses(prev => append ? [...prev, ...enriched] : enriched);
         setTotalCourses(res?.total || 0);
       })
       .catch(err => {
@@ -111,16 +116,35 @@ function ResourcesPageInner() {
         setLoadingMore(false);
         loadingMoreRef.current = false;
       });
-  };
+  }, []);
 
-  const fetchBookmarks = async () => {
+  const fetchBookmarks = useCallback(async () => {
     try {
       const data = await apiRequest('/bookmarks');
       setBookmarks(data || []);
     } catch (err) {
       console.error('Failed to fetch bookmarks:', err);
     }
-  };
+  }, []);
+
+  // Fetch on mount
+  useEffect(() => {
+    if (!tokenReady || !user) return;
+    const timer = setTimeout(() => {
+      setCourses([]);
+      fetchCourses(1);
+      fetchBookmarks();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [tokenReady, user, fetchCourses, fetchBookmarks]);
+
+  // Manual search trigger (Enter key / suggestion click)
+  const handleSearchSubmit = useCallback(() => {
+    if (!tokenReady || !user) return;
+    setCourses([]);
+    fetchCourses(1);
+    fetchBookmarks();
+  }, [tokenReady, user, fetchCourses, fetchBookmarks]);
 
   const handleToggleBookmark = (subjectName) => {
     const wasBookmarked = bookmarks.some(b => b.subject_name === subjectName);
@@ -143,6 +167,55 @@ function ResourcesPageInner() {
 
   const hasMoreCourses = courses.length < totalCourses;
 
+  // Debounced suggestion fetch (triggered only by user typing)
+  const suggestionDebounceRef = useRef(null);
+  const fetchSuggestions = useCallback(async (query) => {
+    if (!query || query.trim().length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    try {
+      const res = await apiRequest(`/resources/courses?search=${encodeURIComponent(query.trim())}&limit=5`);
+      const data = res?.data || [];
+      setSuggestions(data.map(c => ({
+        title: c.subject,
+        code: c.course_code || 'N/A',
+      })));
+      setShowSuggestions(true);
+    } catch (err) {
+      console.error('Failed to fetch suggestions:', err);
+    }
+  }, []);
+
+  const onSearchInputChange = useCallback((val) => {
+    setSearchQuery(val);
+
+    if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+
+    if (!val) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    } else {
+      setShowSuggestions(true);
+      suggestionDebounceRef.current = setTimeout(() => {
+        if (val.trim().length >= 3) {
+          fetchSuggestions(val);
+        }
+      }, 300);
+    }
+  }, [fetchSuggestions]);
+
+  // Close suggestions on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (suggestionsContainerRef.current && !suggestionsContainerRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   // Sync URL param
   const debounceRef = useRef(null);
   useEffect(() => {
@@ -155,16 +228,6 @@ function ResourcesPageInner() {
     }, 400);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [searchQuery, router, searchParams]);
-
-  const filteredCourses = useMemo(() => {
-    if (!searchQuery) return courses;
-    const q = searchQuery.toLowerCase();
-    return courses.filter(c => 
-      c.title.toLowerCase().includes(q) || 
-      c.code.toLowerCase().includes(q) ||
-      c.dept.toLowerCase().includes(q)
-    );
-  }, [courses, searchQuery]);
 
   useEffect(() => {
     const el = observerRef.current;
@@ -185,7 +248,28 @@ function ResourcesPageInner() {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hasMoreCourses, loadingMore]);
+  }, [hasMoreCourses, loadingMore, fetchCourses]);
+
+  const coursesGrid = useMemo(() => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+      {courses.map((course, idx) => {
+        const Icon = getCourseIcon(course.title);
+        const isBookmarked = bookmarks.some(b => b.subject_name === course.title);
+        return (
+          <CourseCard
+            key={course.title}
+            course={course}
+            icon={Icon}
+            accentColor="blue"
+            animationDelay={(idx % 12) * 40}
+            onClick={() => router.push(`/resources/${course.slug}`)}
+            isBookmarked={isBookmarked}
+            onToggleBookmark={() => handleToggleBookmark(course.title)}
+          />
+        );
+      })}
+    </div>
+  ), [courses, bookmarks, router]);
 
   if (authLoading) return null;
 
@@ -207,39 +291,68 @@ function ResourcesPageInner() {
             titleGradient="from-blue-500 to-purple-500"
             description="Explore your faculty's complete collection of lectures, notes, and previous term materials."
           >
-            {/* ─── Premium Search ──────────────────────────────────────────────── */}
-            <SearchInput
-              placeholder="SEARCH RESOURCES..."
-              value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); }}
-              focusBorderClass="focus:border-blue-500/30"
-              widthClass="w-full md:w-[320px]"
-            />
+            {/* ─── Premium Search with suggestions ──────────────────────────────── */}
+            <div className="relative w-full md:w-[320px]" ref={suggestionsContainerRef}>
+              <SearchInput
+                placeholder="SEARCH RESOURCES..."
+                value={searchQuery}
+                onChange={(e) => onSearchInputChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+                    setShowSuggestions(false);
+                    handleSearchSubmit();
+                  }
+                  if (e.key === 'Escape') {
+                    if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+                    setSearchQuery('');
+                    searchQueryRef.current = '';
+                    setSuggestions([]);
+                    setShowSuggestions(false);
+                  }
+                }}
+                onClear={() => {
+                  if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+                  setSearchQuery('');
+                  searchQueryRef.current = '';
+                  setSuggestions([]);
+                  setShowSuggestions(false);
+                }}
+                focusBorderClass="focus:border-blue-500/30"
+                widthClass="w-full"
+              />
+              {/* Suggestions Dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-y-auto max-h-[300px] z-50 backdrop-blur-xl">
+                  {suggestions.map((course, idx) => (
+                    <button
+                      key={`${course.title}-${idx}`}
+                      type="button"
+                      onClick={() => {
+                        if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
+                        setSearchQuery(course.title);
+                        searchQueryRef.current = course.title;
+                        setShowSuggestions(false);
+                        handleSearchSubmit();
+                      }}
+                      className="w-full px-6 py-4 text-left hover:bg-blue-500/5 flex items-center justify-between group transition-colors"
+                    >
+                      <div>
+                        <p className="text-sm font-bold text-[var(--foreground)] group-hover:text-blue-500 transition-colors">{course.title}</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{course.code}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </PageHeader>
 
           {/* ─── Majestic Course Grid ─────────────────────────────────────────── */}
           {initialLoading ? (
             <Skeleton type="card" count={8} />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {filteredCourses.map((course, idx) => {
-                const Icon = getCourseIcon(course.title);
-                const isBookmarked = bookmarks.some(b => b.subject_name === course.title);
-                return (
-                  <CourseCard
-                    key={course.title}
-                    course={course}
-                    icon={Icon}
-                    animationDelay={(idx % 12) * 40}
-                    onClick={() => router.push(`/resources/${course.slug}`)}
-                    footerLeftText={`${course.resourceCount} Files`}
-                    badgeLabel={getCourseDept(course.code, course.title)}
-                    isBookmarked={isBookmarked}
-                    onToggleBookmark={() => handleToggleBookmark(course.title)}
-                  />
-                );
-              })}
-            </div>
+            coursesGrid
           )}
 
           {/* Infinite scroll sentinel — hidden while search is active */}
@@ -250,6 +363,15 @@ function ResourcesPageInner() {
             <div className="flex justify-center mt-8">
               <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
             </div>
+          )}
+
+          {/* Empty State */}
+          {!initialLoading && courses.length === 0 && (
+            <EmptyState
+              icon={BookOpen}
+              title="No Courses Found"
+              message="We couldn't find any courses matching your search criteria. Try adjusting your filters."
+            />
           )}
         </div>
       </div>
