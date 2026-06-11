@@ -392,7 +392,7 @@ export default function UploadResourcePage() {
                   <li>Add multiple files for the same course — each gets its own title from the filename.</li>
                   <li>Click <strong>Add More</strong> to include additional lecture slides or resources.</li>
                   <li>All files share the same course, term, and description metadata.</li>
-                  <li>Published resources become instantly available to all students in the library.</li>
+                  <li>You will receive +1 Points for every verified note you contribute.</li>
                 </ul>
               </div>
             </div>
