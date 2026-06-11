@@ -1,8 +1,15 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Edit, Trash2, BookOpen, GraduationCap, Star, Download, Layers, Clock, User } from 'lucide-react';
+import { Edit, Trash2, BookOpen, GraduationCap, Star, Download, Eye, Layers, Clock, User } from 'lucide-react';
 import { getDepartmentName } from '@/lib/nameUtils';
+
+function formatCount(n) {
+  if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+  return String(n);
+}
 
 function DocumentControlPanel({ onEdit, onDelete }) {
   return (
@@ -95,14 +102,26 @@ function NoteInfoCard({ note, totalRatings }) {
           </div>
         </div>
 
-        <div className="bg-slate-50 dark:bg-white/[0.02] border border-[var(--card-border)] rounded-2xl p-4 flex justify-between items-center transition-all hover:bg-slate-100/50 dark:hover:bg-white/[0.04] duration-300">
-          <div className="flex gap-3.5 items-center">
-            <Layers size={16} className="text-slate-500" />
-            <span className="text-[8px] font-black uppercase tracking-[0.25em] text-slate-400">File Type Format</span>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-slate-50 dark:bg-white/[0.02] border border-[var(--card-border)] rounded-2xl p-4 flex justify-between items-center transition-all hover:bg-slate-100/50 dark:hover:bg-white/[0.04] duration-300">
+            <div className="flex gap-3.5 items-center">
+              <Layers size={16} className="text-slate-500" />
+              <span className="text-[8px] font-black uppercase tracking-[0.25em] text-slate-400">File Type Format</span>
+            </div>
+            <span className="text-[9px] font-black uppercase tracking-widest text-purple-500 bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-lg">
+              {note.file_type?.toUpperCase()}
+            </span>
           </div>
-          <span className="text-[9px] font-black uppercase tracking-widest text-purple-500 bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-lg">
-            {note.file_type?.toUpperCase()}
-          </span>
+
+          <div className="bg-slate-50 dark:bg-white/[0.02] border border-[var(--card-border)] rounded-2xl p-4 flex gap-3.5 items-center transition-all hover:bg-slate-100/50 dark:hover:bg-white/[0.04] duration-300">
+            <Eye size={16} className="text-sky-500" />
+            <div className="space-y-0.5">
+              <span className="text-[7.5px] font-black uppercase tracking-[0.25em] text-slate-400 block">Views</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-[var(--foreground)] block">
+                {formatCount(note.views ?? 0)}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
