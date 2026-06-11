@@ -8,6 +8,7 @@ import Toast from '@/components/ui/Toast';
 import { apiRequest } from '@/lib/api';
 import PopularNotesSection from './PopularNotesSection';
 import PopularResourcesSection from './PopularResourcesSection';
+import RolePieChart from './RolePieChart';
 import {
   BarChart3, Users, FileText, MessageSquare, BookOpen, Shield,
   TrendingUp, Activity, UserPlus, Download,
@@ -526,20 +527,7 @@ export default function AnalyticsPage() {
                 subtitle="Users by assigned role"
                 badge={{ label: 'Roles', color: COLORS.indigo }}
               >
-                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart margin={{ top: 0, right: 0, bottom: 10, left: 0 }}>
-                        <Pie data={rolePieData} cx="50%" cy="50%" innerRadius={45} outerRadius={80} paddingAngle={3} dataKey="value" strokeWidth={0}>
-                          {rolePieData.map((_, i) => (
-                            <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ background: 'transparent', border: 'none', borderRadius: 0, boxShadow: 'none' }} />
-                        <Legend wrapperStyle={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                    {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
-                  </div>
+                <RolePieChart data={rolePieData} loading={loading} />
               </ChartCard>
 
               {/* Department Distribution */}
