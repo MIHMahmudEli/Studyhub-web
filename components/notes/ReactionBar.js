@@ -6,6 +6,13 @@ import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import Toast from '@/components/ui/Toast';
 
+function formatCount(n) {
+  if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+  return String(n);
+}
+
 const REACTIONS = [
   { type: 'helpful', icon: ThumbsUp, label: 'Helpful', activeColor: 'text-blue-500', activeBg: 'bg-blue-500/10', borderColor: 'border-blue-500/30' },
   { type: 'brilliant', icon: Heart, label: 'Brilliant', activeColor: 'text-rose-500', activeBg: 'bg-rose-500/10', borderColor: 'border-rose-500/30' },
@@ -117,7 +124,7 @@ export default function ReactionBar({ noteId }) {
                 className={`${isActive && !noFill ? "fill-current" : "group-hover:scale-110 transition-transform"} shrink-0`} 
                 strokeWidth={isActive && noFill ? 2.5 : 2}
               />
-              {count > 0 && <span>{count}</span>}
+              {count > 0 && <span>{formatCount(count)}</span>}
               <span className="hidden sm:inline-block whitespace-nowrap">{label}</span>
             </button>
           );
