@@ -1,17 +1,17 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import Toast from '@/components/ui/Toast';
 import { apiRequest } from '@/lib/api';
+import PopularNotesSection from './PopularNotesSection';
 import {
   BarChart3, Users, FileText, MessageSquare, BookOpen, Shield,
   TrendingUp, Activity, UserPlus, Download,
-  AlertCircle, FileDown, Loader2, Star, CheckCircle2, Clock, Zap,
+  AlertCircle, FileDown, Loader2, CheckCircle2, Clock, Zap,
   ArrowUpRight, ArrowDownRight, MousePointerClick, MessageCircle,
-  ChevronDown, ChevronRight
 } from 'lucide-react';
 import {
   LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie,
@@ -180,7 +180,6 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success', isClosing: false });
-  const [expandedCourses, setExpandedCourses] = useState({});
 
   const dashboardRef = useRef(null);
   const [exporting, setExporting] = useState(false);
@@ -340,22 +339,6 @@ export default function AnalyticsPage() {
     name: r.role.charAt(0).toUpperCase() + r.role.slice(1),
     value: parseInt(r.count, 10),
   })) || [];
-
-  const popularNotesGrouped = useMemo(() => {
-    if (!contentAnalytics?.popularNotes?.length) return [];
-    const map = {};
-    contentAnalytics.popularNotes.forEach(n => {
-      const key = n.courseTitle || 'Uncategorized';
-      if (!map[key]) { map[key] = { courseTitle: key, code: n.code || '', notes: [], totalDownloads: 0 }; }
-      map[key].notes.push(n);
-      map[key].totalDownloads += n.downloads || 0;
-    });
-    return Object.values(map).sort((a, b) => b.totalDownloads - a.totalDownloads);
-  }, [contentAnalytics]);
-
-  const toggleCourse = (courseTitle) => {
-    setExpandedCourses(prev => ({ ...prev, [courseTitle]: !prev[courseTitle] }));
-  };
 
   const deptBarData = userAnalytics?.deptDistribution?.slice(0, 8).map(d => ({
     name: d.dept && d.dept.length > 12 ? d.dept.slice(0, 12) + '…' : (d.dept || 'Unknown'),
@@ -884,113 +867,7 @@ export default function AnalyticsPage() {
             </div>
           )}
 
-          {/* ─── Popular Notes (Grouped by Course) ────────────────────── */}
-          <div data-pdf-section data-pdf-label="Popular Notes — Grouped by Course">
-            <div className="mb-5">
-              <SectionHeader label="Leaderboard" title="Popular Notes" color={COLORS.amber} />
-            </div>
-
-            <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] sm:rounded-[2rem] overflow-hidden shadow-sm">
-              {loading ? (
-                <div className="p-5 sm:p-7 space-y-3">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="h-12 bg-white/[0.03] rounded-2xl animate-pulse" />
-                  ))}
-                </div>
-              ) : !popularNotesGrouped.length ? (
-                <div className="py-16 text-center">
-                  <FileText size={36} className="text-slate-700 mx-auto mb-3" />
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">No notes data available</p>
-                </div>
-              ) : (
-                <div className="divide-y divide-[var(--card-border)]">
-                  {/* Header */}
-                  <div className="px-5 sm:px-7 py-3 hidden sm:grid grid-cols-[2rem_1fr_auto_auto] gap-4 items-center">
-                    {['#', 'Course', 'Total Downloads', ''].map(h => (
-                      <span key={h} className="text-[8px] font-black uppercase tracking-widest text-slate-500">{h}</span>
-                    ))}
-                  </div>
-
-                  {popularNotesGrouped.map((group, i) => {
-                    const isOpen = expandedCourses[group.courseTitle];
-                    return (
-                      <div key={group.courseTitle}>
-                        {/* Course Group Row */}
-                        <div
-                          onClick={() => toggleCourse(group.courseTitle)}
-                          className="px-5 sm:px-7 py-3.5 sm:py-4 flex items-center gap-3 sm:grid sm:grid-cols-[2rem_1fr_auto_auto] sm:gap-4 hover:bg-white/[0.02] transition-colors cursor-pointer"
-                        >
-                          <RankBadge rank={i + 1} />
-
-                          <div className="flex-1 min-w-0 flex items-center gap-3">
-                            <span className="text-blue-500 transition-transform duration-200" style={{ transform: isOpen ? 'rotate(0deg)' : 'rotate(-90deg)' }}>
-                              <ChevronDown size={14} />
-                            </span>
-                            <div>
-                              <p className="text-[11px] sm:text-xs font-bold text-[var(--foreground)] truncate">{group.courseTitle}</p>
-                              <p className="text-[8px] font-bold text-slate-500 uppercase tracking-wider">{group.code} · {group.notes.length} file{group.notes.length !== 1 ? 's' : ''}</p>
-                            </div>
-                          </div>
-
-                          <div className="hidden sm:flex items-center gap-1.5" style={{ color: COLORS.emerald }}>
-                            <Download size={11} />
-                            <span className="text-[11px] font-black">{group.totalDownloads}</span>
-                          </div>
-
-                          <div className="sm:hidden flex items-center gap-3 shrink-0">
-                            <span className="text-[9px] font-black" style={{ color: COLORS.emerald }}>↓{group.totalDownloads}</span>
-                          </div>
-                        </div>
-
-                        {/* Expanded Individual Notes */}
-                        {isOpen && (
-                          <div className="bg-white/[0.015] border-t border-[var(--card-border)]">
-                            <div className="px-5 sm:px-7 py-2 hidden sm:grid grid-cols-[1fr_1fr_auto_auto_auto] gap-4 items-center">
-                              {['File Name', 'Author', 'Downloads', 'Rating', 'Dept'].map(h => (
-                                <span key={h} className="text-[7px] font-black uppercase tracking-widest text-slate-500">{h}</span>
-                              ))}
-                            </div>
-                            {group.notes.map((note) => (
-                              <div
-                                key={note.id}
-                                className="px-5 sm:px-7 py-3 flex sm:grid sm:grid-cols-[1fr_1fr_auto_auto_auto] gap-3 sm:gap-4 items-center hover:bg-white/[0.02] transition-colors border-t border-[var(--card-border)]/50"
-                              >
-                                <div className="flex-1 min-w-0 sm:contents">
-                                  <p className="text-[10px] sm:text-[11px] font-bold truncate text-[var(--foreground)] pl-3 sm:pl-0" title={note.title}>
-                                    {note.title}
-                                  </p>
-                                  <p className="text-[8px] text-slate-500 font-semibold truncate">{note.uploader?.name || 'Unknown'}</p>
-                                </div>
-
-                                <div className="hidden sm:flex items-center gap-1.5" style={{ color: COLORS.emerald }}>
-                                  <Download size={10} />
-                                  <span className="text-[10px] font-black">{note.downloads}</span>
-                                </div>
-
-                                <div className="hidden sm:flex items-center gap-1" style={{ color: COLORS.amber }}>
-                                  <Star size={9} className="fill-current" />
-                                  <span className="text-[10px] font-black">{note.avgRating?.toFixed(1)}</span>
-                                </div>
-
-                                <span className="hidden sm:block text-[8px] font-bold text-slate-500 uppercase tracking-wider truncate max-w-[80px]">
-                                  {note.dept}
-                                </span>
-
-                                <div className="sm:hidden flex items-center gap-3 shrink-0 pl-3">
-                                  <span className="text-[8px] font-black" style={{ color: COLORS.emerald }}>↓{note.downloads}</span>
-                                  <span className="text-[8px] font-black" style={{ color: COLORS.amber }}>★{note.avgRating?.toFixed(1)}</span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
+          <PopularNotesSection popularNotes={contentAnalytics?.popularNotes} loading={loading} />
 
         </div>
       </div>
