@@ -122,12 +122,15 @@ function NotesPageInner() {
   }, [searchQuery, router]);
 
   // Sync sort only to URL (search redirects to /search page)
+  const lastSortRef = useRef(sortBy);
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
+    if (lastSortRef.current === sortBy) return;
+    lastSortRef.current = sortBy;
+    const params = new URLSearchParams(window.location.search);
     if (sortBy && sortBy !== 'latest') params.set('sort', sortBy);
     else params.delete('sort');
     router.replace(`?${params.toString()}`, { scroll: false });
-  }, [sortBy, router, searchParams]);
+  }, [sortBy, router]);
 
   // Client-side sort only (search is handled server-side)
   const sortedNotes = useMemo(() => {

@@ -171,12 +171,15 @@ function BookmarkPageInner() {
   }, []);
 
   // Sync tab only to URL (search redirects to /search page)
+  const lastTabRef = useRef(activeTab);
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
+    if (lastTabRef.current === activeTab) return;
+    lastTabRef.current = activeTab;
+    const params = new URLSearchParams(window.location.search);
     if (activeTab && activeTab !== 'all') params.set('tab', activeTab);
     else params.delete('tab');
     router.replace(`?${params.toString()}`, { scroll: false });
-  }, [activeTab, router, searchParams]);
+  }, [activeTab, router]);
 
   // ─── Categorization (no client-side search filtering — handled server-side) ─
   const { savedNotes, savedCourses, savedResources } = useMemo(() => ({
