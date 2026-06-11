@@ -14,6 +14,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { apiRequest } from '@/lib/api';
+import { getSuggestions } from '@/lib/searchUtils';
 import Toast from '@/components/ui/Toast';
 import Skeleton from '@/components/ui/Skeleton';
 import PageHeader from '@/components/ui/PageHeader';
@@ -138,13 +139,12 @@ function ResourcesPageInner() {
     return () => clearTimeout(timer);
   }, [tokenReady, user, fetchCourses, fetchBookmarks]);
 
-  // Manual search trigger (Enter key / suggestion click)
+  // Manual search trigger — redirect to /search page
   const handleSearchSubmit = useCallback(() => {
-    if (!tokenReady || !user) return;
-    setCourses([]);
-    fetchCourses(1);
-    fetchBookmarks();
-  }, [tokenReady, user, fetchCourses, fetchBookmarks]);
+    if (!searchQuery.trim()) return;
+    setShowSuggestions(false);
+    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  }, [searchQuery, router]);
 
   const handleToggleBookmark = (subjectName) => {
     const wasBookmarked = bookmarks.some(b => b.subject_name === subjectName);
@@ -167,43 +167,28 @@ function ResourcesPageInner() {
 
   const hasMoreCourses = courses.length < totalCourses;
 
-  // Debounced suggestion fetch (triggered only by user typing)
+  // Debounced suggestion fetch from local courses.json (no DB calls)
   const suggestionDebounceRef = useRef(null);
-  const fetchSuggestions = useCallback(async (query) => {
-    if (!query || query.trim().length < 3) {
-      setSuggestions([]);
-      return;
-    }
-    try {
-      const res = await apiRequest(`/resources/courses?search=${encodeURIComponent(query.trim())}&limit=5`);
-      const data = res?.data || [];
-      setSuggestions(data.map(c => ({
-        title: c.subject,
-        code: c.course_code || 'N/A',
-      })));
-      setShowSuggestions(true);
-    } catch (err) {
-      console.error('Failed to fetch suggestions:', err);
-    }
-  }, []);
 
   const onSearchInputChange = useCallback((val) => {
     setSearchQuery(val);
 
     if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
 
-    if (!val) {
+    if (!val || val.trim().length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
     } else {
       setShowSuggestions(true);
       suggestionDebounceRef.current = setTimeout(() => {
-        if (val.trim().length >= 3) {
-          fetchSuggestions(val);
+        if (val.trim().length >= 2) {
+          const results = getSuggestions(val);
+          setSuggestions(results);
+          setShowSuggestions(results.length > 0);
         }
-      }, 300);
+      }, 200);
     }
-  }, [fetchSuggestions]);
+  }, []);
 
   // Close suggestions on click outside
   useEffect(() => {
@@ -321,25 +306,23 @@ function ResourcesPageInner() {
                 focusBorderClass="focus:border-blue-500/30"
                 widthClass="w-full"
               />
-              {/* Suggestions Dropdown */}
+              {/* Suggestions Dropdown — from local courses.json */}
               {showSuggestions && suggestions.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--background)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-y-auto max-h-[300px] z-50 backdrop-blur-xl">
                   {suggestions.map((course, idx) => (
                     <button
-                      key={`${course.title}-${idx}`}
+                      key={`${course.code}-${idx}`}
                       type="button"
                       onClick={() => {
                         if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
-                        setSearchQuery(course.title);
-                        searchQueryRef.current = course.title;
                         setShowSuggestions(false);
-                        handleSearchSubmit();
+                        router.push(`/search?q=${encodeURIComponent(course.courseTitle)}`);
                       }}
                       className="w-full px-6 py-4 text-left hover:bg-blue-500/5 flex items-center justify-between group transition-colors"
                     >
                       <div>
-                        <p className="text-sm font-bold text-[var(--foreground)] group-hover:text-blue-500 transition-colors">{course.title}</p>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{course.code}</p>
+                        <p className="text-sm font-bold text-[var(--foreground)] group-hover:text-blue-500 transition-colors">{course.courseTitle}</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{course.code} • {course.dept}</p>
                       </div>
                     </button>
                   ))}
