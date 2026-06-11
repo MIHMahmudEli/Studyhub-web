@@ -550,7 +550,7 @@ export default function AnalyticsPage() {
                     <BarChart data={deptBarData} layout="vertical" barSize={10}>
                         <CartesianGrid {...gridStyle} />
                         <XAxis type="number" tick={axisStyle} />
-                        <YAxis dataKey="name" type="category" tick={axisStyle} width={80} />
+                        <YAxis dataKey="name" type="category" tick={axisStyle} width={40} />
                         <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ background: 'transparent', border: 'none', borderRadius: 0, boxShadow: 'none' }} />
                         <Bar dataKey="count" radius={[0, 5, 5, 0]} name="Users">
                           {deptBarData.map((_, i) => (
