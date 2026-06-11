@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { FileText, Layers, BookOpen, Search as SearchIcon, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { apiRequest } from '@/lib/api';
+import { expandShortForm } from '@/lib/searchUtils';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import NoteCard from '@/components/ui/NoteCard';
 import CourseCard from '@/components/ui/CourseCard';
@@ -12,7 +13,8 @@ import EmptyState from '@/components/ui/EmptyState';
 
 function SearchPageInner() {
   const searchParams = useSearchParams();
-  const query = searchParams.get('q') || '';
+  const rawQuery = searchParams.get('q') || '';
+  const query = expandShortForm(rawQuery) || rawQuery;
   const from = searchParams.get('from') || 'notes';
   const { user, loading: authLoading, tokenReady } = useAuth();
   const router = useRouter();

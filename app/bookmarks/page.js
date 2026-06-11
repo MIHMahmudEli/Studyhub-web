@@ -23,7 +23,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { apiRequest } from '@/lib/api';
-import { getSuggestions } from '@/lib/searchUtils';
+import { getSuggestions, expandShortForm } from '@/lib/searchUtils';
 import { BookmarkListSkeleton, ResourceListSkeleton } from '@/components/ui/Skeleton';
 import Toast from '@/components/ui/Toast';
 import PageHeader from '@/components/ui/PageHeader';
@@ -127,11 +127,12 @@ function BookmarkPageInner() {
     return () => clearTimeout(timer);
   }, [tokenReady, user, fetchBookmarks]);
 
-  // Manual search trigger — redirect to /search page
+  // Manual search trigger — redirect to /search page with expanded short form
   const handleSearchSubmit = useCallback(() => {
     if (!searchQuery.trim()) return;
     setShowSuggestions(false);
-    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}&from=bookmarks`);
+    const expanded = expandShortForm(searchQuery.trim()) || searchQuery.trim();
+    router.push(`/search?q=${encodeURIComponent(expanded)}&from=bookmarks`);
   }, [searchQuery, router]);
 
   const handleRemoveBookmark = (id) => {

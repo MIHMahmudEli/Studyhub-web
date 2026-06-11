@@ -14,7 +14,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { apiRequest } from '@/lib/api';
-import { getSuggestions } from '@/lib/searchUtils';
+import { getSuggestions, expandShortForm } from '@/lib/searchUtils';
 import Toast from '@/components/ui/Toast';
 import Skeleton from '@/components/ui/Skeleton';
 import PageHeader from '@/components/ui/PageHeader';
@@ -139,11 +139,12 @@ function ResourcesPageInner() {
     return () => clearTimeout(timer);
   }, [tokenReady, user, fetchCourses, fetchBookmarks]);
 
-  // Manual search trigger — redirect to /search page
+  // Manual search trigger — redirect to /search page with expanded short form
   const handleSearchSubmit = useCallback(() => {
     if (!searchQuery.trim()) return;
     setShowSuggestions(false);
-    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}&from=resources`);
+    const expanded = expandShortForm(searchQuery.trim()) || searchQuery.trim();
+    router.push(`/search?q=${encodeURIComponent(expanded)}&from=resources`);
   }, [searchQuery, router]);
 
   const handleToggleBookmark = (subjectName) => {

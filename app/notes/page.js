@@ -17,7 +17,7 @@ import {
   Download,
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
-import { getSuggestions } from '@/lib/searchUtils';
+import { getSuggestions, expandShortForm } from '@/lib/searchUtils';
 import { NoteCardSkeleton } from '@/components/ui/Skeleton';
 import PageHeader from '@/components/ui/PageHeader';
 import SearchInput from '@/components/ui/SearchInput';
@@ -121,11 +121,12 @@ function NotesPageInner() {
     return () => clearTimeout(timer);
   }, [sortBy, tokenReady, user]);
 
-  // Manual search trigger — redirect to /search page
+  // Manual search trigger — redirect to /search page with expanded short form
   const handleSearchSubmit = useCallback(() => {
     if (!searchQuery.trim()) return;
     setShowSuggestions(false);
-    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}&from=notes`);
+    const expanded = expandShortForm(searchQuery.trim()) || searchQuery.trim();
+    router.push(`/search?q=${encodeURIComponent(expanded)}&from=notes`);
   }, [searchQuery, router]);
 
   // Sync URL params
