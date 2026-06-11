@@ -110,18 +110,18 @@ export default function PopularNotesSection({ popularNotes, loading }) {
 
                   {isOpen && (
                     <div className="bg-white/[0.015] border-t border-[var(--card-border)]">
-                      <div className="px-5 sm:px-7 py-2 hidden sm:grid grid-cols-[1fr_1fr_auto_auto_auto] gap-4 items-center">
-                        {['File Name', 'Author', 'Downloads', 'Rating', 'Dept'].map(h => (
+                            <div className="px-5 sm:px-7 py-2 hidden sm:grid grid-cols-[1fr_auto_auto_auto] gap-4 items-center">
+                              {['File', 'Downloads', 'Rating', 'Dept'].map(h => (
                           <span key={h} className="text-[7px] font-black uppercase tracking-widest text-slate-500">{h}</span>
                         ))}
                       </div>
                       {group.notes.map((note) => (
                         <div
                           key={note.id}
-                          className="px-5 sm:px-7 py-3 flex sm:grid sm:grid-cols-[1fr_1fr_auto_auto_auto] gap-3 sm:gap-4 items-center hover:bg-white/[0.02] transition-colors border-t border-[var(--card-border)]/50"
+                          className="px-5 sm:px-7 py-3 flex sm:grid sm:grid-cols-[1fr_auto_auto_auto] gap-3 sm:gap-4 items-center hover:bg-white/[0.02] transition-colors border-t border-[var(--card-border)]/50"
                         >
-                          <div className="flex-1 min-w-0 sm:contents">
-                            <p className="text-[10px] sm:text-[11px] font-bold truncate text-[var(--foreground)] pl-3 sm:pl-0" title={note.title}>
+                          <div className="flex-1 min-w-0 pl-3 sm:pl-0">
+                            <p className="text-[10px] sm:text-[11px] font-bold truncate text-[var(--foreground)]" title={note.title}>
                               {note.title}
                             </p>
                             <p className="text-[8px] text-slate-500 font-semibold truncate">{note.uploader?.name || 'Unknown'}</p>
@@ -141,7 +141,7 @@ export default function PopularNotesSection({ popularNotes, loading }) {
                             {note.dept}
                           </span>
 
-                          <div className="sm:hidden flex items-center gap-3 shrink-0 pl-3">
+                          <div className="sm:hidden flex items-center gap-3 shrink-0">
                             <span className="text-[8px] font-black" style={{ color: COLORS.emerald }}>↓{note.downloads}</span>
                             <span className="text-[8px] font-black" style={{ color: COLORS.amber }}>★{note.avgRating?.toFixed(1)}</span>
                           </div>
