@@ -40,6 +40,15 @@ const COLORS = {
   orange: '#f97316',
 };
 
+const DEPT_ABBR = {
+  'FACULTY OF BUSINESS ADMINISTRATION': 'FBA',
+  'FACULTY OF ARTS AND SOCIAL SCIENCES': 'FASS',
+  'FACULTY OF SCIENCE & TECHNOLOGY': 'FST',
+  'FACULTY OF SCIENCE AND TECHNOLOGY': 'FST',
+  'FACULTY OF ENGINEERING': 'FE',
+  'FACULTY OF HEALTH AND LIFE SCIENCES': 'FHLS',
+};
+
 const PIE_COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#f43f5e', '#06b6d4'];
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -343,7 +352,7 @@ export default function AnalyticsPage() {
   })) || [];
 
   const deptBarData = userAnalytics?.deptDistribution?.slice(0, 8).map(d => ({
-    name: d.dept && d.dept.length > 12 ? d.dept.slice(0, 12) + '…' : (d.dept || 'Unknown'),
+    name: DEPT_ABBR[d.dept?.toUpperCase()] || (d.dept && d.dept.length > 12 ? d.dept.slice(0, 12) + '…' : (d.dept || 'Unknown')),
     count: parseInt(d.count, 10),
   })) || [];
 
