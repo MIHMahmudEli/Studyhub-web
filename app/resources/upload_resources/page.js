@@ -138,8 +138,10 @@ export default function UploadResourcePage() {
   };
 
   const handleInputChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      addFile(e.target.files[0]);
+    if (e.target.files) {
+      for (const file of e.target.files) {
+        addFile(file);
+      }
       e.target.value = '';
     }
   };
@@ -374,10 +376,11 @@ export default function UploadResourcePage() {
                   </button>
                 )}
 
-                <input
+                  <input
                   ref={fileInputRef}
                   type="file"
                   className="hidden"
+                  multiple
                   onChange={handleInputChange}
                   accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.rtf,.zip,.rar,.jpg,.jpeg,.png,.webp"
                 />
