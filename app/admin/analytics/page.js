@@ -73,17 +73,17 @@ function Skeleton({ className = '' }) {
 function KpiCard({ title, value, subtitle, icon: Icon, color, loading }) {
   if (loading) {
     return (
-      <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-7 h-[130px] sm:h-[150px] animate-pulse" />
+      <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-7 h-[110px] animate-pulse" />
     );
   }
   return (
     <div
-      className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-7 shadow-sm transition-all duration-500 hover:-translate-y-1 overflow-hidden"
+      className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-7 shadow-sm transition-all duration-500 hover:-translate-y-1 overflow-hidden"
       style={{ '--accent': color }}
     >
       {/* hover glow overlay */}
       <div
-        className="absolute inset-0 rounded-[1.75rem] sm:rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        className="absolute inset-0 rounded-[1.5rem] sm:rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{ background: `radial-gradient(circle at 30% 30%, ${color}12, transparent 70%)` }}
       />
       {/* top accent line */}
@@ -95,14 +95,14 @@ function KpiCard({ title, value, subtitle, icon: Icon, color, loading }) {
       <div className="relative z-10 flex items-start justify-between gap-2">
         <div className="space-y-2 flex-1 min-w-0">
           <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500">{title}</span>
-          <p className="text-2xl sm:text-3xl font-black tracking-tight leading-none" style={{ color }}>{value}</p>
+          <p className="text-xl sm:text-3xl font-black tracking-tight leading-none" style={{ color }}>{value}</p>
           <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">{subtitle}</p>
         </div>
         <div
-          className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110"
+          className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110"
           style={{ backgroundColor: `${color}15`, borderColor: `${color}30`, color }}
         >
-          <Icon size={18} className="sm:w-5 sm:h-5" />
+          <Icon size={16} className="sm:w-5 sm:h-5" />
         </div>
       </div>
     </div>
@@ -112,8 +112,8 @@ function KpiCard({ title, value, subtitle, icon: Icon, color, loading }) {
 // ─── Chart Card ────────────────────────────────────────────────────────────
 function ChartCard({ title, subtitle, badge, children, className = '' }) {
   return (
-    <div className={`group min-w-0 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-7 shadow-sm transition-all duration-500 hover:border-[var(--border-h)] ${className}`}>
-      <div className="flex items-start justify-between gap-3 mb-5 sm:mb-6">
+    <div className={`group min-w-0 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-7 shadow-sm transition-all duration-500 hover:border-[var(--border-h)] ${className}`}>
+      <div className="flex items-start justify-between gap-3 mb-4 sm:mb-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
             {badge && (
@@ -358,11 +358,11 @@ export default function AnalyticsPage() {
   const gridStyle = { strokeDasharray: '3 3', stroke: 'rgba(255,255,255,0.05)' };
 
   return (
-    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-32 transition-colors duration-500">
+    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-24 sm:pb-32 transition-colors duration-500">
       <DashboardNavbar />
 
-      <div className="pt-24 md:pt-32 px-4 md:px-8">
-        <div ref={dashboardRef} className="max-w-[1400px] mx-auto space-y-10 sm:space-y-14">
+      <div className="pt-20 sm:pt-24 md:pt-32 px-3 sm:px-5 md:px-8">
+        <div ref={dashboardRef} className="max-w-[1400px] mx-auto space-y-8 sm:space-y-14">
 
           {/* ─── Page Header ─────────────────────────────────────────────── */}
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5 sm:gap-6">
@@ -377,7 +377,7 @@ export default function AnalyticsPage() {
                   </>
                 )}
               </div>
-              <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight uppercase leading-none">
+              <h1 className="text-xl sm:text-4xl md:text-5xl font-black tracking-tight uppercase leading-none">
                 Platform{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400">
                   Analytics
@@ -396,11 +396,11 @@ export default function AnalyticsPage() {
                   <button
                     key={f.key}
                     onClick={() => setFilter(f.key)}
-                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer whitespace-nowrap ${
-                      filter === f.key
-                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
-                        : 'text-slate-500 hover:text-[var(--foreground)] hover:bg-white/[0.05]'
-                    }`}
+                    className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[8px] sm:text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer whitespace-nowrap ${
+                       filter === f.key
+                         ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
+                         : 'text-slate-500 hover:text-[var(--foreground)] hover:bg-white/[0.05]'
+                     }`}
                   >
                     {f.label}
                   </button>
@@ -411,7 +411,7 @@ export default function AnalyticsPage() {
               <button
                 onClick={exportPDF}
                 disabled={exporting || loading || !overview}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-emerald-500 text-white hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:-translate-y-0.5 whitespace-nowrap"
+                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-[8px] sm:text-[10px] font-black uppercase tracking-widest bg-emerald-500 text-white hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:-translate-y-0.5 whitespace-nowrap"
               >
                 {exporting ? <Loader2 size={13} className="animate-spin" /> : <FileDown size={13} />}
                 {exporting ? 'Exporting…' : 'Export PDF'}
@@ -453,7 +453,7 @@ export default function AnalyticsPage() {
                 subtitle="New accounts over time"
                 badge={{ label: 'Users', color: COLORS.blue }}
               >
-                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                <div className="relative min-w-0 h-[200px] min-h-[200px] h-[200px] sm:h-[220px]">
                   <ResponsiveContainer width="100%" height={220}>
                     <AreaChart data={loading ? [] : (userAnalytics?.registrations?.map(r => ({ date: r.date?.slice(5) || '', registrations: parseInt(r.count, 10) })) || [])}>
                       <defs>
@@ -479,7 +479,7 @@ export default function AnalyticsPage() {
                 subtitle="Daily active sessions"
                 badge={{ label: 'Activity', color: COLORS.emerald }}
               >
-                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                <div className="relative min-w-0 min-h-[200px] h-[200px] sm:h-[220px]">
                   <ResponsiveContainer width="100%" height={220}>
                     <LineChart data={loading ? [] : (activityAnalytics?.loginActivity?.map(a => ({ date: a.date?.slice(5) || '', activeUsers: parseInt(a.activeUsers, 10) })) || [])}>
                         <defs>
@@ -505,7 +505,7 @@ export default function AnalyticsPage() {
                 subtitle="Notes & resources over time"
                 badge={{ label: 'Content', color: COLORS.purple }}
               >
-                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                <div className="relative min-w-0 min-h-[200px] h-[200px] sm:h-[220px]">
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={contentChartData} barGap={2}>
                         <CartesianGrid {...gridStyle} />
@@ -536,7 +536,7 @@ export default function AnalyticsPage() {
                 subtitle="Top departments by user count"
                 badge={{ label: 'Depts', color: COLORS.orange }}
               >
-                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                <div className="relative min-w-0 min-h-[200px] h-[200px] sm:h-[220px]">
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={deptBarData} layout="vertical" barSize={10}>
                         <CartesianGrid {...gridStyle} />
@@ -583,17 +583,17 @@ export default function AnalyticsPage() {
                   { label: 'Total Downloads', value: ((contentAnalytics?.totals?.totalDownloads || 0) + (contentAnalytics?.totals?.resourceDownloads || 0)).toLocaleString(), subtitle: 'All time', color: COLORS.cyan, icon: Download },
                 ].map((s, i) => (
                   <div key={i}
-                    className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-7 shadow-sm transition-all duration-500 hover:-translate-y-1 overflow-hidden"
+                    className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-7 shadow-sm transition-all duration-500 hover:-translate-y-1 overflow-hidden"
                   >
-                    <div className="absolute inset-0 rounded-[1.75rem] sm:rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: `radial-gradient(circle at 30% 30%, ${s.color}12, transparent 70%)` }} />
+                    <div className="absolute inset-0 rounded-[1.5rem] sm:rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: `radial-gradient(circle at 30% 30%, ${s.color}12, transparent 70%)` }} />
                     <div className="relative z-10 flex items-center justify-between gap-3">
                       <div>
                         <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">{s.label}</p>
-                        <p className="text-2xl sm:text-3xl font-black tracking-tight leading-none" style={{ color: s.color }}>{s.value}</p>
-                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">{s.subtitle}</p>
+                        <p className="text-xl sm:text-3xl font-black tracking-tight leading-none" style={{ color: s.color }}>{s.value}</p>
+                        <p className="text-[7px] sm:text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">{s.subtitle}</p>
                       </div>
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110" style={{ backgroundColor: `${s.color}12`, borderColor: `${s.color}25`, color: s.color }}>
-                        <s.icon size={16} />
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110" style={{ backgroundColor: `${s.color}12`, borderColor: `${s.color}25`, color: s.color }}>
+                        <s.icon size={14} className="sm:w-4 sm:h-4" />
                       </div>
                     </div>
                   </div>
@@ -608,7 +608,7 @@ export default function AnalyticsPage() {
                 subtitle="Total user accumulation over time"
                 badge={{ label: 'Growth', color: COLORS.emerald }}
               >
-                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                <div className="relative min-w-0 min-h-[200px] h-[200px] sm:h-[220px]">
                   <ResponsiveContainer width="100%" height={220}>
                     <AreaChart data={(() => {
                       const regs = (userAnalytics?.registrations || []).map(r => ({ date: r.date?.slice(5) || '', count: parseInt(r.count, 10) }));
@@ -638,7 +638,7 @@ export default function AnalyticsPage() {
                 subtitle="New users per day"
                 badge={{ label: 'Users', color: COLORS.blue }}
               >
-                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                <div className="relative min-w-0 min-h-[200px] h-[200px] sm:h-[220px]">
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={loading ? [] : (userAnalytics?.registrations?.map(r => ({ date: r.date?.slice(5) || '', count: parseInt(r.count, 10) })) || [])} barSize={8}>
                       <CartesianGrid {...gridStyle} />
@@ -667,7 +667,7 @@ export default function AnalyticsPage() {
                 subtitle="Reviews & comments per day"
                 badge={{ label: 'Engagement', color: COLORS.rose }}
               >
-                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                <div className="relative min-w-0 min-h-[200px] h-[200px] sm:h-[220px]">
                   <ResponsiveContainer width="100%" height={220}>
                     <AreaChart data={loading ? [] : (contentAnalytics?.reviewsCreated?.map(r => ({ date: r.date?.slice(5) || '', reviews: parseInt(r.count, 10) })) || [])}>
                       <defs>
@@ -693,7 +693,7 @@ export default function AnalyticsPage() {
                 subtitle="Active users by day of week"
                 badge={{ label: 'Pattern', color: COLORS.indigo }}
               >
-                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                <div className="relative min-w-0 min-h-[200px] h-[200px] sm:h-[220px]">
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={loading ? [] : (activityAnalytics?.activeDays?.map(d => ({ day: d.day?.slice(0, 3) || '', users: d.activeUsers })) || [])} barSize={20}>
                       <CartesianGrid {...gridStyle} />
@@ -753,7 +753,7 @@ export default function AnalyticsPage() {
                 subtitle="Most active hours of the day"
                 badge={{ label: 'Heatmap', color: COLORS.cyan }}
               >
-                <div className="relative min-w-0 h-[180px] sm:h-[220px]">
+                <div className="relative min-w-0 min-h-[200px] h-[200px] sm:h-[220px]">
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={loading ? [] : (activityAnalytics?.peakHours?.map(h => ({ hour: `${h.hour}`, users: h.activeUsers })) || [])}>
                       <CartesianGrid {...gridStyle} />
@@ -784,7 +784,7 @@ export default function AnalyticsPage() {
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 {loading ? [...Array(4)].map((_, i) => (
-                  <div key={i} className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] p-5 sm:p-7 h-[110px] animate-pulse" />
+                  <div key={i} className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] p-4 sm:p-7 h-[110px] animate-pulse" />
                 )) : [
                   { label: 'Total Notes', value: contentAnalytics.totals.notes, color: COLORS.purple, icon: FileText },
                   { label: 'Approved', value: contentAnalytics.totals.approved, color: COLORS.emerald, icon: CheckCircle2 },
@@ -792,16 +792,16 @@ export default function AnalyticsPage() {
                   { label: 'Downloads', value: contentAnalytics.totals.totalDownloads?.toLocaleString(), color: COLORS.cyan, icon: Download },
                 ].map((s, i) => (
                   <div key={i}
-                    className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-7 shadow-sm transition-all duration-500 hover:-translate-y-1 overflow-hidden"
+                    className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-7 shadow-sm transition-all duration-500 hover:-translate-y-1 overflow-hidden"
                   >
                     <div
-                      className="absolute inset-0 rounded-[1.75rem] sm:rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                      className="absolute inset-0 rounded-[1.5rem] sm:rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                       style={{ background: `radial-gradient(circle at 30% 30%, ${s.color}12, transparent 70%)` }}
                     />
                     <div className="relative z-10 flex items-center justify-between gap-3">
                       <div>
                         <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">{s.label}</p>
-                        <p className="text-2xl sm:text-3xl font-black tracking-tight leading-none" style={{ color: s.color }}>{s.value}</p>
+                        <p className="text-xl sm:text-3xl font-black tracking-tight leading-none" style={{ color: s.color }}>{s.value}</p>
                       </div>
                       <div
                         className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110"
@@ -824,7 +824,7 @@ export default function AnalyticsPage() {
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 {loading ? [...Array(4)].map((_, i) => (
-                  <div key={i} className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] p-5 sm:p-7 h-[110px] animate-pulse" />
+                  <div key={i} className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] p-4 sm:p-7 h-[110px] animate-pulse" />
                 )) : [
                   { label: 'Total Resources', value: contentAnalytics.totals.totalResources ?? 0, color: COLORS.amber, icon: BookOpen },
                   { label: 'Approved', value: contentAnalytics.totals.approvedResources ?? 0, color: COLORS.emerald, icon: CheckCircle2 },
@@ -832,16 +832,16 @@ export default function AnalyticsPage() {
                   { label: 'Downloads', value: (contentAnalytics.totals.resourceDownloads ?? 0).toLocaleString(), color: COLORS.cyan, icon: Download },
                 ].map((s, i) => (
                   <div key={i}
-                    className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-7 shadow-sm transition-all duration-500 hover:-translate-y-1 overflow-hidden"
+                    className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-7 shadow-sm transition-all duration-500 hover:-translate-y-1 overflow-hidden"
                   >
                     <div
-                      className="absolute inset-0 rounded-[1.75rem] sm:rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                      className="absolute inset-0 rounded-[1.5rem] sm:rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                       style={{ background: `radial-gradient(circle at 30% 30%, ${s.color}12, transparent 70%)` }}
                     />
                     <div className="relative z-10 flex items-center justify-between gap-3">
                       <div>
                         <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">{s.label}</p>
-                        <p className="text-2xl sm:text-3xl font-black tracking-tight leading-none" style={{ color: s.color }}>{s.value}</p>
+                        <p className="text-xl sm:text-3xl font-black tracking-tight leading-none" style={{ color: s.color }}>{s.value}</p>
                       </div>
                       <div
                         className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110"
