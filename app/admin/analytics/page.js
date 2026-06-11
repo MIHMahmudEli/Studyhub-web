@@ -7,6 +7,7 @@ import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import Toast from '@/components/ui/Toast';
 import { apiRequest } from '@/lib/api';
 import PopularNotesSection from './PopularNotesSection';
+import PopularResourcesSection from './PopularResourcesSection';
 import {
   BarChart3, Users, FileText, MessageSquare, BookOpen, Shield,
   TrendingUp, Activity, UserPlus, Download,
@@ -868,6 +869,7 @@ export default function AnalyticsPage() {
           )}
 
           <PopularNotesSection popularNotes={contentAnalytics?.popularNotes} loading={loading} />
+          <PopularResourcesSection popularResources={contentAnalytics?.popularResources} loading={loading} />
 
         </div>
       </div>
