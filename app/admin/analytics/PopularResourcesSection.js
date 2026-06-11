@@ -87,14 +87,14 @@ export default function PopularResourcesSection({ popularResources, loading }) {
 
                     <div className="flex-1 min-w-0 flex items-center gap-3">
                       <span
-                        className="text-blue-500 transition-transform duration-200 inline-block"
+                        className="text-blue-500 transition-transform duration-200 inline-block shrink-0"
                         style={{ transform: isOpen ? 'rotate(0deg)' : 'rotate(-90deg)' }}
                       >
                         <ChevronDown size={14} />
                       </span>
-                      <div>
+                      <div className="min-w-0 overflow-hidden">
                         <p className="text-[11px] sm:text-xs font-bold text-[var(--foreground)] truncate">{group.subject}</p>
-                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-wider">{group.course_code} · {group.resources.length} file{group.resources.length !== 1 ? 's' : ''}</p>
+                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-wider truncate">{group.course_code} · {group.resources.length} file{group.resources.length !== 1 ? 's' : ''}</p>
                       </div>
                     </div>
 
