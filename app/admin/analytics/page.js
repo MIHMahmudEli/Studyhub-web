@@ -454,7 +454,7 @@ export default function AnalyticsPage() {
                 badge={{ label: 'Users', color: COLORS.blue }}
               >
                 <div className="relative min-w-0 h-[180px] sm:h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={220}>
                     <AreaChart data={loading ? [] : (userAnalytics?.registrations?.map(r => ({ date: r.date?.slice(5) || '', registrations: parseInt(r.count, 10) })) || [])}>
                       <defs>
                         <linearGradient id="regGrad" x1="0" y1="0" x2="0" y2="1">
@@ -480,7 +480,7 @@ export default function AnalyticsPage() {
                 badge={{ label: 'Activity', color: COLORS.emerald }}
               >
                 <div className="relative min-w-0 h-[180px] sm:h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={220}>
                     <LineChart data={loading ? [] : (activityAnalytics?.loginActivity?.map(a => ({ date: a.date?.slice(5) || '', activeUsers: parseInt(a.activeUsers, 10) })) || [])}>
                         <defs>
                           <linearGradient id="actGrad" x1="0" y1="0" x2="0" y2="1">
@@ -506,7 +506,7 @@ export default function AnalyticsPage() {
                 badge={{ label: 'Content', color: COLORS.purple }}
               >
                 <div className="relative min-w-0 h-[180px] sm:h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={contentChartData} barGap={2}>
                         <CartesianGrid {...gridStyle} />
                         <XAxis dataKey="date" tick={axisStyle} tickFormatter={formatDateLabel} interval="preserveStartEnd" />
@@ -537,7 +537,7 @@ export default function AnalyticsPage() {
                 badge={{ label: 'Depts', color: COLORS.orange }}
               >
                 <div className="relative min-w-0 h-[180px] sm:h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={deptBarData} layout="vertical" barSize={10}>
                         <CartesianGrid {...gridStyle} />
                         <XAxis type="number" tick={axisStyle} />
@@ -609,7 +609,7 @@ export default function AnalyticsPage() {
                 badge={{ label: 'Growth', color: COLORS.emerald }}
               >
                 <div className="relative min-w-0 h-[180px] sm:h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={220}>
                     <AreaChart data={(() => {
                       const regs = (userAnalytics?.registrations || []).map(r => ({ date: r.date?.slice(5) || '', count: parseInt(r.count, 10) }));
                       let cum = 0;
@@ -639,7 +639,7 @@ export default function AnalyticsPage() {
                 badge={{ label: 'Users', color: COLORS.blue }}
               >
                 <div className="relative min-w-0 h-[180px] sm:h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={loading ? [] : (userAnalytics?.registrations?.map(r => ({ date: r.date?.slice(5) || '', count: parseInt(r.count, 10) })) || [])} barSize={8}>
                       <CartesianGrid {...gridStyle} />
                       <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
@@ -668,7 +668,7 @@ export default function AnalyticsPage() {
                 badge={{ label: 'Engagement', color: COLORS.rose }}
               >
                 <div className="relative min-w-0 h-[180px] sm:h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={220}>
                     <AreaChart data={loading ? [] : (contentAnalytics?.reviewsCreated?.map(r => ({ date: r.date?.slice(5) || '', reviews: parseInt(r.count, 10) })) || [])}>
                       <defs>
                         <linearGradient id="engGrad" x1="0" y1="0" x2="0" y2="1">
@@ -694,7 +694,7 @@ export default function AnalyticsPage() {
                 badge={{ label: 'Pattern', color: COLORS.indigo }}
               >
                 <div className="relative min-w-0 h-[180px] sm:h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={loading ? [] : (activityAnalytics?.activeDays?.map(d => ({ day: d.day?.slice(0, 3) || '', users: d.activeUsers })) || [])} barSize={20}>
                       <CartesianGrid {...gridStyle} />
                       <XAxis dataKey="day" tick={axisStyle} />
@@ -754,7 +754,7 @@ export default function AnalyticsPage() {
                 badge={{ label: 'Heatmap', color: COLORS.cyan }}
               >
                 <div className="relative min-w-0 h-[180px] sm:h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={loading ? [] : (activityAnalytics?.peakHours?.map(h => ({ hour: `${h.hour}`, users: h.activeUsers })) || [])}>
                       <CartesianGrid {...gridStyle} />
                       <XAxis dataKey="hour" tickFormatter={formatHourLabel} tick={axisStyle} interval={1} />
