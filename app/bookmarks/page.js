@@ -95,9 +95,6 @@ function BookmarkPageInner() {
     if (!authLoading && !user) router.push('/auth');
   }, [user, authLoading, router]);
 
-  const searchQueryRef = useRef(searchQuery);
-  useEffect(() => { searchQueryRef.current = searchQuery; }, [searchQuery]);
-
   // Fetch bookmarks (always fetches all — search redirects to /search page)
   const fetchBookmarks = useCallback(async () => {
     if (!tokenReady || !user) return;
@@ -173,20 +170,13 @@ function BookmarkPageInner() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Sync URL params
-  const debounceRef = useRef(null);
+  // Sync tab only to URL (search redirects to /search page)
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (searchQuery) params.set('search', searchQuery);
-      else params.delete('search');
-      if (activeTab && activeTab !== 'all') params.set('tab', activeTab);
-      else params.delete('tab');
-      router.replace(`?${params.toString()}`, { scroll: false });
-    }, 400);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [searchQuery, activeTab, router, searchParams]);
+    const params = new URLSearchParams(searchParams.toString());
+    if (activeTab && activeTab !== 'all') params.set('tab', activeTab);
+    else params.delete('tab');
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [activeTab, router, searchParams]);
 
   // ─── Categorization (no client-side search filtering — handled server-side) ─
   const { savedNotes, savedCourses, savedResources } = useMemo(() => ({
@@ -304,7 +294,6 @@ function BookmarkPageInner() {
                   if (e.key === 'Escape') {
                     if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
                     setSearchQuery('');
-                    searchQueryRef.current = '';
                     setSuggestions([]);
                     setShowSuggestions(false);
                   }
@@ -312,7 +301,6 @@ function BookmarkPageInner() {
                 onClear={() => {
                   if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
                   setSearchQuery('');
-                  searchQueryRef.current = '';
                   setSuggestions([]);
                   setShowSuggestions(false);
                 }}

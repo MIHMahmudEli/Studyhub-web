@@ -86,9 +86,6 @@ function ResourcesPageInner() {
     if (!authLoading && !user) router.push('/auth');
   }, [user, authLoading, router]);
 
-  const searchQueryRef = useRef(searchQuery);
-  useEffect(() => { searchQueryRef.current = searchQuery; }, [searchQuery]);
-
   const fetchCourses = useCallback((page, append = false) => {
     if (append) setLoadingMore(true); else setInitialLoading(true);
     apiRequest(`/resources/courses?page=${page}&limit=12`)
@@ -197,19 +194,6 @@ function ResourcesPageInner() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Sync URL param
-  const debounceRef = useRef(null);
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (searchQuery) params.set('search', searchQuery);
-      else params.delete('search');
-      router.replace(`?${params.toString()}`, { scroll: false });
-    }, 400);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [searchQuery, router, searchParams]);
-
   useEffect(() => {
     const el = observerRef.current;
     if (!el || !hasMoreCourses || loadingMore) return;
@@ -287,7 +271,6 @@ function ResourcesPageInner() {
                   if (e.key === 'Escape') {
                     if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
                     setSearchQuery('');
-                    searchQueryRef.current = '';
                     setSuggestions([]);
                     setShowSuggestions(false);
                   }
@@ -295,7 +278,6 @@ function ResourcesPageInner() {
                 onClear={() => {
                   if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
                   setSearchQuery('');
-                  searchQueryRef.current = '';
                   setSuggestions([]);
                   setShowSuggestions(false);
                 }}

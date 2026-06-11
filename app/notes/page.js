@@ -60,9 +60,6 @@ function NotesPageInner() {
   const currentPageRef = useRef(currentPage);
   const totalNotesRef = useRef(totalNotes);
 
-  const searchQueryRef = useRef(searchQuery);
-  useEffect(() => { searchQueryRef.current = searchQuery; }, [searchQuery]);
-
   const fetchNotes = useCallback(async (pageNum, append = false) => {
     try {
       if (append) {
@@ -124,20 +121,13 @@ function NotesPageInner() {
     router.push(`/search?q=${encodeURIComponent(expanded)}&from=notes`);
   }, [searchQuery, router]);
 
-  // Sync URL params
-  const debounceRef = useRef(null);
+  // Sync sort only to URL (search redirects to /search page)
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (searchQuery) params.set('search', searchQuery);
-      else params.delete('search');
-      if (sortBy && sortBy !== 'latest') params.set('sort', sortBy);
-      else params.delete('sort');
-      router.replace(`?${params.toString()}`, { scroll: false });
-    }, 400);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [searchQuery, sortBy, router, searchParams]);
+    const params = new URLSearchParams(searchParams.toString());
+    if (sortBy && sortBy !== 'latest') params.set('sort', sortBy);
+    else params.delete('sort');
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [sortBy, router, searchParams]);
 
   // Client-side sort only (search is handled server-side)
   const sortedNotes = useMemo(() => {
@@ -279,7 +269,6 @@ function NotesPageInner() {
                   if (e.key === 'Escape') {
                     if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
                     setSearchQuery('');
-                    searchQueryRef.current = '';
                     setSuggestions([]);
                     setShowSuggestions(false);
                   }
@@ -287,7 +276,6 @@ function NotesPageInner() {
                 onClear={() => {
                   if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
                   setSearchQuery('');
-                  searchQueryRef.current = '';
                   setSuggestions([]);
                   setShowSuggestions(false);
                 }}
