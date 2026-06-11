@@ -790,7 +790,7 @@ export default function AnalyticsPage() {
           {(loading || contentAnalytics?.totals) && (
             <div data-pdf-section data-pdf-label="Content Summary">
               <div className="mb-5">
-                <SectionHeader label="Summary" title="Content Overview" color={COLORS.emerald} />
+                <SectionHeader label="Summary" title="Notes Overview" color={COLORS.emerald} />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 {loading ? [...Array(4)].map((_, i) => (
