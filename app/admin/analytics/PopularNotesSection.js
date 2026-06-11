@@ -5,6 +5,15 @@ import { FileText, Download, Star, ChevronDown } from 'lucide-react';
 
 const COLORS = { amber: '#f59e0b', emerald: '#10b981', blue: '#3b82f6' };
 
+const DEPT_ABBR = {
+  'FACULTY OF BUSINESS ADMINISTRATION': 'FBA',
+  'FACULTY OF ARTS AND SOCIAL SCIENCES': 'FASS',
+  'FACULTY OF SCIENCE & TECHNOLOGY': 'FST',
+  'FACULTY OF SCIENCE AND TECHNOLOGY': 'FST',
+  'FACULTY OF ENGINEERING': 'FE',
+  'FACULTY OF HEALTH AND LIFE SCIENCES': 'FHLS',
+};
+
 function SectionHeader({ label, title, color = COLORS.blue }) {
   return (
     <div className="flex items-center gap-3">
@@ -138,7 +147,7 @@ export default function PopularNotesSection({ popularNotes, loading }) {
                           </div>
 
                           <span className="hidden sm:block text-[8px] font-bold text-slate-500 uppercase tracking-wider truncate max-w-[80px]">
-                            {note.dept}
+                            {DEPT_ABBR[note.dept?.toUpperCase()] || note.dept}
                           </span>
 
                           <div className="sm:hidden flex items-center gap-3 shrink-0">
