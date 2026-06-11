@@ -42,7 +42,7 @@ export default function PopularResourcesSection({ popularResources, loading }) {
       map[key].resources.push(r);
       map[key].totalDownloads += r.downloads || 0;
     });
-    return Object.values(map).sort((a, b) => b.totalDownloads - a.totalDownloads);
+    return Object.values(map).sort((a, b) => b.totalDownloads - a.totalDownloads).slice(0, 10);
   }, [popularResources]);
 
   const toggleCourse = (subject) => {

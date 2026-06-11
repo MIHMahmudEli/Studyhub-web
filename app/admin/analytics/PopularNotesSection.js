@@ -42,7 +42,7 @@ export default function PopularNotesSection({ popularNotes, loading }) {
       map[key].notes.push(n);
       map[key].totalDownloads += n.downloads || 0;
     });
-    return Object.values(map).sort((a, b) => b.totalDownloads - a.totalDownloads);
+    return Object.values(map).sort((a, b) => b.totalDownloads - a.totalDownloads).slice(0, 10);
   }, [popularNotes]);
 
   const toggleCourse = (courseTitle) => {
