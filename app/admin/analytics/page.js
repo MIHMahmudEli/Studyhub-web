@@ -863,6 +863,21 @@ export default function AnalyticsPage() {
       </div>
 
       <Toast toast={toast} closeToast={() => setToast(prev => ({ ...prev, show: false }))} />
+
+      <style>{`
+        .recharts-wrapper, .recharts-surface, .recharts-svg,
+        .recharts-wrapper *, .recharts-surface *, .recharts-svg *,
+        .recharts-layer, .recharts-sector, .recharts-bar-rectangle,
+        .recharts-area-dot, .recharts-line-dot, .recharts-curve,
+        .recharts-pie, .recharts-pie-sector,
+        .recharts-tooltip-wrapper, .recharts-default-tooltip,
+        .recharts-legend-wrapper, .recharts-cartesian-grid {
+          outline: none !important;
+          box-shadow: none !important;
+        }
+        .recharts-wrapper:focus, .recharts-surface:focus,
+        .recharts-wrapper *:focus { outline: none !important; }
+      `}</style>
     </main>
   );
 }
