@@ -70,12 +70,7 @@ function NotesPageInner() {
       } else {
         setLoading(true);
       }
-      let endpoint = `/notes?sort=${sortBy}&page=${pageNum}&limit=${limit}`;
-      const currentSearch = searchQueryRef.current;
-      if (currentSearch && currentSearch.trim().length >= 3) {
-        endpoint += `&search=${encodeURIComponent(currentSearch.trim())}`;
-      }
-      const res = await apiRequest(endpoint);
+      const res = await apiRequest(`/notes?sort=${sortBy}&page=${pageNum}&limit=${limit}`);
       const mapped = res.data.map(note => ({
         ...note,
         subject: note.courseTitle,

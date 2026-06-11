@@ -98,19 +98,14 @@ function BookmarkPageInner() {
   const searchQueryRef = useRef(searchQuery);
   useEffect(() => { searchQueryRef.current = searchQuery; }, [searchQuery]);
 
-  // Fetch bookmarks (with optional search, reads from ref)
+  // Fetch bookmarks (always fetches all — search redirects to /search page)
   const fetchBookmarks = useCallback(async () => {
     if (!tokenReady || !user) return;
     try {
       setLoading(true);
-      let endpoint = '/bookmarks';
-      const currentSearch = searchQueryRef.current;
-      if (currentSearch && currentSearch.trim().length >= 3) {
-        endpoint += `?search=${encodeURIComponent(currentSearch.trim())}`;
-      }
-      const data = await apiRequest(endpoint);
+      const data = await apiRequest('/bookmarks');
       setBookmarks(data || []);
-      if (!currentSearch) setHasAnyBookmarks((data || []).length > 0);
+      setHasAnyBookmarks((data || []).length > 0);
     } catch (err) {
       console.error('Failed to fetch bookmarks:', err);
     } finally {

@@ -91,12 +91,7 @@ function ResourcesPageInner() {
 
   const fetchCourses = useCallback((page, append = false) => {
     if (append) setLoadingMore(true); else setInitialLoading(true);
-    let endpoint = `/resources/courses?page=${page}&limit=12`;
-    const currentSearch = searchQueryRef.current;
-    if (currentSearch && currentSearch.trim().length >= 3) {
-      endpoint += `&search=${encodeURIComponent(currentSearch.trim())}`;
-    }
-    apiRequest(endpoint)
+    apiRequest(`/resources/courses?page=${page}&limit=12`)
       .then(res => {
         const data = res?.data || [];
         const enriched = data.map(c => ({
