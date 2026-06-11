@@ -134,8 +134,8 @@ function ChartCard({ title, subtitle, badge, children, className = '' }) {
 function CustomTooltip({ active, payload, label, hideLabel }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[var(--card-bg)]/90 border border-[var(--card-border)] rounded-2xl p-3 shadow-2xl backdrop-blur-xl">
-      {!hideLabel && <p className="text-[8px] font-black uppercase tracking-widest mb-2 text-slate-500">{label}</p>}
+    <div className="bg-slate-900/95 border border-white/10 rounded-2xl p-3 shadow-2xl backdrop-blur-xl">
+      {!hideLabel && <p className="text-[8px] font-black uppercase tracking-widest mb-2 text-slate-400">{label}</p>}
       {payload.map((entry, i) => (
         <p key={i} className="text-[11px] font-bold flex items-center gap-1.5" style={{ color: entry.color }}>
           <span className="w-1.5 h-1.5 rounded-full inline-block shrink-0" style={{ backgroundColor: entry.color }} />
@@ -464,8 +464,8 @@ export default function AnalyticsPage() {
                       <CartesianGrid {...gridStyle} />
                       <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
                       <YAxis tick={axisStyle} width={28} />
-                      <Tooltip content={<CustomTooltip />} cursor={false} />
-                        <Area type="monotone" dataKey="registrations" stroke={COLORS.blue} fill="url(#regGrad)" strokeWidth={2} name="Registrations" dot={false} activeDot={{ r: 4, fill: COLORS.blue }} />
+                      <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ background: 'transparent', border: 'none', borderRadius: 0, boxShadow: 'none' }} />
+                        <Area type="monotone" dataKey="registrations" stroke={COLORS.blue} fill="url(#regGrad)" strokeWidth={2} name="Registrations" dot={false} />
                       </AreaChart>
                     </ResponsiveContainer>
                     {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
@@ -490,8 +490,8 @@ export default function AnalyticsPage() {
                         <CartesianGrid {...gridStyle} />
                         <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
                         <YAxis tick={axisStyle} width={28} />
-                        <Tooltip content={<CustomTooltip />} cursor={false} />
-                        <Line type="monotone" dataKey="activeUsers" stroke={COLORS.emerald} strokeWidth={2.5} dot={false} name="Active Users" activeDot={{ r: 4, fill: COLORS.emerald }} />
+                        <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ background: 'transparent', border: 'none', borderRadius: 0, boxShadow: 'none' }} />
+                        <Line type="monotone" dataKey="activeUsers" stroke={COLORS.emerald} strokeWidth={2.5} dot={false} name="Active Users" />
                       </LineChart>
                     </ResponsiveContainer>
                     {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
@@ -510,9 +510,9 @@ export default function AnalyticsPage() {
                         <CartesianGrid {...gridStyle} />
                         <XAxis dataKey="date" tick={axisStyle} tickFormatter={formatDateLabel} interval="preserveStartEnd" />
                         <YAxis tick={axisStyle} width={28} />
-                        <Tooltip content={<CustomTooltip />} cursor={false} />
-                        <Bar dataKey="notes" fill={COLORS.purple} radius={[4, 4, 0, 0]} name="Notes" stackId="a" activeBar={{ stroke: COLORS.purple, strokeWidth: 2, fillOpacity: 1 }} />
-                        <Bar dataKey="resources" fill={COLORS.amber} radius={[4, 4, 0, 0]} name="Resources" stackId="a" activeBar={{ stroke: COLORS.amber, strokeWidth: 2, fillOpacity: 1 }} />
+                        <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ background: 'transparent', border: 'none', borderRadius: 0, boxShadow: 'none' }} />
+                        <Bar dataKey="notes" fill={COLORS.purple} radius={[4, 4, 0, 0]} name="Notes" stackId="a" />
+                        <Bar dataKey="resources" fill={COLORS.amber} radius={[4, 4, 0, 0]} name="Resources" stackId="a" />
                         <Legend wrapperStyle={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', paddingTop: '8px' }} />
                       </BarChart>
                     </ResponsiveContainer>
@@ -534,7 +534,7 @@ export default function AnalyticsPage() {
                             <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip content={<CustomTooltip />} cursor={false} />
+                        <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ background: 'transparent', border: 'none', borderRadius: 0, boxShadow: 'none' }} />
                         <Legend wrapperStyle={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }} />
                       </PieChart>
                     </ResponsiveContainer>
@@ -554,7 +554,7 @@ export default function AnalyticsPage() {
                         <CartesianGrid {...gridStyle} />
                         <XAxis type="number" tick={axisStyle} />
                         <YAxis dataKey="name" type="category" tick={axisStyle} width={80} />
-                        <Tooltip content={<CustomTooltip />} cursor={false} />
+                        <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ background: 'transparent', border: 'none', borderRadius: 0, boxShadow: 'none' }} />
                         <Bar dataKey="count" radius={[0, 5, 5, 0]} name="Users">
                           {deptBarData.map((_, i) => (
                             <Cell key={i} fill={COLORS.orange} fillOpacity={0.45 + (i % 4) * 0.14} />
@@ -636,8 +636,8 @@ export default function AnalyticsPage() {
                       <CartesianGrid {...gridStyle} />
                       <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
                       <YAxis tick={axisStyle} width={28} />
-                      <Tooltip content={<CustomTooltip />} cursor={false} />
-                      <Area type="monotone" dataKey="total" stroke={COLORS.emerald} fill="url(#cumGrad)" strokeWidth={2.5} name="Total Users" dot={false} activeDot={{ r: 4, fill: COLORS.emerald }} />
+                      <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ background: 'transparent', border: 'none', borderRadius: 0, boxShadow: 'none' }} />
+                      <Area type="monotone" dataKey="total" stroke={COLORS.emerald} fill="url(#cumGrad)" strokeWidth={2.5} name="Total Users" dot={false} />
                     </AreaChart>
                   </ResponsiveContainer>
                   {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
@@ -656,8 +656,8 @@ export default function AnalyticsPage() {
                       <CartesianGrid {...gridStyle} />
                       <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
                       <YAxis tick={axisStyle} width={28} />
-                      <Tooltip content={<CustomTooltip />} cursor={false} />
-                      <Bar dataKey="count" radius={[4, 4, 0, 0]} fill={COLORS.blue} name="Registrations" activeBar={{ stroke: COLORS.blue, strokeWidth: 2, fillOpacity: 1 }} />
+                      <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ background: 'transparent', border: 'none', borderRadius: 0, boxShadow: 'none' }} />
+                      <Bar dataKey="count" radius={[4, 4, 0, 0]} fill={COLORS.blue} name="Registrations" />
                     </BarChart>
                   </ResponsiveContainer>
                   {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
@@ -691,8 +691,8 @@ export default function AnalyticsPage() {
                       <CartesianGrid {...gridStyle} />
                       <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={axisStyle} interval="preserveStartEnd" />
                       <YAxis tick={axisStyle} width={28} />
-                      <Tooltip content={<CustomTooltip />} cursor={false} />
-                      <Area type="monotone" dataKey="reviews" stroke={COLORS.rose} fill="url(#engGrad)" strokeWidth={2} name="Reviews" dot={false} activeDot={{ r: 4, fill: COLORS.rose }} />
+                      <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ background: 'transparent', border: 'none', borderRadius: 0, boxShadow: 'none' }} />
+                      <Area type="monotone" dataKey="reviews" stroke={COLORS.rose} fill="url(#engGrad)" strokeWidth={2} name="Reviews" dot={false} />
                     </AreaChart>
                   </ResponsiveContainer>
                   {loading && <Skeleton className="absolute inset-0 rounded-xl" />}
@@ -711,8 +711,8 @@ export default function AnalyticsPage() {
                       <CartesianGrid {...gridStyle} />
                       <XAxis dataKey="day" tick={axisStyle} />
                       <YAxis tick={axisStyle} width={28} />
-                      <Tooltip content={<CustomTooltip />} cursor={false} />
-                      <Bar dataKey="users" radius={[4, 4, 0, 0]} name="Active Users" activeBar={{ stroke: COLORS.indigo, strokeWidth: 2, fillOpacity: 1 }}>
+                      <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ background: 'transparent', border: 'none', borderRadius: 0, boxShadow: 'none' }} />
+                      <Bar dataKey="users" radius={[4, 4, 0, 0]} name="Active Users">
                         {(activityAnalytics?.activeDays || []).map((_, i) => {
                           const isWeekend = i >= 5;
                           return <Cell key={i} fill={isWeekend ? COLORS.rose : COLORS.indigo} fillOpacity={isWeekend ? 0.8 : 0.5} />;
@@ -771,8 +771,8 @@ export default function AnalyticsPage() {
                       <CartesianGrid {...gridStyle} />
                       <XAxis dataKey="hour" tickFormatter={formatHourLabel} tick={axisStyle} interval={1} />
                       <YAxis tick={axisStyle} width={28} />
-                      <Tooltip content={<CustomTooltip hideLabel />} cursor={false} />
-                      <Bar dataKey="users" radius={[4, 4, 0, 0]} name="Active Users" activeBar={{ stroke: COLORS.cyan, strokeWidth: 2, fillOpacity: 0.9 }}>
+                      <Tooltip content={<CustomTooltip hideLabel />} cursor={false} contentStyle={{ background: 'transparent', border: 'none', borderRadius: 0, boxShadow: 'none' }} />
+                      <Bar dataKey="users" radius={[4, 4, 0, 0]} name="Active Users">
                         {(activityAnalytics?.peakHours || []).map((entry, i) => {
                           const max = Math.max(...(activityAnalytics?.peakHours || []).map(h => h.activeUsers));
                           const ratio = max > 0 ? entry.activeUsers / max : 0;
