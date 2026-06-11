@@ -143,7 +143,7 @@ function ResourcesPageInner() {
   const handleSearchSubmit = useCallback(() => {
     if (!searchQuery.trim()) return;
     setShowSuggestions(false);
-    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}&from=resources`);
   }, [searchQuery, router]);
 
   const handleToggleBookmark = (subjectName) => {
@@ -316,7 +316,7 @@ function ResourcesPageInner() {
                       onClick={() => {
                         if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
                         setShowSuggestions(false);
-                        router.push(`/search?q=${encodeURIComponent(course.courseTitle)}`);
+                        router.push(`/search?q=${encodeURIComponent(course.courseTitle)}&from=resources`);
                       }}
                       className="w-full px-6 py-4 text-left hover:bg-blue-500/5 flex items-center justify-between group transition-colors"
                     >

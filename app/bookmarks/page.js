@@ -131,7 +131,7 @@ function BookmarkPageInner() {
   const handleSearchSubmit = useCallback(() => {
     if (!searchQuery.trim()) return;
     setShowSuggestions(false);
-    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}&from=bookmarks`);
   }, [searchQuery, router]);
 
   const handleRemoveBookmark = (id) => {
@@ -333,7 +333,7 @@ function BookmarkPageInner() {
                       onClick={() => {
                         if (suggestionDebounceRef.current) clearTimeout(suggestionDebounceRef.current);
                         setShowSuggestions(false);
-                        router.push(`/search?q=${encodeURIComponent(course.courseTitle)}`);
+                        router.push(`/search?q=${encodeURIComponent(course.courseTitle)}&from=bookmarks`);
                       }}
                       className="w-full px-6 py-4 text-left hover:bg-blue-500/5 flex items-center justify-between group transition-colors"
                     >
