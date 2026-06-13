@@ -5,8 +5,9 @@ import { Star, AlertCircle, CheckCircle2, X, Edit2, Trash2, MessageSquarePlus, S
 import { apiRequest } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import Toast from '@/components/ui/Toast';
+import { insertMention, cleanMentions, prepareReplyPayload } from '@/lib/mention';
 
-function CommentItem({ review, uploaderId, currentUser, onDelete, onStartEdit, onSaveEdit, onCancelEdit, editingCommentId, editingCommentText, setEditingCommentText, commentInputRef, onToggleLike, onToggleDislike, onReply, replyToId, replyText, setReplyText, submitReply, replyingTo }) {
+function CommentItem({ review, uploaderId, currentUser, onDelete, onStartEdit, onSaveEdit, onCancelEdit, editingCommentId, editingCommentText, setEditingCommentText, commentInputRef, onToggleLike, onToggleDislike, onReply, replyToId, replyText, setReplyText, submitReply, mentionTarget }) {
   const isOwner = review.user_id === uploaderId;
   const isAuthor = currentUser && currentUser.id === review.user_id;
   const isEditing = editingCommentId === review.id;
@@ -55,9 +56,9 @@ function CommentItem({ review, uploaderId, currentUser, onDelete, onStartEdit, o
             </div>
           ) : (
             <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-400 leading-relaxed break-words pl-0.5">
-              {replyingTo && (
+              {review.mentioned_user && (
                 <span className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 font-bold mr-1.5 cursor-pointer">
-                  @{replyingTo}
+                  @{review.mentioned_user.name}
                 </span>
               )}
               {review.comment}
@@ -90,7 +91,7 @@ function CommentItem({ review, uploaderId, currentUser, onDelete, onStartEdit, o
 
           {replyToId === review.id && (
             <div className="flex gap-3 mt-3 bg-[var(--card-bg)] p-3 rounded-2xl border border-[var(--card-border)] focus-within:border-purple-500/40 transition-colors">
-              <textarea value={replyText} onChange={(e) => setReplyText(e.target.value)} placeholder="Write a reply..." className="flex-1 bg-transparent text-xs font-semibold focus:outline-none text-slate-800 dark:text-slate-200 placeholder-slate-400 resize-none h-12 py-1.5 px-2" />
+              <textarea value={replyText} onChange={(e) => setReplyText(e.target.value)} placeholder={mentionTarget ? `Replying to ${mentionTarget.displayName}...` : "Write a reply..."} className="flex-1 bg-transparent text-xs font-semibold focus:outline-none text-slate-800 dark:text-slate-200 placeholder-slate-400 resize-none h-12 py-1.5 px-2" />
               <button onClick={submitReply} disabled={!replyText.trim()} className="w-9 h-12 bg-purple-500 hover:bg-purple-600 text-white rounded-xl flex items-center justify-center transition-colors shadow-md shadow-purple-500/20 disabled:opacity-40 cursor-pointer flex-shrink-0">
                 <SendHorizonal size={13} />
               </button>
@@ -115,6 +116,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
 
   const [replyToId, setReplyToId] = useState(null);
   const [replyText, setReplyText] = useState('');
+  const [mentionTarget, setMentionTarget] = useState(null);
 
   const [expandedReplies, setExpandedReplies] = useState(new Set());
 
@@ -273,7 +275,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
     return { likes_count, dislikes_count, userVote };
   };
 
-  const buildOptimisticComment = (text, parentId = null) => {
+  const buildOptimisticComment = (text, parentId = null, mentionedUser = null) => {
     const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     return {
       id: tempId,
@@ -287,6 +289,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
       userVote: null,
       created_at: new Date().toISOString(),
       children: parentId ? undefined : [],
+      mentioned_user: mentionedUser ? { id: mentionedUser.userId, name: mentionedUser.displayName } : null,
       user: {
         id: user.id,
         name: user.name,
@@ -394,14 +397,29 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
 
   // ─── Optimistic: Reply ─────────────────────────────────────────────────────────
   const handleReply = (review) => {
-    setReplyToId(replyToId === review.id ? null : review.id);
-    setReplyText('');
+    if (replyToId === review.id) {
+      setReplyToId(null);
+      setReplyText('');
+      setMentionTarget(null);
+    } else {
+      setReplyToId(review.id);
+      const topLevelParentId = resolveParentId(review.id);
+      if (review.id === topLevelParentId) {
+        setMentionTarget(null);
+      } else {
+        const username = review.user?.name || 'user';
+        setMentionTarget({ userId: review.user?.id, displayName: username });
+      }
+    }
   };
 
   const submitReply = () => {
     if (!user || !replyToId) return;
-    const text = replyText.trim();
-    if (!text) { showToast('Reply cannot be empty.', 'warning'); return; }
+
+    const finalTxt = replyText.trim();
+    const mentioned_user_id = mentionTarget ? mentionTarget.userId : null;
+
+    if (!finalTxt) { showToast('Reply cannot be empty.', 'warning'); return; }
     const key = `reply-${replyToId}`;
     if (pendingFns.current[key]) return;
 
@@ -410,15 +428,16 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
 
     setExpandedReplies(prev => new Set(prev).add(topLevelParentId));
 
-    const optimistic = buildOptimisticComment(text, topLevelParentId);
+    const optimistic = buildOptimisticComment(finalTxt, topLevelParentId, mentionTarget);
     setAllReviews(prev => addChildToTree(prev, topLevelParentId, optimistic));
     setReplyText('');
     setReplyToId(null);
+    setMentionTarget(null);
     pendingFns.current[key] = true;
 
-    apiRequest(`/reviews/note/${noteId}/comment`, { method: 'POST', body: { comment: text, parent_id: topLevelParentId } })
+    apiRequest(`/reviews/note/${noteId}/comment`, { method: 'POST', body: { comment: finalTxt, parent_id: topLevelParentId, mentioned_user_id } })
       .then(real => {
-        setAllReviews(prev => replaceInTree(prev, optimistic.id, { ...real, user: real.user || optimistic.user, userVote: null }));
+        setAllReviews(prev => replaceInTree(prev, optimistic.id, { ...real, user: real.user || optimistic.user, mentioned_user: real.mentioned_user || optimistic.mentioned_user, userVote: null }));
       })
       .catch(err => {
         setAllReviews(prev => removeFromTree(prev, optimistic.id));
@@ -669,6 +688,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
                       replyText={replyText}
                       setReplyText={setReplyText}
                       submitReply={submitReply}
+                      mentionTarget={mentionTarget}
                     />
 
                     {children.length > 0 && (
@@ -686,7 +706,6 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
                                 review={child}
                                 uploaderId={uploaderId}
                                 currentUser={user}
-                                replyingTo={review.user?.name}
                                 onDelete={deleteComment}
                                 onStartEdit={startEditComment}
                                 onSaveEdit={saveEditComment}
@@ -702,6 +721,7 @@ export default function RatingWidget({ noteId, uploaderId, onRateSuccess, onRevi
                                 replyText={replyText}
                                 setReplyText={setReplyText}
                                 submitReply={submitReply}
+                                mentionTarget={mentionTarget}
                               />
                             ))}
                           </div>
