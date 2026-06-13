@@ -131,7 +131,7 @@ export default function NotificationsPage() {
 
   const handleClick = async (n) => {
     if (!n.is_read) await handleMarkRead(n.id);
-    if (n.redirect_url) router.push(n.redirect_url);
+    if (n.redirect_url) router.push(n.redirect_url.replace('/note/', '/notes/'));
   };
 
   const hasMore = notifications.length < total;

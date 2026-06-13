@@ -143,7 +143,7 @@ export default function NotificationBell() {
     }
     setOpen(false);
     if (n.redirect_url) {
-      router.push(n.redirect_url);
+      router.push(n.redirect_url.replace('/note/', '/notes/'));
     }
   };
 
