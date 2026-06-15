@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { Edit, Trash2, BookOpen, GraduationCap, Star, Download, Eye, Layers, Clock, User } from 'lucide-react';
 import { getDepartmentName } from '@/lib/nameUtils';
+import FollowButton from '@/components/notes/FollowButton';
 
 function formatCount(n) {
   if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
@@ -132,28 +133,32 @@ function AuthorCard({ uploader, uploaderId }) {
   const router = useRouter();
 
   return (
-    <button
-      onClick={() => router.push(`/profile/${uploaderId}`)}
-      className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex items-center gap-4 shadow-sm group cursor-pointer hover:border-purple-500/30 transition-all duration-300 text-left"
-    >
-      {uploader?.profile_pic ? (
-        <img
-          src={uploader.profile_pic}
-          alt={uploader?.name || ''}
-          className="w-12 h-12 rounded-2xl object-cover border border-[var(--card-border)] shadow-sm shrink-0"
-        />
-      ) : (
-        <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center text-slate-400 group-hover:bg-purple-500 group-hover:text-white transition-all duration-500 shrink-0">
-          <User size={20} />
+    <div className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] p-6 flex items-center gap-4 shadow-sm transition-all duration-300 hover:border-purple-500/30">
+      <button
+        onClick={() => router.push(`/profile/${uploaderId}`)}
+        className="flex items-center gap-4 flex-1 min-w-0 group cursor-pointer text-left"
+      >
+        {uploader?.profile_pic ? (
+          <img
+            src={uploader.profile_pic}
+            alt={uploader?.name || ''}
+            className="w-12 h-12 rounded-2xl object-cover border border-[var(--card-border)] shadow-sm shrink-0"
+          />
+        ) : (
+          <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center text-slate-400 group-hover:bg-purple-500 group-hover:text-white transition-all duration-500 shrink-0">
+            <User size={20} />
+          </div>
+        )}
+        <div className="min-w-0">
+          <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Uploaded By</p>
+          <p className="text-[11px] font-black uppercase tracking-widest truncate group-hover:text-purple-500 transition-colors duration-500">
+            {uploader?.name || `Student #${uploaderId}`}
+          </p>
         </div>
-      )}
-      <div>
-        <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Uploaded By</p>
-        <p className="text-[11px] font-black uppercase tracking-widest group-hover:text-purple-500 transition-colors duration-500">
-          {uploader?.name || `Student #${uploaderId}`}
-        </p>
-      </div>
-    </button>
+      </button>
+
+      <FollowButton userId={uploaderId} variant="full" className="shrink-0" />
+    </div>
   );
 }
 
