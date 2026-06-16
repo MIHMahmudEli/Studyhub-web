@@ -6,13 +6,14 @@ import { useParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft, Coins, FileText, Calendar, Zap, Sparkles, User,
   Trophy, Globe, Shield, ExternalLink,
-  Star, ArrowRight, Hash
+  Star, ArrowRight, Hash, UserPlus, Check, Medal,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { apiRequest } from '@/lib/api';
 import { getLevelInfo } from '@/components/leaderboard/leaderboardUtils';
 import { Skeleton } from '@/components/ui/Skeleton';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
+import { useFollow } from '@/lib/hooks/useFollow';
 
 // ─── Role Badge Config ──────────────────────────────────────────────────────
 const ROLE_BADGES = {
@@ -105,7 +106,6 @@ function ProfileSkeleton() {
       <DashboardNavbar />
       <div className="pt-24 md:pt-32 px-4 md:px-8">
         <div className="max-w-[1400px] mx-auto space-y-8 sm:space-y-12 animate-pulse">
-          {/* Header skeleton */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="space-y-3">
               <div className="h-6 w-28 bg-white/[0.05] rounded-full" />
@@ -114,9 +114,8 @@ function ProfileSkeleton() {
             </div>
             <div className="h-16 w-48 bg-white/[0.05] rounded-[1.25rem]" />
           </div>
-          {/* Content skeleton */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="h-[420px] bg-white/[0.05] rounded-[2.5rem]" />
+            <div className="h-[520px] bg-white/[0.05] rounded-[2.5rem]" />
             <div className="lg:col-span-2 space-y-6">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[1, 2, 3, 4].map(i => (
@@ -196,6 +195,8 @@ export default function PublicProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const follow = useFollow(id);
+
   useEffect(() => {
     if (!authLoading && !authUser) router.push('/auth');
   }, [authUser, authLoading, router]);
@@ -259,9 +260,6 @@ export default function PublicProfilePage() {
   // ─── Data Prep ──────────────────────────────────────────────────────────────
   const levelInfo = getLevelInfo(profile.points);
   const roleBadge = ROLE_BADGES[profile.role] || ROLE_BADGES.student;
-  const joinedDate = new Date(profile.created_at).toLocaleDateString('en-US', {
-    year: 'numeric', month: 'long', day: 'numeric',
-  });
   const activeSocials = SOCIAL_LINKS.filter(s => profile[s.key]);
 
   // ─── Render ────────────────────────────────────────────────────────────────
@@ -274,22 +272,18 @@ export default function PublicProfilePage() {
 
           {/* ── Page Header ─────────────────────────────────────────────────── */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative">
-            {/* Decorative glow */}
             <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-500/10 blur-[80px] rounded-full -z-10 animate-pulse" />
 
             <div className="space-y-3 sm:space-y-4">
-              {/* Back button */}
               <button
                 onClick={() => router.back()}
                 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-blue-500 transition-colors"
               >
                 <ArrowLeft size={14} /> Back
               </button>
-              {/* Role badge */}
               <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.3em] border ${roleBadge.class}`}>
                 <Shield size={12} /> {roleBadge.label} Profile
               </div>
-              {/* Title */}
               <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight uppercase leading-none">
                 {profile.name.split(' ')[0]}&apos;s{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
@@ -301,7 +295,6 @@ export default function PublicProfilePage() {
               </p>
             </div>
 
-            {/* Date widget */}
             <div className="flex items-center gap-4 w-full md:w-auto justify-start md:justify-end">
               <div className="flex items-center gap-3.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[1.25rem] p-3.5 shadow-sm backdrop-blur-xl">
                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
@@ -320,84 +313,136 @@ export default function PublicProfilePage() {
           {/* ── Main Content Grid ────────────────────────────────────────────── */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
 
-            {/* ── Left Column: Identity Card ─────────────────────────────────── */}
+            {/* ── Left Column: Profile Card ──────────────────────────────────── */}
             <div className="space-y-4 sm:space-y-6">
-              {/* Profile card */}
-              <div className="relative group bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-8 text-center shadow-sm backdrop-blur-xl overflow-hidden hover:border-blue-500/20 transition-all duration-500">
-                {/* Decorative gradient orb */}
+              <div className="relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm backdrop-blur-xl overflow-hidden hover:border-blue-500/20 transition-all duration-500">
                 <div className={`absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl -z-10 opacity-50 bg-gradient-to-br ${roleBadge.glow} to-transparent`} />
 
-                {/* Avatar */}
-                <div className="relative w-24 h-24 mx-auto mb-5">
-                  <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-[var(--card-border)] overflow-hidden flex items-center justify-center text-3xl font-black shadow-2xl">
-                    {profile.profile_pic ? (
-                      <Image src={profile.profile_pic} alt={profile.name} width={96} height={96} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-purple-500">
-                        {profile.name.charAt(0)}
+                {/* Avatar + Info row */}
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="relative shrink-0">
+                    <div className="w-[72px] h-[72px] rounded-[22px] bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-[var(--card-border)] overflow-hidden flex items-center justify-center text-3xl font-black shadow-xl">
+                      {profile.profile_pic ? (
+                        <Image src={profile.profile_pic} alt={profile.name} width={72} height={72} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-purple-500">
+                          {profile.name.charAt(0)}
+                        </span>
+                      )}
+                    </div>
+                    <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-lg border-2 border-[var(--background)] flex items-center justify-center ${levelInfo.currentLevel.bgColor}`}>
+                      <Zap size={10} className={levelInfo.currentLevel.textColor} />
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-lg font-black uppercase tracking-tight truncate">{profile.name}</h2>
+                    <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                      <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-wider border ${roleBadge.class}`}>
+                        <Shield size={8} /> {roleBadge.label}
+                      </div>
+                      <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-wider border ${levelInfo.currentLevel.bgColor} ${levelInfo.currentLevel.textColor} ${levelInfo.currentLevel.borderColor}`}>
+                        <Zap size={8} /> Lv.{levelInfo.currentLevel.level}
+                      </div>
+                    </div>
+                    {profile.dept && (
+                      <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1.5 truncate">{profile.dept}</p>
+                    )}
+                    {profile.code && (
+                      <div className="inline-flex items-center gap-1 text-[8px] font-black text-slate-500 uppercase tracking-widest mt-0.5">
+                        <Hash size={9} /> {profile.code}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Stats row: Points | Rank | Notes */}
+                <div className="flex items-center rounded-2xl bg-slate-500/[0.04] py-3 px-2 mb-4">
+                  {[
+                    { icon: Star, value: profile.points.toLocaleString(), label: 'pts', color: 'text-amber-500' },
+                    { icon: Trophy, value: `#${profile.rank}`, label: 'rank', color: 'text-purple-500' },
+                    { icon: FileText, value: profile.noteCount, label: 'notes', color: 'text-blue-500' },
+                  ].map((s, i) => (
+                    <div key={s.label} className="flex-1 flex items-center justify-center gap-1.5">
+                      <s.icon size={13} className={s.color} />
+                      <span className="text-sm font-black text-[var(--foreground)]">{s.value}</span>
+                      <span className="text-[7px] font-black uppercase text-slate-500 tracking-wider">{s.label}</span>
+                      {i < 2 && <div className="w-px h-4 bg-[var(--card-border)] ml-2" />}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Best Rank */}
+                {profile.bestRank != null && profile.bestRankMonth != null && profile.bestRankYear != null && (
+                  <div className="flex items-center justify-center gap-1.5 mb-4">
+                    <Medal size={13} className="text-amber-500" />
+                    <span className="text-[10px] font-bold text-slate-500">
+                      Best <span className="font-black text-[var(--foreground)]">#{profile.bestRank}</span>
+                    </span>
+                    <span className="text-[8px] font-semibold text-slate-500 opacity-70">
+                      {new Date(profile.bestRankYear, profile.bestRankMonth - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                    </span>
+                    {profile.bestRankPoints != null && (
+                      <span className="text-[8px] font-semibold text-slate-500 opacity-70">
+                        · {profile.bestRankPoints.toLocaleString()} pts
                       </span>
                     )}
                   </div>
-                  {/* Level indicator dot */}
-                  <div className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-xl border-2 border-[var(--background)] flex items-center justify-center ${levelInfo.currentLevel.bgColor}`}>
-                    <Zap size={12} className={levelInfo.currentLevel.textColor} />
-                  </div>
-                </div>
-
-                {/* Name */}
-                <h2 className="text-xl font-black uppercase tracking-tight mb-2">{profile.name}</h2>
-
-                {/* Role badge */}
-                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border mb-4 ${roleBadge.class}`}>
-                  <Shield size={11} /> {roleBadge.label}
-                </div>
-
-                {/* Dept & ID */}
-                {profile.dept && (
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{profile.dept}</p>
                 )}
-                {profile.code && (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-500/5 border border-[var(--card-border)] text-[9px] font-black uppercase tracking-widest text-slate-500 mb-5">
-                    <Hash size={10} /> {profile.code}
-                  </div>
-                )}
-
-                {/* Level Badge */}
-                <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${levelInfo.currentLevel.bgColor} ${levelInfo.currentLevel.textColor} border ${levelInfo.currentLevel.borderColor} mb-5`}>
-                  <Zap size={12} />
-                  {levelInfo.currentLevel.name} · Lv.{levelInfo.currentLevel.level}
-                </div>
-
-                {/* Points */}
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <Coins size={22} className="text-amber-500" />
-                  <span className="text-3xl font-black tracking-tighter">{profile.points.toLocaleString()}</span>
-                  <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest self-end mb-1">pts</span>
-                </div>
 
                 {/* XP Bar */}
-                <div className="mb-2 px-2">
-                  <div className="flex items-center justify-between text-[9px] font-bold text-slate-500 mb-1.5 uppercase tracking-widest">
+                <div className="mb-2">
+                  <div className="flex items-center justify-between text-[8px] font-bold text-slate-500 mb-1 uppercase tracking-widest">
                     <span>XP Progress</span>
                     <span>{levelInfo.xpInLevel.toLocaleString()} / {levelInfo.nextLevel ? levelInfo.xpToNext.toLocaleString() : 'MAX'}</span>
                   </div>
-                  <div className="w-full h-2.5 bg-slate-100 dark:bg-white/[0.06] rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-slate-100 dark:bg-white/[0.06] rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-1000 ease-out ${levelInfo.currentLevel.barColor}`}
                       style={{ width: `${levelInfo.progress * 100}%` }}
                     />
                   </div>
-                  {levelInfo.nextLevel && (
-                    <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1.5 text-right">
-                      Next: {levelInfo.nextLevel.name}
-                    </p>
-                  )}
                 </div>
 
-                {/* Divider */}
-                <div className="border-t border-[var(--card-border)] mt-5 pt-5">
-                  <p className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-500 mb-1">Member Since</p>
-                  <p className="text-[11px] font-black uppercase tracking-tight text-slate-400">{joinedDate}</p>
+                {/* Follow area */}
+                <div className="border-t border-[var(--card-border)] pt-4 mt-4">
+                  <div className="flex items-center justify-center gap-4">
+                    {!follow.isSelf && follow.loaded && (
+                      <button
+                        type="button"
+                        disabled={follow.pending}
+                        onClick={() => follow.toggle()}
+                        className={`inline-flex items-center gap-1.5 px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.15em] transition-all cursor-pointer disabled:opacity-60 ${
+                          follow.following
+                            ? 'border border-rose-500/30 text-rose-500 hover:bg-rose-500/10'
+                            : 'bg-purple-500 text-white hover:bg-purple-600 shadow-sm'
+                        }`}
+                      >
+                        {follow.following ? <Check size={13} /> : <UserPlus size={13} />}
+                        {follow.following ? 'Following' : 'Follow'}
+                      </button>
+                    )}
+
+                    <div className="flex items-center gap-4">
+                      <div className="text-center">
+                        <p className="text-base font-black text-[var(--foreground)]">{follow.followersCount}</p>
+                        <p className="text-[7px] font-black uppercase text-slate-500 tracking-wider">Followers</p>
+                      </div>
+                      <div className="w-px h-6 bg-[var(--card-border)]" />
+                      <div className="text-center">
+                        <p className="text-base font-black text-[var(--foreground)]">{follow.followingCount}</p>
+                        <p className="text-[7px] font-black uppercase text-slate-500 tracking-wider">Following</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Member since */}
+                <div className="border-t border-[var(--card-border)] mt-4 pt-4 text-center">
+                  <p className="text-[7px] font-black uppercase tracking-[0.3em] text-slate-500">Member Since</p>
+                  <p className="text-[10px] font-black uppercase text-slate-400 mt-0.5">
+                    {new Date(profile.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  </p>
                 </div>
               </div>
 
@@ -491,14 +536,14 @@ export default function PublicProfilePage() {
                 {/* Level milestones */}
                 <div className="flex items-center justify-between">
                   {[
-                    { name: 'Bronze', threshold: 0, color: 'text-orange-500' },
-                    { name: 'Silver', threshold: 50, color: 'text-slate-400' },
-                    { name: 'Gold', threshold: 150, color: 'text-amber-500' },
-                    { name: 'Platinum', threshold: 350, color: 'text-purple-400' },
-                    { name: 'Diamond', threshold: 700, color: 'text-cyan-400' },
+                    { name: 'Bronze', threshold: 0, color: 'text-orange-500', dot: 'bg-orange-500' },
+                    { name: 'Silver', threshold: 50, color: 'text-slate-400', dot: 'bg-slate-400' },
+                    { name: 'Gold', threshold: 150, color: 'text-amber-500', dot: 'bg-amber-500' },
+                    { name: 'Platinum', threshold: 350, color: 'text-purple-400', dot: 'bg-purple-400' },
+                    { name: 'Diamond', threshold: 700, color: 'text-cyan-400', dot: 'bg-cyan-400' },
                   ].map((milestone) => (
                     <div key={milestone.name} className="flex flex-col items-center gap-1">
-                      <div className={`w-1.5 h-1.5 rounded-full ${profile.points >= milestone.threshold ? milestone.color.replace('text-', 'bg-') : 'bg-slate-600'}`} />
+                      <div className={`w-1.5 h-1.5 rounded-full ${profile.points >= milestone.threshold ? milestone.dot : 'bg-slate-600'}`} />
                       <span className={`text-[8px] font-black uppercase tracking-wide hidden sm:block ${profile.points >= milestone.threshold ? milestone.color : 'text-slate-600'}`}>
                         {milestone.name}
                       </span>
@@ -533,8 +578,6 @@ export default function PublicProfilePage() {
                   </div>
                 )}
               </div>
-
-
 
             </div>
           </div>
