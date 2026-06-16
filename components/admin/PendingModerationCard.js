@@ -32,6 +32,13 @@ export default function PendingModerationCard({
     ? `${item.course_code} • ${item.dept}`
     : `${item.subject || item.course_code || 'RESOURCE'} • ${item.term?.toUpperCase() || 'MID'}`;
 
+  const getFileUrl = (path) => {
+    if (!path) return '#';
+    if (path.startsWith('http')) return path;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    return `${baseUrl}/storage/object?key=${encodeURIComponent(path)}`;
+  };
+
   return (
     <div className={`bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-5 space-y-4 shadow-sm transition-all text-left ${theme.hoverBorder}`}>
       <div className="flex items-start justify-between gap-3">
@@ -40,7 +47,7 @@ export default function PendingModerationCard({
           <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 truncate">{subtitle}</p>
         </div>
         <a 
-          href={item.file_path} 
+          href={item.file_url || getFileUrl(item.file_path)} 
           target="_blank" 
           rel="noopener noreferrer" 
           className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border transition-colors uppercase text-[9px] tracking-widest font-black shrink-0 ${theme.badgeBg}`}

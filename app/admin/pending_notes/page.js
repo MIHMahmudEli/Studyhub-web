@@ -119,6 +119,13 @@ export default function PendingNotesPage() {
     }
   };
 
+  const getFileUrl = (path) => {
+    if (!path) return '#';
+    if (path.startsWith('http')) return path;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    return `${baseUrl}/storage/object?key=${encodeURIComponent(path)}`;
+  };
+
   const hasMore = pendingNotes.length < totalPending;
 
   useEffect(() => {
@@ -219,7 +226,7 @@ export default function PendingNotesPage() {
                       </td>
                       <td className="py-4 sm:py-5 whitespace-nowrap">
                         <a 
-                          href={note.file_path} 
+                          href={note.file_url || getFileUrl(note.file_path)} 
                           target="_blank" 
                           rel="noopener noreferrer" 
                           className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-500 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition-colors uppercase text-[10px] tracking-widest font-black shrink-0"

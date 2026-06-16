@@ -119,6 +119,13 @@ export default function PendingResourcesPage() {
     }
   };
 
+  const getFileUrl = (path) => {
+    if (!path) return '#';
+    if (path.startsWith('http')) return path;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    return `${baseUrl}/storage/object?key=${encodeURIComponent(path)}`;
+  };
+
   const hasMore = pendingResources.length < totalPending;
 
   useEffect(() => {
@@ -219,7 +226,7 @@ export default function PendingResourcesPage() {
                       </td>
                       <td className="py-4 sm:py-5 whitespace-nowrap">
                         <a 
-                          href={res.file_path} 
+                          href={res.file_url || getFileUrl(res.file_path)} 
                           target="_blank" 
                           rel="noopener noreferrer" 
                           className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-500 rounded-lg border border-amber-500/20 hover:bg-amber-500/20 transition-colors uppercase text-[10px] tracking-widest font-black shrink-0"
