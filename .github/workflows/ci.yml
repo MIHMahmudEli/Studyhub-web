@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build & test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,6 +17,8 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - name: Test
+        run: npm test -- --ci
       # `next build` runs ESLint and compiles every route, so it fails on lint or build errors.
       - name: Build (lint + compile)
         run: npm run build
