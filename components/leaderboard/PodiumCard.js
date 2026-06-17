@@ -1,6 +1,6 @@
 'use client';
 
-import { Crown, Coins, FileText, Zap } from 'lucide-react';
+import { Crown, Coins, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { getLevelInfo } from './leaderboardUtils';
 
@@ -102,11 +102,6 @@ export default function PodiumCard({ user, rank, color, isLarge = false }) {
           </span>
         </div>
 
-        {/* Notes */}
-        <div className="relative z-10 flex items-center justify-center gap-1.5 mt-2 text-slate-500 text-[10px] sm:text-xs font-bold">
-          <FileText size={12} />
-          <span>{user.noteCount ?? 0} notes</span>
-        </div>
       </div>
     </div>
   );
