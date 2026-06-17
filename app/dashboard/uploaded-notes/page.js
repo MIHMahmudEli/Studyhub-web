@@ -87,11 +87,14 @@ export default function UploadedNotesPage() {
     }
   }, []);
 
+  // Depend on the user id (stable), not the user object — otherwise checkUser()
+  // after a delete swaps in a new user object and refetches the whole list,
+  // causing the page to "refresh twice".
   useEffect(() => {
-    if (user) {
+    if (user?.id) {
       fetchNotes(1, true);
     }
-  }, [user, fetchNotes]);
+  }, [user?.id, fetchNotes]);
 
   // Infinite scroll
   useEffect(() => {
@@ -330,7 +333,7 @@ export default function UploadedNotesPage() {
                       </Link>
                     )}
                     <button
-                      onClick={() => handleDeleteNote(note.id)}
+                      onClick={() => handleDeleteClick(note.id)}
                       disabled={deletingId === note.id}
                       className="flex-1 flex items-center justify-center gap-2 py-3 bg-red-500/10 hover:bg-red-500 hover:text-white border border-red-500/20 text-red-500 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all font-bold"
                     >
