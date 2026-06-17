@@ -160,24 +160,24 @@ input:-webkit-autofill:active {
 
 /* Ramadan Theme — gold, emerald, festive */
 [data-theme="dark"][data-theme-variant="ramadan"] {
-  --background: #070b16;
-  --foreground: #fefce8;
-  --card-bg: rgba(20, 22, 34, 0.82);
-  --card-border: rgba(251, 191, 36, 0.3);
-  --muted: #a18b5e;
-  --accent-glow: rgba(251, 191, 36, 0.18);
-  --nebula-1: rgba(251, 191, 36, 0.22);
-  --nebula-2: rgba(245, 158, 11, 0.18);
-  --nebula-3: rgba(16, 185, 129, 0.14);
-  --nebula-4: rgba(239, 68, 68, 0.10);
+  --background: #0c0510;
+  --foreground: #fdf2f8;
+  --card-bg: rgba(44, 16, 44, 0.55);
+  --card-border: rgba(251, 191, 36, 0.28);
+  --muted: #c98fb0;
+  --accent-glow: rgba(236, 72, 153, 0.18);
+  --nebula-1: rgba(176, 42, 110, 0.4);
+  --nebula-2: rgba(245, 158, 11, 0.16);
+  --nebula-3: rgba(236, 72, 153, 0.2);
+  --nebula-4: rgba(124, 24, 80, 0.3);
   --bg-image:
-    radial-gradient(ellipse 90% 50% at 50% -8%, rgba(251,191,36,0.16) 0%, transparent 60%),
-    radial-gradient(ellipse 100% 40% at 50% 108%, rgba(16,185,129,0.07) 0%, transparent 60%);
-  --bg: #070b16;
-  --surface: rgba(255, 255, 255, 0.025);
+    radial-gradient(ellipse 65% 45% at 50% 20%, rgba(190,46,118,0.45) 0%, transparent 62%),
+    linear-gradient(180deg, #3a0f3e 0%, #531346 26%, #661551 46%, #380c33 72%, #0c0510 100%);
+  --bg: #0c0510;
+  --surface: rgba(255, 255, 255, 0.03);
   --border: rgba(251, 191, 36, 0.10);
-  --border-h: rgba(251, 191, 36, 0.22);
-  --blue: #10b981;
+  --border-h: rgba(251, 191, 36, 0.24);
+  --blue: #ec4899;
   --violet: #f59e0b;
   --text-1: #fefce8;
   --text-2: #d4c5a0;
@@ -305,6 +305,25 @@ input:-webkit-autofill:active {
 .animate-ramadan-aurora { animation: ramadan-aurora 12s ease-in-out infinite; }
 .animate-ramadan-geo { animation: ramadan-geo-spin 120s linear infinite; }
 .animate-ramadan-breathe { animation: ramadan-breathe 4s ease-in-out infinite; }
+
+/* Gentle hanging-lantern sway + soft window flicker (cheap, GPU-friendly) */
+@keyframes ramadan-sway {
+  0%, 100% { transform: rotate(-2.2deg); }
+  50% { transform: rotate(2.2deg); }
+}
+@keyframes ramadan-flicker {
+  0%, 100% { opacity: 0.72; }
+  50% { opacity: 1; }
+}
+.animate-ramadan-sway { animation: ramadan-sway 6s ease-in-out infinite; transform-origin: top center; }
+.animate-ramadan-flicker { animation: ramadan-flicker 3.6s ease-in-out infinite; }
+
+/* Freeze the Ramadan CSS animations while the tab is hidden (set from JS on the
+   decoration root), so returning to the tab resumes without a phase jump. */
+[data-ramadan-paused] * { animation-play-state: paused !important; }
+
+/* (The moon's orbit is driven in JS via the Web Animations API so each arc is
+   randomized — see components/ramadan/Decoration.js.) */
 
 /* ─── Ramadan "Lantern Magic" Button System ───────────────────── */
 /* Lantern-style buttons with golden glow ignition on hover */
