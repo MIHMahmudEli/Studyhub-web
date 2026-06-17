@@ -5,20 +5,20 @@ import { BookOpen, Users, Shield } from 'lucide-react';
 const features = [
   {
     icon: BookOpen,
-    title: 'Student',
-    description: 'Access thousands of lecture notes and exam resources. Share your knowledge, earn reputation badges, and stay ahead of the curve.',
+    title: 'For Students',
+    description: 'Browse and download peer-shared lecture notes, past papers, and course resources organized by subject. Upload your own work, build bookmarks, plan with the routine tool, and earn reputation as you contribute.',
     accent: '#3b82f6',
   },
   {
     icon: Users,
-    title: 'Moderator',
-    description: 'Maintain content quality across the platform. Review uploads, guide community discussions, and ensure our standards are upheld.',
+    title: 'For Moderators',
+    description: 'Keep the library trustworthy. Review pending uploads, approve quality submissions, flag duplicates or violations, and help curate the trending notes and resources the whole community sees first.',
     accent: '#8b5cf6',
   },
   {
     icon: Shield,
-    title: 'Administrator',
-    description: 'Analyze trends, manage users, and generate activity reports. Keep the StudyHub ecosystem running smoothly for everyone.',
+    title: 'For Administrators',
+    description: 'Run the platform with confidence. Manage users and roles, monitor active sessions, track engagement analytics, and oversee content health from a single dashboard.',
     accent: '#10b981',
   },
 ];

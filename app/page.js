@@ -4,8 +4,11 @@ import { useState, useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import Navbar from '@/components/layout/Navbar';
 import Hero from '@/components/home/Hero';
+import Preview from '@/components/home/Preview';
+import Highlights from '@/components/home/Highlights';
 import Features from '@/components/home/Features';
 import HowItWorks from '@/components/home/HowItWorks';
+import Videos from '@/components/home/Videos';
 import Contact from '@/components/home/Contact';
 import Footer from '@/components/layout/Footer';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
@@ -27,8 +30,11 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
+        <Preview />
+        <Highlights />
         <Features />
         <HowItWorks />
+        <Videos />
         <Contact />
       </main>
       <Footer />
