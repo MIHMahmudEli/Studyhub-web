@@ -29,8 +29,8 @@ export default function Hero() {
         </h1>
 
         <p className="text-[clamp(1rem,2vw,1.2rem)] text-[var(--text-2)] leading-relaxed max-w-[560px] mx-auto mb-12 fade-up delay-2">
-          Join thousands of students sharing high-quality notes, earning badges,
-          and climbing the academic leaderboard — all in one place.
+          Share high-quality notes, earn reputation badges, and climb the
+          academic leaderboard — all in one place.
         </p>
 
         <div className="flex justify-center items-center gap-4 flex-wrap fade-up delay-3">
@@ -50,7 +50,7 @@ export default function Hero() {
         </div>
 
         <p className="mt-[52px] text-[var(--text-3)] text-sm fade-up delay-4">
-          Trusted by <span className="text-[var(--text-2)] font-bold">5,000+</span> students worldwide
+          Covering <span className="text-[var(--text-2)] font-bold">540+</span> courses across <span className="text-[var(--text-2)] font-bold">5</span> faculties
         </p>
       </div>
     </section>

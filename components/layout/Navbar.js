@@ -31,6 +31,7 @@ export default function Navbar() {
   const navLinks = [
     { label: 'Features', id: 'features' },
     { label: 'How it Works', id: 'how' },
+    { label: 'Videos', id: 'videos' },
     { label: 'Community', id: 'contact' },
   ];
 

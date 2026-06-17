@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useLayoutEffect, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
 import { ArrowRight, Mail, Lock, MousePointer2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useBlessings } from '@/components/ramadan/Blessings';
@@ -13,10 +13,15 @@ import { loginSchema, validate } from '@/lib/schemas';
 function usePageTransition() {
   const router = useRouter();
   const [navigating, setNavigating] = useState(false);
+  const timer = useRef(null);
+
+  // Clear any pending navigation on unmount so the timer can't fire
+  // router.push() while the next page is still hydrating (Next.js E668).
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
 
   const navigate = useCallback((href) => {
     setNavigating(true);
-    setTimeout(() => router.push(href), 250);
+    timer.current = setTimeout(() => router.push(href), 250);
   }, [router]);
 
   return { navigating, navigate };

@@ -13,10 +13,15 @@ import { getNameValidation, sanitizeName } from '@/lib/nameUtils';
 function usePageTransition() {
   const router = useRouter();
   const [navigating, setNavigating] = useState(false);
+  const timer = useRef(null);
+
+  // Clear any pending navigation on unmount so the timer can't fire
+  // router.push() while the next page is still hydrating (Next.js E668).
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
 
   const navigate = useCallback((href) => {
     setNavigating(true);
-    setTimeout(() => router.push(href), 250);
+    timer.current = setTimeout(() => router.push(href), 250);
   }, [router]);
 
   return { navigating, navigate };
@@ -42,6 +47,11 @@ export default function RegisterPage() {
   const router = useRouter();
   const { navigating, navigate } = usePageTransition();
   const entered = useEntrance();
+  const redirectTimer = useRef(null);
+
+  // Cancel the post-verify redirect if the user leaves before it fires,
+  // so router.push() can't run while the next page is hydrating (Next.js E668).
+  useEffect(() => () => { if (redirectTimer.current) clearTimeout(redirectTimer.current); }, []);
 
   const passwordRules = useMemo(() => ({
     length: formData.password.length >= 8,
@@ -133,7 +143,7 @@ export default function RegisterPage() {
     try {
       await verifyEmail(formData.email, otp.join(''));
       setStatus({ type: 'success', message: 'Email verified! Redirecting to login...' });
-      setTimeout(() => router.push('/auth'), 3000);
+      redirectTimer.current = setTimeout(() => router.push('/auth'), 3000);
     } catch (err) {
       setStatus({ type: 'error', message: err.message || 'Invalid OTP' });
       setIsLoading(false);

@@ -1,12 +1,11 @@
 'use client';
 
-import { Play, Send, Mail, Globe } from 'lucide-react';
+import { Play, Send, Mail } from 'lucide-react';
 
 const socialLinks = [
-  { icon: Play,  name: 'YouTube',  description: 'Tutorials & Guides',   url: 'https://www.youtube.com/@studyhub991',           accent: '#ef4444' },
-  { icon: Send,  name: 'Telegram', description: 'Resources Channel',     url: 'https://t.me/studyhub991',                       accent: '#0ea5e9' },
-  { icon: Mail,  name: 'Email',    description: 'Get Support',            url: 'mailto:studyhubteam.official@gmail.com',          accent: '#3b82f6' },
-  { icon: Globe, name: 'Facebook', description: 'Developer Profile',      url: 'https://fb.com/mihmahmudali',                    accent: '#6366f1' },
+  { icon: Play,  name: 'YouTube',  description: 'Tutorials & study guides',   url: 'https://www.youtube.com/@studyhub991',      accent: '#ef4444' },
+  { icon: Send,  name: 'Telegram', description: 'Resource drops & updates',    url: 'https://t.me/studyhub991',                  accent: '#0ea5e9' },
+  { icon: Mail,  name: 'Email',    description: 'Reach our support team',      url: 'mailto:studyhubteam.official@gmail.com',    accent: '#3b82f6' },
 ];
 
 function SocialCard({ link }) {
@@ -61,7 +60,7 @@ export default function Contact() {
             Join our growing community across platforms — get resources, updates, and direct support.
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {socialLinks.map((link, i) => <SocialCard key={i} link={link} />)}
         </div>
       </div>

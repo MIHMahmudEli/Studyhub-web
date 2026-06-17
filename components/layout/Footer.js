@@ -5,6 +5,7 @@ import StudyHubLogo from '@/components/ui/StudyHubLogo';
 const footerLinks = [
   { label: 'Features', href: '#features' },
   { label: 'How it Works', href: '#how' },
+  { label: 'Videos', href: '#videos' },
   { label: 'Contact', href: '#contact' },
   { label: 'Sign In', href: '/auth' },
 ];
