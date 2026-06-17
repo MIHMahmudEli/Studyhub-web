@@ -241,7 +241,7 @@ export default function RamadanDecoration() {
       <div className="absolute bottom-[24%] md:bottom-[29%] right-[34%] w-[200px] h-[64px] rounded-full" style={{ background: 'radial-gradient(ellipse, rgba(190,46,118,0.5), transparent 70%)', filter: 'blur(24px)' }} />
 
       {/* Mosque + city skyline silhouette (modeled on the template) */}
-      <div className="absolute bottom-0 left-0 right-0 h-[36vh] md:h-[46vh] max-h-[500px]">
+      <div className="absolute bottom-0 left-0 right-0 h-[50vh] md:h-[64vh] max-h-[760px]">
         <svg viewBox="0 0 1200 460" preserveAspectRatio="xMidYMax slice" className="w-full h-full">
           <defs>
             <linearGradient id="win" x1="0" y1="0" x2="0" y2="1">
@@ -253,10 +253,10 @@ export default function RamadanDecoration() {
             {/* A real crescent (outer disc minus an offset disc), reusable. */}
             <symbol id="crescentMoon" viewBox="0 0 22 22">
               <mask id="cmMask">
-                <circle cx="11" cy="11" r="9" fill="#fff" />
-                <circle cx="15" cy="9" r="8.4" fill="#000" />
+                <circle cx="11" cy="10.5" r="9.5" fill="#fff" />
+                <circle cx="11" cy="2.5" r="7.8" fill="#000" />
               </mask>
-              <rect width="22" height="22" fill="#fbbf24" mask="url(#cmMask)" />
+              <rect width="22" height="22" fill="currentColor" mask="url(#cmMask)" />
             </symbol>
 
             {/* Reusable mosque silhouette for depth effect */}
@@ -265,19 +265,19 @@ export default function RamadanDecoration() {
               <rect x="402" y="220" width="26" height="210" />
               <rect x="390" y="250" width="50" height="13" rx="2" />
               <path d="M401 220 C395 212 395 198 406.6 187 C411.8 180 414 178 415 176 C416 178 418.2 180 423.4 187 C435 198 435 212 429 220 Z" />
-              <rect x="412" y="156" width="6" height="22" />
+              <rect x="413" y="150" width="4" height="28" />
               {/* right minaret */}
               <rect x="772" y="220" width="26" height="210" />
               <rect x="760" y="250" width="50" height="13" rx="2" />
               <path d="M771 220 C765 212 765 198 776.6 187 C781.8 180 784 178 785 176 C786 178 788.2 180 793.4 187 C805 198 805 212 799 220 Z" />
-              <rect x="782" y="156" width="6" height="22" />
+              <rect x="783" y="150" width="4" height="28" />
               {/* flanking onion domes */}
               <rect x="500" y="236" width="10" height="20" />
               <path d="M465 312 C451 294 451 262 482.3 238 C496.4 222 502.3 216 505 212 C507.7 216 513.6 222 527.7 238 C559 262 559 294 545 312 Z" />
               <rect x="690" y="236" width="10" height="20" />
               <path d="M655 312 C641 294 641 262 672.3 238 C686.4 222 692.3 216 695 212 C697.7 216 703.6 222 717.7 238 C749 262 749 294 735 312 Z" />
-              {/* central big onion dome */}
-              <rect x="594" y="146" width="12" height="22" />
+              {/* central big onion dome + finial pole */}
+              <rect x="597" y="138" width="5" height="10" />
               <path d="M532 305 C508 276 508 225 561.4 187 C585.3 161 595.4 151 600 145 C604.6 151 614.7 161 638.6 187 C692 225 692 276 668 305 Z" />
               {/* arcade / facade */}
               <rect x="470" y="300" width="260" height="130" rx="4" />
@@ -306,115 +306,28 @@ export default function RamadanDecoration() {
             <rect x="1150" y="362" width="46" height="98" />
           </g>
 
-          {/* ── Far background mosque silhouettes ── */}
-          <g fill="#1a0620" opacity="0.25">
-            {/* small mosque left */}
-            <rect x="40" y="395" width="5" height="48" />
-            <rect x="70" y="395" width="5" height="48" />
-            <rect x="45" y="405" width="25" height="38" />
-            <rect x="52" y="393" width="11" height="12" />
-            <path d="M52 393 Q57.5 385 63 393 Z" />
-            <rect x="42" y="370" width="1.5" height="23" />
-            <rect x="71" y="370" width="1.5" height="23" />
-            {/* small mosque center-left */}
-            <rect x="120" y="390" width="5" height="53" />
-            <rect x="155" y="390" width="5" height="53" />
-            <rect x="125" y="405" width="30" height="38" />
-            <rect x="133" y="392" width="14" height="13" />
-            <path d="M133 392 Q140 383 147 392 Z" />
-            <rect x="122" y="365" width="1.5" height="23" />
-            <rect x="156" y="365" width="1.5" height="23" />
-            {/* small mosque center-right */}
-            <rect x="1040" y="390" width="5" height="53" />
-            <rect x="1075" y="390" width="5" height="53" />
-            <rect x="1045" y="405" width="30" height="38" />
-            <rect x="1053" y="392" width="14" height="13" />
-            <path d="M1053 392 Q1060 383 1067 392 Z" />
-            <rect x="1042" y="365" width="1.5" height="23" />
-            <rect x="1076" y="365" width="1.5" height="23" />
-            {/* small mosque right */}
-            <rect x="1115" y="395" width="5" height="48" />
-            <rect x="1145" y="395" width="5" height="48" />
-            <rect x="1120" y="405" width="25" height="38" />
-            <rect x="1127" y="393" width="11" height="12" />
-            <path d="M1127 393 Q1132.5 385 1138 393 Z" />
-            <rect x="1117" y="370" width="1.5" height="23" />
-            <rect x="1146" y="370" width="1.5" height="23" />
+          {/* ── Background mosques: scaled copies of the main mosque (far) ── */}
+          <g fill="#1c0720" opacity="0.3">
+            <use href="#mosque-silhouette" transform="translate(105 452) scale(0.2) translate(-600 -430)" />
+            <use href="#mosque-silhouette" transform="translate(260 452) scale(-0.18 0.18) translate(-600 -430)" />
+            <use href="#mosque-silhouette" transform="translate(940 452) scale(0.18) translate(-600 -430)" />
+            <use href="#mosque-silhouette" transform="translate(1095 452) scale(-0.2 0.2) translate(-600 -430)" />
           </g>
 
-          {/* ── Mid background mosque silhouettes ── */}
-          <g fill="#100314" opacity="0.4">
-            {/* mid mosque far left */}
-            <rect x="55" y="405" width="8" height="56" />
-            <rect x="100" y="405" width="8" height="56" />
-            <rect x="63" y="412" width="37" height="49" />
-            <rect x="72" y="395" width="19" height="17" />
-            <path d="M72 395 Q81.5 384 91 395 Z" />
-            <rect x="58" y="375" width="2.5" height="28" />
-            <rect x="102" y="375" width="2.5" height="28" />
-            {/* connecting ground */}
-            <path d="M55 455 Q77 448 108 455 Z" />
-            {/* mid mosque left */}
-            <rect x="210" y="400" width="9" height="60" />
-            <rect x="260" y="400" width="9" height="60" />
-            <rect x="219" y="408" width="41" height="52" />
-            <rect x="230" y="392" width="19" height="16" />
-            <path d="M230 392 Q239.5 380 249 392 Z" />
-            <rect x="213" y="370" width="3" height="28" />
-            <rect x="263" y="370" width="3" height="28" />
-            {/* mid mosque right */}
-            <rect x="930" y="400" width="9" height="60" />
-            <rect x="980" y="400" width="9" height="60" />
-            <rect x="939" y="408" width="41" height="52" />
-            <rect x="950" y="392" width="19" height="16" />
-            <path d="M950 392 Q959.5 380 969 392 Z" />
-            <rect x="933" y="370" width="3" height="28" />
-            <rect x="983" y="370" width="3" height="28" />
-            {/* mid mosque far right */}
-            <rect x="1090" y="405" width="8" height="56" />
-            <rect x="1135" y="405" width="8" height="56" />
-            <rect x="1098" y="412" width="37" height="49" />
-            <rect x="1107" y="395" width="19" height="17" />
-            <path d="M1107 395 Q1116.5 384 1126 395 Z" />
-            <rect x="1093" y="375" width="2.5" height="28" />
-            <rect x="1137" y="375" width="2.5" height="28" />
-            <path d="M1088 455 Q1112 448 1143 455 Z" />
+          {/* ── Background mosques (mid) ── */}
+          <g fill="#120318" opacity="0.45">
+            <use href="#mosque-silhouette" transform="translate(70 457) scale(-0.26 0.26) translate(-600 -430)" />
+            <use href="#mosque-silhouette" transform="translate(225 457) scale(0.3) translate(-600 -430)" />
+            <use href="#mosque-silhouette" transform="translate(975 457) scale(-0.3 0.3) translate(-600 -430)" />
+            <use href="#mosque-silhouette" transform="translate(1130 457) scale(0.26) translate(-600 -430)" />
           </g>
 
-          {/* ── Near background mosque silhouettes ── */}
-          <g fill="#08030a" opacity="0.6">
-            {/* near left mosque */}
-            <rect x="35" y="420" width="11" height="40" />
-            <rect x="95" y="420" width="11" height="40" />
-            <rect x="46" y="425" width="49" height="35" />
-            <rect x="58" y="408" width="25" height="17" />
-            <path d="M58 408 Q70.5 396 83 408 Z" />
-            <rect x="38" y="390" width="4" height="28" />
-            <rect x="99" y="390" width="4" height="28" />
-            {/* near left-center mosque */}
-            <rect x="175" y="418" width="12" height="42" />
-            <rect x="235" y="418" width="12" height="42" />
-            <rect x="187" y="424" width="48" height="36" />
-            <rect x="200" y="406" width="22" height="18" />
-            <path d="M200 406 Q211 393 222 406 Z" />
-            <rect x="178" y="386" width="4.5" height="30" />
-            <rect x="239" y="386" width="4.5" height="30" />
-            {/* near right-center mosque */}
-            <rect x="955" y="418" width="12" height="42" />
-            <rect x="1015" y="418" width="12" height="42" />
-            <rect x="967" y="424" width="48" height="36" />
-            <rect x="980" y="406" width="22" height="18" />
-            <path d="M980 406 Q991 393 1002 406 Z" />
-            <rect x="958" y="386" width="4.5" height="30" />
-            <rect x="1019" y="386" width="4.5" height="30" />
-            {/* near right mosque */}
-            <rect x="1095" y="420" width="11" height="40" />
-            <rect x="1155" y="420" width="11" height="40" />
-            <rect x="1106" y="425" width="49" height="35" />
-            <rect x="1118" y="408" width="25" height="17" />
-            <path d="M1118 408 Q1130.5 396 1143 408 Z" />
-            <rect x="1098" y="390" width="4" height="28" />
-            <rect x="1159" y="390" width="4" height="28" />
+          {/* ── Background mosques (near) ── */}
+          <g fill="#0a040c" opacity="0.62">
+            <use href="#mosque-silhouette" transform="translate(285 462) scale(-0.42 0.42) translate(-600 -430)" />
+            <use href="#mosque-silhouette" transform="translate(120 462) scale(0.32) translate(-600 -430)" />
+            <use href="#mosque-silhouette" transform="translate(915 462) scale(0.42) translate(-600 -430)" />
+            <use href="#mosque-silhouette" transform="translate(1080 462) scale(-0.32 0.32) translate(-600 -430)" />
           </g>
 
           {/* ── Foreground mosque ── */}
@@ -439,13 +352,11 @@ export default function RamadanDecoration() {
             <path d="M690 426 L690 406 Q696 398 702 406 L702 426 Z" fill="url(#win)" />
           </g>
 
-          {/* ── Gold crescent moon finials ── */}
-          <g fill="#fbbf24">
-            {/* central dome */}
-            <path transform="translate(600 136)" d="M0,-9 A9,9 0 1,0 0,9 A7,7 0 1,1 0,-9 Z" />
-            {/* a crescent moon atop each minaret (opening upward) */}
-            <path transform="translate(415 145) rotate(-90) scale(1.15)" d="M0,-9 A9,9 0 1,0 0,9 A7,7 0 1,1 0,-9 Z" />
-            <path transform="translate(785 145) rotate(-90) scale(1.15)" d="M0,-9 A9,9 0 1,0 0,9 A7,7 0 1,1 0,-9 Z" />
+          {/* ── Crescent finials — black silhouette, floating above each spire ── */}
+          <g style={{ color: '#080308' }}>
+            <use href="#crescentMoon" x="583" y="107" width="34" height="34" />
+            <use href="#crescentMoon" x="398" y="119" width="34" height="34" />
+            <use href="#crescentMoon" x="768" y="119" width="34" height="34" />
           </g>
         </svg>
       </div>
