@@ -67,8 +67,9 @@ export function BlessingsProvider({ children }) {
       {/* Blessing toast */}
       {current && (
         <div
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[999999] pointer-events-none"
+          className="fixed left-1/2 z-[999999] pointer-events-none w-max max-w-[92vw]"
           style={{
+            bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1.5rem)',
             transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
             opacity: visible ? 1 : 0,
             transform: visible
@@ -77,16 +78,16 @@ export function BlessingsProvider({ children }) {
           }}
         >
           <div
-            className="flex items-center gap-3 px-5 py-3 rounded-2xl border shadow-2xl backdrop-blur-xl"
+            className="flex items-center justify-center gap-2.5 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl border shadow-2xl backdrop-blur-xl"
             style={{
               background: 'rgba(6, 10, 20, 0.85)',
               borderColor: 'rgba(251, 191, 36, 0.25)',
               boxShadow: '0 0 30px rgba(251, 191, 36, 0.08), 0 8px 32px rgba(0,0,0,0.3)',
             }}
           >
-            <span className="text-base">{current.icon}</span>
+            <span className="text-sm sm:text-base shrink-0">{current.icon}</span>
             <span
-              className="text-[10px] font-black uppercase tracking-[0.12em]"
+              className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.12em] text-center leading-snug"
               style={{ color: '#fefce8' }}
             >
               {current.message}

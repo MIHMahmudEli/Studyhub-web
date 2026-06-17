@@ -68,8 +68,8 @@ export default function RamadanDecoration() {
       x: 5 + Math.random() * 90,
       delay: Math.random() * 20,
       duration: 16 + Math.random() * 12,
-      size: 2 + Math.random() * 4,
-      opacity: 0.2 + Math.random() * 0.35,
+      size: 2.5 + Math.random() * 4.5,
+      opacity: 0.4 + Math.random() * 0.4,
     }))
   );
 
@@ -114,8 +114,8 @@ export default function RamadanDecoration() {
         stars.push({
           x: Math.random() * w,
           y: Math.random() * h,
-          size: 0.3 + Math.random() * 1.4,
-          baseOpacity: 0.08 + Math.random() * 0.35,
+          size: 0.4 + Math.random() * 1.6,
+          baseOpacity: 0.2 + Math.random() * 0.5,
           twinkleSpeed: 0.0008 + Math.random() * 0.004,
           twinklePhase: Math.random() * Math.PI * 2,
           driftX: (Math.random() - 0.5) * 0.02,
@@ -175,14 +175,17 @@ export default function RamadanDecoration() {
       <AuroraEffect canvasRef={auroraCanvasRef} canvasWidth={canvasSize.w} canvasHeight={canvasSize.h} />
 
       {/* Top golden ambient glow */}
-      <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] md:w-[900px] h-[350px] md:h-[450px] rounded-full bg-[rgba(251,191,36,0.06)] blur-[120px] animate-ramadan-moon" />
+      <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] md:w-[900px] h-[350px] md:h-[450px] rounded-full bg-[rgba(251,191,36,0.14)] blur-[120px] animate-ramadan-moon" />
 
       {/* Mid horizon warm band */}
       <div className="absolute bottom-[20%] left-0 right-0 h-[200px] bg-gradient-to-b from-transparent to-[rgba(251,191,36,0.015)]" />
 
       {/* Crescent Moon */}
-      <div className="absolute top-[10%] right-[6%] md:top-[12%] md:right-[10%] opacity-[0.14] md:opacity-[0.18] animate-ramadan-moon">
-        <svg width="70" height="70" viewBox="0 0 100 100" className="md:w-[90px] md:h-[90px]">
+      <div
+        className="absolute top-[9%] right-[8%] md:top-[11%] md:right-[11%] opacity-[0.55] md:opacity-[0.72] animate-ramadan-moon"
+        style={{ filter: 'drop-shadow(0 0 22px rgba(251,191,36,0.45))' }}
+      >
+        <svg width="92" height="92" viewBox="0 0 100 100" className="md:w-[124px] md:h-[124px]">
           <defs>
             <radialGradient id="moonGlowV2" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="#fde68a" />
@@ -203,7 +206,7 @@ export default function RamadanDecoration() {
       </div>
 
       {/* Rotating geometric pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.018] md:opacity-[0.025] animate-ramadan-geo">
+      <div className="absolute inset-0 opacity-[0.05] md:opacity-[0.07] animate-ramadan-geo">
         <div
           className="w-[200%] h-[200%] -top-1/2 -left-1/2 absolute"
           style={{
@@ -244,8 +247,8 @@ export default function RamadanDecoration() {
             bottom: '-5%',
             width: `${l.size}px`,
             height: `${l.size * 1.6}px`,
-            background: 'radial-gradient(ellipse, rgba(251,191,36,0.5), rgba(245,158,11,0.08) 70%, transparent)',
-            boxShadow: '0 0 8px rgba(251,191,36,0.15)',
+            background: 'radial-gradient(ellipse, rgba(251,191,36,0.7), rgba(245,158,11,0.15) 70%, transparent)',
+            boxShadow: '0 0 12px rgba(251,191,36,0.4)',
             animation: `ramadan-lantern-rise ${l.duration}s ease-in-out ${l.delay}s infinite`,
             opacity: l.opacity,
           }}
@@ -253,7 +256,7 @@ export default function RamadanDecoration() {
       ))}
 
       {/* Desert Horizon with Mosque Silhouettes */}
-      <div className="absolute bottom-0 left-0 right-0 h-[120px] md:h-[160px] opacity-[0.04] md:opacity-[0.06]">
+      <div className="absolute bottom-0 left-0 right-0 h-[130px] md:h-[180px] opacity-[0.22] md:opacity-[0.32]">
         {/* Distant dunes */}
         <svg viewBox="0 0 1200 140" preserveAspectRatio="xMidYMax slice" className="w-full h-full" fill="currentColor" color="#fbbf24">
           <path d="M0,140 L0,115 Q40,105 80,110 L120,100 Q160,88 200,95 L250,100 Q290,85 340,92 L380,88 Q420,75 460,85 L520,95 Q570,78 620,90 L670,85 Q710,72 750,82 L800,92 Q850,75 900,88 L950,82 Q990,70 1030,80 L1080,92 Q1130,78 1170,88 L1200,95 L1200,140 Z" />
