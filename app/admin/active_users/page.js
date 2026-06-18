@@ -19,7 +19,27 @@ import {
   Loader2,
   Radio,
   RefreshCw,
+  Globe,
+  Smartphone,
+  Apple,
 } from 'lucide-react';
+
+// ─── Platform badge (which client the user was last active on) ───────────────
+function PlatformBadge({ platform }) {
+  const map = {
+    web:     { label: 'Web',     icon: Globe,      cls: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+    android: { label: 'Android', icon: Smartphone, cls: 'bg-green-500/10 text-green-400 border-green-500/20' },
+    ios:     { label: 'iOS',     icon: Apple,      cls: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+  };
+  const p = map[platform];
+  if (!p) return <span className="text-[11px] font-bold text-slate-500">—</span>;
+  const Icon = p.icon;
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${p.cls}`}>
+      <Icon size={11} /> {p.label}
+    </span>
+  );
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function getTodayStr() {
@@ -104,8 +124,8 @@ function UserRow({ u, isLive, router }) {
         </button>
       </td>
 
-      <td className="py-4 sm:py-5 whitespace-nowrap text-xs font-bold text-slate-400">
-        {u.dept?.toUpperCase() || 'GENERAL'}
+      <td className="py-4 sm:py-5 whitespace-nowrap">
+        <PlatformBadge platform={u.last_active_platform} />
       </td>
 
       <td className="py-4 sm:py-5 whitespace-nowrap">
@@ -384,7 +404,7 @@ export default function ActiveUsersPage() {
                     <thead>
                       <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
                         <th className="pb-4 pl-4 whitespace-nowrap">User & Email</th>
-                        <th className="pb-4 whitespace-nowrap">Department</th>
+                        <th className="pb-4 whitespace-nowrap">Platform</th>
                         <th className="pb-4 whitespace-nowrap">Role</th>
                         <th className="pb-4 whitespace-nowrap">Points</th>
                         <th className="pb-4 text-right pr-4 whitespace-nowrap">Last Active Time</th>
@@ -458,7 +478,7 @@ export default function ActiveUsersPage() {
                     <thead>
                       <tr className="border-b border-[var(--card-border)] text-[10px] font-black uppercase tracking-widest text-slate-500">
                         <th className="pb-4 pl-4 whitespace-nowrap">User & Email</th>
-                        <th className="pb-4 whitespace-nowrap">Department</th>
+                        <th className="pb-4 whitespace-nowrap">Platform</th>
                         <th className="pb-4 whitespace-nowrap">Role</th>
                         <th className="pb-4 whitespace-nowrap">Points</th>
                         <th className="pb-4 text-right pr-4 whitespace-nowrap">Last Seen</th>
