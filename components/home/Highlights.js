@@ -32,7 +32,7 @@ function StatCard({ stat }) {
 
 export default function Highlights() {
   return (
-    <section className="px-6 pb-20 md:pb-[120px] relative overflow-hidden">
+    <section id="highlights" className="px-6 pb-20 md:pb-[120px] relative overflow-hidden scroll-mt-24">
       <div className="max-w-[1120px] mx-auto">
         <div className="border-t border-[var(--border)] mb-12 md:mb-20" />
         <div className="mb-10 md:mb-14">

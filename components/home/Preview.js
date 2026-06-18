@@ -35,7 +35,7 @@ const board = [
 
 export default function Preview() {
   return (
-    <section className="px-6 pb-20 md:pb-[120px] relative overflow-hidden">
+    <section id="preview" className="px-6 pb-20 md:pb-[120px] relative overflow-hidden scroll-mt-24">
       <div className="max-w-[1040px] mx-auto">
         {/* Compact intro */}
         <div className="text-center mb-10 md:mb-12">

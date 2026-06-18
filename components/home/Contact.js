@@ -45,7 +45,7 @@ function SocialCard({ link }) {
 
 export default function Contact() {
   return (
-    <section id="contact" className="px-6 pb-24 md:pb-[140px] relative overflow-hidden">
+    <section id="contact" className="px-6 pb-24 md:pb-[140px] relative overflow-hidden scroll-mt-24">
       <div className="max-w-[1120px] mx-auto">
         <div className="border-t border-[var(--border)] mb-12 md:mb-20" />
         <div className="mb-10 md:mb-14">

@@ -9,7 +9,7 @@ export default function Hero() {
   const ramadanVariant = theme === 'dark' ? darkThemeVariant : lightThemeVariant;
 
   return (
-    <section className="pt-32 md:pt-[160px] px-6 pb-20 md:pb-[120px] text-center relative overflow-hidden fade-up">
+    <section id="home" className="pt-32 md:pt-[160px] px-6 pb-20 md:pb-[120px] text-center relative overflow-hidden fade-up scroll-mt-24">
       {/* Center atmospheric glow — subtle and theme-aware */}
       <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-full max-w-[800px] h-[300px] md:h-[500px] bg-[radial-gradient(ellipse,var(--blue)/0.12_0%,transparent_70%)] -z-10" />
 

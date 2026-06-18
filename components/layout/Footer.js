@@ -24,6 +24,8 @@ export default function Footer() {
         const elementPosition = elementRect - bodyRect;
         const offsetPosition = elementPosition - offset;
         window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        // Reflect the section in the URL so it's a shareable deep link
+        window.history.replaceState(null, '', href);
       }
     }
   };

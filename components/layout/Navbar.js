@@ -25,6 +25,8 @@ export default function Navbar() {
       const elementPosition = elementRect - bodyRect;
       const offsetPosition = elementPosition - offset;
       window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+      // Reflect the section in the URL so it can be copied/shared as a deep link
+      window.history.replaceState(null, '', `#${id}`);
     }
   };
 

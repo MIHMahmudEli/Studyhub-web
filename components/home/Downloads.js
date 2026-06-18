@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Smartphone, Apple, Download, Clock } from 'lucide-react';
+import { Smartphone, Apple, Download, Clock, Link2, Check } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 import { getDisplayUrl } from '@/lib/r2';
 
@@ -71,8 +71,6 @@ function PlatformCard({ platform, releases }) {
           <a
             href={getDisplayUrl(latest.file_path)}
             download
-            target="_blank"
-            rel="noopener noreferrer"
             onClick={() => trackDownload(latest.id)}
             className="group inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-[15px] text-white transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5"
             style={{ background: accent, boxShadow: `0 8px 30px ${accent}40` }}
@@ -91,8 +89,6 @@ function PlatformCard({ platform, releases }) {
                     key={r.id}
                     href={getDisplayUrl(r.file_path)}
                     download
-                    target="_blank"
-                    rel="noopener noreferrer"
                     onClick={() => trackDownload(r.id)}
                     className="group flex items-center justify-between gap-3 px-3 py-2 rounded-xl text-[13px] transition-colors hover:bg-[var(--text-1)]/[0.04]"
                   >
@@ -138,21 +134,44 @@ export default function Downloads() {
 
   const byPlatform = (id) => releases.filter((r) => r.platform === id); // already newest-first from API
 
+  const [copied, setCopied] = useState(false);
+  const copyShareLink = async () => {
+    const url = `${window.location.origin}/#download`;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // clipboard may be blocked; still reflect the link in the address bar
+    }
+    window.history.replaceState(null, '', '#download');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <section id="download" className="px-6 pb-20 md:pb-[120px] relative overflow-hidden">
+    <section id="download" className="px-6 pb-20 md:pb-[120px] relative overflow-hidden scroll-mt-24">
       <div className="max-w-[1120px] mx-auto">
         <div className="border-t border-[var(--border)] mb-12 md:mb-20" />
-        <div className="mb-10 md:mb-14">
-          <span className="block text-[10px] md:text-[11px] font-bold tracking-[0.12em] uppercase text-emerald-500 mb-3">
-            Get the app
-          </span>
-          <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[var(--text-1)] mb-4">
-            Take StudyHub<br />
-            <span className="text-[var(--text-3)]">anywhere you go.</span>
-          </h2>
-          <p className="text-sm md:text-base text-[var(--text-2)] leading-relaxed max-w-[480px]">
-            Download the official StudyHub mobile app to browse notes, track your routine, and stay on top of the leaderboard — on the move.
-          </p>
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 md:mb-14">
+          <div>
+            <span className="block text-[10px] md:text-[11px] font-bold tracking-[0.12em] uppercase text-emerald-500 mb-3">
+              Get the app
+            </span>
+            <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[var(--text-1)] mb-4">
+              Take StudyHub<br />
+              <span className="text-[var(--text-3)]">anywhere you go.</span>
+            </h2>
+            <p className="text-sm md:text-base text-[var(--text-2)] leading-relaxed max-w-[480px]">
+              Download the official StudyHub mobile app to browse notes, track your routine, and stay on top of the leaderboard — on the move.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={copyShareLink}
+            className="group inline-flex items-center gap-2 py-2.5 px-5 rounded-xl text-[13px] font-bold border border-[var(--border)] text-[var(--text-2)] hover:text-[var(--text-1)] hover:border-[var(--border-h)] hover:bg-[var(--surface)] transition-all duration-300 self-start whitespace-nowrap"
+          >
+            {copied ? <Check size={16} className="text-emerald-500" /> : <Link2 size={16} />}
+            {copied ? 'Link copied' : 'Copy share link'}
+          </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

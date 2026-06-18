@@ -25,6 +25,25 @@ export default function Home() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Deep-link support: opening e.g. /#download scrolls to that section.
+  // Sections like Downloads render after a client fetch, so retry until present.
+  useEffect(() => {
+    const id = window.location.hash?.replace('#', '');
+    if (!id) return;
+    let tries = 0;
+    const timer = setInterval(() => {
+      const el = document.getElementById(id);
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 64;
+        window.scrollTo({ top, behavior: 'smooth' });
+        clearInterval(timer);
+      } else if (++tries > 25) {
+        clearInterval(timer);
+      }
+    }, 150);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div data-theme="dark" data-theme-variant={variant} className="min-h-screen overflow-x-hidden relative transition-colors duration-500" style={{ background: 'none', backgroundColor: 'transparent' }}>
       <div className="fixed inset-0 -z-10" style={{ backgroundColor: 'var(--background)', backgroundImage: 'var(--bg-image)', backgroundAttachment: 'fixed' }} />
