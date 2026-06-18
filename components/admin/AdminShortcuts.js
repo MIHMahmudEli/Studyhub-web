@@ -1,7 +1,7 @@
 'use client';
 
 import ShortcutCard from '@/components/admin/ShortcutCard';
-import { Layers, Clock, LayoutDashboard, Smartphone } from 'lucide-react';
+import { Layers, Clock, LayoutDashboard } from 'lucide-react';
 
 export default function AdminShortcuts({ user, loadingData, pendingNotesTotal, pendingResourcesTotal, pendingNotes, pendingResources }) {
   return (
@@ -39,18 +39,6 @@ export default function AdminShortcuts({ user, loadingData, pendingNotesTotal, p
           colorScheme="purple"
           loading={loadingData}
         />
-
-        {user?.role === 'admin' && (
-          <ShortcutCard
-            href="/admin/app_releases"
-            title="App Releases"
-            description="Upload Android & iOS builds"
-            badgeText="Downloads"
-            icon={Smartphone}
-            colorScheme="indigo"
-            loading={loadingData}
-          />
-        )}
 
         <ShortcutCard
           href="/dashboard"

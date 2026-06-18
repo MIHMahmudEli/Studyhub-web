@@ -3,7 +3,7 @@
 import StatsCard from '@/components/admin/StatsCard';
 import {
   Clock, Layers, TrendingUp, Flame, Palette, BarChart3,
-  Users, ShieldCheck, Activity,
+  Users, ShieldCheck, Activity, Smartphone,
 } from 'lucide-react';
 
 export default function AdminStatsGrid({
@@ -130,6 +130,19 @@ export default function AdminStatsGrid({
           subtitle="Platform insights & charts"
           icon={BarChart3}
           colorScheme="blue"
+          iconAnimation="animate-pulse"
+          loading={loadingData}
+        />
+      )}
+
+      {user?.role === 'admin' && (
+        <StatsCard
+          href="/admin/released_apps"
+          title="App Releases"
+          value="Manage"
+          subtitle="Android & iOS builds"
+          icon={Smartphone}
+          colorScheme="emerald"
           iconAnimation="animate-pulse"
           loading={loadingData}
         />

@@ -21,6 +21,11 @@ function timeAgo(date) {
   return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+// Fire-and-forget download counter; never blocks the actual download.
+function trackDownload(id) {
+  apiRequest(`/app-releases/${id}/download`, { method: 'POST' }).catch(() => {});
+}
+
 function PlatformCard({ platform, releases }) {
   const { icon: Icon, accent } = platform;
   const latest = releases[0];
@@ -68,6 +73,7 @@ function PlatformCard({ platform, releases }) {
             download
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackDownload(latest.id)}
             className="group inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-[15px] text-white transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5"
             style={{ background: accent, boxShadow: `0 8px 30px ${accent}40` }}
           >
@@ -87,6 +93,7 @@ function PlatformCard({ platform, releases }) {
                     download
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => trackDownload(r.id)}
                     className="group flex items-center justify-between gap-3 px-3 py-2 rounded-xl text-[13px] transition-colors hover:bg-[var(--text-1)]/[0.04]"
                   >
                     <span className="font-semibold text-[var(--text-2)] group-hover:text-[var(--text-1)] transition-colors">v{r.version}</span>
