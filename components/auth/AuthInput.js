@@ -35,7 +35,7 @@ export default function AuthInput({
           onChange={onChange}
           onBlur={onBlur}
           placeholder={placeholder}
-          className={`w-full bg-transparent py-3.5 ${Icon ? 'pl-11' : 'px-5'} ${isPassword ? 'pr-12' : 'pr-5'} text-sm text-[var(--foreground)] placeholder-[var(--muted)] outline-none autofill:shadow-[0_0_0_30px_var(--card-bg)_inset] autofill:[-webkit-text-fill-color:var(--foreground)]`}
+          className={`w-full bg-transparent py-3.5 ${Icon ? 'pl-11' : 'px-5'} ${isPassword ? 'pr-12' : 'pr-5'} text-sm text-[var(--foreground)] placeholder-[var(--muted)] outline-none`}
         />
 
         {isPassword && (

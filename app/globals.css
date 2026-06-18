@@ -133,12 +133,23 @@ main {
 
 
 
-/* Override browser autofill background (white/yellow square) with themed card background */
+/* Keep browser autofill fully transparent (no white/blue square) in every theme.
+   Two independent defenses so a theme that overrides transitions (e.g. Ramadan's
+   universal `transition-duration`) can't bring the box back:
+     1. background-clip: text  → clips Chrome's autofill fill to the glyphs, so the
+        box never paints. This does NOT depend on transitions.
+     2. transition: ...100000s → also stops the autofill color from animating in. */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
-input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px var(--card-bg) inset !important;
+input:-webkit-autofill:active,
+input:autofill,
+input:autofill:hover,
+input:autofill:focus,
+input:autofill:active {
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  transition: background-color 100000s ease-in-out 0s !important;
   -webkit-text-fill-color: var(--foreground) !important;
   caret-color: var(--foreground);
 }
