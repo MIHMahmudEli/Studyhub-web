@@ -6,9 +6,16 @@ import { useSocket } from '@/context/SocketContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
+import PresenceHistoryChart from '@/components/admin/PresenceHistoryChart';
 import { apiRequest } from '@/lib/api';
 import { getDisplayUrl } from '@/lib/r2';
-import { ArrowLeft, Globe, Smartphone, Apple, Radio, Users } from 'lucide-react';
+import { ArrowLeft, Globe, Smartphone, Apple, Radio, Users, LineChart } from 'lucide-react';
+
+const RANGES = [
+  { label: '24h', hours: 24 },
+  { label: '7d', hours: 168 },
+  { label: '30d', hours: 720 },
+];
 
 const EMPTY = {
   total: 0,
@@ -81,6 +88,8 @@ export default function OnlineUsersPage() {
 
   const [data, setData] = useState(EMPTY);
   const [loaded, setLoaded] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [rangeHours, setRangeHours] = useState(24);
 
   // Admin only
   useEffect(() => {
@@ -116,6 +125,23 @@ export default function OnlineUsersPage() {
     });
     return off;
   }, [on]);
+
+  // Online-history timeline (refetch on range change + slow poll)
+  const fetchHistory = useCallback(async (hours) => {
+    try {
+      const res = await apiRequest(`/admin/online-users/history?hours=${hours}`);
+      setHistory(Array.isArray(res) ? res : []);
+    } catch {
+      setHistory([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!tokenReady || user?.role !== 'admin') return;
+    fetchHistory(rangeHours);
+    const id = setInterval(() => fetchHistory(rangeHours), 60000);
+    return () => clearInterval(id);
+  }, [tokenReady, user, rangeHours, fetchHistory]);
 
   if (authLoading || !user || user.role !== 'admin') return null;
 
@@ -158,6 +184,29 @@ export default function OnlineUsersPage() {
           <div className="flex items-center gap-2 text-sm text-[var(--text-2)]">
             <Users size={15} className="text-[var(--text-3)]" />
             <span><span className="font-bold text-[var(--text-1)]">{app.count || 0}</span> using the mobile app · <span className="font-bold text-[var(--text-1)]">{web.count || 0}</span> on web</span>
+          </div>
+
+          {/* History chart */}
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl p-4 sm:p-6">
+            <div className="flex items-center justify-between gap-3 mb-5">
+              <h3 className="text-sm font-black flex items-center gap-2 text-[var(--text-1)]">
+                <LineChart size={16} className="text-emerald-500" /> Online history
+              </h3>
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--background)]/60 border border-[var(--card-border)]">
+                {RANGES.map((r) => (
+                  <button
+                    key={r.hours}
+                    onClick={() => setRangeHours(r.hours)}
+                    className={`px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-widest transition-colors ${
+                      rangeHours === r.hours ? 'bg-emerald-500 text-white' : 'text-[var(--text-3)] hover:text-[var(--text-1)]'
+                    }`}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <PresenceHistoryChart data={history} rangeHours={rangeHours} />
           </div>
 
           {/* Platform columns */}
