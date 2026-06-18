@@ -32,6 +32,7 @@ export default function Navbar() {
     { label: 'Features', id: 'features' },
     { label: 'How it Works', id: 'how' },
     { label: 'Videos', id: 'videos' },
+    { label: 'Get the App', id: 'download' },
     { label: 'Community', id: 'contact' },
   ];
 
@@ -73,9 +74,10 @@ export default function Navbar() {
         </div>
 
         {/* Hamburger */}
-        <button 
+        <button
           className="md:hidden w-10 h-10 flex flex-col justify-center items-center gap-1.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] transition-colors hover:bg-[var(--surface)]"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
         >
           <span className={`block w-5 h-0.5 bg-[var(--text-2)] rounded-full transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
           <span className={`block w-5 h-0.5 bg-[var(--text-2)] rounded-full transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`} />
@@ -86,7 +88,7 @@ export default function Navbar() {
       {/* Mobile Dropdown */}
       <div 
         className={`md:hidden overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] bg-[var(--card-bg)] backdrop-blur-2xl border-b border-[var(--card-border)] ${
-          mobileMenuOpen ? 'max-h-[300px] py-4' : 'max-h-0'
+          mobileMenuOpen ? 'max-h-[520px] py-4' : 'max-h-0'
         }`}
       >
         <div className="flex flex-col gap-1 px-6">

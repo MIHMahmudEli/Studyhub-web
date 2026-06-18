@@ -9,6 +9,7 @@ import Highlights from '@/components/home/Highlights';
 import Features from '@/components/home/Features';
 import HowItWorks from '@/components/home/HowItWorks';
 import Videos from '@/components/home/Videos';
+import Downloads from '@/components/home/Downloads';
 import Contact from '@/components/home/Contact';
 import Footer from '@/components/layout/Footer';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
@@ -35,6 +36,7 @@ export default function Home() {
         <Features />
         <HowItWorks />
         <Videos />
+        <Downloads />
         <Contact />
       </main>
       <Footer />
