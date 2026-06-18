@@ -37,8 +37,19 @@ export default function AdminAppReleasesPage() {
   const [notes, setNotes] = useState('');
   const [file, setFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [versionError, setVersionError] = useState(false);
 
   const activePlatform = PLATFORMS.find((p) => p.id === platform);
+
+  // Toast must carry `show: true` for the Toast component to render.
+  const notify = (type, message) => setToast({ show: true, type, message });
+
+  // Auto-dismiss the toast after 5s (matches the progress ring).
+  useEffect(() => {
+    if (!toast?.show) return;
+    const t = setTimeout(() => setToast(null), 5000);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   // Admin only
   useEffect(() => {
@@ -50,8 +61,13 @@ export default function AdminAppReleasesPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file || !version.trim()) {
-      setToast({ type: 'error', message: 'Pick a file and enter a version.' });
+    if (!version.trim()) {
+      setVersionError(true);
+      notify('error', 'Please enter a version (e.g. 1.0.0).');
+      return;
+    }
+    if (!file) {
+      notify('error', `Please choose the ${activePlatform.label} build file (${activePlatform.hint}).`);
       return;
     }
     setSubmitting(true);
@@ -72,13 +88,13 @@ export default function AdminAppReleasesPage() {
         },
       });
 
-      setToast({ type: 'success', message: `${activePlatform.label} v${ver} published. Manage it from the dashboard.` });
+      notify('success', `${activePlatform.label} v${ver} published successfully.`);
       setVersion('');
       setNotes('');
       setFile(null);
       e.target.reset?.();
     } catch (err) {
-      setToast({ type: 'error', message: err.message || 'Upload failed.' });
+      notify('error', err.message || 'Upload failed. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -135,16 +151,21 @@ export default function AdminAppReleasesPage() {
 
             {/* Version */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-2)] mb-1.5">Version</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-2)] mb-1.5">
+                Version <span className="text-red-400">*</span>
+              </label>
               <div className="relative">
-                <Tag size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
+                <Tag size={15} className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${versionError ? 'text-red-400' : 'text-[var(--muted)]'}`} />
                 <input
                   value={version}
-                  onChange={(e) => setVersion(e.target.value)}
+                  onChange={(e) => { setVersion(e.target.value); if (versionError) setVersionError(false); }}
                   placeholder="e.g. 1.0.0"
-                  className="w-full bg-[var(--background)] border border-[var(--card-border)] rounded-2xl py-3 pl-10 pr-4 text-sm outline-none focus:border-blue-500/50"
+                  className={`w-full bg-[var(--background)] border rounded-2xl py-3 pl-10 pr-4 text-sm outline-none transition-colors ${
+                    versionError ? 'border-red-500/60 focus:border-red-500' : 'border-[var(--card-border)] focus:border-blue-500/50'
+                  }`}
                 />
               </div>
+              {versionError && <p className="text-[11px] font-semibold text-red-400 mt-1.5">Version is required.</p>}
             </div>
 
             {/* Release notes */}

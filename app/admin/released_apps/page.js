@@ -34,6 +34,15 @@ export default function ReleasedAppsPage() {
   const [savingId, setSavingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
+  // Toast must carry `show: true` for the Toast component to render.
+  const notify = (type, message) => setToast({ show: true, type, message });
+
+  useEffect(() => {
+    if (!toast?.show) return;
+    const t = setTimeout(() => setToast(null), 5000);
+    return () => clearTimeout(t);
+  }, [toast]);
+
   // Admin only
   useEffect(() => {
     if (!authLoading) {
@@ -65,7 +74,7 @@ export default function ReleasedAppsPage() {
 
   const saveEdit = async (id) => {
     if (!form.version.trim()) {
-      setToast({ type: 'error', message: 'Version cannot be empty.' });
+      notify('error', 'Version cannot be empty.');
       return;
     }
     setSavingId(id);
@@ -76,9 +85,9 @@ export default function ReleasedAppsPage() {
       });
       setReleases((prev) => prev.map((r) => (r.id === id ? { ...r, ...updated } : r)));
       setEditingId(null);
-      setToast({ type: 'success', message: 'Release updated.' });
+      notify('success', 'Release updated.');
     } catch (err) {
-      setToast({ type: 'error', message: err.message || 'Update failed.' });
+      notify('error', err.message || 'Update failed.');
     } finally {
       setSavingId(null);
     }
@@ -90,9 +99,9 @@ export default function ReleasedAppsPage() {
     try {
       await apiRequest(`/app-releases/${id}`, { method: 'DELETE' });
       setReleases((prev) => prev.filter((r) => r.id !== id));
-      setToast({ type: 'success', message: 'Release deleted.' });
+      notify('success', 'Release deleted.');
     } catch (err) {
-      setToast({ type: 'error', message: err.message || 'Delete failed.' });
+      notify('error', err.message || 'Delete failed.');
     } finally {
       setDeletingId(null);
     }

@@ -1,7 +1,23 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Clock, Award, UserX, UserCheck } from 'lucide-react';
+import { Clock, Award, UserX, UserCheck, Globe, Smartphone, Apple } from 'lucide-react';
+
+function PlatformBadge({ platform }) {
+  const map = {
+    web:     { label: 'Web',     icon: Globe,      cls: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+    android: { label: 'Android', icon: Smartphone, cls: 'bg-green-500/10 text-green-400 border-green-500/20' },
+    ios:     { label: 'iOS',     icon: Apple,      cls: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+  };
+  const p = map[platform];
+  if (!p) return <span className="text-xs font-black text-slate-500">—</span>;
+  const Icon = p.icon;
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${p.cls}`}>
+      <Icon size={11} /> {p.label}
+    </span>
+  );
+}
 
 const ACTIVE_NOW_THRESHOLD_SEC = 90;
 
@@ -30,6 +46,7 @@ export default function UserCard({
   showActions = false,
   isLive = false,
   showDept = true,
+  showPlatform = false,
   onPromote,
   onDemote,
   onBan
@@ -79,6 +96,12 @@ export default function UserCard({
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Department</span>
             <span className="text-xs font-black text-slate-400">{u.dept.toUpperCase()}</span>
+          </div>
+        )}
+        {showPlatform && (
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Platform</span>
+            <PlatformBadge platform={u.last_active_platform} />
           </div>
         )}
       </div>
