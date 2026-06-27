@@ -11,7 +11,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
-import { uploadToR2, deleteFromR2 } from '@/lib/r2';
+import { uploadToR2, deleteFromR2, getDisplayUrl } from '@/lib/r2';
 import coursesData from '@/lib/data/courses.json';
 
 export default function EditResourceModal({ isOpen, onClose, resource, onSave }) {
@@ -276,7 +276,7 @@ export default function EditResourceModal({ isOpen, onClose, resource, onSave })
               <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-slate-400">
                 <span>Current File:</span>
                 <a 
-                  href={resource.file_path} 
+                  href={getDisplayUrl(resource.file_path)}
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="text-blue-500 hover:underline inline-flex items-center gap-1"

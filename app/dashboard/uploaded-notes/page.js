@@ -7,7 +7,7 @@ import Link from 'next/link';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import Toast from '@/components/ui/Toast';
 import { apiRequest } from '@/lib/api';
-import { deleteFromR2 } from '@/lib/r2';
+import { deleteFromR2, getDisplayUrl } from '@/lib/r2';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminPanel from '@/components/admin/AdminPanel';
 import {
@@ -235,7 +235,7 @@ export default function UploadedNotesPage() {
                       <td className="py-4 sm:py-5 text-center whitespace-nowrap">
                         {note.file_path ? (
                           <a
-                            href={note.file_path}
+                            href={getDisplayUrl(note.file_path)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-500/10 text-purple-500 rounded-lg border border-purple-500/20 hover:bg-purple-500/20 transition-colors uppercase text-[10px] tracking-widest font-black shrink-0"

@@ -1,6 +1,7 @@
 'use client';
 
 import { Download, ExternalLink } from 'lucide-react';
+import { getDisplayUrl } from '@/lib/r2';
 
 export default function TrendingItemCard({ item, index, type = 'note', accentColor = 'orange' }) {
   // Styles for rank badge
@@ -49,7 +50,7 @@ export default function TrendingItemCard({ item, index, type = 'note', accentCol
 
       <div className="pt-2 border-t border-[var(--card-border)]">
         <a 
-          href={item.file_path}
+          href={getDisplayUrl(item.file_path)}
           target="_blank"
           rel="noopener noreferrer"
           className={`w-full flex items-center justify-center gap-2 py-3 ${bgAccentClass} ${hoverBgAccentClass} hover:text-white border ${borderAccentClass} ${textAccentClass} rounded-xl text-xs font-black uppercase tracking-widest transition-all cursor-pointer shadow-sm shrink-0`}

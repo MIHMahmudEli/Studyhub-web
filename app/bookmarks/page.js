@@ -23,6 +23,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { apiRequest } from '@/lib/api';
+import { getDisplayUrl } from '@/lib/r2';
 import { getSuggestions, expandShortForm } from '@/lib/searchUtils';
 import { BookmarkListSkeleton, ResourceListSkeleton } from '@/components/ui/Skeleton';
 import Toast from '@/components/ui/Toast';
@@ -463,7 +464,7 @@ function BookmarkPageInner() {
                           <Trash2 size={14} />
                         </button>
                         <button
-                          onClick={() => window.open(resource.resource?.file_path || '#', '_blank')}
+                          onClick={() => window.open(getDisplayUrl(resource.resource?.file_path) || '#', '_blank')}
                           className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.05] text-slate-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm cursor-pointer"
                         >
                           <Download size={14} />

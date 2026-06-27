@@ -1,6 +1,7 @@
 'use client';
 
 import { FileText, Download, ExternalLink } from 'lucide-react';
+import { getDisplayUrl } from '@/lib/r2';
 
 export default function TrendingItemRow({ item, index, type = 'note', accentColor = 'orange' }) {
   // Styles for rank badge
@@ -67,7 +68,7 @@ export default function TrendingItemRow({ item, index, type = 'note', accentColo
       </td>
       <td className="py-4 sm:py-5 text-right pr-4 whitespace-nowrap">
         <a 
-          href={item.file_path}
+          href={getDisplayUrl(item.file_path)}
           target="_blank"
           rel="noopener noreferrer"
           className={`inline-flex items-center gap-2 px-4 py-2 ${bgAccentClass} ${hoverBgAccentClass} hover:text-white border ${borderAccentClass} ${textAccentClass} rounded-xl text-xs font-black uppercase tracking-widest transition-all cursor-pointer shadow-sm shrink-0`}

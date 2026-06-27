@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { FileText, Layers, BookOpen, Search as SearchIcon, Loader2, Trash2, Download, ExternalLink, Bookmark, Atom, Calculator, Brain, Globe, Database, Code2, Cpu, Network } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { apiRequest } from '@/lib/api';
+import { getDisplayUrl } from '@/lib/r2';
 import { expandShortForm } from '@/lib/searchUtils';
 import DashboardNavbar from '@/components/layout/DashboardNavbar';
 import NoteCard from '@/components/ui/NoteCard';
@@ -295,7 +296,7 @@ function SearchPageInner() {
                             <Trash2 size={14} />
                           </button>
                           <button
-                            onClick={() => window.open(resource.resource?.file_path || '#', '_blank')}
+                            onClick={() => window.open(getDisplayUrl(resource.resource?.file_path) || '#', '_blank')}
                             className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.05] text-slate-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm cursor-pointer"
                           >
                             <Download size={14} />
