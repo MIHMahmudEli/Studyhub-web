@@ -117,6 +117,7 @@ function PlatformCard({ platform, releases }) {
 export default function Downloads() {
   const [releases, setReleases] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -127,14 +128,6 @@ export default function Downloads() {
     return () => { active = false; };
   }, []);
 
-  // Don't render the section at all until we know there's at least one release,
-  // so the landing page never shows an empty "download" area.
-  const hasAny = releases.length > 0;
-  if (loaded && !hasAny) return null;
-
-  const byPlatform = (id) => releases.filter((r) => r.platform === id); // already newest-first from API
-
-  const [copied, setCopied] = useState(false);
   const copyShareLink = async () => {
     const url = `${window.location.origin}/#download`;
     try {
@@ -147,15 +140,19 @@ export default function Downloads() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Don't render the section at all until we know there's at least one release,
+  // so the landing page never shows an empty "download" area.
+  const hasAny = releases.length > 0;
+  if (loaded && !hasAny) return null;
+
+  const byPlatform = (id) => releases.filter((r) => r.platform === id); // already newest-first from API
+
   return (
     <section id="download" className="px-6 pb-20 md:pb-[120px] relative overflow-hidden scroll-mt-24">
       <div className="max-w-[1120px] mx-auto">
         <div className="border-t border-[var(--border)] mb-12 md:mb-20" />
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 md:mb-14">
           <div>
-            <span className="block text-[10px] md:text-[11px] font-bold tracking-[0.12em] uppercase text-emerald-500 mb-3">
-              Get the app
-            </span>
             <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[var(--text-1)] mb-4">
               Take StudyHub<br />
               <span className="text-[var(--text-3)]">anywhere you go.</span>

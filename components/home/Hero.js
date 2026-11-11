@@ -15,13 +15,10 @@ export default function Hero() {
 
       <div className="max-w-[800px] mx-auto">
         {ramadanVariant === 'ramadan' && (
-          <div className="inline-flex items-center gap-2 py-1.5 px-4 bg-amber-500/10 border border-amber-500/25 rounded-full text-amber-500 text-[12px] font-bold uppercase tracking-widest mb-3 fade-up animate-ramadan-glow">
+          <div className="inline-flex items-center gap-2 py-1.5 px-4 bg-amber-500/10 border border-amber-500/25 rounded-full text-amber-500 text-[12px] font-bold uppercase tracking-widest mb-6 fade-up animate-ramadan-glow">
             🌙 Ramadan Mubarak — A blessed month of knowledge and growth
           </div>
         )}
-        <div className="inline-flex items-center gap-2 py-1.5 px-4 bg-blue-500/10 border border-blue-500/25 rounded-full text-blue-400 text-[12px] font-bold uppercase tracking-widest mb-7 fade-up">
-          ✦ Academic Collaboration Platform
-        </div>
 
         <h1 className="text-[clamp(2.4rem,6vw,4.5rem)] font-black leading-[1.08] tracking-tight mb-6 text-[var(--text-1)] fade-up delay-1">
           Study smarter.<br />

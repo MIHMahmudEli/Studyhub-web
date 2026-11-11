@@ -74,9 +74,6 @@ export default function Videos() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 md:mb-14">
           <div>
-            <span className="block text-[10px] md:text-[11px] font-bold tracking-[0.12em] uppercase text-red-500 mb-3">
-              Watch &amp; Learn
-            </span>
             <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[var(--text-1)] mb-4">
               Study with us<br />
               <span className="text-[var(--text-3)]">on YouTube.</span>

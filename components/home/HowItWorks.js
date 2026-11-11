@@ -73,9 +73,6 @@ export default function HowItWorks() {
       <div className="max-w-[1120px] mx-auto">
         <div className="border-t border-[var(--border)] mb-12 md:mb-20" />
         <div className="mb-10 md:mb-14">
-          <span className="block text-[10px] md:text-[11px] font-bold tracking-[0.12em] uppercase text-purple-500 mb-3">
-            Process
-          </span>
           <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[var(--text-1)] mb-4">
             Up and running<br />
             <span className="text-[var(--text-3)]">in three steps.</span>
