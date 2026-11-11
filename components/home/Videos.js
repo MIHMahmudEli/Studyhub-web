@@ -72,8 +72,8 @@ export default function Videos() {
         <div className="border-t border-[var(--border)] mb-12 md:mb-20" />
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 md:mb-14">
-          <div>
+        <div className="flex flex-col md:flex-row-reverse md:items-end md:justify-between gap-6 mb-10 md:mb-14">
+          <div className="text-right flex flex-col items-end">
             <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.2] md:leading-[1.15] tracking-tight text-[var(--text-1)] mb-4">
               Study with us<br />
               <span className="text-[var(--text-3)]">on YouTube.</span>
@@ -86,7 +86,7 @@ export default function Videos() {
             href={CHANNEL_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2 py-3 px-6 bg-red-600 text-white font-bold text-[14px] rounded-xl no-underline whitespace-nowrap shadow-[0_4px_20px_rgba(220,38,38,0.3)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-red-700 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(220,38,38,0.4)] self-start md:self-auto"
+            className="group inline-flex items-center gap-2 py-3 px-6 bg-red-600 text-white font-bold text-[14px] rounded-xl no-underline whitespace-nowrap shadow-[0_4px_20px_rgba(220,38,38,0.3)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-red-700 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(220,38,38,0.4)] self-end md:self-auto"
           >
             <SquarePlay size={18} />
             Subscribe
